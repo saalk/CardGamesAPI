@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 by Ivo Woltring (http://ivonet.nl)
+ * Copyright (c) 2016 by klaas (http://kinked.nl)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  *   limitations under the License.
  */
 
-package nl.ivonet.application;
+package nl.kinked.application;
 
 
-import nl.ivonet.controler.HomeControler;
+import nl.kinked.controler.HomeControler;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * Basic JAX-RS application.
  *
- * @author Ivo Woltring
+ * @author klaas
  */
 @ApplicationPath("service")
 public class SeedApplication extends Application {

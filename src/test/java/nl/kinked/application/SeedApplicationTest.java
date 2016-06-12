@@ -1,6 +1,6 @@
-package nl.ivonet.application;
+package nl.kinked.application;
 
-import nl.ivonet.controler.HomeControler;
+import nl.kinked.controler.HomeControler;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,5 +1,6 @@
 #!/bin/bash
 # run this script with bash <scriptname>.sh
+# guide to: Java Maven AngularJS Seed Project on Web Dev Zone
 #
 # 1: Archetype is a Maven project templating toolkit - to create a new project based on an archetype 
 #    - use mvn archetype:generate
@@ -56,12 +57,12 @@ bower install angular-loader
 bower install bootstrap
 #
 # 5: Initialize bower.json to let bower know the name of your package and dependencies 
-#    - bower init via CMD!!
+#    - do bower init via CMD not via Bash!!
 #    - npm via bower will fill the directory vendor automated after npm install!
 #
 bower init
 #
-# 6: Test the setup of bower; npm via bower will fill the directory vendor automated after npm install!
+# 6: Test the setup of bower; npm via bower will fill a removed vendor directory automatically after npm install!
 #
 rm -rf ./src/main/webapp/vendor
 npm install
@@ -74,8 +75,10 @@ npm install
 #    - create the ./src/test/javascript/protractor.conf.js mentioning jasmine as framework
 #    - this will run the integration test by using the command npm run protractor
 #
-#
 # 9: Add an index.html and the js files and the jasmine and e2e tests
 #    - start a terminal window in the root of the project and start the test server
 #
-
+#
+# 10: update the pom
+#    - start a terminal window in the root of the project and start the test server
+#

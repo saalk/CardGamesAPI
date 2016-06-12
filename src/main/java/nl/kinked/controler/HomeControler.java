@@ -1,6 +1,6 @@
-package nl.ivonet.controler;
+package nl.kinked.controler;
 
-import nl.ivonet.model.Hello;
+import nl.kinked.model.Hello;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Ivo Woltring
+ * @author Klaas
  */
 @Path("/home")
 @RequestScoped

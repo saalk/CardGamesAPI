@@ -1,8 +1,8 @@
-package nl.ivonet.model;
+package nl.kinked.model;
 
 /**
  * Simple model class.
- * @author Ivo Woltring
+ * @author klaas
  */
 public class Hello {
     private final String message;

@@ -1,6 +1,6 @@
-package nl.ivonet.controler;
+package nl.kinked.controler;
 
-import nl.ivonet.model.Hello;
+import nl.kinked.model.Hello;
 import org.junit.Before;
 import org.junit.Test;
 
