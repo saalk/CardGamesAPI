@@ -1,6 +1,10 @@
 #!/bin/bash
 # run this script with bash <scriptname>.sh
 # guide to: Java Maven AngularJS Seed Project on Web Dev Zone
+# - https://dzone.com/articles/java-maven-angularjs-seed
+# guide to: Hello World Restful Web Service Using Spring
+# - https://dzone.com/articles/hello-world-restful-web
+#
 #
 # 1: Archetype is a Maven project templating toolkit - to create a new project based on an archetype 
 #    - use mvn archetype:generate
@@ -61,6 +65,7 @@ bower install bootstrap
 #    - npm via bower will fill the directory vendor automated after npm install!
 #
 bower init
+also do: npm install -g http-server ?
 #
 # 6: Test the setup of bower; npm via bower will fill a removed vendor directory automatically after npm install!
 #
@@ -75,10 +80,10 @@ npm install
 #    - create the ./src/test/javascript/protractor.conf.js mentioning jasmine as framework
 #    - this will run the integration test by using the command npm run protractor
 #
-# 9: Add an index.html and the js files and the jasmine and e2e tests
+# 9: update the pom
+#    - add dependecy for jackson jaxb annotations, glassfish
+#
+# 10: Add an index.html and the js files and the jasmine and e2e tests
 #    - start a terminal window in the root of the project and start the test server
-#
-#
-# 10: update the pom
 #    - start a terminal window in the root of the project and start the test server
 #

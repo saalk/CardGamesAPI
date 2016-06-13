@@ -1,7 +1,25 @@
 # CardGamesAPI
+#
+# A Restful API with Java, AngularJS
 
-Goals
+Coding prerequisites for Windows
+- Browser - Mozilla Firefox v46.0.1
+- JDK - Java SE Development Kit 8
+- Project Management Tool - Maven v3.3.9
+- IDE - IntelliJ IDEA Community Edition 2016 1.2 IDE
+- Git - Version control system v2.6.1.windows.1
+- Javascript runtime - nodejs v4.4.5 (dl from nodejs.org)
+- npm Package Manager for various dev tools - npm v2.15.5 (comes with nodejs)
+-> Make sure the locations of both npm and http-server are added in environment variable 'PATH' 
+- bower Web Package Manager for the runtime angular code - Bower v1.7.9
+- npm is preconfigured to run bower also
+- PhantomJs as headless browser for testing
+- GlassFish Application Server - open source GlassFish Java EE 7 App Server 4.1.1 (jdk 8u60 min)
+Other Java EE servers for EAR are: IBM WebSphere, Apache TomEE Jaxrs, Oracle Weblogic, RedHat Wildfly (former Jboss)
+- Tomcat is for War only and suitable for Spring so Java EE is not really needed.
 
+Coding ecosystem:
+Use GitHub as version control
 Maven as the java software build tool to automated
  - lib dependencies folder in m2
  - run tests etc
@@ -27,8 +45,7 @@ AngularJS 1.5.6 as the frond-end framework
  - controller sets initial state and $scope with methods to control behavior
 Frond-end testing during the maven build
 - grunt is used to automate tasks eg. testing
-Bower as the web package download manager to install components.
-Use GitHub as version control
+- Jasmine as javascript unit test tool integrated with maven
 Bootstrap als css standard
  - an html, css, javascript framework build at twitter
  - build user interface components
@@ -36,17 +53,3 @@ Bootstrap als css standard
 Javascript in src/main/javascript
  - find an element in html and change the content (text or pic)
  - start with <script>
-Jasmine as javascript unit test tool integrated with maven
-
-Prerequisites
-- Browser - Mozilla Firefox v46.0.1
-- Project Management Tool - Maven v3.3.9
-- IDE - IntelliJ IDEA Community Edition 2016 1.2 IDE
-- Git - Version control system v2.6.1.windows.1
-- Maven - Project Management Tool v3.3.9
-- Javascript runtime - nodejs v4.4.5 (dl from nodejs.org)
-- Package Manager for various dev stuff - npm v2.15.5 (comes with nodejs)
-- Web Package Manager for the runtime - Bower v1.7.9
-- JDK - Java SE Development Kit 8
-- PhantomJs
-- Application Server

@@ -4,43 +4,133 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nl.kinked</groupId>
-    <artifactId>CardGamesAPI</artifactId>
+    <artifactId>card-games-api</artifactId>
     <packaging>war</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>CardGamesAPI Maven Webapp</name>
     <url>http://kinked.nl</url>
 
     <properties>
         <artifact.name>app</artifact.name>
-        <vendor.loc>src\main\webapp\vendor</vendor.loc>
+        <vendor.loc>src/main/webapp/vendor</vendor.loc>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.plugin>3.5.1</maven.compiler.plugin>
         <spring.version>4.0.0.RELEASE</spring.version>
-        <maven.compiler.plugin>2.3.2</maven.compiler.plugin>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
+
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <!-- JUnit is a regression testing framework written by Erich Gamma and Kent Beck. -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!-- Mock objects library for java. -->
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!-- Java(TM) EE 7 Specification APIs -->
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <!-- Support for using JAXB annotations as an alternative to "native" Jackson annotations, for configuring data binding. -->
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.7.4</version>
+        </dependency>
+        <dependency>
+            <!-- Jersey JSON Jackson (2.x) entity providers support module.  -->
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.23</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
     <build>
         <finalName>${artifact.name}</finalName>
 
@@ -52,31 +142,33 @@
         </resources>
 
         <plugins>
-            <!-- java compiler version -->
+            <!-- Maven plugin to compile sources of you project -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${maven.compiler.plugin}</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                    <compilerArguments>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgument>
+                        -XDignore.symbol.file
+                    </compilerArgument>
                 </configuration>
             </plugin>
+            <!-- Maven plugin for collecting classes and resources for a web app and package them into a war -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <!-- Maven plugin for utilities to work with dependencies like copy, pack, etc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.10</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -98,6 +190,36 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Maven plugin for scala, used by gatling -->
+            <!-- yuicompressor is to minify + obfuscate + check js and css files -->
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <id>compress-js</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <!--<goal>jslint</goal>-->
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnWarning>true</failOnWarning>
+                    <!--<outputDirectory>src/main/webapp/js</outputDirectory>-->
+                    <outputDirectory>target/${artifact.name}/js</outputDirectory>
+                    <nosuffix>true</nosuffix>
+                    <excludes>
+                        <exclude>**/js/**/*js</exclude>
+                        <exclude>vendor/**</exclude>
+                        <exclude>**/*min.css</exclude>
+                        <exclude>**/*min.js</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!-- Maven plugin to execute Jasmine Specs (unittest javascript) and Selenuim (integrate browser testing) -->
             <plugin>
                 <groupId>com.github.searls</groupId>
                 <artifactId>jasmine-maven-plugin</artifactId>
@@ -126,10 +248,11 @@
                     </specIncludes>
                 </configuration>
             </plugin>
+            <!-- Maven plugin to execute Java in the same VM as maven-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.7.9</version>
+                <version>1.3.2</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -144,6 +267,21 @@
                         <argument>install</argument>
                     </arguments>
                     <workingDirectory>${basedir}</workingDirectory>
+                </configuration>
+            </plugin>
+            <!-- Maven plugin to remove files generated at build-time in a project's directory. -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/webapp/vendor</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>node_modules</directory>
+                        </fileset>
+                    </filesets>
                 </configuration>
             </plugin>
         </plugins>

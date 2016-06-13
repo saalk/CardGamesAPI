@@ -1,6 +1,6 @@
 {
   "name": "card-games-api",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Card games project for AngularJS with java and maven",
   "main": "src/main/webapp/index.html",
   "authors": [

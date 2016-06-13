@@ -1,7 +1,7 @@
 {
   "name": "card-games-api",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Card games project for AngularJS with java and maven",
   "main": "index.js",
   "repository": {
@@ -9,7 +9,7 @@
     "url": "git+https://github.com/saalk/CardGamesAPI.git"
   },
   "author": "Saalk lightyear",
-  "license": "ISC",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/saalk/CardGamesAPI/issues"
   },
@@ -27,8 +27,8 @@
   },
   "scripts": {
     "postinstall": "bower install",
-    "prestart": "npm install",
-    "start": "http-server src/main/webapp -a localhost -p 8000",
+    "prestart": "npm install & mvn clean package",
+    "start": "http-server target/app -a localhost -p 8000",
     "pretest": "npm install",
     "test": "karma start src/test/javascript/karma.conf.js",
     "test-single-run": "karma start src/test/javascript/karma.conf.js  --single-run",
