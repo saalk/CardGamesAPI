@@ -11,14 +11,14 @@
 #	 - use eg. -DarchetypeArtifactId=mamaven-archetype-webapp to generate a sample Maven Webapp project
 #    - example: mvn archetype:generate -DgroupId=nl.kinked -DartifactId=CardGamesAPI -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
 #
-echo "make archetype for webapp"
+echo "1: make archetype for webapp"
 mvn archetype:generate -DgroupId=nl.kinked -DartifactId=CardGamesAPI -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
 #
 # 2: Add a java folder structure to the project  
 #    - mkdir for structure
 #    - touch to create empty files
 #	 - remove unnecessary files
-echo "make java folder structure and initial js files"
+echo "2: make java folder structure and initial js files"
 mkdir -p src/main/java
 mkdir -p src/test/java
 mkdir -p src/test/javascript/unit
@@ -45,6 +45,8 @@ touch .bowerrc
 #    - cat package.json - to show the just created file
 #    - tweak the package.json - add dev-dependencies and scripts for karma*, protractor
 #
+echo "3: add package.json at root of node.js project keeps track of other peoples packages you use"
+echo "   use npm init for interactive creating a package.json file (see: npm help json)"
 npm init
 #
 # 4: Tell bower to download packages not to bower-components but to a vendor folder
@@ -53,6 +55,8 @@ npm init
 #    - use bower to install angular and bootstrap dependencies
 #    - bootstrap is a html, css and JS framework for developing mobile-first web sites
 #
+echo "4: install bower via npm for other peoples packages you use"
+echo "   a bower.json as a manifest for packages installed"
 bower install angular
 bower install angular-route
 bower install angular-animate
@@ -64,6 +68,8 @@ bower install bootstrap
 #    - do bower init via CMD not via Bash!!
 #    - npm via bower will fill the directory vendor automated after npm install!
 #
+echo "4: add bower.json to add currently installed components to  "
+echo "   a bower.json as a manifest for packages installed"
 bower init
 also do: npm install -g http-server ?
 #
@@ -81,9 +87,15 @@ npm install
 #    - this will run the integration test by using the command npm run protractor
 #
 # 9: update the pom
-#    - add dependecy for jackson jaxb annotations, glassfish
+#    - add dependency for jackson jaxb annotations, glassfish
 #
 # 10: Add an index.html and the js files and the jasmine and e2e tests
 #    - start a terminal window in the root of the project and start the test server
 #    - start a terminal window in the root of the project and start the test server
 #
+# 11: make a java project with | Annotation | Meaning                                             |
+#+------------+-----------------------------------------------------+
+#| @Component | generic stereotype for any Spring-managed component |
+#| @Repository| stereotype for persistence layer                    |
+#| @Service   | stereotype for service layer                        |
+#| @Controller| stereotype for presentation layer (spring-mvc)      |

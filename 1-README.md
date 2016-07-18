@@ -3,20 +3,20 @@
 # A Restful API with Java, AngularJS
 
 Coding prerequisites for Windows
-- Browser - Mozilla Firefox v46.0.1
-- JDK - Java SE Development Kit 8
-- Project Management Tool - Maven v3.3.9
-- IDE - IntelliJ IDEA Community Edition 2016 1.2 IDE
-- Git - Version control system v2.6.1.windows.1
-- Javascript runtime - nodejs v4.4.5 (dl from nodejs.org)
-- npm Package Manager for various dev tools - npm v2.15.5 (comes with nodejs)
--> Make sure the locations of both npm and http-server are added in environment variable 'PATH' 
-- bower Web Package Manager for the runtime angular code - Bower v1.7.9
-- npm is preconfigured to run bower also
-- PhantomJs as headless browser for testing
-- GlassFish Application Server - open source GlassFish Java EE 7 App Server 4.1.1 (jdk 8u60 min)
-Other Java EE servers for EAR are: IBM WebSphere, Apache TomEE Jaxrs, Oracle Weblogic, RedHat Wildfly (former Jboss)
-- Tomcat is for War only and suitable for Spring so Java EE is not really needed.
+1- DL Browser - Mozilla Firefox v46.0.1
+2- DL JDK - Java SE Development Kit 8
+3- DL Project Management Tool - Maven v3.3.9
+4- DL IDE - IntelliJ IDEA Community Edition 2016 1.2 IDE
+5- DL Git - Version control system v2.6.1.windows.1
+6- DL Javascript runtime - nodejs v4.4.5 (dl from nodejs.org)
+ - incl. NPM = Node.js Package Manager for various DEV tools - npm v2.15.5 (comes with nodejs)
+ -> Make sure the locations of both npm and http-server are added in environment variable 'PATH' 
+7- INSTALL VIA NPM bower Web Package Manager for the frontend runtime (ANGULAR) code - Bower v1.7.9
+ - use bower to DL bootstrap (css/js/fonts framework) + angular
+8- INSTALL VIA NPM PhantomJs as headless browser for testing
+9- DL GlassFish Application Server - open source GlassFish Java EE 7 App Server 4.1.1 (jdk 8u60 min)
+ - Other Java EE servers for EAR are: IBM WebSphere, Apache TomEE Jaxrs, Oracle Weblogic, RedHat Wildfly (former Jboss)
+10- DL Tomcat is for War only and suitable for Spring so Java EE is not really needed.
 
 Coding ecosystem:
 Use GitHub as version control
@@ -45,7 +45,8 @@ AngularJS 1.5.6 as the frond-end framework
  - controller sets initial state and $scope with methods to control behavior
 Frond-end testing during the maven build
 - grunt is used to automate tasks eg. testing
-- Jasmine as javascript unit test tool integrated with maven
+- Jasmine as javascript UNITTEST tool integrated with maven
+- use Karma as the browser testrunner for javascript and reports testresults for INTEGRATION TESTING.
 Bootstrap als css standard
  - an html, css, javascript framework build at twitter
  - build user interface components

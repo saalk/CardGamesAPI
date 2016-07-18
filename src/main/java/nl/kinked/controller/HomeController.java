@@ -1,4 +1,4 @@
-package nl.kinked.controler;
+package nl.kinked.controller;
 
 import nl.kinked.model.Hello;
 
@@ -14,12 +14,12 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("/home")
 @RequestScoped
-public class HomeControler {
+public class HomeController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Hello get() {
-        return new Hello("world");
+        return new Hello("stranger");
     }
 
 }

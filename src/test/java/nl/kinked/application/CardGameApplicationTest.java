@@ -1,6 +1,6 @@
 package nl.kinked.application;
 
-import nl.kinked.controler.HomeControler;
+import nl.kinked.controller.HomeController;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,33 +13,33 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class SeedApplicationTest {
+public class CardGameApplicationTest {
 
-    private SeedApplication seedApplication;
+    private CardGameApplication cardGameApplication;
 
     @Before
     public void setUp() throws Exception {
-        this.seedApplication = new SeedApplication();
+        this.cardGameApplication = new CardGameApplication();
 
     }
 
     @Test
     public void testGetClasses() throws Exception {
-        final Set<Class<?>> classes = this.seedApplication.getClasses();
+        final Set<Class<?>> classes = this.cardGameApplication.getClasses();
         assertNotNull(classes);
         assertEquals(2, classes.size());
-        assertThat("contains the the JacksonFeature", classes.contains(JacksonFeature.class));
-        assertThat("contains the HomeController", classes.contains(HomeControler.class));
+        assertThat("contains the JacksonFeature", classes.contains(JacksonFeature.class));
+        assertThat("contains the HomeController", classes.contains(HomeController.class));
     }
 
     @Test
     public void testAnnotations() throws Exception {
 
 
-        assertThat("The Class has the annotation ApplicationPath ", this.seedApplication.getClass()
+        assertThat("The Class has the annotation ApplicationPath ", this.cardGameApplication.getClass()
                                                                                         .isAnnotationPresent(
                                                                                                 ApplicationPath.class));
-        final ApplicationPath annotation = this.seedApplication.getClass()
+        final ApplicationPath annotation = this.cardGameApplication.getClass()
                                                                .getAnnotation(ApplicationPath.class);
         assertThat("The containing string is 'service'", annotation.value(), is("service"));
     }

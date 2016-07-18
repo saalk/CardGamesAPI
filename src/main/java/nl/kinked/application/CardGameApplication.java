@@ -17,19 +17,19 @@
 package nl.kinked.application;
 
 
-import nl.kinked.controler.HomeControler;
+import nl.kinked.controller.HomeController;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.Set;
 
 /**
- * Basic JAX-RS application.
+ * Basic JAX-RS application, a json provider.
  *
  * @author klaas
  */
 @ApplicationPath("service")
-public class SeedApplication extends Application {
+public class CardGameApplication extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
@@ -52,7 +52,7 @@ public class SeedApplication extends Application {
      * Add your own resources here.
      */
     private void addRestResourceClasses(final Set<Class<?>> resources) {
-        resources.add(HomeControler.class);
+        resources.add(HomeController.class);
     }
 
 }

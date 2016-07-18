@@ -1,4 +1,4 @@
-package nl.kinked.controler;
+package nl.kinked.controller;
 
 import nl.kinked.model.Hello;
 import org.junit.Before;
@@ -15,13 +15,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 
-public class HomeControlerTest {
+public class HomeControllerTest {
 
-    private HomeControler controler;
+    private HomeController controler;
 
     @Before
     public void setUp() throws Exception {
-        this.controler = new HomeControler();
+        this.controler = new HomeController();
 
     }
 
@@ -29,7 +29,7 @@ public class HomeControlerTest {
     public void testGet() throws Exception {
         final Hello result = this.controler.get();
         assertNotNull(result);
-        assertThat("the result message is world", result.getMessage(), is("world"));
+        assertThat("the result message is stranger", result.getMessage(), is("stranger"));
     }
 
     @Test
