@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head ng-app="cardGamesApp">
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
@@ -25,116 +25,29 @@
 
     <!-- Scripts
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <link rel="stylesheet" href="css/github-prettify-theme.css">
-    <!-- src="vendor/angular/angular.min.js" -->
-    <!-- src="vendor/angular-route/angular-route.min.js" -->
-    <script src="js/site.js"></script>
+    <script src="vendor/angular/angular.min.js"></script>
+    <script src="vendor/angular-route/angular-route.min.js"></script>
 
-    <script src="js/app.js"></script>
-    <script src="js/controllers.js"></script>
-    <script src="js/filters.js"></script>
-    <script src="js/routes.js"></script>
-    <script src="js/services.js"></script>
+    <script src="javascript/app.js"></script>
+    <script src="javascript/controllers.js"></script>
+    <script src="javascript/filters.js"></script>
+    <script src="javascript/routes.js"></script>
+    <script src="javascript/factories.js"></script>
 
     <!-- Favicon
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="img/favicon.png">
 
 </head>
-<body data-ng-app="cardGamesApp">
-<!-- ng-view angular placeholder for html partials
-    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div data-ng-view></div>
-
-<!-- Primary Page Layout
-    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<body>
 <div class="container">
-
-    <section class="header">
-        <div class="row">
-            <div class="two-thirds column" style="margin-top: 15%">
-                <h2 class="title">Welcome alien!</h2>
-                <h5>and play this simple, but yet very addictive
-                    High-low card game</h5>
-                <p class="section-description">
-                    This game is an angular powered, skeleton css based java application that
-                    runs on any device. Choose amongst the many java back-end implemented options
-                    while playing this
-                    <a href="http://www.ehow.com/list_6705590_hi_lo-card-game-rules.html">
-                        High-Low</a> game. Start with
-                    bailing your ship and get a random starting amount <strong>up to 1000</strong>
-                    credits!
-                    <br>
-                    <br>
-                    Select up to 2 ai Players to join you; we have them with an ai level of
-                    high, average or low. All you do is guess if the next card will be higher or
-                    lower
-                    than the card facing up.
-                    <br>
-                    See how many you can get in a row. Only after one
-                    guess you can opt to pass on to the next player or keep playing for a next turn.
-                    <br>
-                    Win or lose depends on a series of good guesses and of course the result of
-                    your selected opponent ai player(s) strenght...
-                    <br></p>
-                <a class="button button-primary" href="#casino">Bail your ship</a>
-            </div>
-            <div class="one-third column" style="margin-botton: 5%">
-                <img class="u-max-full-width" src="img/ship.ico">
-            </div>
-        </div>
-    </section>
-
-    <!-- alien presentation
-            –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <div class="value-props row" style="margin-top: 5%">
-            <div class="four columns value-prop">
-                <img class="value-img" src="img/aihigh.jpg">
-                <h5>High</h5>
-                <p>Most evolved alien species &amp; as smart as you?</p>
-            </div>
-            <div class="four columns value-prop">
-                <img class="value-img" src="img/aimedium.jpg">
-                <h5>Medium</h5>
-                <p>Nice competitor, not that smart but can be a challenge now and then.</p>
-            </div>
-            <div class="four columns value-prop">
-                <img class="value-img" src="img/ailow.jpg">
-                <h5>Low</h5>
-                <p>Quick to beat or just for learning the game.</p>
-            </div>
-        </div>
-
-    <!-- footer
-       –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <section class="footer u-full-width">
-            <div class="container">
-                <hr>
-                <div class="row">
-                    <div class="one column">
-                        &copy 2016 klaas.
-                    </div>
-                </div>
-            </div>
-    </section>
+    <!-- ng-view angular placeholder for html partials
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <div ng-view></div>
 
 </div>
-
-<!-- Google Analytics -->
-<script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-33397759-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-</script>
 <!-- End Document
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 </body>
+
 </html>

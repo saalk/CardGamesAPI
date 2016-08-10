@@ -8,10 +8,9 @@
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>CardGamesAPI Maven Webapp</name>
-    <url>http://deknik.j2e.nl</url>
+    <url>http://deknik.j2e.nl/</url>
 
     <properties>
-        <artifact.name>cardgames</artifact.name>
         <vendor.loc>src/main/webapp/vendor</vendor.loc>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -197,7 +196,7 @@
 
         <resources>
             <resource>
-                <directory>src/main/javascript</directory>
+                <directory>src/main/webapp/javascript</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -302,7 +301,7 @@
                         <source>${vendor.loc}/angular-route/angular-route.min.js</source>
                         <source>${vendor.loc}/angular-mocks/angular-mocks.js</source>
                     </preloadSources>
-                    <jsSrcDir>src/main/javascript</jsSrcDir>
+                    <jsSrcDir>src/main/webapp/javascript</jsSrcDir>
                     <jsTestSrcDir>src/test/javascript/unit</jsTestSrcDir>
                     <specIncludes>
                         <include>*Spec.js</include>

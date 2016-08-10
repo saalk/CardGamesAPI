@@ -1,82 +1,76 @@
-<!-- .container is main centered wrapper -->
+<!-- Primary Page Layout Casino
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 <div class="container">
 
-    <table class="u-full-width">
-        <thead>
-        <tr>
-            <th>Player</th>
-            <th>Level</th>
-            <th>Fiches</th>
-            <th>Won</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>You</td>
-            <td>Human</td>
-            <td>1230</td>
-            <td>2</td>
-        </tr>
-        <tr>
-            <td>Player1</td>
-            <td>High</td>
-            <td>1900</td>
-            <td>1</td>
-        </tr>
-        <tr>
-            <td>Player2</td>
-            <td>Low</td>
-            <td>130</td>
-            <td>5</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <div class="u-full-width" data-ng-controller="repeatController">
-        Visitors in the casino {{players.length}}.
-        <!-- q is a property in the model in memory via ng-model -->
-        <input type="search" data-ng-model="q" placeholder="filter..."
-               aria-label="filter players"/>
-        <ul class="example-animate-container">
-            <!-- use q from the model to filter the list in ng-repeat-->
-            <li class="animate-repeat"
-                data-ng-repeat="visitor in players | filter:q as results | orderBy:'aiLevel'">
-                [{{$index + 1}}] {{visitor.name}} ai level {{visitor.aiLevel | uppercase }}
-                having
-                {{visitor.fiches}} fiches
-            </li>
-            <li class="animate-repeat" data-ng-if="results.length === 0">
-                <strong>No visitors yet...</strong>
-            </li>
-        </ul>
-    </div>
-
-    <!-- columns should be the immediate child of a .row -->
-    <div class="row">
-        <div class="one column">One</div>
-        <div class="eleven columns">Eleven</div>
-    </div>
-
-    <!-- just use a number and class 'column' or 'columns' -->
-    <div class="row">
-        <div class="two columns">Two</div>
-        <div class="ten columns">Ten</div>
-    </div>
-
-    <!-- Buttons -->
-    <div class="docs-section" id="buttons">
-        <h6 class="docs-header">Choice</h6>
-        <p>Buttons for the game play.
-        <div class="docs-example">
-            <div>
-                <a class="button" href="#">Anchor button</a>
-                <button>Button element</button>
-                <input class="button-primary" type="submit" value="submit input">
-                <input class="button-primary" type="button" value="button input">
+    <header>
+        <div class="row">
+            <div class="twelve columns">
+                <h2 class="title">{{alien}}, start playing</h2>
+                <h5 class="subtitle">choose the options for this High-low card game</h5>
             </div>
         </div>
-    </div>
+    </header>
 
-    <pre><code>List of cards</code></pre>
+    <section class="section-main">
+        <div class="row">
+            <div class="nine columns">
+                <p class="main-description">
+                    Choose the ante for the double of nothing select your opponent(s) together with
+                    their ai level.
+                    <br></p>
+                <p class="main-description">
+                    Remember: your honour is at stake as well as you ship...
+                    <br></p>
+                <p class="main-description">
+                    Only after one guess you can opt to pass on to the next player, but keep playing
+                    next turn will reward you double or nothing.
+                    <br> Win or lose depends on a series of good guesses and of course the result of
+                    your selected opponent ai player(s) strength...<br></p>
+                <a class="button game-button" href="#">Leave</a>
+                <a class="button button-primary game-button1" href="#casino">Ai player 1</a>
+                <a class="button button-primary game-button2" href="#casino">Ai player 2</a>
+            </div>
+            <div class="three column main-prop">
+                todo
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns">
+                <pre><code>TODO: Show the deck of cards</code></pre>
+            </div>
+        </div>
+    </section>
 
- </div>
+    <section class="aliens">
+        <div class="alien-props row" style="margin-top: 5%">
+            <div class="four columns main-img">
+                <img class="alien-img" src="img/alien.ico">
+                <br>
+                <h5>You</h5>
+                <p>Bailing your ship gained you {{ bail | | leadingZeros }} fiches.</p>
+            </div>
+            <div class="four columns alien-prop">
+                <img class="alien-img" src="img/aimedium.jpg">
+                <br>
+                <h5>First</h5>
+                <p>A nice competitor, this fellow has {{ fiches1 | | leadingZeros }} fiches.</p>
+            </div>
+            <div class="four columns alien-prop">
+                <img class="alien-img" src="img/aimedium.jpg">
+                <br>
+                <h5>Second</h5>
+                <p>A nice competitor, this fellow has {{ fiches2 | | leadingZeros }} fiches.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer u-full-width">
+        <div class="row">
+            <div class="twelve columns">
+                <hr>&copy 2016 klaas - and hoping to beat
+                <a href="http://www.dictionary.com/browse/sturgeon-s-law">sturgeon's law</a>
+            </div>
+        </div>
+    </footer>
+
+</div>

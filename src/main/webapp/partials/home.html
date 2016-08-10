@@ -1,0 +1,91 @@
+<!-- Primary Page Layout Home
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<div class="container">
+
+    <header>
+        <div class="row">
+            <div class="twelve columns">
+                <h2 class="title">Welcome {{alien}}</h2>
+                <h5 class="subtitle">and play this simple, but yet very addictive
+                    High-low card game</h5>
+            </div>
+        </div>
+    </header>
+
+    <section class="section-main">
+        <div class="row">
+            <div class="nine columns">
+                <p class="main-description">
+                    Like Netflix and YouTube this web application is build with directives and
+                    views supplied by the popular framework
+                    <a href="https://www.codeschool.com/pages/angular-1-vs-2">AngularJS</a>.
+                    Being a
+                    <a href="http://singlepageappbook.com/goal.html">Single Page app</a>
+                    this site is a showcase for
+                    <a href="https://mediaweb.nl/blog/responsive-website/">responsive webdesign</a>
+                    thanks to the 'death simple' css framework
+                    <a href="https://mother.domains/blog/responsive-skeleton-css/">Skeleton</a>.
+                </p>
+                <p class="main-description">
+                    So choose amongst the many game options while playing this
+                    <a href="http://www.ehow.com/list_6705590_hi_lo-card-game-rules.html">High-Low</a>
+                    card game. Start to bail your ship and receive a (randomly generated) starting
+                    amount of <strong>up to 1000</strong> credits!
+                </p>
+                <p class="main-description">
+                    Select up to 2 <a
+                        href="http://www.alanturing.net/turing_archive/pages/reference%20articles/what%20is%20ai.html">AI</a>
+                    opponents to join you; we have them with various ai levels hard, moderate and
+                    easy. All you do is guess if the next card will be higher or lower than the card
+                    facing up. See how many you can get in a row!<br></p>
+                <p class="main-description">
+                    Only after one guess you can opt to pass on to the next player, but keep playing
+                    next turn will reward you double or nothing.
+                    <br> Win or lose depends on a series of good guesses and of course the result of
+                    your selected opponent ai player(s) strength...<br></p>
+                <a class="button main-button" href="#/home">Leave</a>
+                <a class="button button-primary main-button" href="#/casino">To the Casino</a>
+            </div>
+            <div class="three columns main-prop">
+                <img class="u-max-full-width main-img" src="img/alien.ico">
+                <a class="button button-primary" href="#/home">Get a name</a>
+                <img class="u-max-full-width  main-img" src="img/ship.ico">
+                <a class="button button-primary" ng-click="getNumber()" href="#/home">Bail: {{
+                    bail | leadingZeros }}</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="aliens">
+        <div class="alien-props row" style="margin-top: 5%">
+            <div class="four columns alien-prop">
+                <img class="alien-img" src="img/aihigh.jpg">
+                <br>
+                <h5>Smart</h5>
+                <p>Most evolved alien species &amp; as smart as you?</p>
+            </div>
+            <div class="four columns alien-prop">
+                <img class="alien-img" src="img/aimedium.jpg">
+                <br>
+                <h5>Basic</h5>
+                <p>Nice competitor, not that smart but can be a challenge now and then.</p>
+            </div>
+            <div class="four columns alien-prop">
+                <img class="alien-img" src="img/ailow.jpg">
+                <br>
+                <h5>Dumb</h5>
+                <p>Quick to beat or just for learning the game.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer u-full-width">
+        <div class="row">
+            <div class="twelve columns">
+                <hr>&copy 2016 klaas - and hoping to beat
+                <a href="http://www.dictionary.com/browse/sturgeon-s-law">sturgeon's law</a>
+            </div>
+        </div>
+    </footer>
+
+</div>

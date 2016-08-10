@@ -4,13 +4,13 @@
 
 describe('Controller tests', function () {
 
-   describe('homeController', function () {
+   describe('HomeController', function () {
       var scope, ctrl;
 
-      beforeEach(module('app'));
+      beforeEach(module('cardGamesApp'));
       beforeEach(inject(function ($rootScope, $controller) {
          scope = $rootScope.$new();
-         ctrl = $controller('homeController', {$scope: scope});
+         ctrl = $controller('HomeController', {$scope: scope});
          /* for testing */
          scope.title = 'Start '
       }));
