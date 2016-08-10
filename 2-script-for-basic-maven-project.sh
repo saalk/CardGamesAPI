@@ -9,10 +9,10 @@
 # 1: Archetype is a Maven project templating toolkit - to create a new project based on an archetype 
 #    - use mvn archetype:generate
 #	 - use eg. -DarchetypeArtifactId=mamaven-archetype-webapp to generate a sample Maven Webapp project
-#    - example: mvn archetype:generate -DgroupId=nl.kinked -DartifactId=CardGamesAPI -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+#    - example: mvn archetype:generate -DgroupId=nl.deknik -DartifactId=CardGamesAPI -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
 #
 echo "1: make archetype for webapp"
-mvn archetype:generate -DgroupId=nl.kinked -DartifactId=CardGamesAPI -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+mvn archetype:generate -DgroupId=nl.deknik -DartifactId=CardGamesAPI -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
 #
 # 2: Add a java folder structure to the project  
 #    - mkdir for structure
@@ -99,3 +99,10 @@ npm install
 #| @Repository| stereotype for persistence layer                    |
 #| @Service   | stereotype for service layer                        |
 #| @Controller| stereotype for presentation layer (spring-mvc)      |
+#
+http://crunchify.com/simplest-spring-mvc-hello-world-example-tutorial-spring-model-view-controller-tips/
+- Open pom.xml file and add below jar dependencies to project. sping-context/webmvc/web
+- what is jstl
+- Create new Spring Configuration Bean file: /WebContent/WEB-INF/crunchify-servlet.xml
+- In the above crunchify-servlet.xml  configuration file, we have defined a tag <context:component-scan> . This will allow Spring to load all the components from package com.crunchify.controller  and all its child packages.
+- Create new file web.xml. Map Spring MVC in /WebContent/WEB-INF/web.xml file.

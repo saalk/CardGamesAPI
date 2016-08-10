@@ -1,0 +1,82 @@
+<!-- .container is main centered wrapper -->
+<div class="container">
+
+    <table class="u-full-width">
+        <thead>
+        <tr>
+            <th>Player</th>
+            <th>Level</th>
+            <th>Fiches</th>
+            <th>Won</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>You</td>
+            <td>Human</td>
+            <td>1230</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>Player1</td>
+            <td>High</td>
+            <td>1900</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>Player2</td>
+            <td>Low</td>
+            <td>130</td>
+            <td>5</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="u-full-width" data-ng-controller="repeatController">
+        Visitors in the casino {{players.length}}.
+        <!-- q is a property in the model in memory via ng-model -->
+        <input type="search" data-ng-model="q" placeholder="filter..."
+               aria-label="filter players"/>
+        <ul class="example-animate-container">
+            <!-- use q from the model to filter the list in ng-repeat-->
+            <li class="animate-repeat"
+                data-ng-repeat="visitor in players | filter:q as results | orderBy:'aiLevel'">
+                [{{$index + 1}}] {{visitor.name}} ai level {{visitor.aiLevel | uppercase }}
+                having
+                {{visitor.fiches}} fiches
+            </li>
+            <li class="animate-repeat" data-ng-if="results.length === 0">
+                <strong>No visitors yet...</strong>
+            </li>
+        </ul>
+    </div>
+
+    <!-- columns should be the immediate child of a .row -->
+    <div class="row">
+        <div class="one column">One</div>
+        <div class="eleven columns">Eleven</div>
+    </div>
+
+    <!-- just use a number and class 'column' or 'columns' -->
+    <div class="row">
+        <div class="two columns">Two</div>
+        <div class="ten columns">Ten</div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="docs-section" id="buttons">
+        <h6 class="docs-header">Choice</h6>
+        <p>Buttons for the game play.
+        <div class="docs-example">
+            <div>
+                <a class="button" href="#">Anchor button</a>
+                <button>Button element</button>
+                <input class="button-primary" type="submit" value="submit input">
+                <input class="button-primary" type="button" value="button input">
+            </div>
+        </div>
+    </div>
+
+    <pre><code>List of cards</code></pre>
+
+ </div>

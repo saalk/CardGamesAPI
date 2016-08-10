@@ -1,0 +1,61 @@
+/* Shared
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.button {
+  border-radius: 100px;
+}
+
+.container {
+  max-width: 800px; }
+
+.header {
+  margin-top: 6rem;
+  text-align: center; }
+
+.value-prop {
+  margin-top: 1rem; }
+
+.value-props {
+  margin-top: 4rem;
+  margin-bottom: 4rem; }
+
+.docs-header {
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  letter-spacing: .2rem;
+  font-weight: 600; }
+
+.docs-section {
+  border-top: 1px solid #eee;
+  padding: 4rem 0;
+  margin-bottom: 0;}
+
+.value-img {
+  display: block;
+  text-align: center;
+  margin: 2.5rem auto 0; }
+
+  .footer-left {
+    text-align: left;
+    margin-bottom: 0;}
+
+/* Sections
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.section {
+  padding: 8rem 0 7rem;
+  text-align: center;
+}
+.section-heading,
+.section-description {
+  margin-bottom: 1.2rem;
+}
+
+/* Background to do
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.container theme-showcase {
+    position: relative;
+    background: #fff url("casino-background-blur.jpg") center center;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    overflow: hidden;
+}

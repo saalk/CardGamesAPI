@@ -4,18 +4,19 @@
 
 describe('Controller tests', function () {
 
-   describe('HomeController', function () {
+   describe('homeController', function () {
       var scope, ctrl;
 
       beforeEach(module('app'));
       beforeEach(inject(function ($rootScope, $controller) {
          scope = $rootScope.$new();
-         ctrl = $controller('HomeController', {$scope: scope});
+         ctrl = $controller('homeController', {$scope: scope});
+         /* for testing */
+         scope.title = 'Start '
       }));
 
-
-       it('should contain hello', function () {
-         expect(scope.title).toBe('Hello ');
+       it('should contain start', function () {
+         expect(scope.title).toBe('Start ');
       });
    });
 });

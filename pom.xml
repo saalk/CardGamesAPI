@@ -3,25 +3,34 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>nl.kinked</groupId>
-    <artifactId>card-games-api</artifactId>
+    <groupId>nl.deknik.cardgames</groupId>
+    <artifactId>card-games-webapp</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>CardGamesAPI Maven Webapp</name>
-    <url>http://kinked.nl</url>
+    <url>http://deknik.j2e.nl</url>
 
     <properties>
-        <artifact.name>app</artifact.name>
+        <artifact.name>cardgames</artifact.name>
         <vendor.loc>src/main/webapp/vendor</vendor.loc>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.plugin>3.5.1</maven.compiler.plugin>
-        <spring.version>4.0.0.RELEASE</spring.version>
+
+        <spring.version>4.3.1.RELEASE</spring.version>
+        <spring-hateoas.version>0.20.0.RELEASE</spring-hateoas.version>
+        <hibernate.version>4.3.6.Final</hibernate.version>
+        <mysql.connector.version>5.1.31</mysql.connector.version>
+        <junit.version>4.11</junit.version>
+        <mockito.version>1.9.5</mockito.version>
+
         <java.version>1.8</java.version>
+        <lombok.version>1.16.10</lombok.version>
     </properties>
 
     <dependencies>
 
+        <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -36,7 +45,19 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
         </dependency>
 
@@ -71,22 +92,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.hateoas</groupId>
+            <artifactId>spring-hateoas</artifactId>
+            <version>${spring-hateoas.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
-            <type>jar</type>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
         </dependency>
 
         <dependency>
@@ -96,17 +110,31 @@
         </dependency>
 
         <dependency>
+            <!-- Hibernate -->
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+
+        <dependency>
+            <!-- MySQL -->
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.version}</version>
+        </dependency>
+
+        <dependency>
             <!-- JUnit is a regression testing framework written by Erich Gamma and Kent Beck. -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <!-- Mock objects library for java. -->
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -116,12 +144,14 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <!-- Support for using JAXB annotations as an alternative to "native" Jackson annotations, for configuring data binding. -->
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
             <version>2.7.4</version>
         </dependency>
+
         <dependency>
             <!-- Jersey JSON Jackson (2.x) entity providers support module.  -->
             <groupId>org.glassfish.jersey.media</groupId>
@@ -129,10 +159,41 @@
             <version>2.23</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <!-- Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction for various logging frameworks -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <!-- Logging Framework -->
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <dependency>
+            <!-- Logging Framework that implements SLF4J natively -->
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+
+        <!--Util -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
-        <finalName>${artifact.name}</finalName>
+        <finalName>${project.artifactId}##${project.version}</finalName>
 
         <resources>
             <resource>
@@ -283,6 +344,31 @@
                         </fileset>
                     </filesets>
                 </configuration>
+            </plugin>
+            <!-- Maven plugin to integrate PlantUML -->
+            <plugin>
+                <groupId>com.github.jeluard</groupId>
+                <artifactId>plantuml-maven-plugin</artifactId>
+                <version>1.4</version>
+                <configuration>
+                    <outputInSourceDirectory>false</outputInSourceDirectory>
+                    <outputDirectory>${basedir}/target/site/apidocs</outputDirectory>
+                    <sourceFiles>
+                        <directory>${basedir}/src/main/java/</directory>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                    </sourceFiles>
+                </configuration>
+                <!--
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sourceforge.plantuml</groupId>
+                        <artifactId>plantuml</artifactId>
+                        <version>8004</version>
+                    </dependency>
+                </dependencies>
+                -->
             </plugin>
         </plugins>
     </build>

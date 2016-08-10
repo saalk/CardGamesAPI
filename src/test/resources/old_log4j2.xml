@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Log4j contains four ConfigurationFactory implementations: one for JSON, 
+	one for YAML, one for properties, and one for XML. 
+	
+	Ing config in a log4j.properties
+	log4j.rootCategory=DEBUG, stdout
+	log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+	log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+	log4j.appender.stdout.layout.ConversionPattern=%d %p [%c] - %m %n
+-->
+<Configuration status="ERROR" monitorInterval="30">
+	<!-- an appender is an output destination, such as the console or a file; 
+		names of appenders are arbitrarily chosen. -->
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="error">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>
