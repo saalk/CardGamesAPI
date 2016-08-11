@@ -11,12 +11,11 @@ describe('Controller tests', function () {
       beforeEach(inject(function ($rootScope, $controller) {
          scope = $rootScope.$new();
          ctrl = $controller('HomeController', {$scope: scope});
-         /* for testing */
-         scope.title = 'Start '
+
       }));
 
-       it('should contain start', function () {
-         expect(scope.title).toBe('Start ');
+       it('human player name should contain stranger', function () {
+         expect(scope.humanplayer.name).toBe('stranger');
       });
    });
 });

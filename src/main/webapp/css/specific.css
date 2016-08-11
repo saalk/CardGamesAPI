@@ -43,10 +43,17 @@ header {
   text-align: center;
   margin-top: 1rem; }
 
-.aline-img {
+.alien-img {
   display: block;
   text-align: center;
   margin: 2.5rem auto 0; }
+
+.human-img {
+  display: block;
+  text-align: center;
+  margin: 2.5rem auto 0;
+  max-width:30%;
+  max-height:30%; }
 
 /* Footer
 –––––––––––––––––––––––––––––––––––––––––––––––––– */

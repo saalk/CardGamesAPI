@@ -5,7 +5,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">{{alien}}, start playing</h2>
+                <h2 class="title">{{ humanplayer.name }}, start playing</h2>
                 <h5 class="subtitle">choose the options for this High-low card game</h5>
             </div>
         </div>
@@ -17,37 +17,39 @@
                 <p class="main-description">
                     Choose the ante for the double of nothing select your opponent(s) together with
                     their ai level.
-                    <br></p>
-                <p class="main-description">
-                    Remember: your honour is at stake as well as you ship...
+                    Remember: your
+                    <a href="https://en.wikipedia.org/wiki/Honour">honour</a>
+                    is at stake as well as you ship...
                     <br></p>
                 <p class="main-description">
                     Only after one guess you can opt to pass on to the next player, but keep playing
                     next turn will reward you double or nothing.
-                    <br> Win or lose depends on a series of good guesses and of course the result of
+                    Win or lose depends on a series of good guesses and of course the result of
                     your selected opponent ai player(s) strength...<br></p>
                 <a class="button game-button" href="#">Leave</a>
-                <a class="button button-primary game-button1" href="#casino">Ai player 1</a>
-                <a class="button button-primary game-button2" href="#casino">Ai player 2</a>
+                <a class="button button-primary game-button1" ng-click="getFiches1()"
+                   href="#casino">Ai player 1</a>
+                <a class="button button-primary game-button2" ng-click="getFiches2()"
+                   href="#casino">Ai player 2</a>
             </div>
             <div class="three column main-prop">
-                todo
             </div>
         </div>
         <div class="row">
             <div class="twelve columns">
-                <pre><code>TODO: Show the deck of cards</code></pre>
+                <pre><code>Show the deck of cards</code></pre>
             </div>
         </div>
     </section>
 
     <section class="aliens">
         <div class="alien-props row" style="margin-top: 5%">
-            <div class="four columns main-img">
-                <img class="alien-img" src="img/alien.ico">
+            <div class="four columns alien-prop">
+                <img class="human-img" src="img/alien.ico">
                 <br>
                 <h5>You</h5>
-                <p>Bailing your ship gained you {{ bail | | leadingZeros }} fiches.</p>
+                <p>Bailing your ship gained you {{ humanplayer.fiches | | leadingZeros }} fiches
+                    .</p>
             </div>
             <div class="four columns alien-prop">
                 <img class="alien-img" src="img/aimedium.jpg">
@@ -67,7 +69,8 @@
     <footer class="footer u-full-width">
         <div class="row">
             <div class="twelve columns">
-                <hr>&copy 2016 klaas - and hoping to beat
+                <hr>
+                &copy 2016 klaas - and hoping to beat
                 <a href="http://www.dictionary.com/browse/sturgeon-s-law">sturgeon's law</a>
             </div>
         </div>

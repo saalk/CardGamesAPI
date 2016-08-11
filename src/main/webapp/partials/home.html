@@ -5,7 +5,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Welcome {{alien}}</h2>
+                <h2 class="title">Welcome {{humanplayer.name}}</h2>
                 <h5 class="subtitle">and play this simple, but yet very addictive
                     High-low card game</h5>
             </div>
@@ -48,9 +48,9 @@
             </div>
             <div class="three columns main-prop">
                 <img class="u-max-full-width main-img" src="img/alien.ico">
-                <a class="button button-primary" href="#/home">Get a name</a>
+                <a class="button button-primary">Get a name</a>
                 <img class="u-max-full-width  main-img" src="img/ship.ico">
-                <a class="button button-primary" ng-click="getNumber()" href="#/home">Bail: {{
+                <a class="button button-primary" ng-click="getBail()">Bail: {{
                     bail | leadingZeros }}</a>
             </div>
         </div>

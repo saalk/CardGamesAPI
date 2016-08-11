@@ -1,21 +1,72 @@
 // Define all the controller on the `cardGamesApp` module
-var controllers = {};
-controllers.HomeController = function ($scope, $filter) {
-    $scope.alien = 'stranger';
 
-    $scope.bail = 0;
-    $scope.getNumber = function() {
-        $scope.bail = (Math.ceil(Math.random() * 1000));};
-};
-controllers.CasinoController = function ($scope, $filter) {
-    $scope.alien = 'stranger';
+cardGamesApp.controller('HomeController', function ($scope, GameService, PlayerService, $filter) {
+
+    $scope.players = PlayerService.listPlayers();
+    $scope.humanplayer = PlayerService.getPlayer(0);
+    $scope.bail = humanplayer.fiches;
+
+    $scope.newplayer = {};
+
+    // save is add or update based on id
+    $scope.savePlayer = function(){
+        PlayerService.savePlayer($scope.newplayer)
+    };
+
+    $scope.deletePlayer = function(id){
+            PlayerService.deletePlayer(id);
+            if ($scope.newplayer.id == id ) $scope.newplayer = {};
+    };
+
+    $scope.editPlayer = function(id){
+            $scope.newplayer = angular.copy(PlayerService.getPlayer(id));
+    };
+
+    $scope.getBail = function() {
+        newplayer = angular.copy(PlayerService.getPlayer(0));
+        newplayer.fiches = (Math.ceil(Math.random() * 1000));
+        PlayerService.savePlayer(newplayer);
+        $scope.bail = newplayer.fiches;
+    }
+});
+
+cardGamesApp.controller('CasinoController', function ($scope, $filter) {
+
 
     $scope.fiches1 = 0;
-    $scope.getNumber = function() {
-        $scope.fiches1 = (Math.ceil(Math.random() * 1000));};
-
     $scope.fiches2 = 0;
-    $scope.getNumber = function() {
-        $scope.fiches2 = (Math.ceil(Math.random() * 1000));};
-};
-cardGamesApp.controller(controllers);
+
+    $scope.players = PlayerService.listPlayers();
+    $scope.humanplayer = PlayerService.getPlayer(0);
+    $scope.bail = humanplayer.fiches;
+
+    $scope.newplayer = {};
+
+    // save is add or update based on id
+    $scope.savePlayer = function(){
+        PlayerService.savePlayer($scope.newplayer)
+    };
+
+    $scope.deletePlayer = function(id){
+            PlayerService.deletePlayer(id);
+            if ($scope.newplayer.id == id ) $scope.newplayer = {};
+    };
+
+    $scope.editPlayer = function(id){
+            $scope.newplayer = angular.copy(PlayerService.getPlayer(id));
+    };
+
+    $scope.getFiches1 = function(){
+        newplayer = angular.copy(PlayerService.getPlayer(1));
+        newplayer.fiches = (Math.ceil(Math.random() * 500)) + 500;
+         PlayerService.savePlayer(newplayer);
+        $scope.fiches1 = newplayer.fiches;
+    }
+
+    $scope.getFiches2 = function(){
+        newplayer = angular.copy(PlayerService.getPlayer(2));
+        newplayer.fiches = (Math.ceil(Math.random() * 500)) + 500;
+        PlayerService.savePlayer(newplayer);
+        $scope.fiches2 = newplayer.fiches;
+    };
+});
