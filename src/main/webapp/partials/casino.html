@@ -1,6 +1,6 @@
 <!-- Primary Page Layout Casino
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div class="container">
+<div class="container" data-ng-controller="HomeController">
 
     <header>
         <div class="row">
@@ -27,17 +27,27 @@
                     Win or lose depends on a series of good guesses and of course the result of
                     your selected opponent ai player(s) strength...<br></p>
                 <a class="button game-button" href="#">Leave</a>
-                <a class="button button-primary game-button1" ng-click="getFiches1()"
+                <a class="button button-primary game-button1" data-ng-click="getFiches1()"
                    href="#casino">Ai player 1</a>
-                <a class="button button-primary game-button2" ng-click="getFiches2()"
+                <a class="button button-primary game-button2" data-ng-click="getFiches2()"
                    href="#casino">Ai player 2</a>
             </div>
             <div class="three column main-prop">
             </div>
         </div>
+    </section>
+
+    <section class="section-list">
         <div class="row">
             <div class="twelve columns">
-                <pre><code>Show the deck of cards</code></pre>
+                <table>
+                    <tr data-ng-repeat="player in players">
+                        <td>{{ player.id }}</td>
+                        <td>{{ player.name }}</td>
+                        <td>{{ player.aiLevel }}</td>
+                        <td>{{ player.fiches }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </section>

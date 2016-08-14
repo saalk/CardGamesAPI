@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ng-app="cardGamesApp">
 <head>
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
     <title>Card games</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -19,43 +20,46 @@
 
     <!-- CSS
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="vendor/skeleton-css/css/normalize.css">
+    <link rel="stylesheet" href="vendor/skeleton-css/css/skeleton.css">
+    <link rel="stylesheet" href="vendor/angular-toastr/dist/angular-toastr.css"/>
     <link rel="stylesheet" href="css/specific.css">
 
     <!-- Scripts
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <script src="vendor/angular/angular.min.js"></script>
     <script src="vendor/angular-route/angular-route.min.js"></script>
+    <script src="vendor/angular-toastr/dist/angular-toastr.tpls.js"></script>
 
     <script src="javascript/app.js"></script>
     <script src="javascript/controllers.js"></script>
     <script src="javascript/filters.js"></script>
     <script src="javascript/routes.js"></script>
-    <script src="javascript/factories.js"></script>
+    <script src="javascript/factory.player.js"></script>
     <script src="javascript/services.js"></script>
+    <script src="javascript/logger.js"></script>
 
     <!-- Favicon
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <link rel="icon" type="image/png" href="img/favicon.png">
 
 </head>
-<body ng-app="cardGamesApp">
+<body>
 <div class="container">
-    <!-- ng-view angular placeholder for html partials
+    <!-- data-ng-view angular placeholder for html partials
         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <div ng-view></div>
+    <div data-ng-view></div>
 
-</div>
-<footer class="footer u-full-width">
-    <div class="row">
-        <div class="twelve columns">
-            <hr>
-            &copy 2016 klaas - trying to beat
-            <a href="http://www.dictionary.com/browse/sturgeon-s-law">sturgeon's law</a>
+    <footer class="footer">
+        <div class="row">
+            <div class="twelve columns">
+                <hr>
+                &copy 2016 klaas - trying to beat
+                <a href="http://www.dictionary.com/browse/sturgeon-s-law">sturgeon's law</a>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
+</div>
 <!-- End Document
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 </body>

@@ -1,19 +1,20 @@
-//Define an angular module for our cardGamesApp
+//Set an angular module for our cardGamesApp
+angular
+    .module('cardGamesApp', ['ngRoute']);
 
-var cardGamesApp;
-cardGamesApp = angular.module('cardGamesApp', ['ngRoute']);
+//Set Routing for cardGamesApp angular module
+angular
+    .module('cardGamesApp')
+    .config(config);
 
-//Define Routing for cardGamesApp
-//Uri /home -> partial home.html and Controller HomeController
-//Uri /casino -> partial casino.html and Controller CasinoController
-cardGamesApp.config(function ($routeProvider) {
-$routeProvider.when('/home', {
-templateUrl: 'partials/home.html',
-controller: 'HomeController'
-}).when('/casino', {
-templateUrl: 'partials/casino.html',
-controller: 'CasinoController'
-}).otherwise({
-redirectTo: '/home'
-});
-});
+function config($routeProvider) {
+            $routeProvider.when('/home', {
+               templateUrl: 'partials/home.html',
+               controller: 'HomeController'
+            }).when('/casino', {
+               templateUrl: 'partials/casino.html',
+               controller: 'HomeController'
+            }).otherwise({
+                redirectTo: '/home'
+            });
+}

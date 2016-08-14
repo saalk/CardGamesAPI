@@ -1,76 +1,44 @@
-// Define all the controller on the `cardGamesApp` module
+// Set all the controller on the `cardGamesApp` module
+//
+// The controller's responsibility is for the presentation and gathering of information for the view.
+// It should not care how it gets the data, just that it knows who to ask for it.
 
-cardGamesApp.controller('HomeController', function ($scope, GameService, PlayerService) {
+angular
+    .module('cardGamesApp')
+    .controller('HomeController', function ($scope, PlayerService, $location) {
 
-$scope.players = PlayerService.listPlayers();
-$scope.humanplayer = PlayerService.getPlayer(0);
-$scope.bail = humanplayer.fiches;
+    $scope.players = PlayerService.listPlayers();
+    $scope.humanplayer = PlayerService.getPlayer(0);
+    $scope.bail = $scope.humanplayer.fiches;
+    $scope.newplayer = $scope.humanplayer;
 
-$scope.newplayer = humanplayer;
+    if ($location.path() === '') {
+        $location.path('/');
+    }
 
-// save is add or update based on id
-$scope.savePlayer = function () {
-PlayerService.savePlayer($scope.newplayer)
-};
+    $scope.location = $location;
 
-$scope.deletePlayer = function (id) {
-PlayerService.deletePlayer(id);
-if ($scope.newplayer.id == id) {
-$scope.newplayer = {};
-}
-};
+    // save is add or update based on id
+    $scope.savePlayer = function () {
+        PlayerService.savePlayer($scope.newplayer)
+    };
 
-$scope.editPlayer = function (id) {
-$scope.newplayer = angular.copy(PlayerService.getPlayer(id));
-};
+    $scope.deletePlayer = function (id) {
+        PlayerService.deletePlayer(id);
+        if ($scope.newplayer.id == id) {
+        $scope.newplayer = {};
+    }
+    };
 
-$scope.getBail = function () {
+    $scope.editPlayer = function (id) {
+        $scope.newplayer = angular.copy(PlayerService.getPlayer(id));
+    };
 
-$scope.newplayer = angular.copy(PlayerService.getPlayer(0));
-$scope.newplayer.fiches = (Math.ceil(Math.random() * 1000));
-PlayerService.savePlayer(newplayer);
-$scope.bail = newplayer.fiches;
-}
-});
-
-cardGamesApp.controller('CasinoController', function ($scope, GameService, PlayerService) {
-
-$scope.fiches1 = 0;
-$scope.fiches2 = 0;
-
-$scope.players = PlayerService.listPlayers();
-$scope.humanplayer = PlayerService.getPlayer(0);
-$scope.bail = humanplayer.fiches;
-
-$scope.newplayer = {};
-
-// save is add or update based on id
-$scope.savePlayer = function () {
-PlayerService.savePlayer($scope.newplayer)
-};
-
-$scope.deletePlayer = function (id) {
-PlayerService.deletePlayer(id);
-if ($scope.newplayer.id == id) {
-$scope.newplayer = {};
-}
-};
-
-$scope.editPlayer = function (id) {
-$scope.newplayer = angular.copy(PlayerService.getPlayer(id));
-};
-
-$scope.getFiches1 = function () {
-$scope.newplayer = angular.copy(PlayerService.getPlayer(1));
-$scope.newplayer.fiches = (Math.ceil(Math.random() * 500)) + 500;
-PlayerService.savePlayer(newplayer);
-$scope.fiches1 = newplayer.fiches;
-};
-
-$scope.getFiches2 = function () {
-$scope.newplayer = angular.copy(PlayerService.getPlayer(2));
-$scope.newplayer.fiches = (Math.ceil(Math.random() * 500)) + 500;
-PlayerService.savePlayer(newplayer);
-$scope.fiches2 = newplayer.fiches;
-};
-});
+    $scope.getBail = function () {
+        $scope.newplayer = angular.copy(PlayerService.getPlayer(0));
+        $scope.newplayer.fiches = (Math.ceil(Math.random() * 1000));
+        // (Math.ceil(Math.random() * 500)) + 500;
+        PlayerService.savePlayer($scope.newplayer);
+        $scope.bail = $scope.newplayer.fiches;
+    }
+})
