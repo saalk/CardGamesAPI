@@ -1,11 +1,11 @@
 <!-- Primary Page Layout Home
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div class="container" data-ng-controller="HomeController">
+<div class="container">
 
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Welcome {{humanplayer.name}}</h2>
+                <h2 class="title">{{ welcome }}</h2>
                 <h5 class="subtitle">and play this simple, but yet very addictive
                     High-low card game</h5>
             </div>
@@ -25,40 +25,38 @@
                     <a href="https://mediaweb.nl/blog/responsive-website/">responsive webdesign</a>
                     thanks to the 'death simple' css framework
                     <a href="https://mother.domains/blog/responsive-skeleton-css/">Skeleton</a>.
-                </p>
-                <p class="main-description">
+                    <p>
+                    <p class="main-description">
+     
                     In this webapp you can play the
                     <a href="http://www.ehow.com/list_6705590_hi_lo-card-game-rules.html">High-Low</a>
-                    card game with betting style. Choose choose amongst the many game options
-                    before and while playing to secure of increase you credits. Before entering the
-                    casino:
-                <ul>
-                    <li>Bail your ship and receive <strong>up to 1000</strong> credits!
-                    </li>
-                    <li>Get a name and don't be a stranger any more
-                    </li>
-                </ul>
-                </p>
+                    card game 'betting style'. Choose choose amongst the many game options
+                    before and while playing to secure or increase you credits.
+                    </p>
+                    <ul>
+                        <li>Bail your ship and receive <strong>up to 1000</strong> starting credits!
+                        </li>
+                        <li>Get a name, don't be a stranger any more
+                        </li>
+                    </ul>
                 <p class="main-description">
                     <strong>How to play?</strong><br>
                     All you do is guess if the next card will be higher or lower than the
-                    card facing up. Each guess earns you double or nothing so get you ship back
-                    and have some credits for next visit! An <strong>extra bonus</strong> is
-                    rewarded for winning from your opponents. Your opponents have various
+                    card facing up. An <strong>bonus</strong> is rewarded for winning.
+                    Select up to 2 opponent aliens to join you with differ
                     <a href="http://www.alanturing.net/turing_archive/pages/reference%20articles/what%20is%20ai.html">AI</a>
-                    at various levels as shown below. Select up to 2 to join you while playing.
-                    But be careful, the extra bonus is paid by the losers...
+                    . Be careful, the extra bonus is paid by the losers...
                     </p>
                 <a class="button main-button" href="#/home">Home</a>
                 <a class="button button-primary main-button" href="#/casino">Get me to the
                     Casino</a>
             </div>
             <div class="three columns main-prop">
-                <img class="u-max-full-width main-img" src="img/alien.ico">
+                <img class="u-max-full-width main-img" alt="you" src="img/alien.ico">
                 <a class="button button-primary">Get a name</a>
-                <img class="u-max-full-width  main-img" src="img/ship.ico">
-                <a class="button button-primary" data-ng-click="getBail()">Bail: {{
-                    bail | leadingZeros }}</a>
+                <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico">
+                <a class="button button-primary" ng-click="bailHumanShipForFiches()">Bail: {{
+                    human.fiches | leadingZeros }}</a>
             </div>
         </div>
     </section>
@@ -66,8 +64,9 @@
     <section class="section-list">
         <div class="row">
             <div class="twelve columns">
+                <h4>Players</h4>
                 <table>
-                    <tr data-ng-repeat="player in players">
+                    <tr ng-repeat="player in players">
                         <td>{{ player.id }}</td>
                         <td>{{ player.name }}</td>
                         <td>{{ player.aiLevel }}</td>
@@ -81,19 +80,19 @@
     <section class="aliens">
         <div class="alien-props row" style="margin-top: 5%">
             <div class="four columns alien-prop">
-                <img class="alien-img" src="img/aihigh.jpg">
+                <img class="alien-img" alt="smart alien" src="img/aihigh.jpg">
                 <br>
                 <h5>Smart</h5>
                 <p>Most evolved alien species &amp; as smart as you?</p>
             </div>
             <div class="four columns alien-prop">
-                <img class="alien-img" src="img/aimedium.jpg">
+                <img class="alien-img" alt="average alien" src="img/aimedium.jpg">
                 <br>
                 <h5>Basic</h5>
                 <p>Nice competitor, not that smart but can be a challenge now and then.</p>
             </div>
             <div class="four columns alien-prop">
-                <img class="alien-img" src="img/ailow.jpg">
+                <img class="alien-img" alt="dumb alien" src="img/ailow.jpg">
                 <br>
                 <h5>Dumb</h5>
                 <p>Quick to beat or just for learning the game.</p>

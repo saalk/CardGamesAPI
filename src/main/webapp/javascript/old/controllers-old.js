@@ -4,8 +4,8 @@
 // It should not care how it gets the data, just that it knows who to ask for it.
 
 angular
-    .module('cardGamesApp')
-    .controller('HomeController', function ($scope, PlayerService, $location) {
+    .module('myApp')
+    .controller('HomeController2', function ($scope, PlayerService, $location) {
 
     $scope.players = PlayerService.listPlayers();
     $scope.humanplayer = PlayerService.getPlayer(0);

@@ -1,11 +1,11 @@
 <!-- Primary Page Layout Casino
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div class="container" data-ng-controller="HomeController">
+<div class="container">
 
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">{{ humanplayer.name }}, start playing</h2>
+                <h2 class="title">{{ human.name }}, start playing</h2>
                 <h5 class="subtitle">choose the options for this High-low card game</h5>
             </div>
         </div>
@@ -26,11 +26,11 @@
                     next turn will reward you double or nothing.
                     Win or lose depends on a series of good guesses and of course the result of
                     your selected opponent ai player(s) strength...<br></p>
-                <a class="button game-button" href="#">Leave</a>
-                <a class="button button-primary game-button1" data-ng-click="getFiches1()"
-                   href="#casino">Ai player 1</a>
-                <a class="button button-primary game-button2" data-ng-click="getFiches2()"
-                   href="#casino">Ai player 2</a>
+                <a class="button game-button" href="#/home">Leave</a>
+                <a class="button button-primary game-button1" data-ng-click="addAlien1()"
+                   >add ai player 1</a>
+                <a class="button button-primary game-button2" data-ng-click="addAlien2()"
+                   >add ai player 2</a>
             </div>
             <div class="three column main-prop">
             </div>
@@ -41,7 +41,7 @@
         <div class="row">
             <div class="twelve columns">
                 <table>
-                    <tr data-ng-repeat="player in players">
+                    <tr data-ng-repeat="player in vm.players">
                         <td>{{ player.id }}</td>
                         <td>{{ player.name }}</td>
                         <td>{{ player.aiLevel }}</td>
@@ -55,23 +55,25 @@
     <section class="aliens">
         <div class="alien-props row" style="margin-top: 5%">
             <div class="four columns alien-prop">
-                <img class="human-img" src="img/alien.ico">
+                <img class="human-img" alt="you" src="img/alien.ico">
                 <br>
                 <h5>You</h5>
-                <p>Bailing your ship gained you {{ humanplayer.fiches | | leadingZeros }} fiches
+                <p>Bailing your ship gained you {{ human.fiches | | leadingZeros }} fiches
                     .</p>
             </div>
             <div class="four columns alien-prop">
-                <img class="alien-img" src="img/aimedium.jpg">
+                <img class="alien-img" alt="alien1" src="img/aimedium.jpg">
                 <br>
                 <h5>First</h5>
-                <p>A nice competitor, this fellow has {{ fiches1 | | leadingZeros }} fiches.</p>
+                <p>A nice competitor, this fellow has {{ alien1.fiches | | leadingZeros }} fiches
+                    .</p>
             </div>
             <div class="four columns alien-prop">
-                <img class="alien-img" src="img/aimedium.jpg">
+                <img class="alien-img" alt="alien2" src="img/aimedium.jpg">
                 <br>
                 <h5>Second</h5>
-                <p>A nice competitor, this fellow has {{ fiches2 | | leadingZeros }} fiches.</p>
+                <p>A nice competitor, this fellow has {{ alien2.fiches | | leadingZeros }}
+                    fiches.</p>
             </div>
         </div>
     </section>

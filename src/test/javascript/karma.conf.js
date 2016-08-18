@@ -5,7 +5,12 @@ module.exports = function(config){
 
     files : [
       'src/main/webapp/vendor/angular**/**.min.js',
+      'src/main/webapp/vendor/angular-route/angular-route.js',
+      'src/main/webapp/vendor/angular-animate/angular-animate.js',
       'src/main/webapp/vendor/angular-mocks/angular-mocks.js',
+      'src/main/webapp/vendor/angular-resource/angular-resource.js',
+      'src/main/webapp/vendor/angular-toastr/angular-toastr.js',
+      'src/main/webapp/vendor/angular-cookies/angular-cookies.js',
       'src/main/webapp/javascript/**/*.js',
       'src/test/javascript/unit/**/*.js'
     ],
@@ -45,7 +50,7 @@ module.exports = function(config){
           'karma-firefox-launcher',
           'karma-jasmine',
           'karma-ng-html2js-preprocessor',
-          'karma-phantomjs-launcher'
+          'karma-phantomjs-launcher',
           'karma-junit-reporter'
     ],
     // plugin settings

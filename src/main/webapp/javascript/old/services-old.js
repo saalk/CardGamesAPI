@@ -1,8 +1,8 @@
 // Set all the services on the `cardGamesApp` module
 
 angular
-    .module('cardGamesApp')
-    .service('PlayerService', function(){
+    .module('myApp')
+    .service('PlayerService2', function(){
 
     // TODO: fetch from cookie and server
     var players = [
