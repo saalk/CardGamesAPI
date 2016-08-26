@@ -28,7 +28,6 @@ function HomeController(PlayerService, toastr){
     var vm = this;
     vm.welcome = 'Welcome';
     vm.showList = false;
-    
 
     vm.init = function() {
        vm.players = PlayerService.initPlayers(true);
@@ -70,24 +69,77 @@ CasinoController.$inject = ['PlayerService', 'toastr'];
 function CasinoController(PlayerService, toastr){
 
     var vm = this;
-    vm.showList = true;
- 
+    vm.showList = false;
+    
+    vm.showalien1 = false;
+    vm.showalien2 = false;
+    vm.startthegame = false;
+    
+    vm.smart = "Most evolved alien species, this fellow start with ";
+    vm.average = "A nice competitor, he has a budget of ";
+    vm.dumb = "Quick to beat, starting with ";
+    vm.none = "This alien has left the game with ";
+    
     vm.list = function() {
        vm.players = PlayerService.initPlayers(false);
      };
     vm.list();
-;
-    
+    vm.start = function() {
+       toastr.warning('Work in progress', 'Warning');
+     };    
     vm.alien1 = function () {
-        vm.players = PlayerService.nextAiLevel('1');
-        vm.players[1].fiches = (Math.ceil(Math.random() * 500)+ 500); 
-        toastr.info('Alien 1 changed', 'Information');
-     };
+        nextAiLevel(1);
+        if (vm.players[1].aiLevel == 'None') {
+            vm.showalien1 = false;
+            toastr.info('Alien 1 left', 'Information');
+        } else {
+            vm.players[1].fiches = (Math.ceil(Math.random() * 500)+ 500); 
+            if (vm.players[0].fiches != 0)  {
+                vm.startthegame = true;
+            }
+            if (vm.players[0].fiches != 0) {
+                vm.tothetable = true;
+            }
+            vm.showalien1 = true;
+            toastr.info('Alien 1 changed', 'Information');
+        }
+    };
     vm.alien2 = function () {
-        vm.players[2].fiches = (Math.ceil(Math.random() * 500)+ 500);
-        toastr.info('Alien 2 changed', 'Information');
-     };
-
+        nextAiLevel(2);
+        if (vm.players[2].aiLevel == 'None') {
+            vm.showalien2 = false;
+            toastr.info('Alien 2 left', 'Information');
+        } else {
+            vm.players[2].fiches = (Math.ceil(Math.random() * 500)+ 500); 
+            vm.showalien2 = true;
+            toastr.info('Alien 1 changed', 'Information');
+        }
+    };
+    function nextAiLevel(id) {
+        if (vm.players[id].aiLevel == 'None') {
+            if (vm.players[1].aiLevel == 'None' && id == 2) {
+                vm.players[id].aiLevel = 'None';    
+                vm.players[id].label = vm.none;
+            } else {
+                vm.players[id].aiLevel = 'Dumb';    
+                vm.players[id].label = vm.dumb;
+            };
+        } else if (vm.players[id].aiLevel == 'Dumb') {
+            vm.players[id].aiLevel = 'Average';
+            vm.players[id].label = vm.average;
+        } else if (vm.players[id].aiLevel == 'Average') {
+            vm.players[id].aiLevel = 'Smart';
+            vm.players[id].label = vm.smart;
+        } else if (vm.players[id].aiLevel == 'Smart') {
+            if (vm.players[2].aiLevel != 'None' && id == 1) {
+                vm.players[id].aiLevel = 'Dumb';    
+                vm.players[id].label = vm.dumb;
+            } else {
+                vm.players[id].aiLevel = 'None';    
+                vm.players[id].label = vm.none;
+            };
+        };
+    };
  };
  
 angular.module('myApp')
@@ -101,13 +153,12 @@ function PlayerService(toastr){
         initPlayers: function(init) {
             if (init && (players[0] == null)) {
             players = [
-                {id: '0', 'name': 'stranger', 'aiLevel': 'Human', fiches: '0000'},
-                {id: '1', 'name': 'alien 1', 'aiLevel': 'Average', fiches: '0000'},
-                {id: '2', 'name': 'alien 2', 'aiLevel': 'Dumb', fiches: '0000'}
+                {id: 0, 'name': 'stranger', 'aiLevel': 'Human', 'label': 'Bailing your ship gained you ', fiches: '0000'},
+                {id: 1, 'name': 'alien 1', 'aiLevel': 'None', 'label': 'This alien has left the game with ', fiches: '0000'},
+                {id: 2, 'name': 'alien 2', 'aiLevel': 'None', 'label': 'This alien has left the game with ', fiches: '0000'}
                 ];
                 toastr.success('Players initializing...', 'Success');
             };
-
             return players;
         },
         listPlayers: function() {
@@ -132,38 +183,12 @@ function PlayerService(toastr){
                 return players[i];
             }
         },
-        nextAiLevel: function(id) {
-            //var human = {id: 0, 'name': 'not found', 'aiLevel': 'Human', fiches: '0000'};
-            //toastr.success('Configure aiLevel for alien', 'Success');
-            for (var i in players) {
-                if (players[i].id == id) {
-                    // found
-                    if (players[i].aiLevel == 'Smart') {
-                        players[i].aiLevel = 'Dumb';
-                    } else if (players[i].aiLevel == 'Dumb') {
-                        players[i].aiLevel = 'Average';
-                    } else if (players[i].aiLevel == 'Dumb') {
-                        players[i].aiLevel = 'Average';
-                    } else if (players[i].aiLevel == 'Average') {
-                        players[i].aiLevel = 'Smart';
-                    };
-                    toastr.success('Alien aiLevel changed', 'Success');
-                    return players;
-                }
-                // not found so add average alien    
-                toastr.error('Alien not found', 'Error');
-                //savePlayers({id: id, 'name': 'Alien ' + id, 'aiLevel': 'Average', fiches: '0000'});
-                return players;
-            };
-            toastr.error('Alien not searched', 'Error');
-            return players;
-        },
         deletePlayers: function(id) {
             // existing player
-            for (var i in players) {
+            players.forEach(function () {
                 if (players[i].id == id)
-                players.splice(i, 1);}
-
+                players.splice(i, 1);
+            });
         }
     }
 };

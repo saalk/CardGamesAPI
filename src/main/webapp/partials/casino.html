@@ -32,6 +32,7 @@
                    >Alien 1</a>
                 <a class="button button-primary game-button2" data-ng-click="vm.alien2()"
                    >Alien 2</a>
+                <a class="button game-button" ng-if="vm.startthegame" data-ng-click="vm.start()" class="animate-if">start the game</a>
             </div>
             <div class="three column main-prop">
             </div>
@@ -60,22 +61,26 @@
                 <img class="human-img" alt="you" src="img/aliensmall.jpg">
                 <br>
                 <h5>You: {{ vm.players[0].name }}</h5>
-                <p>Bailing your ship gained you {{ vm.players[0].fiches | leadingZeros }} fiches
+                <p>{{ vm.players[0].label }} {{ vm.players[0].fiches | leadingZeros }} fiches
                     .</p>
             </div>
             <div class="four columns alien-prop">
-                <img class="alien-img" alt="alien1" src="img/aimedium.jpg">
-                <br>
-                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
-                <p>A nice competitor, this fellow has {{ vm.players[1].fiches | leadingZeros }} fiches
-                    .</p>
+                <div ng-if="vm.showalien1" class="animate-if" class="alien-img">
+                    <img alt="alien1" src="img/aimedium.jpg">
+                    <br>
+                    <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
+                    <p>{{ vm.players[1].label }} {{ vm.players[1].fiches | leadingZeros }} fiches
+                        .</p>
+                </div>
             </div>
             <div class="four columns alien-prop">
-                <img class="alien-img" alt="alien2" src="img/aimedium.jpg">
-                <br>
-                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>A nice competitor, this fellow has {{ vm.players[2].fiches | leadingZeros }}
-                    fiches.</p>
+                <div ng-if="vm.showalien2" class="animate-if" class="alien-img">
+                    <img class="alien-img" alt="alien1" src="img/aimedium.jpg">
+                    <br>
+                    <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
+                    <p>{{ vm.players[2].label }} {{ vm.players[2].fiches | leadingZeros }} fiches
+                        .</p>
+                </div>
             </div>
         </div>
     </section>
