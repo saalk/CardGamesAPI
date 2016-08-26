@@ -1,0 +1,64 @@
+{   "residentialAddress":
+    {
+        "currentAddress":
+        {
+            "contactPointText":null,
+            "addressLines":
+                ["Solebaystraat 69","1055 ZM Amsterdam"],
+            "street":"Solebaystraat",
+            "houseNumber":"69",
+            "houseNumberAddition":null,
+            "postalCode":"1055ZM",
+            "city":"Amsterdam",
+            "countryIsoCode":"NL",
+            "countryName":"NEDERLAND",
+            "validity":"VALID"
+        },
+        "futureAddress":
+        {
+            "contactPointText":null,
+            "addressLines":
+                ["Solebaystraat 61","1055 ZM Amsterdam"],
+            "street":"Solebaystraat",
+            "houseNumber":"61",
+            "houseNumberAddition":null,
+            "postalCode":"1055ZM",
+            "city":"Amsterdam",
+            "countryIsoCode":"NL",
+            "countryName":"NEDERLAND",
+            "startDate":[2016,5,3],
+            "validity":"VALID"
+        }
+    },
+    "correspondenceAddress":
+    {
+        "currentAddress":
+        {
+            "contactPointText":null,
+            "addressLines": [],
+            "street":"John Fordstraat",
+            "houseNumber":"15",
+            "houseNumberAddition":null,
+            "postalCode":"1325TG",
+            "city":"Almere",
+            "countryIsoCode":"NL",
+            "countryName":"NEDERLAND",
+            "validity":"VALID"
+        },
+        "futureAddress":
+        {
+            "contactPointText":null,
+            "addressLines":
+                ["Emmakade 22","1182 AB Amstelveen"],
+            "street":"Emmakade",
+            "houseNumber":"22",
+            "houseNumberAddition":null,
+            "postalCode":"1182 AB",
+            "city":"Amstelveen",
+            "countryIsoCode":"NL",
+            "countryName":"NEDERLAND",
+            "startDate":[2016,5,3],
+            "validity":"VALID"
+        }
+    }
+}

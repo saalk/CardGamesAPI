@@ -1,0 +1,15 @@
+[
+  {
+    "name": "C VAN DREUMEL",
+    "accountNumber": "747784787",
+    "maskedCreditcardNumber": "1234.****.****.2990",
+    "type": "Primary",
+    "productType": "PlatinumCreditcard",
+    "ibanNumber": "NL30INGB0747784787",
+    "ibanPrefix": "NL30INGB",
+    "cardId": "2990",
+    "status": "Active",
+    "statusReason":"",
+    "linkedMainCardId": "-1"
+  }
+]

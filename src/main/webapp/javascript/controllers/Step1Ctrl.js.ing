@@ -1,0 +1,233 @@
+'use strict';
+
+angular.module('pCreditcardsSwitchRepaymentOffApp')
+
+    .controller('Step1Ctrl', function ($scope, $filter, $q, progressService, nextButtonService, navigatorService,
+            propertyService, SwitchRepaymentOffService, imageRoot, ServiceHandler, infoBrokerService, constants, orderByFilter, filterFilter) {
+
+        var $ctrl = this;
+        var navigatorCtrl = navigatorService.get('switchRepaymentOffNavigator');
+
+        propertyService = propertyService.properties('module_NL');
+
+        $ctrl.checkErrorCode = '0';
+        $ctrl.isMainHolder = false;
+        $ctrl.hasExtraCards = false;
+        $scope.isCreditcardsFound = false;
+
+        $scope.contactDetails = {
+            isEmailValid: true,
+            isPhoneValid: true
+        };
+
+        $scope.cardModel = {
+            selectedCreditcard: null
+        };
+
+        // checks whether there are creditcards returned from the API.
+        function checkCreditcardList() {
+            $scope.isCreditcardsFound = (!angular.equals([], $ctrl.config.creditCard) &&
+                                         !angular.equals('', $ctrl.config.creditCard));
+
+            return $scope.cardModel.selectedCreditcard !== null;
+        }
+
+        var clearSelection = function() {
+            $ctrl.checkErrorCode = '0';
+
+            progressService.selectedCreditcard = null;
+            progressService.creditcardDto = {};
+            progressService.cardsForSwitchOff = [];
+            nextButtonService.canProceed = true;
+        };
+
+        $scope.$watch(checkCreditcardList, function() {
+            // checks whether there is only one card available in the list, and selects it for the user.
+            if ($scope.cardModel.selectedCreditcard !== null && $scope.cardModel.selectedCreditcard.length === 1) {
+                if (progressService.selectedCreditcard === null) {
+                    $scope.isCreditcardsFound = true;
+                    selectCard($scope.cardModel.selectedCreditcard['0']);
+                }
+            }
+        });
+
+        // watcher to check if the user selects a card
+        $scope.$on('ing-rich-select-change-creditcard-selector', function(e, data) {
+            selectCard(data);
+        });
+
+        // sets the selected card in the progressService and gets the creditcard details.
+        var selectCard = function(creditcard) {
+            clearSelection();
+            setCreditcard(creditcard);
+            getSelectedCreditcardDetails();
+        };
+
+        // Function to set the details of the selected creditcard to the creditcardDto which is sent to the API service.
+        var setCreditcard = function(selectedCreditcard) {
+            progressService.selectedCreditcard = selectedCreditcard.card;
+
+            // Dto info required for API service call
+            progressService.creditcardDto.cardId = selectedCreditcard.card.cardId;
+
+            // details to use when user navigates back from page 2 to page1
+            progressService.selectedCreditcard.selected = true;
+            progressService.selectedCreditcard.id = selectedCreditcard.card.cardId;
+        };
+
+        // retrieve the details of the creditcard that was selected from the list
+        var getSelectedCreditcardDetails = function() {
+            $scope.StateLoading();
+            ServiceHandler.init();
+
+            var selectCardCallback = function(details) {
+                progressService.requestId = details.requestId;
+
+                if (details.agreement && details.agreement.role === 'HOLDER') {
+                    progressService.selectedCreditcard.isMainHolder = true;
+
+                    if ($ctrl.config.creditCard.length > 1) {
+                        var filterValue;
+
+                        if (angular.isUndefined(progressService.selectedCreditcard.linkedMainCardId) ||
+                            progressService.selectedCreditcard.linkedMainCardId === '-1') {
+
+                            filterValue = progressService.selectedCreditcard.cardId;
+                        } else {
+                            filterValue = progressService.selectedCreditcard.linkedMainCardId;
+                        }
+
+                        progressService.cardsForSwitchOff =
+                            orderByFilter(filterFilter($ctrl.config.creditCard, filterValue), 'linkedMainCardId');
+                        progressService.selectedCreditcard.hasExtraCards = progressService.cardsForSwitchOff.length > 1;
+                    } else {
+                        progressService.cardsForSwitchOff = $ctrl.config.creditCard;
+                        progressService.selectedCreditcard.hasExtraCards = false;
+                    }
+
+                    progressService.showContactDetails = true;
+                } else {
+                    progressService.selectedCreditcard.isMainHolder = false;
+                    nextButtonService.canProceed = false;
+                }
+
+                $scope.StateOk();
+            };
+
+            ServiceHandler.call(constants.serviceCalls.selectCard, selectCardCallback);
+        };
+
+        $scope.init = function() {
+            // required to watch the state of the email/tel directives as you can only watch on $scope vars.
+            $scope.broker = infoBrokerService;
+
+            var invalidState = 'invalid',
+                errorState = 'error';
+
+            $scope.$watch('broker.info.ingEmailInfo.state', function(newVal) {
+                $scope.contactDetails.isEmailValid = !(newVal === invalidState || newVal === errorState);
+            });
+
+            $scope.$watch('broker.info.ingServicePhoneInfo.state', function(newVal) {
+                $scope.contactDetails.isPhoneValid = !(newVal === invalidState || newVal === errorState);
+            });
+        };
+
+        var checkContactDetailsValidity = function() {
+            return ($scope.contactDetails.isEmailValid && $scope.contactDetails.isPhoneValid);
+        };
+
+        // callback function for navigator to test validity and progress to next step.
+        navigatorCtrl.addCallback('step1', function(target) {
+            $scope.$broadcast('checkValidity');
+            var d = $q.defer();
+
+            if (target === 'step2' && $scope.formStepOne.$valid && checkContactDetailsValidity()) {
+                $ctrl.config.isPageNavigatedCard.selected = true;
+
+                var confirmCardInformationCallback = function(details) {
+                    if (details.errorCode && details.errorCode !== '0') {
+                        // Unsuccessful result
+                        $ctrl.checkErrorCode = details.errorCode;
+                        d.reject();
+                        nextButtonService.canProceed = false;
+                    } else {
+                        infoBrokerService.synchronize().then(function() {
+                            progressService.emailAddress = infoBrokerService.info.ingEmailInfo.emailAddress;
+                            progressService.phoneNumber = infoBrokerService.info.ingServicePhoneInfo.phoneNumberMasked;
+                            progressService.addressLines = infoBrokerService.info.ingCorrespondenceAddressInfo.addressLines;
+
+                            d.resolve();
+                        });
+                    }
+                };
+
+                ServiceHandler.call(constants.serviceCalls.confirmCardInformation, confirmCardInformationCallback);
+            } else {
+                d.reject();
+            }
+
+            return d.promise;
+        });
+
+        // configuration for the creditCardSelector
+        $ctrl.config = {
+            imageBasePath: imageRoot,
+            checkStatus: function(status) {
+                return status.toUpperCase() === 'ACTIVE' || status.toUpperCase() === 'BLOCKED' || status.toUpperCase() === 'CANCELLED';
+            },
+            creditCard: '',
+            isPageNavigatedCard: progressService.selectedCreditcard || {
+                id: null,
+                selected: false
+            },
+            hasCreditCards: true,
+            cardFilter: 'type=revolving'
+        };
+
+        // watchers for message display conditions
+        $scope.$watchGroup(['progressService.cardsForSwitchOff', 'progressService.selectedCreditcard.isMainHolder', 'progressService.selectedCreditcard.hasExtraCards', '$ctrl.checkErrorCode'], function() {
+            // message configuration for ing-messages-dir
+            $ctrl.messages = [
+                {
+                    id: 'roleUserId',
+                    display: showCardUserMsg(),
+                    type: 'info',
+                    message: propertyService.LabelValidation.IsNotCardHolder
+                },
+                {
+                    id: 'termsId',
+                    display: showMainCardholderMsg(),
+                    type: 'warning',
+                    message: propertyService.LabelTermsSwitchOff
+                },
+                {
+                    id: 'bkrMsgId',
+                    display: showMainCardholderMsg(),
+                    type: 'info',
+                    message: propertyService.LabelBkrMessage
+                },
+                {
+                    id: 'extraCardId',
+                    display: (showMainCardholderMsg() && progressService.selectedCreditcard.hasExtraCards),
+                    type: 'info',
+                    message: propertyService.LabelExtraCards
+                },
+                {
+                    id: 'checkErrorId',
+                    display: progressService.cardsForSwitchOff !== null && $ctrl.checkErrorCode !== '0',
+                    type: 'error',
+                    message: (propertyService.LabelCheckError[$ctrl.checkErrorCode] || propertyService.LabelCheckError['default'])
+                }
+            ];
+        });
+
+        var showMainCardholderMsg = function() {
+            return progressService.cardsForSwitchOff !== null && progressService.selectedCreditcard.isMainHolder && $ctrl.checkErrorCode === '0';
+        };
+
+        var showCardUserMsg = function() {
+            return progressService.cardsForSwitchOff !== null && !progressService.selectedCreditcard.isMainHolder && $ctrl.checkErrorCode === '0';
+        };
+
+    });

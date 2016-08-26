@@ -1,0 +1,21 @@
+{
+  "requestId": "8cec62e4-f36d-4ce7-a7bf-c8472036a0c8",
+  "cramId": "null",
+  "creditCards": [{
+    "cardId": "2991",
+    "name": "C VAN DREUMELL",
+    "maskedCreditcardNumber": "1234.****.****.2991",
+    "type": "Primary",
+    "productType": "SilverCreditcard",
+    "ibanNumber": "NL30INGB0747784787",
+    "startDate": "2008-11-13",
+    "status": "Active",
+    "statusReason": "",
+    "accountNumber": "0003393040",
+    "currentAccount": "0003393040"
+  }],
+  "agreement": {
+    "role": "HOLDER"
+  },
+  "errorCode": "3"
+}

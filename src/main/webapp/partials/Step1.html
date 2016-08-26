@@ -1,0 +1,40 @@
+<form role="form" name="formStepOne" class="form-horizontal" ng-controller="Step1Ctrl as $ctrl" ng-init="init()">
+
+    <fieldset>
+        <div ing-validation-group name="cardSelect">
+            <div ing-form-row label={{properties.Label_Select_Credit_Card}} ng-show="isCreditcardsFound">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <creditcards-selector ng-model="cardModel" config="$ctrl.config"></creditcards-selector>
+                    </div>
+                    <div class="col-lg-12" ing-notify id="creditcardSelectAlert" on-element="creditcardSelect" validate="ingRequired">
+                        <div ing-notification type="error">{{properties.LabelValidation.NoCreditcardSelected}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <br/>
+
+    <fieldset class="l-mb-3" ng-if="progressService.showContactDetails">
+        <div id="email-info" ing-email-info class="l-pb-05"></div>
+
+        <div id="service-phone-info" ing-service-phone-info class="l-pb-05"></div>
+        <div id="service-phone-info-description" ing-form-row=""></div>
+
+        <div id="correspondence-address"
+             ing-correspondence-address-info
+             enable-change-address-link="true"
+             required="true"></div>
+    </fieldset>
+
+    <ing-messages-dir message-list="$ctrl.messages"></ing-messages-dir>
+
+    <div ng-if="state === 'loading'">
+        <div ing-control-group>
+            <div id="spinner" ing-spinner></div>
+        </div>
+    </div>
+
+</form>

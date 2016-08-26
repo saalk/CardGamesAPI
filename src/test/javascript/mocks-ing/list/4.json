@@ -1,0 +1,54 @@
+[
+  {
+    "name": "C VAN DREUMEL",
+    "accountNumber": "747784787",
+    "maskedCreditcardNumber": "1234.****.****.2990",
+    "type": "Primary",
+    "productType": "PlatinumCreditcard",
+    "ibanNumber": "NL30INGB0747784787",
+    "ibanPrefix": "NL30INGB",
+    "cardId": "2990",
+    "status": "Active",
+    "statusReason":"",
+    "linkedMainCardId": "-1"
+  },
+  {
+    "name": "D VAN DREUMELL",
+    "accountNumber": "747784787",
+    "maskedCreditcardNumber": "1234.****.****.2991",
+    "type": "Secondary",
+    "productType": "SilverCreditcard",
+    "ibanNumber": "NL30INGB0747784787",
+    "ibanPrefix": "NL30INGB",
+    "cardId": "2991",
+    "status": "Active",
+    "statusReason":"Block_Reason_Three_Error_Two",
+    "linkedMainCardId": "2990"
+  },
+  {
+    "name": "E VAN DREUMEL",
+    "accountNumber": "747784787",
+    "maskedCreditcardNumber": "1234.****.****.2992",
+    "type": "Primary",
+    "productType": "ExtraCreditcard",
+    "ibanNumber": "NL30INGB0747784787",
+    "ibanPrefix": "NL30INGB",
+    "cardId": "2992",
+    "status": "Blocked",
+    "statusReason":"",
+    "linkedMainCardId": "-1"
+  },
+  {
+    "name": "F VAN DREUMEL",
+    "accountNumber": "747784787",
+    "maskedCreditcardNumber": "1234.****.****.2993",
+    "type": "Primary",
+    "productType": "ExtraCreditcard",
+    "ibanNumber": "NL30INGB0747784787",
+    "ibanPrefix": "NL30INGB",
+    "cardId": "2993",
+    "status": "Blocked",
+    "statusReason":"Block_Reason_Three_Error_One",
+    "linkedMainCardId": "-1"
+  }
+]

@@ -1,0 +1,50 @@
+<form role="form" name="formStepTwo" class="form-horizontal" ng-cloak="" ng-controller="Step2Ctrl as $ctrl" ng-init="$ctrl.init()">
+
+    <fieldset>
+        <legend>
+            <span ng-bind-html="properties.LabelData.yourData"></span>
+        </legend>
+
+        <ing-selected-creditcards-dir config="$ctrl.config" card-list="$ctrl.cards"></ing-selected-creditcards-dir>
+
+        <div ing-form-row="" label={{properties.LabelData.wayOfPayment}} class="form-text-only">
+            <p class="form-control-static"><span ng-bind-html="properties.LabelData.monthlyPayment"></span></p>
+        </div>
+
+        </br>
+
+        <div ing-form-row="" id="email" label={{properties.Label_ContactDetails.FieldEmailAdres}} class="form-text-only">
+            <p class="form-control-static"><span ng-bind-html="progressService.emailAddress"></span></p>
+        </div>
+        <div ing-form-row="" id="phone" label={{properties.Label_ContactDetails.FieldPhoneNumber}} class="form-text-only">
+            <p class="form-control-static"><span ng-bind-html="progressService.phoneNumber"></span></p>
+        </div>
+        <div ing-form-row="" id="address" label={{properties.Label_ContactDetails.FieldAddress}} class="form-text-only">
+            <div data-ng-repeat="addressLine in progressService.addressLines">{{addressLine}}</div>
+        </div>
+    </fieldset>
+
+    <hr/>
+
+    <fieldset>
+        <legend>
+           <span ng-bind-html="properties.LabelAgreement.agree"></span>
+        </legend>
+
+        <span ing-form-row="" ng-bind-html="properties.LabelAgreement.firstAgreement" class="form-text-only"></span>
+        <span ing-form-row="" ng-bind-html="properties.LabelAgreement.secondAgreement" class="form-text-only"></span>
+
+        <div ing-validation-group name="voorwaarden">
+            <div class="checkbox" name="acknowlegdeTerms">
+                <label class="read-only-value">
+                    <input type="checkbox" id="checkTerms" name="checkTerms" ng-model="agreementAcknowledged" ing-required>
+                    {{properties.LabelAgreement.checkBox}}
+                </label>
+            </div>
+            <div class="col-lg-12" ing-notify id="checkboxAlert" on-element="acknowlegdeTerms" validate="ingRequired">
+                <div ing-notification type="error">test message</div>
+            </div>
+        </div>
+    </fieldset>
+
+</form>

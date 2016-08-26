@@ -32,6 +32,9 @@
     "angular-resource": "^1.5.6",
     "angular-toastr": "^1.5.6",
     "angular-cookies": "^1.5.6",
+    "angular-sanitize": "^1.5.6",
+    "angular-touch": "^1.5.6",
+    "restangular": "^1.5.2",
     "skeleton-css": "^2.0.4",
     "bootstrap": "^3.3.6",
     "requirejs": "^2.2.0"

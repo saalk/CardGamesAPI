@@ -1,0 +1,51 @@
+'use strict';
+
+angular.module('pCreditcardsSwitchRepaymentOffApp')
+
+    .controller('Step2Ctrl', ['$q', '$scope', 'nextButtonService', 'navigatorService', 'propertyService', 'progressService', 'ServiceHandler', 'constants',
+                              function ($q, $scope, nextButtonService, navigatorService, propertyService, progressService, ServiceHandler, constants) {
+
+        var navigatorCtrl = navigatorService.get('switchRepaymentOffNavigator');
+
+        $scope.agreementAcknowledged = false;
+        propertyService = propertyService.properties('module_NL');
+
+        var $ctrl = this;
+
+        $ctrl.cards = [];
+
+        $ctrl.init = function() {
+            for (var i = 0; i < progressService.cardsForSwitchOff.length; i++) {
+                var card = progressService.cardsForSwitchOff[i].card;
+                card.image = progressService.cardsForSwitchOff[i].image;
+                $ctrl.cards.push(card);
+            }
+        };
+
+        $ctrl.config = {
+          label: propertyService.LabelData.selectedCards,
+          imageSize: 2
+        };
+
+        navigatorCtrl.addCallback('step2', function(target) {
+            var d = $q.defer();
+
+            if (target === 'step3' && $scope.formStepTwo.$valid) {
+                var submitCallback = function(response) {
+                    progressService.cramRequestDto.cramId = 'C' + response.cramId;
+                    d.resolve();
+                };
+
+                ServiceHandler.call(constants.serviceCalls.submit, submitCallback);
+            } else if (target === 'step1') {
+                ServiceHandler.reset().then(function(response) {
+                    d.resolve(response);
+                });
+            } else {
+                d.reject();
+            }
+
+            return d.promise;
+        });
+        
+    }]);
