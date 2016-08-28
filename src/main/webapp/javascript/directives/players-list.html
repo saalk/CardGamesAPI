@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="twelve columns">
+        <h4>Players</h4>
+        <table>
+            <tr data-ng-repeat="player in vm.players">
+                <td>{{ player.id }}</td>
+                <td>{{ player.name }}</td>
+                <td>{{ player.aiLevel }}</td>
+                <td>{{ player.cubits }}</td>
+                <td>{{ player.pawn }}</td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+<!-- Primary Page Layout Results
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<div class="container"  ng-controller="ResultsController as vm">
+    <header>
+        <div class="row">
+            <div class="twelve columns">
+                <h2 class="title">Well played {{ vm.players[0].name }}</h2>
+                <h5 class="subtitle">have a look at the results and repay your loan</h5>
+            </div>
+        </div>
+    </header>
+
+    <section class="section-main">
+        <div class="row">
+            <div class="nine columns">
+                <p class="main-description">
+                    Play another game with different ante, change your opponent(s) ai level.
+                    <br></p>
+                <p class="main-description">
+                    After one guess you can opt to pass on to the next player, but keep playing
+                    next turn will reward you double or nothing. Changing opponents ai level will not change their cubits.
+                    <br></p>
+                <a class="button game-button" href="#/home">Quit</a>
+                <a class="button button-primary game-button1" data-ng-click="vm.changeAlien(1)"
+                   >Alien 1</a>
+                <a class="button button-primary game-button2" data-ng-click="vm.changeAlien(2)" ng-if="vm.showalien2">Alien 2</a>
+                <a class="button game-button" ng-if="vm.tothetable" href="#/table" data-ng-click="vm.start()">another the game</a>
+            </div>
+            <div class="three columns main-prop">
+                <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico" ng-click="vm.pawnHumanShipForFiches()">
+                <div ng-if="vm.players[0].pawn !== 0">
+                    <a class="button button-primary" ng-click="vm.pawnHumanShipForFiches()">Repay for: {{vm.players[0].pawn | leadingZeros }}</a>
+                </div>
+                <div ng-if="vm.players[0].pawn === 0">
+                    <a class="button button-primary" ng-click="vm.pawnHumanShipForFiches()">Pawn your ship</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-list" ng-show="vm.showList">
+        <div my-results-directive template-path="javascript/directives/players-list.html">
+        </div>
+    </section>
+
+    <section class="aliens">
+        <div my-results-directive template-path="javascript/directives/players-results.html">
+        </div>
+    </section>
+
+</div>

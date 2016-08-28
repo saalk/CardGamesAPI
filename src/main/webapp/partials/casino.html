@@ -16,7 +16,7 @@
         <div class="row">
             <div class="12 columns">
                 <p class="main-description">
-                    Choose the ante for the double of nothing select your opponent(s) together with
+                    Choose the ante (todo: now fixed at 50) for double or nothing and select your opponent(s) together with
                     their ai level.
                     Remember: your
                     <a href="https://en.wikipedia.org/wiki/Honour">honour</a>
@@ -24,15 +24,14 @@
                     <br></p>
                 <p class="main-description">
                     Only after one guess you can opt to pass on to the next player, but keep playing
-                    next turn will reward you double or nothing.
-                    Win or lose depends on a series of good guesses and of course the result of
+                    next turn will reward you double or nothing (todo: now always 50).
+                    Win or lose depends on a series of good guesses and of course the results of
                     your selected opponent ai player(s) strength...<br></p>
                 <a class="button game-button" href="#/home">Leave</a>
-                <a class="button button-primary game-button1" data-ng-click="vm.alien1()"
+                <a class="button button-primary game-button1" data-ng-click="vm.changeAlien(1)"
                    >Alien 1</a>
-                <a class="button button-primary game-button2" data-ng-click="vm.alien2()"
-                   >Alien 2</a>
-                <a class="button game-button" ng-if="vm.startthegame" data-ng-click="vm.start()" class="animate-if">start the game</a>
+                <a class="button button-primary game-button2" data-ng-click="vm.changeAlien(2)" ng-if="vm.showalien1" class="animate-if">Alien 2</a>
+                <a class="button game-button" ng-if="vm.tothetable" href="#/table" data-ng-click="vm.start()" class="animate-if">start the game</a>
             </div>
             <div class="three column main-prop">
             </div>
@@ -40,48 +39,12 @@
     </section>
 
     <section class="section-list" ng-show="vm.showList">
-        <div class="row">
-            <div class="twelve columns">
-                <h4>Players</h4>
-                <table>
-                    <tr data-ng-repeat="player in vm.players">
-                        <td>{{ player.id }}</td>
-                        <td>{{ player.name }}</td>
-                        <td>{{ player.aiLevel }}</td>
-                        <td>{{ player.fiches }}</td>
-                    </tr>
-                </table>
-            </div>
+        <div my-casino-directive template-path="javascript/directives/players-list.html">
         </div>
     </section>
 
     <section class="aliens">
-        <div class="alien-props row" style="margin-top: 5%">
-            <div class="four columns alien-prop">
-                <img class="human-img" alt="you" src="img/aliensmall.jpg">
-                <br>
-                <h5>You: {{ vm.players[0].name }}</h5>
-                <p>{{ vm.players[0].label }} {{ vm.players[0].fiches | leadingZeros }} fiches
-                    .</p>
-            </div>
-            <div class="four columns alien-prop">
-                <div ng-if="vm.showalien1" class="animate-if" class="alien-img">
-                    <img alt="alien1" src="img/aimedium.jpg">
-                    <br>
-                    <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
-                    <p>{{ vm.players[1].label }} {{ vm.players[1].fiches | leadingZeros }} fiches
-                        .</p>
-                </div>
-            </div>
-            <div class="four columns alien-prop">
-                <div ng-if="vm.showalien2" class="animate-if" class="alien-img">
-                    <img class="alien-img" alt="alien1" src="img/aimedium.jpg">
-                    <br>
-                    <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                    <p>{{ vm.players[2].label }} {{ vm.players[2].fiches | leadingZeros }} fiches
-                        .</p>
-                </div>
-            </div>
+        <div my-casino-directive template-path="javascript/directives/players-casino.html">
         </div>
     </section>
 
