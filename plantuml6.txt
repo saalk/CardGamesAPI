@@ -1,28 +1,28 @@
 @startuml
-class nl.deknik.cardgames.controller.GalacticCasino
-class nl.deknik.cardgames.model.Card
-class nl.deknik.cardgames.model.Deck
-class nl.deknik.cardgames.model.Game
-class nl.deknik.cardgames.model.Hand
-class nl.deknik.cardgames.model.Player
-class nl.deknik.cardgames.model.Player.Predict
-class nl.deknik.cardgames.utils.Console
-class nl.deknik.cardgames.utils.NameGenerator
-class nl.deknik.cardgames.utils.Password
-enum nl.deknik.cardgames.model.AiLevel
-enum nl.deknik.cardgames.model.CardGame
-enum nl.deknik.cardgames.model.CardGameVariant
-enum nl.deknik.cardgames.model.Origin
-enum nl.deknik.cardgames.model.Rank
-enum nl.deknik.cardgames.model.Suit
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.Game
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.Player
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.Player.Predict
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.utils.Console
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.AiLevel
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.CardGame
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.CardGameVariant
-nl.deknik.cardgames.controller.GalacticCasino ..> nl.deknik.cardgames.model.Origin
-nl.deknik.cardgames.model.Game ..> nl.deknik.cardgames.controller.GalacticCasino
-nl.deknik.cardgames.model.Player ..> nl.deknik.cardgames.utils.NameGenerator
+class GalacticCasino
+class Card
+class Deck
+class Game
+class Hand
+class Player
+class Player.Predict
+class Console
+class NameGenerator
+class Password
+enum AiLevel
+enum CardGame
+enum CardGameVariant
+enum Origin
+enum Rank
+enum Suit
+GalacticCasino ..> Game
+GalacticCasino ..> Player
+GalacticCasino ..> Player.Predict
+GalacticCasino ..> Console
+GalacticCasino ..> AiLevel
+GalacticCasino ..> CardGame
+GalacticCasino ..> CardGameVariant
+GalacticCasino ..> Origin
+Game ..> GalacticCasino
+Player ..> NameGenerator
 @enduml

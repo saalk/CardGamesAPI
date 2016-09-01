@@ -49,16 +49,16 @@ function ResultsController(PlayerService, toastr){
             vm.ante = 50;
         };
     };
-    vm.pawnHumanShipForFiches = function () {
-        if (vm.players[0].pawn == 0 ) {
-            vm.players[0].pawn = (Math.ceil(Math.random() * 750)+250);
-            vm.players[0].cubits = vm.players[0].cubits + vm.players[0].pawn;
+    vm.pawnHumanShipForCubits = function () {
+        if (vm.players[0].securedLoan == 0 ) {
+            vm.players[0].securedLoan = (Math.ceil(Math.random() * 750)+250);
+            vm.players[0].cubits = vm.players[0].cubits + vm.players[0].securedLoan;
             toastr.info('Your ship is pawned', 'Information');
-        } else if (vm.players[0].cubits < vm.players[0].pawn) {
+        } else if (vm.players[0].cubits < vm.players[0].securedLoan) {
             toastr.error('Your don\'t have not enough credits', 'Error');
-        } else if (vm.players[0].cubits >= vm.players[0].pawn) {
-            vm.players[0].cubits = vm.players[0].cubits - vm.players[0].pawn;
-            vm.players[0].pawn = 0;
+        } else if (vm.players[0].cubits >= vm.players[0].securedLoan) {
+            vm.players[0].cubits = vm.players[0].cubits - vm.players[0].securedLoan;
+            vm.players[0].securedLoan = 0;
             toastr.info('Your loan is repayed', 'Information');
             vm.tothetable = false;
         };

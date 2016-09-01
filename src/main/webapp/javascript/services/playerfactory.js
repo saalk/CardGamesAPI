@@ -9,9 +9,9 @@ function PlayerService(toastr){
         initPlayers: function() {
             if (players[0] == null) {
             players = [
-                {id: 0, 'name': 'stranger', 'aiLevel': 'Human', cubits: 0000, pawn: 0000},
-                {id: 1, 'name': 'alien 1', 'aiLevel': 'None', cubits: 0000, pawn: 0000},
-                {id: 2, 'name': 'alien 2', 'aiLevel': 'None', cubits: 0000, pawn: 0000}
+                {id: 0, 'alias': 'stranger', 'aiLevel': 'Human', cubits: 0000, securedLoan: 0000},
+                {id: 1, 'alias': 'alien 1', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000},
+                {id: 2, 'alias': 'alien 2', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000}
                 ];
                 toastr.success('A new spaceship has landed...', 'Alpha landing bay');
             };

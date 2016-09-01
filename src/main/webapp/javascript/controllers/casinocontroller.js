@@ -37,10 +37,10 @@ function CasinoController(PlayerService, toastr){
         loopAiLevel(id);
         if (vm.players[id].aiLevel == 'None') {
             vm.players[id].cubits = 0; 
-            vm.players[id].pawn = vm.players[id].cubits;
+            vm.players[id].securedLoan = vm.players[id].cubits;
         } else {
             vm.players[id].cubits = (Math.ceil(Math.random() * 500)+ 500); 
-            vm.players[id].pawn = vm.players[id].cubits;
+            vm.players[id].securedLoan = vm.players[id].cubits;
         };
         checkIfAliensAreSet();    
     };

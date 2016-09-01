@@ -6,7 +6,7 @@
 
     <!-- set global properties for this build -->
     <property name="ant.project.name" value="GalacticCasino"/>
-    <property name="main_class_name" value="nl.deknik.cardgames.controller.GalacticCasino"/>
+    <property name="main_class_name" value="GalacticCasino"/>
     <property name="sitename" value="nl.deknik.cardgames"/>
     <property name="jarname" value="${ant.project.name}"/>
     <property name="libjarname" value="external-libs.jar"/>
@@ -160,7 +160,7 @@
         so add our start class to the already define path
         nb cannot use reference in classname..
         -->
-        <java classname="nl.deknik.cardgames.controller.GalacticCasino" fork="no">
+        <java classname="GalacticCasino" fork="no">
             <classpath>
                 <path location="${dist}\${jarname}-latest.jar"/>
             </classpath>

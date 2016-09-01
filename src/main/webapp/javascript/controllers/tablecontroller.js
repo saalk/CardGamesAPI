@@ -60,8 +60,8 @@ function TableController(PlayerService, toastr){
             vm.ante = 50;
         };
         for (var i in vm.players) {
-            if (vm.players[i].pawn == 0 && vm.players[i].aiLevel != 'None') {
-                vm.players[i].pawn = vm.players[i].cubits;
+            if (vm.players[i].securedLoan == 0 && vm.players[i].aiLevel != 'None') {
+                vm.players[i].securedLoan = vm.players[i].cubits;
             };
         };       
         

@@ -27,12 +27,15 @@
                 <a class="button game-button" ng-if="vm.tothetable" href="#/table" data-ng-click="vm.start()">another the game</a>
             </div>
             <div class="three columns main-prop">
-                <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico" ng-click="vm.pawnHumanShipForFiches()">
-                <div ng-if="vm.players[0].pawn !== 0">
-                    <a class="button button-primary" ng-click="vm.pawnHumanShipForFiches()">Repay for: {{vm.players[0].pawn | leadingZeros }}</a>
+                <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
+                     ng-click="vm.pawnHumanShipForCubits()">
+                <div ng-if="vm.players[0].securedLoan !== 0">
+                    <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Repay
+                        for: {{vm.players[0].securedLoan | leadingZeros }}</a>
                 </div>
-                <div ng-if="vm.players[0].pawn === 0">
-                    <a class="button button-primary" ng-click="vm.pawnHumanShipForFiches()">Pawn your ship</a>
+                <div ng-if="vm.players[0].securedLoan === 0">
+                    <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Pawn
+                        your ship</a>
                 </div>
             </div>
         </div>

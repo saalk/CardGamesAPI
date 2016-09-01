@@ -3,7 +3,7 @@
         <img class="human-img" alt="you" src="img/aliensmall.jpg">
         <br>
         <h5>You: {{ vm.players[0].name }}</h5>
-        <p>Playing the game resulted in {{ vm.players[0].cubits - vm.players[0].pawn }} cubits
+        <p>Playing the game resulted in {{ vm.players[0].cubits - vm.players[0].securedLoan }} cubits
             .</p>
     </div>
     <div class="four columns alien-prop">
@@ -13,21 +13,21 @@
                 <br>
                 <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
                 
-                <p>Quick to beat and having only {{ vm.players[1].cubits - vm.players[1].pawn }} cubits
+                <p>Quick to beat and having only {{ vm.players[1].cubits - vm.players[1].securedLoan }} cubits
                     .</p>                
             </div>
             <div ng-if="vm.players[1].aiLevel == 'Average'">
                 <img alt="alien1" src="img/aimedium.jpg">
                 <br>
                 <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
-                <p>A nice competitor, he has now {{ vm.players[1].cubits - vm.players[1].pawn }} cubits
+                <p>A nice competitor, he has now {{ vm.players[1].cubits - vm.players[1].securedLoan }} cubits
                     .</p>                
             </div>
             <div ng-if="vm.players[1].aiLevel == 'Smart'">
                 <img alt="alien1" src="img/aihigh.jpg">
                 <br>
                 <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
-                <p>Most evolved alien species, this fellow played {{ vm.players[1].cubits - vm.players[1].pawn }} cubits
+                <p>Most evolved alien species, this fellow played {{ vm.players[1].cubits - vm.players[1].securedLoan }} cubits
                     .</p>                
             </div>
         </div>
@@ -38,21 +38,21 @@
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>
                 <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>Quick to beat and having only {{ vm.players[2].cubits - vm.players[2].pawn }} cubits
+                <p>Quick to beat and having only {{ vm.players[2].cubits - vm.players[2].securedLoan }} cubits
                     .</p>                
             </div>
             <div ng-if="vm.players[2].aiLevel == 'Average'">
                 <img alt="alien2" src="img/aimedium.jpg">
                 <br>
                 <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>A nice competitor, he has now {{ vm.players[2].cubits - vm.players[2].pawn }} cubits
+                <p>A nice competitor, he has now {{ vm.players[2].cubits - vm.players[2].securedLoan }} cubits
                     .</p>                
             </div>
             <div ng-if="vm.players[2].aiLevel == 'Smart'">
                 <img alt="alien2" src="img/aihigh.jpg">
                 <br>
                 <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>Most evolved alien species, this fellow splayed {{ vm.players[2].cubits - vm.players[2].pawn }} cubits
+                <p>Most evolved alien species, this fellow splayed {{ vm.players[2].cubits - vm.players[2].securedLoan }} cubits
                     .</p>                
             </div>
         </div>
