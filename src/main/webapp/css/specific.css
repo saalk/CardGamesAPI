@@ -22,10 +22,15 @@
   border-radius: 100px; }
 
 /*
+.b, strong {
+     color: #ff33cc;
+     }
+*/
+/*
 .container {
   max-width: 900px; }
 */
-/* Header
+/* Header 
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 header {
   margin-top: 2rem;}

@@ -4,7 +4,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Well played {{ vm.players[0].name }}</h2>
+                <h2 class="title">Well played {{ vm.players[0].alias }}</h2>
                 <h5 class="subtitle">have a look at the results and repay your loan</h5>
             </div>
         </div>
@@ -23,7 +23,7 @@
                 <a class="button game-button" href="#/home">Quit</a>
                 <a class="button button-primary game-button1" data-ng-click="vm.changeAlien(1)"
                    >Alien 1</a>
-                <a class="button button-primary game-button2" data-ng-click="vm.changeAlien(2)" ng-if="vm.showalien2">Alien 2</a>
+                <a class="button button-primary game-button2" data-ng-click="vm.changeAlien(2)" ng-if="vm.showalien1">Alien 2</a>
                 <a class="button game-button" ng-if="vm.tothetable" href="#/table" data-ng-click="vm.start()">another the game</a>
             </div>
             <div class="three columns main-prop">
@@ -41,7 +41,7 @@
         </div>
     </section>
 
-    <section class="section-list" ng-show="vm.showList">
+    <section class="section-list" ng-show="vm.showListForDebug">
         <div my-results-directive template-path="javascript/directives/players-list.html">
         </div>
     </section>

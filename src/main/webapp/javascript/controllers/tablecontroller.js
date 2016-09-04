@@ -16,7 +16,7 @@ function TableController(PlayerService, toastr){
     vm.players = PlayerService.initPlayers();
 
     // flags + checks for ng-if
-    vm.showList = true;
+    vm.showListForDebug = false;
     vm.higher = true;
     vm.lower = true;
     vm.pass = true;

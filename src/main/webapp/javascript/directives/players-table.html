@@ -2,9 +2,9 @@
     <div class="four columns alien-prop">
         <img class="human-img" alt="you" src="img/aliensmall.jpg">
         <br>
-        <h5>You: {{ vm.players[0].name }}</h5>
-        <p>{{ vm.players[0].cubits | leadingZeros }} of {{ vm.players[0].securedLoan | leadingZeros
-            }} cubits left
+        <h5>You: {{ vm.players[0].alias }}</h5>
+        <p>{{ vm.players[0].cubits - vm.players[0].securedLoan }} of {{ vm.players[0].securedLoan | leadingZeros
+            }} cubits won
             .</p>
     </div>
     <div class="four columns alien-prop">
@@ -12,23 +12,23 @@
             <div ng-if="vm.players[1].aiLevel == 'Dumb'">
                 <img alt="alien1" src="img/ailow.jpg">
                 <br>
-                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
+                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].alias }}</h5>
                 
-                <p>{{ vm.players[1].cubits | leadingZeros }} of {{ vm.players[1].securedLoan | leadingZeros }} cubits left
+                <p>{{ vm.players[1].cubits - vm.players[1].securedLoan }} of {{ vm.players[1].securedLoan | leadingZeros }} cubits won
                 .</p>                
             </div>
             <div ng-if="vm.players[1].aiLevel == 'Average'">
                 <img alt="alien1" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
-                <p>{{ vm.players[1].cubits | leadingZeros }} of {{ vm.players[1].securedLoan | leadingZeros }} cubits left
+                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].alias }}</h5>
+                <p>{{ vm.players[1].cubits - vm.players[1].securedLoan }} of {{ vm.players[1].securedLoan | leadingZeros }} cubits won
                 .</p>               
             </div>
             <div ng-if="vm.players[1].aiLevel == 'Smart'">
                 <img alt="alien1" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].name }}</h5>
-                <p>{{ vm.players[1].cubits | leadingZeros }} of {{ vm.players[1].securedLoan | leadingZeros }} cubits left
+                <h5>{{ vm.players[1].aiLevel }}: {{ vm.players[1].alias }}</h5>
+                <p>{{ vm.players[1].cubits - vm.players[1].securedLoan }} of {{ vm.players[1].securedLoan | leadingZeros }} cubits won
                 .</p>               
             </div>
         </div>
@@ -38,22 +38,22 @@
             <div ng-if="vm.players[2].aiLevel == 'Dumb'">
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>
-                <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>{{ vm.players[2].cubits | leadingZeros }} of {{ vm.players[2].securedLoan | leadingZeros }} cubits left
+                <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].alias }}</h5>
+                <p>{{ vm.players[2].cubits - vm.players[2].securedLoan }} of {{ vm.players[2].securedLoan | leadingZeros }} cubits won
                 .</p>               
             </div>
             <div ng-if="vm.players[2].aiLevel == 'Average'">
                 <img alt="alien2" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>{{ vm.players[2].cubits | leadingZeros }} of {{ vm.players[2].securedLoan | leadingZeros }} cubits left
+                <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].alias }}</h5>
+                <p>{{ vm.players[2].cubits - vm.players[2].securedLoan }} of {{ vm.players[2].securedLoan | leadingZeros }} cubits won
                 .</p>                
             </div>
             <div ng-if="vm.players[2].aiLevel == 'Smart'">
                 <img alt="alien2" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].name }}</h5>
-                <p>{{ vm.players[2].cubits | leadingZeros }} of {{ vm.players[2].securedLoan | leadingZeros }} cubits left
+                <h5>{{ vm.players[2].aiLevel }}: {{ vm.players[2].alias }}</h5>
+                <p>{{ vm.players[2].cubits - vm.players[2].securedLoan  }} of {{ vm.players[2].securedLoan | leadingZeros }} cubits won
                 .</p>               
             </div>
         </div>

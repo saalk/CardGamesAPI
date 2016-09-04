@@ -76,7 +76,11 @@
             <version>${springframework.version}</version>
         </dependency>
         -->
-
+        <dependency> <!-- Define this if you use Spring Expression APIs -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
         <dependency> <!-- implementation of Spring MVC, includes spring-web -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -111,9 +115,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${springframework.version}</version>
+            <scope>test</scope>
         </dependency>
 
-        <dependency>
+        <dependency> <!-- Object-to-Relation-Mapping (ORM) integration with Hibernate -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${springframework.version}</version>
@@ -137,7 +142,7 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- This dependency is required to use the JSP standard tag libray.  -->
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
@@ -183,15 +188,15 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- not compatible with spring boot and tomcat 8
+        <!-- not compatible with spring boot and tomcat 8 -->
         <dependency>
-                Java(TM) EE 7 Specification APIs
+                <!-- Java(TM) EE 7 Specification APIs -->
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
                 <version>7.0</version>
                 <scope>provided</scope>
         </dependency>
-        -->
+
         <dependency> <!-- important -->
             <!-- Support for using JAXB annotations as an alternative to "native" Jackson annotations, for configuring data binding. -->
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -287,8 +292,14 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven.war.plugin}</version>
                 <configuration>
-                    <warName>ROOT</warName>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
             <!-- Maven plugin for utilities to work with dependencies like copy, pack, etc -->

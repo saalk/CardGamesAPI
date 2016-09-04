@@ -16,20 +16,24 @@ function HomeController(PlayerService, toastr){
     vm.players = PlayerService.initPlayers();
         
     // flags for ng-if
-    vm.showList = false;
+    vm.showListForDebug = false;
     vm.gotocasino = false;
     checkIfNameAndSecuredLoanAreSet();
 
     // behaviour 
+    //vm.minimum = 0;
     vm.setHumanName = function () {
+        //toastr.clear();
         vm.players[0].alias = 'John Doe';
         toastr.info('Your name is set', 'Information');
         checkIfNameAndSecuredLoanAreSet();
     };
-    vm.pawnHumanShipForCubits = function () {
+    vm.pawnHumanShipForCubits = function (minimum) {
+        minimum;
         if (vm.players[0].securedLoan == 0 ) {
-            vm.players[0].cubits = (Math.ceil(Math.random() * 750)+250);
-            vm.players[0].securedLoan = vm.players[0].cubits;
+            vm.players[0].securedLoan = (Math.ceil(Math.random() * (1000 - minimum))+ minimum);
+            vm.players[0].cubits = vm.players[0].cubits + vm.players[0].securedLoan;
+            // toastr.info('<body>Your ship is pawned for at least {{ vm.minimum }}<body>', 'InformationL',{allowHtml: true});
             toastr.info('Your ship is pawned', 'Information');
         } else if (vm.players[0].cubits < vm.players[0].securedLoan) {
             toastr.error('Your don\'t have not enough credits', 'Error');
@@ -41,14 +45,6 @@ function HomeController(PlayerService, toastr){
         };
         checkIfNameAndSecuredLoanAreSet();
     }; 
-    vm.pawnCheatHumanShipForCubits = function () {
-        if (vm.players[0].securedLoan == 0 ) {
-            vm.players[0].cubits = (Math.ceil(Math.random() * 250)+750);
-            vm.players[0].securedLoan = vm.players[0].cubits;
-            toastr.success('Your ship is pawned above 750!', 'Cheat applied');
-        };
-        checkIfNameAndSecuredLoanAreSet();
-    };
     
     // checks and functions
     function checkIfNameAndSecuredLoanAreSet() {
@@ -57,7 +53,7 @@ function HomeController(PlayerService, toastr){
         };
         if (vm.players[0].alias === 'stranger' && vm.players[0].cubits != 0) {
             setTimeout(function() {
-            toastr.warning('Get your name, stranger', 'Warning')},1000);
+            toastr.warning('Get your name for the casino, stranger', 'Warning')},1000);
         } else if (vm.players[0].cubits == 0 && vm.players[0].alias != 'stranger') {
             setTimeout(function() {
             toastr.warning('Pawn your ship for the casino', 'Warning')},1000);

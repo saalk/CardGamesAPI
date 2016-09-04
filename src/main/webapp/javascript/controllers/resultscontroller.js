@@ -16,7 +16,7 @@ function ResultsController(PlayerService, toastr){
     vm.players = PlayerService.initPlayers();
 
     // flags + checks for ng-if
-    vm.showList = false;
+    vm.showListForDebug = false;
     vm.showalien1 = false;
     vm.showalien2 = false;
     vm.ante = 0; 

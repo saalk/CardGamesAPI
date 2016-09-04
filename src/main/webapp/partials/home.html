@@ -5,7 +5,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Welcome {{ vm.players[0].name }}</h2>
+                <h2 class="title">Welcome {{ vm.players[0].alias }}</h2>
                 <h5 class="subtitle">and play this simple, but yet very addictive
                     High-low card game</h5>
             </div>
@@ -48,7 +48,7 @@
                     <a href="http://www.alanturing.net/turing_archive/pages/reference%20articles/what%20is%20ai.html">AI</a>
                     . Be careful, the extra bonus is paid by the losers...
                     </p>
-                <a class="button main-button" ng-click="vm.pawnCheatHumanShipForCubits()"
+                <a class="button main-button" ng-click="vm.pawnHumanShipForCubits(750)"
                    href="#/home">Home</a>
                 <a class="button button-primary main-button" ng-if="vm.gotocasino"
                    class="animate-if" ng-click="vm.checkIfNameAndSecuredLoanAreSet()" href="#/casino">Get me to the
@@ -56,24 +56,24 @@
             </div>
             <div class="three columns main-prop">
                 <img class="u-max-full-width main-img" alt="you" src="img/alien.ico" ng-click="vm.setHumanName()">
-                <a class="button button-primary" ng-click="vm.setHumanName()">{{ vm.players[0].name }}: {{
+                <a class="button button-primary" ng-click="vm.setHumanName()">{{ vm.players[0].alias }}: {{
                         vm.players[0].cubits | leadingZeros }}</a>
                 <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
                      ng-click="vm.pawnHumanShipForCubits()">
                 <div ng-if="vm.players[0].securedLoan != 0">
-                    <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Repay
+                    <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Repay
                         for: {{
                         vm.players[0].securedLoan | leadingZeros }}</a>
                 </div>
                 <div ng-if="vm.players[0].securedLoan == 0">
-                    <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Pawn
+                    <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Pawn
                         your ship</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section-list" ng-show="vm.showList">
+    <section class="section-list" ng-show="vm.showListForDebug">
         <div my-home-directive template-path="javascript/directives/players-list.html">
         </div>
     </section>

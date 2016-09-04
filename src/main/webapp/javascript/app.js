@@ -23,6 +23,8 @@ angular.module('myApp')
         redirectTo: '/home'
     });
     angular.extend(toastrConfig, {
+    newestOnTop: false,
+    preventDuplicates: true,
     allowHtml: true,
     closeButton: false,
     closeHtml: '<button>&times;</button>',

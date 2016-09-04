@@ -1,10 +1,10 @@
-package nl.knikit.cardgames.DAO;
+package nl.knikit.cardgames.Service;
 
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Origin;
 import nl.knikit.cardgames.model.Player2;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
@@ -16,16 +16,24 @@ import java.util.ArrayList;
  * @since v1 - console game
  */
 
-@Component
-public class PlayerDAO {
+@Service
+public class PlayerService {
 
+    private ArrayList<Player2> players = new ArrayList<Player2>();
+
+    //hard coded but usually get from database
+    PlayerService() {
+        players.add(new Player2(0, Origin.ELF, "Alias1", true, AiLevel.HUMAN, 0, 0));
+        players.add(new Player2(1, Origin.ELF, "Alias2", false, AiLevel.NONE, 0, 0));
+        players.add(new Player2(2, Origin.ELF, "Alias3", false, AiLevel.NONE, 0, 0));
+    }
      /**
      * Returns list of players from dummy database.
      *
      * @return list of players
      */
     public ArrayList<Player2> list() {
-        return dummyPlayers();
+        return players;
     };
 
     /**
@@ -37,7 +45,6 @@ public class PlayerDAO {
      */
     public Player2 get(int id) {
 
-        ArrayList<Player2> players = dummyPlayers();
         for (Player2 p : players)
             if (p.getId() == id) {
                 return p;
@@ -55,7 +62,6 @@ public class PlayerDAO {
      */
     public Player2 create(Player2 player) {
 
-        ArrayList<Player2> players = dummyPlayers();
         players.add(player);
         return player;
     }
@@ -70,7 +76,6 @@ public class PlayerDAO {
      */
     public int delete(int id) {
 
-        ArrayList<Player2> players = dummyPlayers();
         for (Player2 p : players) {
             if (p.getId() == id) {
                 players.remove(p);
@@ -90,8 +95,7 @@ public class PlayerDAO {
      */
     public Player2 update(int id, Player2 player) {
 
-        ArrayList<Player2> players = dummyPlayers();
-        for (Player2 p : (ArrayList<Player2>) players) {
+        for (Player2 p : players) {
             if (p.getId() == id) {
                 players.remove(p);
                 players.add(player);
@@ -101,12 +105,4 @@ public class PlayerDAO {
         return null;
     }
 
-     private static ArrayList<Player2> dummyPlayers() {
-
-        ArrayList<Player2> players = new ArrayList<Player2>();
-        players.add(new Player2(0,Origin.ELF,"Alias1",true,AiLevel.HUMAN,0,0));
-        players.add(new Player2(1,Origin.ELF,"Alias2",false,AiLevel.NONE,0,0));
-        players.add(new Player2(2,Origin.ELF,"Alias3",false,AiLevel.NONE,0,0));
-        return players;
-     }
 }

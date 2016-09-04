@@ -23,35 +23,38 @@ package nl.knikit.cardgames.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import nl.knikit.cardgames.DAO.PlayerDAO;
+import nl.knikit.cardgames.Service.PlayerService;
 import nl.knikit.cardgames.model.Player2;
 
 import java.util.List;
 
 @RestController
-public class PlayerRestController {
+@Component
+public class PlayerController {
 
     @Autowired
-    private PlayerDAO PlayerDAO;
+    private PlayerService PlayerService;
 
-
-    @GetMapping("/api/players")
+    @GetMapping("/players")
     public List getPlayers() {
-        return PlayerDAO.list();
+        return PlayerService.list();
     }
 
-    @GetMapping("/api/players/{id}")
+    @GetMapping("/players/{id}")
     public ResponseEntity getPlayer(@PathVariable("id") int id) {
 
-        Player2 player = PlayerDAO.get(id);
+        Player2 player = PlayerService.get(id);
         if (player == null) {
             return new ResponseEntity("No Player found for ID " + id, HttpStatus.NOT_FOUND);
         }
@@ -59,18 +62,18 @@ public class PlayerRestController {
         return new ResponseEntity(player, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/api/players")
+    @PostMapping("/players")
     public ResponseEntity createPlayer(@RequestBody Player2 player) {
 
-        PlayerDAO.create(player);
+        PlayerService.create(player);
 
         return new ResponseEntity(player, HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/players/{id}")
+    @DeleteMapping("/players/{id}")
     public ResponseEntity deletePlayer(@PathVariable int id) {
 
-        if (-1 == PlayerDAO.delete(id)) {
+        if (-1 == PlayerService.delete(id)) {
             return new ResponseEntity("No Player found for ID " + id, HttpStatus.NOT_FOUND);
         }
 
@@ -78,10 +81,10 @@ public class PlayerRestController {
 
     }
 
-    @PutMapping("/api/players/{id}")
+    @PutMapping("/players/{id}")
     public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player2 player) {
 
-        player = PlayerDAO.update(id, player);
+        player = PlayerService.update(id, player);
 
         if (null == player) {
             return new ResponseEntity("No Player found for ID " + id, HttpStatus.NOT_FOUND);
