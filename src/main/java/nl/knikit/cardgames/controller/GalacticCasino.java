@@ -1,9 +1,6 @@
-/*
 package nl.knikit.cardgames.controller;
 // @formatter:off
-*/
 /*
-
 @startuml src/main/resources/plantuml/GalacticCasino.png
 skinparam classAttributeIconSize 0
 package "nl.deknik.cardgames" {
@@ -46,8 +43,8 @@ GalacticCasino --> enum Trigger
 package "nl.deknik.cardgames" {
 package "model" {
 GalacticCasino .. Game
-GalacticCasino .. Player
-GalacticCasino .. Player.Predict
+GalacticCasino .. PlayerOld
+GalacticCasino .. PlayerOld.Predict
 GalacticCasino .. AiLevel
 GalacticCasino .. CardGame
 GalacticCasino .. CardGameVariant
@@ -59,7 +56,8 @@ GalacticCasino . Console
 }
 }
 @enduml
-
+*/
+/*
 @startuml
 
 state GalacticCasino {
@@ -87,9 +85,7 @@ STOP_GAME -up-> SELECT_GAME: GAME_FINISHED
 }
 }
 @enduml
-
-*//*
-
+*/
 // @formatter:on
 
 import java.util.Random;
@@ -109,10 +105,9 @@ import nl.knikit.cardgames.model.CardGame;
 import nl.knikit.cardgames.model.CardGameVariant;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Origin;
-import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.model.PlayerOld;
 import nl.knikit.cardgames.utils.Console;
 
-*/
 /**
  * <H1>GalacticCasino</H1>Main functionality: <ul> <li>a native casino adventure application that
  * runs on your desktop's console <li>offers card game 'HighLow' <li>each visitor starts with 1000
@@ -126,7 +121,7 @@ import nl.knikit.cardgames.utils.Console;
  * @author Klaas van der Meulen
  * @version 1.0
  * @since v1 - console game
-
+**/
 
 public class GalacticCasino {
 
@@ -211,7 +206,7 @@ public class GalacticCasino {
                 originChosen = Origin.MAGICIAN;
                 break;
         }
-        Player visitor = new Player(originChosen, null, true);
+        PlayerOld visitor = new PlayerOld(originChosen, null, true);
 
         Random random = new Random();
         int number = (random.nextInt(30) + 1);
@@ -226,9 +221,9 @@ public class GalacticCasino {
         CardGameVariant cardGameVariantSelected;
         // why not null; instead of new Game(null); or just Game currentGame; ?
         Game currentGame = new Game(null);
-        Player currentPlayer = new Player(visitor.getOrigin(), null, false);
-        Player.Predict prediction;
-        Player.Predict real;
+        PlayerOld currentPlayerOld = new PlayerOld(visitor.getOrigin(), null, false);
+        PlayerOld.Predict prediction;
+        PlayerOld.Predict real;
         int turn = 0;
 
         // CONTROLLER
@@ -307,27 +302,27 @@ public class GalacticCasino {
                         for (int i = 0; i < answer; i++) {
                             switch (secondAnswer) {
                                 case 1:
-                                    currentPlayer = currentGame.setPlayer(new Player(originChosen, AiLevel.LOW, false));
-                                    currentPlayer.setCubits(1000);
+                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.LOW, false));
+                                    currentPlayerOld.setCubits(1000);
                                     break;
                                 case 2:
-                                    currentPlayer = currentGame.setPlayer(new Player(originChosen, AiLevel.MEDIUM, false));
-                                    currentPlayer.setCubits(1000);
+                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
+                                    currentPlayerOld.setCubits(1000);
                                     break;
                                 case 3:
-                                    currentPlayer = currentGame.setPlayer(new Player(originChosen, AiLevel.HIGH, false));
-                                    currentPlayer.setCubits(1000);
+                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.HIGH, false));
+                                    currentPlayerOld.setCubits(1000);
                                     break;
                                 default:
-                                    currentPlayer = currentGame.setPlayer(new Player(originChosen, AiLevel.MEDIUM, false));
-                                    currentPlayer.setCubits(1000);
+                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
+                                    currentPlayerOld.setCubits(1000);
                                     break;
                             }
-                            currentPlayer.emptyHand();
+                            currentPlayerOld.emptyHand();
                         }
                     }
-                    currentPlayer = null;
-                    for (Player cp : currentGame.getPlayers()) {
+                    currentPlayerOld = null;
+                    for (PlayerOld cp : currentGame.getPlayerOlds()) {
                         if (!cp.isHuman()) {
                             System.out.println("  " + cp.getAlias() + " joined the game");
                         }
@@ -355,8 +350,8 @@ public class GalacticCasino {
                 case ITERATE_PLAYERS:
 
                     // SETUP PLAYER AND ROUNDS, STOP WHEN ZERO ROUNDS LEFT
-                    currentPlayer = currentGame.getNextPlayer(currentPlayer);
-                    if (currentPlayer == currentGame.getBegins() && !(currentPlayer.getHand().countNumberOfCards() == 0)) {
+                    currentPlayerOld = currentGame.getNextPlayer(currentPlayerOld);
+                    if (currentPlayerOld == currentGame.getBegins() && !(currentPlayerOld.getHand().countNumberOfCards() == 0)) {
                         currentGame.decreaseRoundsLeft();
                         if (currentGame.getRoundsLeft() == 0) {
                             answer = console.getAnswerFromConsole("> Last round played, game ended", dummy);
@@ -368,14 +363,13 @@ public class GalacticCasino {
 
                     // CHECK CARDS LEFT STOP WHEN ZERO
                     if (currentGame.getDeck().searchNextCardNotInHand() == -1) {
-                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayer.getAlias(),
+                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias(),
                                 dummy);
                         galacticCasino.fire(Trigger.DECK_EMPTY);
                     }
 
                     // debug logging
-*/
-/*				log = new StringBuilder();
+				log = new StringBuilder();
                 log.append(System.lineSeparator());
 				log.append("= Next player=============================");
 				log.append(System.lineSeparator());
@@ -385,14 +379,14 @@ public class GalacticCasino {
 				log.append(System.lineSeparator());
 				log.append("  Current Game: " + currentGame);
 				log.append(System.lineSeparator());
-				log.append("  Current Player: " + currentPlayer);
+				log.append("  Current PlayerOld: " + currentPlayerOld);
 				log.append(System.lineSeparator());
 				log.append("= End ====================================");
 				logger.debug(log.toString());
 
                     // DEAL A INITIAL CARD AND SHOW
-                    currentPlayer.addCardToHand(currentGame.getDeck().deal(currentPlayer.getId()));
-                    System.out.println("" + currentPlayer.toStringPlayers());
+                    currentPlayerOld.addCardToHand(currentGame.getDeck().deal(currentPlayerOld.getId()));
+                    System.out.println("" + currentPlayerOld.toStringPlayers());
 
                     galacticCasino.fire(Trigger.TURN_STARTED);
                     break;
@@ -401,9 +395,9 @@ public class GalacticCasino {
 
                     // CHECK CARDS LEFT IN DECK
                     if (currentGame.getDeck().searchNextCardNotInHand() == -1) {
-                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayer.getAlias()
+                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias()
                                 + ", keep the " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
-                        currentPlayer.setCubits(currentGame.getAnte() * (int) Math.pow(2, turn - 1));
+                        currentPlayerOld.setCubits(currentGame.getAnte() * (int) Math.pow(2, turn - 1));
                         galacticCasino.fire(Trigger.DECK_EMPTY);
                         break;
                     }
@@ -413,28 +407,28 @@ public class GalacticCasino {
                     if (turn == 1) {
                         action = new String[]{"Lower", "Higher"};
                         question = "> Stake is set to " + currentGame.getAnte() + ", what will your next card be "
-                                + currentPlayer.getAlias() + "?";
+                                + currentPlayerOld.getAlias() + "?";
                     } else {
                         action = new String[]{"Lower", "Higher", "Pass"};
                         question = "> Double or nothing " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1))
-                                + ", what will your next card be " + currentPlayer.getAlias() + "?";
+                                + ", what will your next card be " + currentPlayerOld.getAlias() + "?";
                     }
 
-                    if (currentPlayer.isHuman()) {
+                    if (currentPlayerOld.isHuman()) {
                         answer = console.getAnswerFromConsole(question, action);
                         switch (answer) {
                             case 1:
-                                prediction = Player.Predict.LOW;
+                                prediction = PlayerOld.Predict.LOW;
                                 break;
                             case 2:
-                                prediction = Player.Predict.HIGH;
+                                prediction = PlayerOld.Predict.HIGH;
                                 break;
                             default:
-                                prediction = Player.Predict.INDECISIVE;
+                                prediction = PlayerOld.Predict.INDECISIVE;
                                 break;
                         }
                     } else {
-                        prediction = currentPlayer.predictNextCard((turn == 1) ? true : false);
+                        prediction = currentPlayerOld.predictNextCard((turn == 1) ? true : false);
                         switch (prediction) {
                             case LOW:
                                 console.autoAnswerOnConsole(question, action, 1);
@@ -449,23 +443,22 @@ public class GalacticCasino {
                     }
 
                     // TURN ENDS WHEN INDECISIVE
-                    if (prediction == Player.Predict.INDECISIVE) {
-                        answer = console.getAnswerFromConsole("> A safe choice " + currentPlayer.getAlias() + ", keep the "
+                    if (prediction == PlayerOld.Predict.INDECISIVE) {
+                        answer = console.getAnswerFromConsole("> A safe choice " + currentPlayerOld.getAlias() + ", keep the "
                                 + ((currentGame.getAnte() * (int) Math.pow(2, turn - 2))), dummy);
-                        currentPlayer.setCubits(currentGame.getAnte() * (int) Math.pow(2, turn - 2));
-                        System.out.println(currentPlayer.toStringPlayers());
+                        currentPlayerOld.setCubits(currentGame.getAnte() * (int) Math.pow(2, turn - 2));
+                        System.out.println(currentPlayerOld.toStringPlayers());
                         System.out.println(currentGame);
                         galacticCasino.fire(Trigger.TURN_ENDED);
                         break;
                     }
 
                     // TURN THE CARD AND SHOW
-                    real = currentPlayer.addCardToHand(currentGame.getDeck().deal(currentPlayer.getId()));
-                    System.out.println(currentPlayer.toStringPlayers());
+                    real = currentPlayerOld.addCardToHand(currentGame.getDeck().deal(currentPlayerOld.getId()));
+                    System.out.println(currentPlayerOld.toStringPlayers());
 
                     // debug logging
-*/
-/*				log = new StringBuilder();
+				log = new StringBuilder();
                 log.append("");
 				log.append(System.lineSeparator());
 				log.append("= Loop Turn for current player ===========");
@@ -488,25 +481,25 @@ public class GalacticCasino {
                         if (turn >= currentGame.getTurnsToWin()) {
                             // TODO depend upon game variant
                             answer = console.getAnswerFromConsole("> " + turn + " in a row, you won!", dummy);
-                            currentPlayer.setCubits((currentGame.getAnte() * (int) Math.pow(2, turn - 1)));
-                            currentGame.setWinner(currentPlayer);
+                            currentPlayerOld.setCubits((currentGame.getAnte() * (int) Math.pow(2, turn - 1)));
+                            currentGame.setWinner(currentPlayerOld);
 
                             System.out.println(currentGame);
                             galacticCasino.fire(Trigger.PLAYER_WINS);
                         } else {
-                            answer = console.getAnswerFromConsole("> Nice guess " + currentPlayer.getAlias() + "!", dummy);
+                            answer = console.getAnswerFromConsole("> Nice guess " + currentPlayerOld.getAlias() + "!", dummy);
                             galacticCasino.fire(Trigger.ANOTHER_TURN);
                         }
                     } else {
-                        if (real == Player.Predict.EQUAL) {
-                            answer = console.getAnswerFromConsole("> Equal cards " + currentPlayer.getAlias()
+                        if (real == PlayerOld.Predict.EQUAL) {
+                            answer = console.getAnswerFromConsole("> Equal cards " + currentPlayerOld.getAlias()
                                     + ", so hand over the " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
                         } else {
-                            answer = console.getAnswerFromConsole("> Bad guess " + currentPlayer.getAlias()
+                            answer = console.getAnswerFromConsole("> Bad guess " + currentPlayerOld.getAlias()
                                     + ", i'll take the " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
                         }
                         galacticCasino.fire(Trigger.TURN_ENDED);
-                        currentPlayer.setCubits(-(currentGame.getAnte() * (int) Math.pow(2, turn - 1)));
+                        currentPlayerOld.setCubits(-(currentGame.getAnte() * (int) Math.pow(2, turn - 1)));
                         System.out.println(currentGame);
                     }
                     break;
@@ -515,7 +508,7 @@ public class GalacticCasino {
 
                     // SHOW STATS
                     System.out.println("  > Statistics");
-                    for (Player cp : currentGame.getPlayers()) {
+                    for (PlayerOld cp : currentGame.getPlayerOlds()) {
                         System.out.println(cp.displayCubits());
                     }
                     answer = console.getAnswerFromConsole("> Have a look at the outcome " + visitor.getAlias(), dummy);
@@ -549,4 +542,3 @@ public class GalacticCasino {
 
     }
 }
-*/

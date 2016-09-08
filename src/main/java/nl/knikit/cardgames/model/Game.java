@@ -22,10 +22,10 @@ public class Game {
 	private CardGameVariant cardGameVariant;
 	private int roundsToPlay;
 	private Deck deck;
-	private List<Player> players;
-	private Player begins;
+	private List<PlayerOld> playerOlds;
+	private PlayerOld begins;
 	private int turnsToWin;
-	private Player winner;
+	private PlayerOld winner;
 	private int ante;
 
 	/**
@@ -53,7 +53,7 @@ public class Game {
 			}
 		}
 		this.deck = new Deck(0);
-		this.players = new ArrayList<>();
+		this.playerOlds = new ArrayList<>();
 		if (!(chosenCardGameVariant == null)) {
 			switch (chosenCardGameVariant) {
 			case HILOW_1ROUND:
@@ -102,26 +102,26 @@ public class Game {
 	}
 
 	public void removeAllPlayers() {
-		this.players = new ArrayList<>();
+		this.playerOlds = new ArrayList<>();
 		;
 	}
 
-	public Player setPlayer(Player player) {
-		this.players.add(player);
-		return player;
+	public PlayerOld setPlayer(PlayerOld playerOld) {
+		this.playerOlds.add(playerOld);
+		return playerOld;
 	}
 
-	public Player getPlayer(int inputPlayer) {
+	public PlayerOld getPlayer(int inputPlayer) {
 		// use the other getter to get a list and then get the index passed
-		return getPlayers().get(inputPlayer);
+		return getPlayerOlds().get(inputPlayer);
 	}
 
-	public Player getPlayerById(int inputPlayerId) {
+	public PlayerOld getPlayerById(int inputPlayerId) {
 
 		// do a foreach and if there is a match on id return the player
 		// TODO throw Exception when no player found by id
-		Player found = null;
-		for (Player p : players) {
+		PlayerOld found = null;
+		for (PlayerOld p : playerOlds) {
 			if (p.getId() == inputPlayerId) {
 				found = p;
 			}
@@ -129,50 +129,50 @@ public class Game {
 		return found;
 	}
 
-	public void setPlayers(List<Player> inputPlayers) {
-		for (Player addPLayer : inputPlayers) {
-			this.players.add(addPLayer);
+	public void setPlayerOlds(List<PlayerOld> inputPlayerOlds) {
+		for (PlayerOld addPLayer : inputPlayerOlds) {
+			this.playerOlds.add(addPLayer);
 		}
 	}
 
-	public List<Player> getPlayers() {
-		return players;
+	public List<PlayerOld> getPlayerOlds() {
+		return playerOlds;
 	}
 
-	public Player getNextPlayer(Player player) {
+	public PlayerOld getNextPlayer(PlayerOld playerOld) {
 
 		int next = 0;
 
-		if (players.isEmpty()) {
+		if (playerOlds.isEmpty()) {
 			return null;
 		}
 		// INITIALLY START WITH FIRST PLAYER
-		if (player == null) {
+		if (playerOld == null) {
 			next = 0;
 		} else {
-			if ((players.indexOf(player)) == (players.size() - 1)) {
+			if ((playerOlds.indexOf(playerOld)) == (playerOlds.size() - 1)) {
 				// ONLY ONE PLAYER OR START WITH FIRST PLAYER AGAIN
 				next = 0;
 			} else {
 				// ADVANCE TO NEXT PLAYER
-				next = (players.indexOf(player)) + 1;
+				next = (playerOlds.indexOf(playerOld)) + 1;
 
 /*				Logger logger = LoggerFactory.getLogger(GalacticCasino.class);
 				StringBuilder log = new StringBuilder();
 
 				log = new StringBuilder();
 				log.append(System.lineSeparator());
-				log.append("= Get Next player=========================");
+				log.append("= Get Next playerOld=========================");
 				log.append(System.lineSeparator());
-				log.append("  Current Player: " + (players.indexOf(player)));
+				log.append("  Current PlayerOld: " + (playerOlds.indexOf(playerOld)));
 				log.append(System.lineSeparator());
-				log.append("  Next Player: " + next);
+				log.append("  Next PlayerOld: " + next);
 				log.append(System.lineSeparator());
 				log.append("= End ====================================");
 				logger.debug(log.toString());*/
 			}
 		}
-		return players.get(next);
+		return playerOlds.get(next);
 	}
 
 	public int decreaseTurnsToWin() {
@@ -184,19 +184,19 @@ public class Game {
 		return turnsToWin;
 	}
 
-	public void setWinner(Player winner) {
+	public void setWinner(PlayerOld winner) {
 		this.winner = winner;
 	}
 
-	public Player getWinner() {
+	public PlayerOld getWinner() {
 		return winner;
 	}
 
-	public void setBegins(Player begins) {
+	public void setBegins(PlayerOld begins) {
 		this.begins = begins;
 	}
 
-	public Player getBegins() {
+	public PlayerOld getBegins() {
 		return begins;
 	}
 
@@ -217,7 +217,7 @@ public class Game {
 		displayGame.append(System.lineSeparator());
 		displayGame.append(deck);
 		displayGame.append(System.lineSeparator());
-		displayGame.append("  > Players : " + players);
+		displayGame.append("  > Players : " + playerOlds);
 		displayGame.append(System.lineSeparator());
 		displayGame.append("  > Winner  : " + winner);
 		// displayGame.append(System.lineSeparator());

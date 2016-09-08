@@ -2,12 +2,12 @@
     <div class="twelve columns">
         <h4>Players</h4>
         <table>
-            <tr data-ng-repeat="player in vm.players">
-                <td>{{ player.id }}</td>
-                <td>{{ player.alias }}</td>
-                <td>{{ player.aiLevel }}</td>
-                <td>{{ player.cubits }}</td>
-                <td>{{ player.securedLoan }}</td>
+            <tr data-ng-repeat="playerOld in vm.players">
+                <td>{{ playerOld.id }}</td>
+                <td>{{ playerOld.alias }}</td>
+                <td>{{ playerOld.aiLevel }}</td>
+                <td>{{ playerOld.cubits }}</td>
+                <td>{{ playerOld.securedLoan }}</td>
             </tr>
         </table>
     </div>

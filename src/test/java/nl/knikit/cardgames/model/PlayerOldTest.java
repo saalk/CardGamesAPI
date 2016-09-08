@@ -14,10 +14,10 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PlayerTest {
+public class PlayerOldTest {
 
 	// make instance variables
-	private Player testHumanPlayer1, testAiPlayer2, testAiPlayer3;
+	private PlayerOld testHumanPlayerOld1, testAiPlayerOld2, testAiPlayerOld3;
 
 	@Before
 	public void setUpBeforeEachTest() throws IOException, URISyntaxException {
@@ -25,9 +25,9 @@ public class PlayerTest {
 		// cannot make instance variables here ?
 
 		// initialize the variables
-		testHumanPlayer1 = new Player(Origin.ELF, AiLevel.MEDIUM ,true);
-		testAiPlayer2 = new Player(Origin.ELF, AiLevel.MEDIUM, false);
-		testAiPlayer3 = new Player(Origin.ELF, AiLevel.MEDIUM, false);
+		testHumanPlayerOld1 = new PlayerOld(Origin.ELF, AiLevel.MEDIUM ,true);
+		testAiPlayerOld2 = new PlayerOld(Origin.ELF, AiLevel.MEDIUM, false);
+		testAiPlayerOld3 = new PlayerOld(Origin.ELF, AiLevel.MEDIUM, false);
 
 	}
 
@@ -35,21 +35,21 @@ public class PlayerTest {
 	@Test
 	public void test1_Make3PlayersIdsShouldBe123() {
 
-		// run this test first since the Player id starts with 1
+		// run this test first since the PlayerOld id starts with 1
 		
 		// verify
-		assertEquals("Player ids not 1", 1, testHumanPlayer1.getId());
-		assertEquals("Player ids not 2", 2, testAiPlayer2.getId());
-		assertEquals("Player ids not 3", 3, testAiPlayer3.getId());
+		assertEquals("PlayerOld ids not 1", 1, testHumanPlayerOld1.getId());
+		assertEquals("PlayerOld ids not 2", 2, testAiPlayerOld2.getId());
+		assertEquals("PlayerOld ids not 3", 3, testAiPlayerOld3.getId());
 	}
 	@Ignore
 	@Test
 	public void testMake3PlayersAllShouldHaveNames() throws IOException {
 
 		// verify
-		assertNotNull("Player name is null", testHumanPlayer1.getAlias());
-		assertNotNull("Player name is null", testAiPlayer2.getAlias());
-		assertNotNull("Player name is null", testAiPlayer3.getAlias());
+		assertNotNull("PlayerOld name is null", testHumanPlayerOld1.getAlias());
+		assertNotNull("PlayerOld name is null", testAiPlayerOld2.getAlias());
+		assertNotNull("PlayerOld name is null", testAiPlayerOld3.getAlias());
 	}
 	@Ignore
 	@Test
@@ -57,7 +57,7 @@ public class PlayerTest {
 
 		// verify
 		assertTrue("Number of Humans players not correct",
-				testHumanPlayer1.isHuman() && !testAiPlayer2.isHuman() && !testAiPlayer3.isHuman());
+				testHumanPlayerOld1.isHuman() && !testAiPlayerOld2.isHuman() && !testAiPlayerOld3.isHuman());
 	}
 
 }

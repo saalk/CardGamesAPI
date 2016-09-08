@@ -1,10 +1,9 @@
 /*
 package nl.knikit.cardgames.controller;
 
-import nl.knikit.cardgames.controller.HomeController;
-import nl.knikit.cardgames.model.Hello;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.ResponseEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
@@ -15,29 +14,30 @@ import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class HomeControllerTest {
+public class PlayerControllerTest {
 
-    private HomeController controler;
+    private PlayerController controller;
 
     @Before
     public void setUp() throws Exception {
-        this.controler = new HomeController();
+        this.controller = new PlayerController();
 
     }
 
     @Test
-    public void testGet() throws Exception {
-        final Hello result = this.controler.get();
-        assertNotNull(result);
-        assertThat("the result message is stranger", result.getMessage(), is("stranger"));
+    public void testPlayerController_getPlayers() throws Exception {
+        int TEST_ID = 0;
+        final ResponseEntity result = this.controller.getPlayer(TEST_ID);
+        assertEquals("GET /Players/1 should result in HTTP status 200", result.getStatusCode(), 200);
     }
 
     @Test
     public void testGetMethodAnnotations() throws Exception {
-        final Method method = this.controler.getClass()
-                                            .getMethod("get");
+        final Method method = this.controller.getClass()
+                                            .getMethod("getPlayers");
         assertThat("The method has the GET annotation", method.isAnnotationPresent(GET.class));
         assertThat("The method produces JSon", method.isAnnotationPresent(Produces.class));
 
@@ -47,22 +47,23 @@ public class HomeControllerTest {
 
     @Test
     public void testPathAnnotation() throws Exception {
-        assertNotNull(this.controler.getClass()
+        assertNotNull(this.controller.getClass()
                                     .getAnnotations());
-        assertThat("The controller has the annotation Path", this.controler.getClass()
+        assertThat("The controller has the annotation Path", this.controller.getClass()
                                                                            .isAnnotationPresent(Path.class));
 
-        final Path path = this.controler.getClass()
+        final Path path = this.controller.getClass()
                                         .getAnnotation(Path.class);
         assertThat("The path is /home", path.value(), is("/home"));
     }
 
     @Test
     public void testScope() throws Exception {
-        assertNotNull(this.controler.getClass()
+        assertNotNull(this.controller.getClass()
                                     .getAnnotations());
-        assertThat("The controller has the annotation RequestScoped", this.controler.getClass()
+        assertThat("The controller has the annotation RequestScoped", this.controller.getClass()
                                                                                     .isAnnotationPresent(
                                                                                             RequestScoped.class));
     }
-}*/
+}
+*/

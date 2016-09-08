@@ -1,7 +1,5 @@
 package nl.knikit.cardgames.configuration;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-
 /**
  * This will register springs DispatcherServlet to use @Configuration annotated classed
  * Spring then scans at application startup this class that has one job: assemble the web app's
@@ -20,6 +18,9 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
  *
  * Traditionally WEB-INF/web.xml was used to register Springs DispatcherServlet. Thanks to
  * Servlet 3.0 a class like this can now replace web.xml and map spring’s dispatcher servlet
+ *
+ * http://www.codejava.net/frameworks/spring/spring-4-and-hibernate-4-integration-tutorial-part-2-java-based-configuration
+ *
  */
 
 import org.springframework.web.WebApplicationInitializer;
@@ -31,22 +32,22 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 // so bootstrap DispatcherServlet
-public class WebAppInitializer implements WebApplicationInitializer {
+public class SpringWebAppInitializer implements WebApplicationInitializer {
 
-    private static final String CONFIG_LOCATION = "nl.knikit.cardgames.configuration";
-
-    @Override
+     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
 
         System.out.println("***** Initializing Application for " + servletContext.getServerInfo() + " *****");
 
-        // Create ApplicationContext
+        // create the 'root' spring application context, the central interface
+        // for the non-servlet related components like dao so anything but controllers
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-        applicationContext.setConfigLocation(CONFIG_LOCATION);
+        // register the root configuration using Spring
+        applicationContext.register(ApplicationContextConfig.class);
 
         // Add the servlet mapping manually and make it initialize automatically
         DispatcherServlet dispatcherServlet = new DispatcherServlet(applicationContext);
-        ServletRegistration.Dynamic servlet = servletContext.addServlet("mvc-dispatcher", dispatcherServlet);
+        ServletRegistration.Dynamic servlet = servletContext.addServlet("SpringDispatcher", dispatcherServlet);
 
         servlet.addMapping("/api/*");
         servlet.setAsyncSupported(true);

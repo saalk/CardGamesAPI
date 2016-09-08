@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * <H1>AIlevel</H1> Artificial Intelligence level for simulation human-like intelligence to
- * {@link Player Player}s that are bots. AiLevel is an enum
+ * {@link PlayerOld PlayerOld}s that are bots. AiLevel is an enum
  * since the levels are a predefined list of values.
  * AIlevels that can be used are
  * <ul>

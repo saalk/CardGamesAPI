@@ -1,0 +1,79 @@
+{
+	"variables": [],
+	"info": {
+		"name": "CardGames",
+		"_postman_id": "5f27c068-1db7-8980-c086-4b811f99b0f8",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET http://knikit.nl/api/players",
+			"request": {
+				"url": "http://knikit.nl/api/players",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "POST http://knikit.nl/api/players",
+			"request": {
+				"url": "http://knikit.nl/api/players",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"origin\": \"ELF\",\n  \"alias\": \"Alien4\",\n  \"aiLevel\": \"MEDIUM\",\n  \"cubits\": 0,\n  \"securedLoan\": 0,\n  \"human\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE http://knikit.nl/api/players",
+			"request": {
+				"url": "http://knikit.nl/api/players/4",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "PUT http://knikit.nl/api/players/0",
+			"request": {
+				"url": "http://knikit.nl/api/players/3",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n    \"uid\": \"160905-224427-892\",\n    \"sequence\": 2,\n    \"origin\": \"ELF\",\n    \"alias\": \"Alien2\",\n    \"aiLevel\": \"MEDIUM\",\n    \"cubits\": 0,\n    \"securedLoan\": 0,\n    \"human\": false\n  }"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

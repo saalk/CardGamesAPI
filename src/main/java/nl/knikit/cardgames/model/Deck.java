@@ -39,7 +39,7 @@ import java.util.Set;
  * <li><b>Dependency (often confused as Association)</b> - a uni directional reference between a dependent and independent elements.<br>
  * class A -USES- class B: represented by a dashed arrow starting from the dependent class to its dependency.<br>
  * codified: as a parameter via a method or as a local instance reference with new in a method. You only need to import B in A.<br>
- * example: Player - Die via the Player.takeTurn(Die die) method that has die.Roll() reference to the Roll method of die.
+ * example: PlayerOld - Die via the PlayerOld.takeTurn(Die die) method that has die.Roll() reference to the Roll method of die.
  * <li><b>Association</b> - a uni or bi directional reference between two classes.<br>
  * class A -NOUN- class B: represented by a line, arrows indicate navigation, has multiplicity at one (uni) or both (bi) ends.<br>
  * codified: define an instance of the associated class and passed in it's setter or constructor.<br>
