@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.Service;
+package nl.knikit.cardgames.service;
 
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Origin;
@@ -22,7 +22,7 @@ public class PlayerService extends ResourceSupport {
 
     private ArrayList<Player> players = new ArrayList<Player>();
 
-    //TODO get from database via playerDaoInterface
+    //TODO move to PLayerDAO instead of this temporary PlayerService
     PlayerService() {
         players.add(new Player.PlayerBuilder()
                 .withSequence(-1)

@@ -54,9 +54,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import nl.knikit.cardgames.Service.PlayerService;
-import nl.knikit.cardgames.model.AiLevel;
-import nl.knikit.cardgames.model.Origin;
+import nl.knikit.cardgames.service.PlayerService;
 import nl.knikit.cardgames.model.Player;
 
 import java.util.ArrayList;

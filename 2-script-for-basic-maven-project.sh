@@ -2,7 +2,7 @@
 # run this script with bash <scriptname>.sh
 # guide to: Java Maven AngularJS Seed Project on Web Dev Zone
 # - https://dzone.com/articles/java-maven-angularjs-seed
-# guide to: Hello World Restful Web Service Using Spring
+# guide to: Hello World Restful Web service Using Spring
 # - https://dzone.com/articles/hello-world-restful-web
 #
 #
@@ -97,7 +97,7 @@ npm install
 #+------------+-----------------------------------------------------+
 #| @Component | generic stereotype for any Spring-managed component |
 #| @Repository| stereotype for persistence layer                    |
-#| @Service   | stereotype for service layer                        |
+#| @service   | stereotype for service layer                        |
 #| @Controller| stereotype for presentation layer (spring-mvc)      |
 #
 http://crunchify.com/simplest-spring-mvc-hello-world-example-tutorial-spring-model-view-controller-tips/

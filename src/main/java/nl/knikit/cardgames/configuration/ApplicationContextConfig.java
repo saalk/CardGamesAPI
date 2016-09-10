@@ -1,14 +1,15 @@
 package nl.knikit.cardgames.configuration;
 
-import nl.knikit.cardgames.DAO.PlayerDAO;
-import nl.knikit.cardgames.DAO.PlayerDAOInterface;
-import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.dao.PlayerDAOImpl;
+import nl.knikit.cardgames.dao.PlayerDAO;
+import nl.knikit.cardgames.utils.Password;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -22,12 +23,12 @@ import org.springframework.web.servlet.view.JstlView;
 
 // MySQL JDBC Driver com.mysql.jdbc.jdbc2.optional.MysqlDataSource class
 // Oracle database driver oracle.jdbc.pool.OracleDataSource class
-import org.mariadb.jdbc.*;
+
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
-import javax.xml.registry.infomodel.User;
 
 
 
@@ -38,9 +39,36 @@ import javax.xml.registry.infomodel.User;
 
 // 1: The @Configuration annotation is required for any Java-based configuration in Spring
 // 2: The @ComponentScan annotation tells Spring to scan the specified package for annotated classes
-//    (like controllers)
 // 3: The @EnableTransactionManager annotation enables Spring’s annotation-driven transaction management
+// 4: TODO The @EnableJpaRepositories("*.dao.*") scan for Spring Data repositories
 //
+
+/*
+Investigate the following:
+
+@Import({xxxConfiguration.class, yyyConfiguration.class})
+public class zzzConfiguration {
+
+    @Bean // org.springframework.context.
+    @Lazy
+    @Autowired // org.springframework.beans.factory.
+    @Qualifier("modelPackage")
+    public EntityManagerFactory
+
+    @Bean // org.springframework.context.
+    @Lazy
+    @Autowired // org.springframework.beans.factory.
+    public PlatformTransactionManager
+
+    @Bean
+    public HibernateExceptionTranslator
+
+    @Bean(name = "messageSource")
+    public ResourceBundleMessageSource
+
+}
+*/
+
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"nl.knikit.cardgames"})
@@ -77,15 +105,18 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
 
     // A: create a DataSource is to be used with Hibernate’s SessionFactory
     @Bean(name = "dataSource")
-    public MariaDbDataSource getDataSource() throws SQLException {
-        MariaDbDataSource dataSource = new MariaDbDataSource();
-        // driver extention for java to connect the database
-        //dataSource.setDriverClassName("com.mariadb.jdbc.Driver");
-        dataSource.setUrl("jdbc:mariadb://localhost:3306/cardgamesdb");
-        dataSource.setUser("root");
-        dataSource.setPassword("klaas");
-
-        return dataSource;
+    public DriverManagerDataSource getDataSource() throws SQLException, UnsupportedEncodingException {
+        // MariaDbDataSource driverManagerDataSource = new MariaDbDataSource();
+        // org.mariadb.jdbc.MySQLDataSource or com.mariadb.jdbc.Driver
+        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+        // JDBC drivers are extensions for java to connect to the database
+        // TODO get these 4 properties from property file
+        driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.MySQLDataSource");
+        // URL: jdbc:mysql://{HOST}[:{PORT}][/{DB}]
+        driverManagerDataSource.setUrl("jdbc:mariadb://192.168.2.100:3306/knikit");
+        driverManagerDataSource.setUsername(Password.decode("cm9cdA=="));
+        driverManagerDataSource.setPassword(Password.decode("a2xhYXM="));
+        return driverManagerDataSource;
     }
 
     // B: Configure a session bean for Player from the session factory etc
@@ -102,7 +133,7 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         return sessionBuilder.buildSessionFactory();
     }
 
-    // C: By configuring a transaction manager, code in the DAO class doesn’t have to take care of
+    // C: By configuring a transaction manager, code in the dao class doesn’t have to take care of
     // transaction management explicitly. Instead, the @Transactional annotation can be used.
     @Autowired
     @Bean(name = "transactionManager")
@@ -113,11 +144,11 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         return transactionManager;
     }
 
-    // D: The following method configures a bean which is a PlayerDAO implementation:
+    // D: The following method configures a bean which is a PlayerDAOImpl implementation:
     @Autowired
     @Bean(name = "playerDao")
-    public PlayerDAOInterface getPlayerDao(SessionFactory sessionFactory) {
-        return new PlayerDAO(sessionFactory);
+    public PlayerDAO getPlayerDao(SessionFactory sessionFactory) {
+        return new PlayerDAOImpl(sessionFactory);
     }
 
     // uses sessionBuilder.addProperties(getHibernateProperties()) in the session factory bean
@@ -128,6 +159,9 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         // @ing use org.hibernate.dialect.Oracle10gDialect
         // This property makes Hibernate generate the appropriate SQL for the chosen database.
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        properties.put("hibernate.connection.driver_class", "com.mariadb.jdbc.Driver");
+        properties.put("hibernate.hbm2ddl.auto", "update");
+
         return properties;
     }
 }

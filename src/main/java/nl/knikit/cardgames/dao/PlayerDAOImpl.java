@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.DAO;
+package nl.knikit.cardgames.dao;
 
 import nl.knikit.cardgames.model.Player;
 
@@ -11,20 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
-// Implementing DAO for all the crud in the DAO interface
+// Implementing dao for all the crud in the dao interface
 @Repository
-public class PlayerDAO implements PlayerDAOInterface {
+public class PlayerDAOImpl implements PlayerDAO {
 
     // the basic interfaces between a Java application and Hibernate
     // every method that interact with the database gets a session via the factory
     @Autowired
     private SessionFactory sessionFactory;
 
-    public PlayerDAO() {
+    public PlayerDAOImpl() {
 
     }
 
-    public PlayerDAO(SessionFactory sessionFactory) {
+    public PlayerDAOImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
