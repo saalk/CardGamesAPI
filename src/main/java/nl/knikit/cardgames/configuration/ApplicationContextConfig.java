@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -101,7 +102,18 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         return sessionBuilder.buildSessionFactory();
     }
 
-    // C: The following method configures a bean which is a PlayerDAO implementation:
+    // C: By configuring a transaction manager, code in the DAO class doesn’t have to take care of
+    // transaction management explicitly. Instead, the @Transactional annotation can be used.
+    @Autowired
+    @Bean(name = "transactionManager")
+    public HibernateTransactionManager getTransactionManager(
+            SessionFactory sessionFactory) {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager(
+                sessionFactory);
+        return transactionManager;
+    }
+
+    // D: The following method configures a bean which is a PlayerDAO implementation:
     @Autowired
     @Bean(name = "playerDao")
     public PlayerDAOInterface getPlayerDao(SessionFactory sessionFactory) {

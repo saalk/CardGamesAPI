@@ -22,7 +22,7 @@ public class PlayerService extends ResourceSupport {
 
     private ArrayList<Player> players = new ArrayList<Player>();
 
-    //TODO get from database
+    //TODO get from database via playerDaoInterface
     PlayerService() {
         players.add(new Player.PlayerBuilder()
                 .withSequence(-1)
