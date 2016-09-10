@@ -31,25 +31,31 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-// so bootstrap DispatcherServlet
+// so bootstrap DispatcherServlet without web.xml
 public class SpringWebAppInitializer implements WebApplicationInitializer {
 
-     @Override
+    @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
 
         System.out.println("***** Initializing Application for " + servletContext.getServerInfo() + " *****");
 
-        // create the 'root' spring application context, the central interface
+        // 1: Create the 'root' spring web aware application context, the central interface.
+        // Difference between AC and BF in spring (both get beans) is :
+        // - application context = creates singleton bean when container is started
+        // - beanfactory = only instantiates bean when called
+        // (both use getBean from spring ioc)
         // for the non-servlet related components like dao so anything but controllers
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-        // register the root configuration using Spring
+
+        // 2: register the root configuration using Spring
         applicationContext.register(ApplicationContextConfig.class);
 
-        // Add the servlet mapping manually and make it initialize automatically
+        // 3: Add the servlet mapping manually and make it initialize automatically
         DispatcherServlet dispatcherServlet = new DispatcherServlet(applicationContext);
         ServletRegistration.Dynamic servlet = servletContext.addServlet("SpringDispatcher", dispatcherServlet);
 
         servlet.addMapping("/api/*");
+        // 4: By default, servlet and filters do not support asynchronous operations.
         servlet.setAsyncSupported(true);
         servlet.setLoadOnStartup(1);
     }

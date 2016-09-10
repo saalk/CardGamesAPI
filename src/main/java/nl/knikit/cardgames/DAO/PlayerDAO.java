@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
-// DAO for all the crud
+// Implementing DAO for all the crud in the DAO interface
 @Repository
 public class PlayerDAO implements PlayerDAOInterface {
 
@@ -48,16 +48,16 @@ public class PlayerDAO implements PlayerDAOInterface {
 
     @Override
     @Transactional
-    public void delete(String uid) {
+    public void delete(String id) {
         Player playerToDelete = new Player();
-        playerToDelete.setUid(uid);
+        playerToDelete.setId(id);
         sessionFactory.getCurrentSession().delete(playerToDelete);
     }
 
     @Override
     @Transactional
-    public Player get(String uid) {
-        String hql = "from Player where id=" + uid;
+    public Player get(String id) {
+        String hql = "from Player where id=" + id;
         Query query = sessionFactory.getCurrentSession().createQuery(hql);
 
         @SuppressWarnings("unchecked")

@@ -56,7 +56,7 @@ public class PlayerService extends ResourceSupport {
     public Player get(String uid) {
 
         for (Player p : players)
-            if (p.getUid().equals(uid)) {
+            if (p.getId().equals(uid)) {
                 return p;
             }
         return null;
@@ -74,7 +74,7 @@ public class PlayerService extends ResourceSupport {
     public String delete(String uid) {
         boolean found = false;
         for (Player p : players) {
-            if (p.getUid() == uid) {
+            if (p.getId() == uid) {
                 players.remove(p);
                 // break to avoid concurrency problems for next iteration when removing last...
                 found = true;
@@ -144,7 +144,7 @@ public class PlayerService extends ResourceSupport {
     public Player update(String uid, Player player) {
         int index = 0;
         for (Player p : players) {
-            if (p.getUid() == uid) {
+            if (p.getId() == uid) {
                 // Use ArrayList remove and add to make a new sequence or set to change the current
                 Player playerBuilder = new Player.PlayerBuilder()
                         .withSequence(player.getSequence())

@@ -14,15 +14,29 @@ package nl.knikit.cardgames.controller;
 
     9 REST Endpoint 	                HTTP Method 	Description
     /players 	                    GET     Returns the list of players
-    /players/{uid}                  GET     Returns player detail for given player {uid}
+    /players/{id}                  GET     Returns player detail for given player {id}
     /players/?sequence={sequence}   GET     Returns player detail for given player {sequence}
     /players 	                    POST    Creates new player from the post data
-    /players/{uid}                  PUT     Replace the details for given player {uid}
+    /players/{id}                  PUT     Replace the details for given player {id}
     /players/?sequence={sequence}   PUT     Replace the details for given player {sequence}
     /players 	                    DELETE  Deletes all players
-    /players/{uid}                  DELETE  Delete the player for given player {uid}
+    /players/{id}                  DELETE  Delete the player for given player {id}
     /players/?sequence={sequence}   DELETE  Delete the player for given player {sequence}
 */
+
+
+/*  The log levels in Java Logging API are different to other standard logging libraries
+    Log4j/Logback	Java Logging
+    fatal	        SEVERE
+    error	        SEVERE
+    warn	        WARNING
+    info	        INFO
+                    CONFIG
+    debug	        FINE
+                    FINER
+    trace	        FINEST
+*/
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -46,11 +60,13 @@ import nl.knikit.cardgames.model.Origin;
 import nl.knikit.cardgames.model.Player;
 
 import java.util.ArrayList;
+import lombok.extern.slf4j.Slf4j;
 
 // @RestController = @Controller + @ResponseBody
 @RestController
 @Component
 @ExposesResourceFor(Player.class)
+@Slf4j
 public class PlayerController {
 
     @Autowired
@@ -64,14 +80,20 @@ public class PlayerController {
         return new ResponseEntity(players, HttpStatus.OK);
     }
 
-    @GetMapping("/players/{uid}")
-    public ResponseEntity getPlayer(@PathVariable("uid") String uid) {
+    @GetMapping("/players/{id}")
+    public ResponseEntity getPlayer(@PathVariable("id") String uid) {
 
         Player player = PlayerService.get(uid);
         if (player == null) {
+
+            // %s, %d print string an dinteger as is use with new line \n
+            String message = String.format("No Player found for path id: %s\n", uid);
+            // @Slf4j makes log available
+
+            log.warn(message);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found for path id: " + uid);
+                    .body(message);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -83,9 +105,13 @@ public class PlayerController {
 
         Player player = PlayerService.getBySequence(sequence);
         if (player == null) {
+
+            String message = String.format("No Player found for param sequence: %d\n", sequence);
+            log.warn(message);
+
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found for param sequence: " + sequence);
+                    .body(message);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -111,7 +137,7 @@ public class PlayerController {
                 .body(newPlayer);
     }
 
-    @DeleteMapping("/players/{uid}")
+    @DeleteMapping("/players/{id}")
     public ResponseEntity deletePlayer(@PathVariable String uid) {
 
         String playerUid = PlayerService.delete(uid);
@@ -122,7 +148,7 @@ public class PlayerController {
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Player with uid: " + uid + " deleted");
+                .body("Player with id: " + uid + " deleted");
     }
 
     @DeleteMapping(value = "/players", params = "sequence")
@@ -148,7 +174,7 @@ public class PlayerController {
                 .body("All Players deleted");
     }
 
-    @PutMapping("/players/{uid}")
+    @PutMapping("/players/{id}")
     public ResponseEntity updatePlayer(@PathVariable String uid, @RequestBody Player
             player) {
         Player newPlayer = PlayerService.update(uid, player);

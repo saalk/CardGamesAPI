@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public interface PlayerDAOInterface {
     public ArrayList<Player> list();
-    public Player get(String uid);
-    public void delete(String uid);
+    public Player get(String id);
+    public void delete(String id);
     public Player saveOrUpdate(Player player);
 }

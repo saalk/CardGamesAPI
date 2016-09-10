@@ -8,12 +8,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.core.Relation;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +31,10 @@ import lombok.Setter;
  * @author Klaas van der Meulen
  */
 
-//@Entity is deprecated in Hibernate 4 so use JPA, use @DynamicUpdate from Hibernate
+//@Entity is deprecated in Hibernate 4 so use JPA annotations directly in the model class
+//TODO @DynamicUpdate from Hibernate
 @Entity
-@Table(name = "PLAYERS", catalog = "catalog")
+@Table(name = "PLAYERS")
 @Getter
 @Setter
 @Relation(value="player", collectionRelation="players")
@@ -43,11 +45,13 @@ public final class Player {
      */
     private static int startId = 0;
 
+
     /**
      * id is final, initialization in constructor and no setter
      */
     @Id
-    private String uid;
+    @Column(name = "PLAYER_ID")
+    private String id;
     private int sequence;
     private Origin origin;
     private String alias;
@@ -61,7 +65,7 @@ public final class Player {
 
     @JsonCreator
     public Player(
-            @JsonProperty("uid") String uid,
+            @JsonProperty("id") String id,
             @JsonProperty("sequence") int sequence,
             @JsonProperty("origin") Origin origin,
             @JsonProperty("alias") String alias,
@@ -69,7 +73,7 @@ public final class Player {
             @JsonProperty("aiLevel") AiLevel aiLevel,
             @JsonProperty("cubits") int cubits,
             @JsonProperty("securedLoan") int securedLoan) {
-        this.uid = uid;
+        this.id = id;
         this.sequence = sequence;
         this.origin = origin;
         this.alias = alias;
@@ -102,7 +106,7 @@ public final class Player {
     private void setUid() {
 
         // java 8 has java.time and java.time.format instead of java.util.Date
-        // get local date and a format use format() to store the result into uid
+        // get local date and a format use format() to store the result into id
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -111,15 +115,15 @@ public final class Player {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
         String result = localDateAndTime.format(formatter);
-        this.uid = result.substring(2,19);
+        this.id = result.substring(2,19);
     }
 
     public int getSequence() {
         return this.sequence;
     }
 
-    public String getUid() {
-        return uid;
+    public String getId() {
+        return id;
     }
 
     // static builder class generated with plugin Builder Generator and ALT+SHIFT+B
@@ -185,7 +189,7 @@ public final class Player {
         public Player build() {
             Player player = new Player(uid, sequence, origin, alias, isHuman, aiLevel, cubits,
                     securedLoan);
-            // do not use input uid
+            // do not use input id
             player.setUid();
             if (sequence >= 0) {
                 player.setSequence(sequence);
