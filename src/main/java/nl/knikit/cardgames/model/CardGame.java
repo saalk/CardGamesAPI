@@ -3,6 +3,12 @@ package nl.knikit.cardgames.model;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
+
+import lombok.Getter;
+
 /**
  * <H1>CardGame</H1> A selection of card games that can be selected to play. <p> More games will be
  * added in future.
@@ -11,6 +17,8 @@ import java.util.Set;
  * @version 1.0
  * @since v1 - console game
  */
+@Getter
+@Embeddable
 public enum CardGame {
 
     /**
@@ -22,12 +30,15 @@ public enum CardGame {
      * the bet to another player, or go double or nothing on the next bet depending on the specific
      * variant of HIGHLOW.
      */
+    @Column(name = "CARDGAME")
     HIGHLOW("Hi-Lo Card Game", "Hoog Laag Kaartspel");
     // BLACKJACK("Blackjack (twenty-one)", "Blackjack (Eenentwintigen)");
 
+    @Transient
     String englishName;
+    @Transient
     String dutchName;
-
+    @Transient
     public static Set<CardGame> cardGamesList = EnumSet.of(HIGHLOW);
 
     // Constructor, each argument to the constructor shadows one of the object's
@@ -35,15 +46,6 @@ public enum CardGame {
     CardGame(String englishName, String dutchName) {
         this.englishName = englishName;
         this.dutchName = dutchName;
-    }
-
-    // Getters, no setters needed
-    String getEnglishName() {
-        return englishName;
-    }
-
-    String getDutchName() {
-        return dutchName;
     }
 
     /*

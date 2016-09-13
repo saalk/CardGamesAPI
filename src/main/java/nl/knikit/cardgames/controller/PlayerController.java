@@ -12,15 +12,15 @@ package nl.knikit.cardgames.controller;
     For example @GetMapping is a composed annotation that acts as a shortcut for
     @RequestMapping(method = RequestMethod.GET).
 
-    9 REST Endpoint 	                HTTP Method 	Description
+    9 REST Endpoint                 HTTP Method 	Description
     /players 	                    GET     Returns the list of players
-    /players/{id}                  GET     Returns player detail for given player {id}
+    /players/{id}                   GET     Returns player detail for given player {id}
     /players/?sequence={sequence}   GET     Returns player detail for given player {sequence}
     /players 	                    POST    Creates new player from the post data
-    /players/{id}                  PUT     Replace the details for given player {id}
+    /players/{id}                   PUT     Replace the details for given player {id}
     /players/?sequence={sequence}   PUT     Replace the details for given player {sequence}
     /players 	                    DELETE  Deletes all players
-    /players/{id}                  DELETE  Delete the player for given player {id}
+    /players/{id}                   DELETE  Delete the player for given player {id}
     /players/?sequence={sequence}   DELETE  Delete the player for given player {sequence}
 */
 
@@ -58,6 +58,9 @@ import nl.knikit.cardgames.service.PlayerService;
 import nl.knikit.cardgames.model.Player;
 
 import java.util.ArrayList;
+
+import javax.annotation.Resource;
+
 import lombok.extern.slf4j.Slf4j;
 
 // @RestController = @Controller + @ResponseBody
@@ -67,25 +70,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PlayerController {
 
+    // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private PlayerService PlayerService;
+    private PlayerService playerService;
 
     @GetMapping("/players")
     public ResponseEntity<ArrayList<Player>> getPlayers() {
 
         ArrayList<Player> players;
-        players = PlayerService.list();
+        players = playerService.list();
         return new ResponseEntity(players, HttpStatus.OK);
     }
 
     @GetMapping("/players/{id}")
-    public ResponseEntity getPlayer(@PathVariable("id") String uid) {
+    public ResponseEntity getPlayer(@PathVariable("id") Long id) {
 
-        Player player = PlayerService.get(uid);
+        Player player = playerService.get(id);
         if (player == null) {
 
             // %s, %d print string an dinteger as is use with new line \n
-            String message = String.format("No Player found for path id: %s\n", uid);
+            String message = String.format("No Player found for path id: %d\n", id);
             // @Slf4j makes log available
 
             log.warn(message);
@@ -101,7 +105,7 @@ public class PlayerController {
     @GetMapping(value = "/players", params = "sequence")
     public ResponseEntity getPlayerBySequence(@RequestParam("sequence") int sequence) {
 
-        Player player = PlayerService.getBySequence(sequence);
+        Player player = playerService.getBySequence(sequence);
         if (player == null) {
 
             String message = String.format("No Player found for param sequence: %d\n", sequence);
@@ -124,7 +128,7 @@ public class PlayerController {
                     .status(HttpStatus.NOT_ACCEPTABLE)
                     .body("No Player supplied to create: " + player);
         }
-        Player newPlayer = PlayerService.create(player);
+        Player newPlayer = playerService.create(player);
         if (newPlayer == null) {
             return ResponseEntity
                     .status(HttpStatus.PRECONDITION_FAILED)
@@ -136,23 +140,23 @@ public class PlayerController {
     }
 
     @DeleteMapping("/players/{id}")
-    public ResponseEntity deletePlayer(@PathVariable String uid) {
+    public ResponseEntity deletePlayer(@PathVariable Long id) {
 
-        String playerUid = PlayerService.delete(uid);
-        if (playerUid.equals("-1")) {
+        Long playerId = playerService.delete(id);
+        if (playerId == -1) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found to delete for path id: " + uid);
+                    .body("No Player found to delete for path id: " + id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Player with id: " + uid + " deleted");
+                .body("Player with id: " + id + " deleted");
     }
 
     @DeleteMapping(value = "/players", params = "sequence")
     public ResponseEntity deletePlayerBySequence(@RequestParam("sequence") int sequence) {
 
-        int playerSequence = PlayerService.deleteBySequence(sequence);
+        int playerSequence = playerService.deleteBySequence(sequence);
         if (-1 == playerSequence) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -166,20 +170,20 @@ public class PlayerController {
     @DeleteMapping("/players")
     public ResponseEntity deleteAllPlayers() {
 
-        PlayerService.deleteAll();
+        playerService.deleteAll();
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body("All Players deleted");
     }
 
     @PutMapping("/players/{id}")
-    public ResponseEntity updatePlayer(@PathVariable String uid, @RequestBody Player
+    public ResponseEntity updatePlayer(@PathVariable Long id, @RequestBody Player
             player) {
-        Player newPlayer = PlayerService.update(uid, player);
+        Player newPlayer = playerService.update(id, player);
         if (null == newPlayer) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found to change for path id: " + uid);
+                    .body("No Player found to change for path id: " + id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -190,7 +194,7 @@ public class PlayerController {
     public ResponseEntity updatePlayerBySequence(
             @RequestParam("sequence") int sequence, @RequestBody Player
             player) {
-        Player newPlayer = PlayerService.updateBySequence(sequence, player);
+        Player newPlayer = playerService.updateBySequence(sequence, player);
         if (null == newPlayer) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

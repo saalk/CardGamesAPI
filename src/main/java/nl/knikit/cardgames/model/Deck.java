@@ -21,6 +21,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * <H2>Description</H2>A "standard" deck of playing cards consists of 52 {@link Card Cards}; 13 in each of
  * the 4 Enum {@link Suit suits} of the following list <ul> <li>{@link Suit Spades} <li>{@link Suit
@@ -72,9 +80,12 @@ import java.util.Set;
  * @version 1.0
  * @since v1 - console game
  */
+@Embeddable
 public class Deck {
 
+    @Column(name="CARDS")
     private ArrayList<Card> cards;
+    @Column(name="DEALED_TO")
     private int dealedTo[];
 
     /**
@@ -91,7 +102,7 @@ public class Deck {
      */
     public Deck(int totalJokers) {
 
-        /**
+        /*
          * Do not do: List<Card> cards = new ArrayList<Card>()
          * <P>
          * since that means another declaration in the constructor When
@@ -111,14 +122,13 @@ public class Deck {
 
         //TODO get out of constructor and into setter
         dealedTo = new int[52 + totalJokers]; // auto init with zero
-        for (Suit suits : Suit.values()) {
+        for (Suit suit : Suit.values()) {
             /*
              * without the values() method use allOf
 			 */
-            for (Rank ranks : EnumSet.allOf(Rank.class)) {
-
-                if (!(ranks.equals(Rank.JOKER) || suits.equals(Suit.JOKERS))) {
-                    cards.add(new Card(ranks, suits));
+            for (Rank rank : EnumSet.allOf(Rank.class)) {
+                if (!(rank.equals(Rank.JOKER) || suit.equals(Suit.JOKERS))) {
+                    cards.add(new Card(rank, suit));
                 }
             }
         }

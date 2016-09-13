@@ -21,7 +21,6 @@ public class PlayerDAOImpl implements PlayerDAO {
     private SessionFactory sessionFactory;
 
     public PlayerDAOImpl() {
-
     }
 
     public PlayerDAOImpl(SessionFactory sessionFactory) {
@@ -48,7 +47,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     @Override
     @Transactional
-    public void delete(String id) {
+    public void delete(Long id) {
         Player playerToDelete = new Player();
         playerToDelete.setId(id);
         sessionFactory.getCurrentSession().delete(playerToDelete);
@@ -56,7 +55,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     @Override
     @Transactional
-    public Player get(String id) {
+    public Player get(Long id) {
         String hql = "from Player where id=" + id;
         Query query = sessionFactory.getCurrentSession().createQuery(hql);
 

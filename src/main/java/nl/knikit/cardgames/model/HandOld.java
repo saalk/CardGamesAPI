@@ -3,27 +3,8 @@
  */
 package nl.knikit.cardgames.model;
 
-import org.springframework.hateoas.core.Relation;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * <H1>Hand</H1> A players hand that can hold one or more cards. <p>For Hand to reuses the Card
@@ -42,32 +23,11 @@ import lombok.Setter;
  * @version 1.0
  * @since v1 - console game
  */
-@Entity
-@Table(name = "HANDS", indexes = {
-        @Index(columnList = "FK_PLAYER_ID", name = "FK_PLAYER_ID_INDEX"),
-        @Index(columnList = "FK_TABLES_ID", name = "FK_TABLES_ID_INDEX")})
-@Getter
-@Setter
-@Relation(value="hand", collectionRelation="hands")
-public class Hand {
+public class HandOld {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE)
-    @Column(name = "HAND_ID")
-    private long id;
-
-    @OneToOne
-    @JoinColumn(name = "FK_PLAYER_ID", referencedColumnName = "PLAYER_ID")
-    Player player;
-
-    @OneToOne
-    @JoinColumn(name = "FK_TABLES_ID", referencedColumnName = "TABLE_ID")
-    Tables tables;
-
-    @Embedded
     private List<Card> cards;
 
-    public Hand() {
+    public HandOld() {
         this.cards = new ArrayList<>();
     }
 

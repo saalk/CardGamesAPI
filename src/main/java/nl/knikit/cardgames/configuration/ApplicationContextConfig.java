@@ -5,6 +5,7 @@ import nl.knikit.cardgames.dao.PlayerDAO;
 import nl.knikit.cardgames.utils.Password;
 
 import org.hibernate.SessionFactory;
+import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -111,11 +112,17 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         // JDBC drivers are extensions for java to connect to the database
         // TODO get these 4 properties from property file
-        driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.MySQLDataSource");
-        // URL: jdbc:mysql://{HOST}[:{PORT}][/{DB}]
-        driverManagerDataSource.setUrl("jdbc:mariadb://192.168.2.100:3306/knikit");
+
+        // either these 3 or URL
+        driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.Driver");
+
         driverManagerDataSource.setUsername(Password.decode("cm9cdA=="));
         driverManagerDataSource.setPassword(Password.decode("a2xhYXM="));
+
+        driverManagerDataSource.setUrl("jdbc:mariadb://127.0.0.1:3306/knikit");
+
+        // driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.MySQLDataSource");
+        // URL: jdbc:mysql://{HOST}[:{PORT}][/{DB}]
         return driverManagerDataSource;
     }
 
@@ -158,9 +165,10 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         properties.put("hibernate.show_sql", "true");
         // @ing use org.hibernate.dialect.Oracle10gDialect
         // This property makes Hibernate generate the appropriate SQL for the chosen database.
+        // do not use org.hibernate.dialect.MySQLInnoDBDialect
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        properties.put("hibernate.connection.driver_class", "com.mariadb.jdbc.Driver");
-        properties.put("hibernate.hbm2ddl.auto", "update");
+        //properties.put("hibernate.connection.driver_class", "com.mariadb.jdbc.Driver");
+        properties.put("hibernate.hbm2ddl.auto", "create");
 
         return properties;
     }

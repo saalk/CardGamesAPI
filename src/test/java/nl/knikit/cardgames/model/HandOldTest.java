@@ -5,16 +5,16 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-public class HandTest {
+public class HandOldTest {
 
 	// make instance variables
-	private Hand testHand1;
+	private HandOld testHandOld1;
 	private Card testAceOfSpades, testJoker;
 
 	@Before
 	public void setUpBeforeEachTest() {
 		// initialize the variables
-		testHand1 = new Hand();
+		testHandOld1 = new HandOld();
 		
 		testAceOfSpades = new Card(Rank.ACE, Suit.SPADES);
 		testJoker = new Card(Rank.JOKER, Suit.JOKERS);		
@@ -24,7 +24,7 @@ public class HandTest {
 	public void testShowInitialHandShouldBeEmpty() {
 	
 		// verify
-		assertTrue("Hand should be initialized", testHand1.showCards(true).isEmpty());
+		assertTrue("Hand should be initialized", testHandOld1.showCards(true).isEmpty());
 	
 	}
 
@@ -32,23 +32,23 @@ public class HandTest {
 	public void testAdd3CardToHandShouldShow3Cards() {
 	
 		// run
-		testHand1.setCard(testAceOfSpades);
-		testHand1.setCard(testJoker);
-		testHand1.setCard(testAceOfSpades);
+		testHandOld1.setCard(testAceOfSpades);
+		testHandOld1.setCard(testJoker);
+		testHandOld1.setCard(testAceOfSpades);
 		
 		// verify
-		assertTrue("Hand should show 3 cards", testHand1.showCards(false).size()==3);
+		assertTrue("Hand should show 3 cards", testHandOld1.showCards(false).size()==3);
 		
 	}
 
 	@Test
 	public void testPlayAceOfSpadesFromHand() {
 		// run
-		testHand1.setCard(testAceOfSpades);
-		testHand1.playCard(testAceOfSpades);
+		testHandOld1.setCard(testAceOfSpades);
+		testHandOld1.playCard(testAceOfSpades);
 		
 		//verify 
-		assertTrue("Hand should show no cards",testHand1.showCards(true).size()==0);
+		assertTrue("Hand should show no cards", testHandOld1.showCards(true).size()==0);
 		
 	}
 

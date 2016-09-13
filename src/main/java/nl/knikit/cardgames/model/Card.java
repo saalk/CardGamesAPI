@@ -21,15 +21,25 @@ package nl.knikit.cardgames.model;
  * Clubs
  * Hearts
  * Spades
- * DIamonds
+ * Diamonds
  * }
  * @enduml
  */
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * <H2>Description</H2> A playing card used for playing card games. A complete set of cards is called a
  * pack (UK English), deck (US English), or set (Universal), and the subset of cards held at one
- * time by a {@link PlayerOld player} during a {@link Game game} is commonly called a {@link Hand
+ * time by a {@link PlayerOld player} during a {@link GameOld game} is commonly called a {@link HandOld
  * hand}.
  * <H2>Relations</H2>
  * Card is associated to {@link Rank enum Rank} and {@link Suit enum Suit}. Because you must have
@@ -41,52 +51,25 @@ package nl.knikit.cardgames.model;
  * @since v1 - console game
  */
 
+@Getter
+@Setter
+@ToString
+@Embeddable
 public class Card {
 
-    /**
-     * 13 progressing ranks 2 to 10, jack, queen, king, ace.
-     */
+    // 13 progressing ranks 2 to 10, jack, queen, king, ace.
+    @Embedded
     private Rank rank;
 
-    /**
-     * 4 suits are possible
-     */
+    @Embedded
     private Suit suit;
 
-    /**
-     * Sole constructor for Card.
-     *
-     * @param rank Rank for the card.
-     * @param suit Suit of the card.
-     */
     public Card(Rank rank, Suit suit) {
         this.rank = rank;
         this.suit = suit;
     }
 
-    // Generated with ALT SHIFT S -> select Generate Getters and Setters
-    public Suit getSuit() {
-        return suit;
-    }
-
-    public void setSuit(Suit suit) {
-        this.suit = suit;
-    }
-
-    public Rank getRank() {
-        return rank;
-    }
-
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
-    @Override
-    public String toString() {
-        return "" + rank + suit;
-    }
-
-    public int compareTwo(Card o1, Card o2, CardGame cardGame) {
+    public int compareTwoCards(Card o1, Card o2, CardGame cardGame) {
         if (o1.getRank().getValue(cardGame) < o2.getRank().getValue(cardGame)) {
             return 1;
         } else {

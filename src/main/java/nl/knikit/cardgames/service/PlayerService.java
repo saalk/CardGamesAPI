@@ -26,26 +26,35 @@ public class PlayerService extends ResourceSupport {
     PlayerService() {
         players.add(new Player.PlayerBuilder()
                 .withSequence(-1)
+                .withCreated(null)
                 .withOrigin(Origin.ELF)
                 .withAlias("John Doe")
                 .withIsHuman(true)
                 .withAiLevel(AiLevel.HUMAN)
+                .withCubits(0)
+                .withSecuredLoan(0)
                 .build()
         );
         players.add(new Player.PlayerBuilder()
                 .withSequence(-1)
+                .withCreated(null)
                 .withOrigin(Origin.ELF)
                 .withAlias("Alien1")
                 .withIsHuman(false)
                 .withAiLevel(AiLevel.MEDIUM)
+                .withCubits(0)
+                .withSecuredLoan(0)
                 .build()
         );
         players.add(new Player.PlayerBuilder()
                 .withSequence(-1)
+                .withCreated(null)
                 .withOrigin(Origin.ELF)
                 .withAlias("Alien2")
                 .withIsHuman(false)
                 .withAiLevel(AiLevel.MEDIUM)
+                .withCubits(0)
+                .withSecuredLoan(0)
                 .build()
         );
     }
@@ -53,10 +62,10 @@ public class PlayerService extends ResourceSupport {
     public ArrayList<Player> list() {
         return players; }
 
-    public Player get(String uid) {
+    public Player get(Long id) {
 
         for (Player p : players)
-            if (p.getId().equals(uid)) {
+            if (p.getId() == id) {
                 return p;
             }
         return null;
@@ -71,10 +80,10 @@ public class PlayerService extends ResourceSupport {
         return null;
     }
 
-    public String delete(String uid) {
+    public Long delete(Long id) {
         boolean found = false;
         for (Player p : players) {
-            if (p.getId() == uid) {
+            if (p.getId() == id) {
                 players.remove(p);
                 // break to avoid concurrency problems for next iteration when removing last...
                 found = true;
@@ -93,7 +102,7 @@ public class PlayerService extends ResourceSupport {
             Player.setSequenceBackWithOne();
         }
         // use ternary operator (ternary = conditional operator -> expression?true:false)
-        return (found ? uid : "-1");
+        return (found ? id : -1);
     }
 
     public int deleteBySequence(int sequence) {
@@ -123,6 +132,7 @@ public class PlayerService extends ResourceSupport {
 
     public Player create(Player player) {
         Player playerBuilder = new Player.PlayerBuilder()
+                .withId(player.getId())
                 .withSequence(-1)
                 .withOrigin(player.getOrigin())
                 .withAlias(player.getAlias())
@@ -141,12 +151,13 @@ public class PlayerService extends ResourceSupport {
         Player.setSequenceToZero();
     }
 
-    public Player update(String uid, Player player) {
+    public Player update(Long id, Player player) {
         int index = 0;
         for (Player p : players) {
-            if (p.getId() == uid) {
+            if (p.getId() == id) {
                 // Use ArrayList remove and add to make a new sequence or set to change the current
                 Player playerBuilder = new Player.PlayerBuilder()
+                        .withId(player.getId())
                         .withSequence(player.getSequence())
                         .withOrigin(player.getOrigin())
                         .withAlias(player.getAlias())
@@ -169,7 +180,9 @@ public class PlayerService extends ResourceSupport {
             if (p.getSequence() == sequence) {
                 // Use ArrayList remove and add to make a new sequence or set to change the current
                 Player playerBuilder = new Player.PlayerBuilder()
+                        .withId(player.getId())
                         .withSequence(sequence)
+                        .withCreated(player.getCreated())
                         .withOrigin(player.getOrigin())
                         .withAlias(player.getAlias())
                         .withIsHuman(player.isHuman())

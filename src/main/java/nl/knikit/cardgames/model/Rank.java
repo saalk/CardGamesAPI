@@ -1,5 +1,9 @@
 package nl.knikit.cardgames.model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
+
 /**
  * <H1>Rank</H1> Progressive value for a card. <p> There are thirteen ranks of each of the four
  * French suits. The rank 'Joker' is the 14th one.
@@ -8,6 +12,7 @@ package nl.knikit.cardgames.model;
  * @version 1.0
  * @since v1 - console game
  */
+@Embeddable
 public enum Rank {
 
     /**
@@ -15,13 +20,16 @@ public enum Rank {
      * this enum Rank the 13 constants are declared with various properties, in addition the Joker
      * is added
      */
+    @Transient
     ACE("A", "Ace", "Aas"), TWO("2", "Two", "Twee"), THREE("3", "Three", "Drie"), FOUR("4", "Four", "Vier"), FIVE("5",
             "Five", "Vijf"), SIX("6", "Six", "Zes"), SEVEN("7", "Seven", "Zeven"), EIGHT("8", "Eight",
             "Acht"), NINE("9", "Nine", "Negen"), TEN("10", "Ten", "Tien"), JACK("J", "Jack", "Boer"), QUEEN("Q",
             "Queen", "Vrouw"), KING("K", "King", "Koning"), JOKER("R", "Joker", "Joker");
-
+    @Column(name="RANK")
     String shortName;
+    @Transient
     String englishName;
+    @Transient
     String dutchName;
 
     Rank(String shortName, String englishName, String dutchName) {

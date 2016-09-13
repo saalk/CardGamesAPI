@@ -7,7 +7,7 @@
         <div class="row">
             <div class="twelve columns">
                 <h2 class="title">{{ vm.players[vm.loopplayer].alias }}, ante up!</h2>
-                <h5 class="subtitle">High-low card game round {{vm.round}}</h5>
+                <h5 class="subtitle">High-low card gameOld round {{vm.round}}</h5>
             </div>
         </div>
     </header>
@@ -23,22 +23,22 @@
                     When the last playerOld has passed, you can start a new turn or go to the resuls.<br></p>
                 <code> TABLE, DECK, HAND, CARDS</code> <br><br><br>
                 <div ng-if="vm.round > 1">
-                    <a class="button game-button" href="#/results">Results</a>
-                    <a class="button button-primary game-button1" ng-if="vm.higher" class="animate-if"
+                    <a class="button gameOld-button" href="#/results">Results</a>
+                    <a class="button button-primary gameOld-button1" ng-if="vm.higher" class="animate-if"
                    data-ng-click="vm.doguess()">Higher</a>
-                    <a class="button button-primary game-button2" ng-if="vm.lower" class="animate-if"
+                    <a class="button button-primary gameOld-button2" ng-if="vm.lower" class="animate-if"
                    data-ng-click="vm.doguess()">Lower</a>
                     <!-- pass the round logic-->
-                    <a class="button game-button" ng-if="vm.pass" class="animate-if" 
+                    <a class="button gameOld-button" ng-if="vm.pass" class="animate-if"
                    data-ng-click="vm.pass()">pass the turn</a>
                 </div>
                 <div ng-if="vm.round <= 1">
-                    <a class="button game-button" href="#/casino">Leave</a>
-                    <a class="button button-primary game-button1" ng-if="vm.higher" class="animate-if"
+                    <a class="button gameOld-button" href="#/casino">Leave</a>
+                    <a class="button button-primary gameOld-button1" ng-if="vm.higher" class="animate-if"
                    data-ng-click="vm.doguess()">Higher</a>
-                    <a class="button button-primary game-button2" ng-if="vm.lower" class="animate-if"
+                    <a class="button button-primary gameOld-button2" ng-if="vm.lower" class="animate-if"
                    data-ng-click="vm.doguess()">Lower</a>
-                    <a class="button game-button" ng-if="vm.pass" class="animate-if" 
+                    <a class="button gameOld-button" ng-if="vm.pass" class="animate-if"
                    data-ng-click="vm.pass()">pass the turn</a>
                 </div>                
 

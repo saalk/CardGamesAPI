@@ -35,7 +35,7 @@ public class PlayerOld {
     private int cubits;
     private int securedLoan;
     private Origin origin;
-    private Hand hand;
+    private HandOld handOld;
 
     /**
      * @param inputOrigin human or bot
@@ -54,7 +54,7 @@ public class PlayerOld {
         this.aiLevel = inputAiLevel;
         this.cubits = 0;
         this.securedLoan = 0;
-        this.hand = new Hand();
+        this.handOld = new HandOld();
     }
     public PlayerOld() {};
 
@@ -74,12 +74,12 @@ public class PlayerOld {
         return origin;
     }
 
-    public Hand emptyHand() {
-        return hand = new Hand();
+    public HandOld emptyHand() {
+        return handOld = new HandOld();
     }
 
-    public Hand getHand() {
-        return hand;
+    public HandOld getHandOld() {
+        return handOld;
     }
 
     public boolean isHuman() {
@@ -161,11 +161,11 @@ public class PlayerOld {
 
         Predict prediction = null;
 
-        if (!(this.hand.getCards().size() == 0)) {
-            prediction = predictHighOrLowOrEqual(this.hand.getLastCard(), newCard);
+        if (!(this.handOld.getCards().size() == 0)) {
+            prediction = predictHighOrLowOrEqual(this.handOld.getLastCard(), newCard);
         }
 
-        this.hand.setCard(newCard);
+        this.handOld.setCard(newCard);
         return prediction;
     }
 
@@ -186,7 +186,7 @@ public class PlayerOld {
         Predict prediction = null;
         int value = 0;
         Random rnd = new Random();
-        value = this.hand.getLastCard().getRank().getValue(CardGame.HIGHLOW);
+        value = this.handOld.getLastCard().getRank().getValue(CardGame.HIGHLOW);
 
         switch (this.aiLevel) {
             case HIGH:
@@ -266,7 +266,7 @@ public class PlayerOld {
         StringBuilder displayPlayer = new StringBuilder();
         displayPlayer.append(displayCubits());
         displayPlayer.append(System.lineSeparator());
-        displayPlayer.append("  > Cards : " + hand);
+        displayPlayer.append("  > Cards : " + handOld);
 
         return displayPlayer.toString();
     }

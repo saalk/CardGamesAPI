@@ -42,7 +42,7 @@ enum State -> GalacticCasino
 GalacticCasino --> enum Trigger
 package "nl.deknik.cardgames" {
 package "model" {
-GalacticCasino .. Game
+GalacticCasino .. GameOld
 GalacticCasino .. PlayerOld
 GalacticCasino .. PlayerOld.Predict
 GalacticCasino .. AiLevel
@@ -103,7 +103,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.CardGame;
 import nl.knikit.cardgames.model.CardGameVariant;
-import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.GameOld;
 import nl.knikit.cardgames.model.Origin;
 import nl.knikit.cardgames.model.PlayerOld;
 import nl.knikit.cardgames.utils.Console;
@@ -219,8 +219,8 @@ public class GalacticCasino {
         StateMachine<State, Trigger> galacticCasino = new StateMachine<>(State.SELECT_GAME, cardGameConfig);
         CardGame cardGameSelected;
         CardGameVariant cardGameVariantSelected;
-        // why not null; instead of new Game(null); or just Game currentGame; ?
-        Game currentGame = new Game(null);
+        // why not null; instead of new GameOld(null); or just GameOld currentGameOld; ?
+        GameOld currentGameOld = new GameOld(null);
         PlayerOld currentPlayerOld = new PlayerOld(visitor.getOrigin(), null, false);
         PlayerOld.Predict prediction;
         PlayerOld.Predict real;
@@ -260,7 +260,7 @@ public class GalacticCasino {
                         cardGameVariantSelected = CardGameVariant.HILOW_1ROUND;
 
                         // SETUP GAME VARIANT
-                        currentGame = new Game(cardGameVariantSelected);
+                        currentGameOld = new GameOld(cardGameVariantSelected);
                         galacticCasino.fire(Trigger.GAME_SELECTED);
 
                     } else {
@@ -280,12 +280,12 @@ public class GalacticCasino {
                     }
 
                     // SET GAME WITH VISITOR, OPPONENTS (IF ANY), AND SHUFFLED DECK
-                    currentGame.getDeck().shuffle();
-                    currentGame.removeAllPlayers();
-                    currentGame.setPlayer(visitor).emptyHand();
+                    currentGameOld.getDeck().shuffle();
+                    currentGameOld.removeAllPlayers();
+                    currentGameOld.setPlayer(visitor).emptyHand();
 
                     // TODO choose who may begin
-                    currentGame.setBegins(visitor);
+                    currentGameOld.setBegins(visitor);
 
                     if (answer <= 2) {
 
@@ -302,19 +302,19 @@ public class GalacticCasino {
                         for (int i = 0; i < answer; i++) {
                             switch (secondAnswer) {
                                 case 1:
-                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.LOW, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.LOW, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                                 case 2:
-                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                                 case 3:
-                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.HIGH, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.HIGH, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                                 default:
-                                    currentPlayerOld = currentGame.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                             }
@@ -322,7 +322,7 @@ public class GalacticCasino {
                         }
                     }
                     currentPlayerOld = null;
-                    for (PlayerOld cp : currentGame.getPlayerOlds()) {
+                    for (PlayerOld cp : currentGameOld.getPlayerOlds()) {
                         if (!cp.isHuman()) {
                             System.out.println("  " + cp.getAlias() + " joined the game");
                         }
@@ -333,16 +333,16 @@ public class GalacticCasino {
 
                     switch (answer) {
                         case 1:
-                            currentGame.setAnte(20);
+                            currentGameOld.setAnte(20);
                             break;
                         case 2:
-                            currentGame.setAnte(50);
+                            currentGameOld.setAnte(50);
                             break;
                         case 3:
-                            currentGame.setAnte(100);
+                            currentGameOld.setAnte(100);
                             break;
                         default:
-                            currentGame.setAnte(20);
+                            currentGameOld.setAnte(20);
                     }
                     galacticCasino.fire(Trigger.GAME_SETUP);
                     break;
@@ -350,10 +350,10 @@ public class GalacticCasino {
                 case ITERATE_PLAYERS:
 
                     // SETUP PLAYER AND ROUNDS, STOP WHEN ZERO ROUNDS LEFT
-                    currentPlayerOld = currentGame.getNextPlayer(currentPlayerOld);
-                    if (currentPlayerOld == currentGame.getBegins() && !(currentPlayerOld.getHand().countNumberOfCards() == 0)) {
-                        currentGame.decreaseRoundsLeft();
-                        if (currentGame.getRoundsLeft() == 0) {
+                    currentPlayerOld = currentGameOld.getNextPlayer(currentPlayerOld);
+                    if (currentPlayerOld == currentGameOld.getBegins() && !(currentPlayerOld.getHandOld().countNumberOfCards() == 0)) {
+                        currentGameOld.decreaseRoundsLeft();
+                        if (currentGameOld.getRoundsLeft() == 0) {
                             answer = console.getAnswerFromConsole("> Last round played, game ended", dummy);
                             galacticCasino.fire(Trigger.ROUNDS_ENDED);
                             break;
@@ -362,7 +362,7 @@ public class GalacticCasino {
                     turn = 0;
 
                     // CHECK CARDS LEFT STOP WHEN ZERO
-                    if (currentGame.getDeck().searchNextCardNotInHand() == -1) {
+                    if (currentGameOld.getDeck().searchNextCardNotInHand() == -1) {
                         answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias(),
                                 dummy);
                         galacticCasino.fire(Trigger.DECK_EMPTY);
@@ -377,7 +377,7 @@ public class GalacticCasino {
 				log.append(System.lineSeparator());
 				log.append("  Permitted trigger: " + galacticCasino.getPermittedTriggers());
 				log.append(System.lineSeparator());
-				log.append("  Current Game: " + currentGame);
+				log.append("  Current GameOld: " + currentGameOld);
 				log.append(System.lineSeparator());
 				log.append("  Current PlayerOld: " + currentPlayerOld);
 				log.append(System.lineSeparator());
@@ -385,7 +385,7 @@ public class GalacticCasino {
 				logger.debug(log.toString());
 
                     // DEAL A INITIAL CARD AND SHOW
-                    currentPlayerOld.addCardToHand(currentGame.getDeck().deal(currentPlayerOld.getId()));
+                    currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
                     System.out.println("" + currentPlayerOld.toStringPlayers());
 
                     galacticCasino.fire(Trigger.TURN_STARTED);
@@ -394,10 +394,10 @@ public class GalacticCasino {
                 case ITERATE_TURNS:
 
                     // CHECK CARDS LEFT IN DECK
-                    if (currentGame.getDeck().searchNextCardNotInHand() == -1) {
+                    if (currentGameOld.getDeck().searchNextCardNotInHand() == -1) {
                         answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias()
-                                + ", keep the " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
-                        currentPlayerOld.setCubits(currentGame.getAnte() * (int) Math.pow(2, turn - 1));
+                                + ", keep the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+                        currentPlayerOld.setCubits(currentGameOld.getAnte() * (int) Math.pow(2, turn - 1));
                         galacticCasino.fire(Trigger.DECK_EMPTY);
                         break;
                     }
@@ -406,11 +406,11 @@ public class GalacticCasino {
                     // GET (AI) PLAYER ACTION
                     if (turn == 1) {
                         action = new String[]{"Lower", "Higher"};
-                        question = "> Stake is set to " + currentGame.getAnte() + ", what will your next card be "
+                        question = "> Stake is set to " + currentGameOld.getAnte() + ", what will your next card be "
                                 + currentPlayerOld.getAlias() + "?";
                     } else {
                         action = new String[]{"Lower", "Higher", "Pass"};
-                        question = "> Double or nothing " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1))
+                        question = "> Double or nothing " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1))
                                 + ", what will your next card be " + currentPlayerOld.getAlias() + "?";
                     }
 
@@ -445,16 +445,16 @@ public class GalacticCasino {
                     // TURN ENDS WHEN INDECISIVE
                     if (prediction == PlayerOld.Predict.INDECISIVE) {
                         answer = console.getAnswerFromConsole("> A safe choice " + currentPlayerOld.getAlias() + ", keep the "
-                                + ((currentGame.getAnte() * (int) Math.pow(2, turn - 2))), dummy);
-                        currentPlayerOld.setCubits(currentGame.getAnte() * (int) Math.pow(2, turn - 2));
+                                + ((currentGameOld.getAnte() * (int) Math.pow(2, turn - 2))), dummy);
+                        currentPlayerOld.setCubits(currentGameOld.getAnte() * (int) Math.pow(2, turn - 2));
                         System.out.println(currentPlayerOld.toStringPlayers());
-                        System.out.println(currentGame);
+                        System.out.println(currentGameOld);
                         galacticCasino.fire(Trigger.TURN_ENDED);
                         break;
                     }
 
                     // TURN THE CARD AND SHOW
-                    real = currentPlayerOld.addCardToHand(currentGame.getDeck().deal(currentPlayerOld.getId()));
+                    real = currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
                     System.out.println(currentPlayerOld.toStringPlayers());
 
                     // debug logging
@@ -467,7 +467,7 @@ public class GalacticCasino {
 				log.append(System.lineSeparator());
 				log.append("  Permitted trigger: " + galacticCasino.getPermittedTriggers());
 				log.append(System.lineSeparator());
-				log.append("  Current Game: " + currentGame);
+				log.append("  Current GameOld: " + currentGameOld);
 				log.append(System.lineSeparator());
 				log.append("  Anwer from player: " + prediction);
 				log.append(System.lineSeparator());
@@ -478,13 +478,13 @@ public class GalacticCasino {
 
                     // WIN, LOOSE OR JUST NEXT TURN
                     if (prediction == real) {
-                        if (turn >= currentGame.getTurnsToWin()) {
+                        if (turn >= currentGameOld.getTurnsToWin()) {
                             // TODO depend upon game variant
                             answer = console.getAnswerFromConsole("> " + turn + " in a row, you won!", dummy);
-                            currentPlayerOld.setCubits((currentGame.getAnte() * (int) Math.pow(2, turn - 1)));
-                            currentGame.setWinner(currentPlayerOld);
+                            currentPlayerOld.setCubits((currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)));
+                            currentGameOld.setWinner(currentPlayerOld);
 
-                            System.out.println(currentGame);
+                            System.out.println(currentGameOld);
                             galacticCasino.fire(Trigger.PLAYER_WINS);
                         } else {
                             answer = console.getAnswerFromConsole("> Nice guess " + currentPlayerOld.getAlias() + "!", dummy);
@@ -493,14 +493,14 @@ public class GalacticCasino {
                     } else {
                         if (real == PlayerOld.Predict.EQUAL) {
                             answer = console.getAnswerFromConsole("> Equal cards " + currentPlayerOld.getAlias()
-                                    + ", so hand over the " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+                                    + ", so hand over the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
                         } else {
                             answer = console.getAnswerFromConsole("> Bad guess " + currentPlayerOld.getAlias()
-                                    + ", i'll take the " + (currentGame.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+                                    + ", i'll take the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
                         }
                         galacticCasino.fire(Trigger.TURN_ENDED);
-                        currentPlayerOld.setCubits(-(currentGame.getAnte() * (int) Math.pow(2, turn - 1)));
-                        System.out.println(currentGame);
+                        currentPlayerOld.setCubits(-(currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)));
+                        System.out.println(currentGameOld);
                     }
                     break;
 
@@ -508,7 +508,7 @@ public class GalacticCasino {
 
                     // SHOW STATS
                     System.out.println("  > Statistics");
-                    for (PlayerOld cp : currentGame.getPlayerOlds()) {
+                    for (PlayerOld cp : currentGameOld.getPlayerOlds()) {
                         System.out.println(cp.displayCubits());
                     }
                     answer = console.getAnswerFromConsole("> Have a look at the outcome " + visitor.getAlias(), dummy);

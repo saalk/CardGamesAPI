@@ -12,9 +12,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -40,40 +47,50 @@ import lombok.Setter;
 @Relation(value="player", collectionRelation="players")
 public final class Player {
 
-    /**
-     * startId static maken ivm onthouden ophogen in constructor
-     */
+    @Transient
     private static int startId = 0;
 
-
-    /**
-     * id is final, initialization in constructor and no setter
-     */
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = "PLAYER_ID")
-    private String id;
+    private long id;
+    @Column(name = "CREATED")
+    private String created;
+    @Column(name = "SEQUENCE")
     private int sequence;
+    @Embedded
+    @Enumerated(EnumType.STRING)
     private Origin origin;
+    @Column(name = "ALIAS")
     private String alias;
+    @Column(name = "HUMAN")
     private boolean isHuman;
+    @Embedded
+    @Enumerated(EnumType.STRING)
     private AiLevel aiLevel;
+    @Column(name = "CUBITS")
     private int cubits;
+    @Column(name = "SECURED_LOAN")
     private int securedLoan;
 
+    // TODO make private
     public Player() {
     }
 
     @JsonCreator
     public Player(
-            @JsonProperty("id") String id,
+            @JsonProperty("id") long id,
+            @JsonProperty("created") String created,
             @JsonProperty("sequence") int sequence,
             @JsonProperty("origin") Origin origin,
             @JsonProperty("alias") String alias,
             @JsonProperty("isHuman") boolean isHuman,
             @JsonProperty("aiLevel") AiLevel aiLevel,
             @JsonProperty("cubits") int cubits,
-            @JsonProperty("securedLoan") int securedLoan) {
+            @JsonProperty("securedLoan") int securedLoan)
+    {
         this.id = id;
+        this.created = created;
         this.sequence = sequence;
         this.origin = origin;
         this.alias = alias;
@@ -103,34 +120,21 @@ public final class Player {
         }
     }
 
-    private void setUid() {
+    private void setCreated() {
 
         // java 8 has java.time and java.time.format instead of java.util.Date
         // get local date and a format use format() to store the result into id
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         LocalDateTime localDateAndTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         String result = localDateAndTime.format(formatter);
-        this.id = result.substring(2,19);
-    }
-
-    public int getSequence() {
-        return this.sequence;
-    }
-
-    public String getId() {
-        return id;
+        this.created = result.substring(2,14);
     }
 
     // static builder class generated with plugin Builder Generator and ALT+SHIFT+B
-    // when seperate class then builder and buil class should both be protected instead of private
-
+    // when seperate class then builder and build class should both be protected instead of private
     public static final class PlayerBuilder {
-        private String uid;
+        private long id;
+        private String created;
         private int sequence;
         private Origin origin;
         private String alias;
@@ -139,6 +143,7 @@ public final class Player {
         private int cubits;
         private int securedLoan;
 
+        // TODO  only receive the required attributes
         public PlayerBuilder() {
         }
 
@@ -146,8 +151,13 @@ public final class Player {
             return new PlayerBuilder();
         }
 
-        public PlayerBuilder withUid(String uid) {
-            this.uid = uid;
+        public PlayerBuilder withId(long id) {
+            this.id = id;
+            return this;
+        }
+
+        public PlayerBuilder withCreated(String created) {
+            this.created = created;
             return this;
         }
 
@@ -187,10 +197,10 @@ public final class Player {
         }
 
         public Player build() {
-            Player player = new Player(uid, sequence, origin, alias, isHuman, aiLevel, cubits,
-                    securedLoan);
-            // do not use input id
-            player.setUid();
+            Player player = new Player(id, created, sequence, origin, alias, isHuman, aiLevel,
+                    cubits, securedLoan);
+            player.setCreated();
+            // when -1 use set sequence to auto generated a sequence otherwise it is a update
             if (sequence >= 0) {
                 player.setSequence(sequence);
             } else {

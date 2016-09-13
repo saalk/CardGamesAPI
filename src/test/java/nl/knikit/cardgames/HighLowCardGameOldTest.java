@@ -4,17 +4,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import nl.knikit.cardgames.model.Deck;
-import nl.knikit.cardgames.model.Hand;
+import nl.knikit.cardgames.model.HandOld;
 
-public class HighLowCardGameTest {
+public class HighLowCardGameOldTest {
 
 	private Deck deck; 
-	private Hand hand1;
+	private HandOld handOld1;
 		
 	@Before
 	public void setUpBeforeEachTest() {
 		deck = new Deck(0);
-		hand1 = new Hand();
+		handOld1 = new HandOld();
 
 	}
 	@Test
