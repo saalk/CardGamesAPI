@@ -9,8 +9,8 @@ angular.module('myApp')
   };
 });
 
-CasinoController.$inject = ['PlayerService', 'toastr'];
-function CasinoController(PlayerService, toastr){
+CasinoController.$inject = ['$scope', 'PlayerService', 'toastr', 'restangular'];
+function CasinoController($scope, PlayerService, toastr, Restangular){
 
     var vm = this;
     vm.players = PlayerService.initPlayers();
@@ -33,14 +33,14 @@ function CasinoController(PlayerService, toastr){
        toastr.warning('Work in progress', 'Warning') };    
 
     // behaviour 
-    vm.changeAlien = function (id) {
-        loopAiLevel(id);
-        if (vm.players[id].aiLevel == 'None') {
-            vm.players[id].cubits = 0; 
-            vm.players[id].securedLoan = vm.players[id].cubits;
+    vm.changeAlien = function (sequence) {
+        loopAiLevel(sequence);
+        if (vm.players[sequence].aiLevel == 'None') {
+            vm.players[sequence].cubits = 0;
+            vm.players[sequence].securedLoan = vm.players[sequence].cubits;
         } else {
-            vm.players[id].cubits = (Math.ceil(Math.random() * 500)+ 500); 
-            vm.players[id].securedLoan = vm.players[id].cubits;
+            vm.players[sequence].cubits = (Math.ceil(Math.random() * 500)+ 500);
+            vm.players[sequence].securedLoan = vm.players[sequence].cubits;
         };
         checkIfAliensAreSet();    
     };
@@ -61,28 +61,28 @@ function CasinoController(PlayerService, toastr){
             vm.showalien2 = true; 
         }
     };
-    function loopAiLevel(id) {
-        if (vm.players[id].aiLevel == 'None') {
-            if (vm.players[1].aiLevel == 'None' && id == 2) {
-                vm.players[id].aiLevel = 'None';    
-                vm.players[id].label = vm.none;
+    function loopAiLevel(sequence) {
+        if (vm.players[sequence].aiLevel == 'None') {
+            if (vm.players[1].aiLevel == 'None' && sequence == 2) {
+                vm.players[sequence].aiLevel = 'None';
+                //vm.players[sequence].label = vm.none;
             } else {
-                vm.players[id].aiLevel = 'Dumb';    
-                vm.players[id].label = vm.dumb;
+                vm.players[sequence].aiLevel = 'Dumb';
+                //vm.players[sequence].label = vm.dumb;
             };
-        } else if (vm.players[id].aiLevel == 'Dumb') {
-            vm.players[id].aiLevel = 'Average';
-            vm.players[id].label = vm.average;
-        } else if (vm.players[id].aiLevel == 'Average') {
-            vm.players[id].aiLevel = 'Smart';
-            vm.players[id].label = vm.smart;
-        } else if (vm.players[id].aiLevel == 'Smart') {
-            if (vm.players[2].aiLevel != 'None' && id == 1) {
-                vm.players[id].aiLevel = 'Dumb';    
-                vm.players[id].label = vm.dumb;
+        } else if (vm.players[sequence].aiLevel == 'Dumb') {
+            vm.players[sequence].aiLevel = 'Average';
+            //vm.players[sequence].label = vm.average;
+        } else if (vm.players[sequence].aiLevel == 'Average') {
+            vm.players[sequence].aiLevel = 'Smart';
+            //vm.players[sequence].label = vm.smart;
+        } else if (vm.players[sequence].aiLevel == 'Smart') {
+            if (vm.players[2].aiLevel != 'None' && sequence == 1) {
+                vm.players[sequence].aiLevel = 'Dumb';
+                //vm.players[sequence].label = vm.dumb;
             } else {
-                vm.players[id].aiLevel = 'None';    
-                vm.players[id].label = vm.none;
+                vm.players[sequence].aiLevel = 'None';
+                //vm.players[sequence].label = vm.none;
             };
         };
     };

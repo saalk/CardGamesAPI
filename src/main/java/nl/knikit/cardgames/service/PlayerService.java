@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.service;
 
+import nl.knikit.cardgames.dao.PlayerDAO;
+import nl.knikit.cardgames.dao.PlayerDAOImpl;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Origin;
 import nl.knikit.cardgames.model.Player;
@@ -142,6 +144,8 @@ public class PlayerService extends ResourceSupport {
                 .withSecuredLoan(player.getSecuredLoan())
                 .build();
         players.add(playerBuilder);
+        PlayerDAOImpl playerDao = null;
+        playerDao.saveOrUpdate(playerBuilder);
         // return the new player by looking in array for playerBuilder new sequence;
         return players.get(playerBuilder.getSequence());
     }

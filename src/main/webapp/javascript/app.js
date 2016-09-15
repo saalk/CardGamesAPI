@@ -4,9 +4,10 @@
 //
 // 1. 'ngRoute' is for angular-route
 // 2. 'ngAnimate', 'toastr' is for angular-toastr (
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'toastr']);
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'toastr', 'restangular']);
 angular.module('myApp')
-        .config(function($routeProvider, toastrConfig) {
+        .config(function($routeProvider, toastrConfig, RestangularProvider) {
+
     $routeProvider.when('/home', {
        templateUrl: 'partials/home.html',
        controller: 'HomeController'
@@ -22,31 +23,44 @@ angular.module('myApp')
     }).otherwise({
         redirectTo: '/home'
     });
+
     angular.extend(toastrConfig, {
-    newestOnTop: false,
-    preventDuplicates: true,
-    allowHtml: true,
-    closeButton: false,
-    closeHtml: '<button>&times;</button>',
-    extendedTimeOut: 1000,
-    iconClasses: {
-      error: 'toast-error',
-      info: 'toast-info',
-      success: 'toast-success',
-      warning: 'toast-warning'
-    },  
-    messageClass: 'toast-message',
-    onHidden: null,
-    onShown: null,
-    onTap: null,
-    progressBar: true,
-    tapToDismiss: true,
-    templates: {
-      toast: 'directives/toast/toast.html',
-      progressbar: 'directives/progressbar/progressbar.html'
-    },
-    timeOut: 1500,
-    titleClass: 'toast-title',
-    toastClass: 'toast'
-  });
+        newestOnTop: false,
+        preventDuplicates: true,
+        allowHtml: true,
+        closeButton: false,
+        closeHtml: '<button>&times;</button>',
+        extendedTimeOut: 1000,
+        iconClasses: {
+          error: 'toast-error',
+          info: 'toast-info',
+          success: 'toast-success',
+          warning: 'toast-warning'
+        },
+        messageClass: 'toast-message',
+        onHidden: null,
+        onShown: null,
+        onTap: null,
+        progressBar: true,
+        tapToDismiss: true,
+        templates: {
+          toast: 'directives/toast/toast.html',
+          progressbar: 'directives/progressbar/progressbar.html'
+        },
+        timeOut: 1500,
+        titleClass: 'toast-title',
+        toastClass: 'toast'
+    });
+    RestangularProvider.setBaseUrl('http://knikit.nl/api/');
+    RestangularProvider.setDefaultRequestParams({ apiKey: '4f847ad3e4b08a2eed5f3b54' })
+    RestangularProvider.setRestangularFields({
+            id: '_id.$oid'
+    });
+    RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
+        if (operation === 'put') {
+            elem._id = undefined;
+            return elem;
+        }
+        return elem;
+    })
 });

@@ -3,11 +3,14 @@
         <h4>Players</h4>
         <table>
             <tr data-ng-repeat="playerOld in vm.players">
-                <td>{{ playerOld.id }}</td>
-                <td>{{ playerOld.alias }}</td>
-                <td>{{ playerOld.aiLevel }}</td>
-                <td>{{ playerOld.cubits }}</td>
-                <td>{{ playerOld.securedLoan }}</td>
+                <td>{{ player.id }}</td>
+                <td>{{ player.created }}</td>
+                <td>{{ player.sequence }}</td>
+                <td>{{ player.alias }}</td>
+                <td>{{ player.human }}</td>
+                <td>{{ player.aiLevel }}</td>
+                <td>{{ player.cubits }}</td>
+                <td>{{ player.securedLoan }}</td>
             </tr>
         </table>
     </div>

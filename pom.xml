@@ -45,6 +45,7 @@
 
         <mockito.version>1.9.5</mockito.version>
         <slf4j-version>1.7.5</slf4j-version>
+        <logback.version>1.1.7</logback.version>
         <aspectj-version>1.7.4</aspectj-version>
         <lombok.version>1.16.10</lombok.version>
 
@@ -533,19 +534,29 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction for various logging frameworks -->
-        <!-- Logging -->
+        <!-- Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction
+        for various logging frameworks -->
+
+        <!-- Logging Framework that implements SLF4J natively -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <!-- Logback implements SLF4J directly
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-version}</version>
-        </dependency>
+        </dependency> -->
+        <!-- The mandatory logging dependency in Spring is Jakarta Commons Logging API (JCL) -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j-version}</version>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -575,13 +586,6 @@
                 </exclusion>
             </exclusions>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <!-- Logging Framework that implements SLF4J natively -->
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
         </dependency>
 
         <!--Util -->

@@ -1,7 +1,7 @@
 angular.module('myApp')
         .service('PlayerService', PlayerService); 
-PlayerService.$inject = ['toastr'];
-function PlayerService(toastr){
+PlayerService.$inject = ['$scope', 'toastr', 'restangular'];
+function PlayerService($scope, toastr, Restangular){
 
    var players = [];
    uid = 0;
@@ -9,40 +9,47 @@ function PlayerService(toastr){
         initPlayers: function() {
             if (players[0] == null) {
             players = [
-                {id: 0, 'alias': 'stranger', 'aiLevel': 'Human', cubits: 0000, securedLoan: 0000},
-                {id: 1, 'alias': 'alien 1', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000},
-                {id: 2, 'alias': 'alien 2', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000}
+                {id: 123,  'created': '160913-01:28-11', sequence: 0, 'origin': 'ELF', 'alias':
+                'John Doe', 'aiLevel': 'Human', cubits: 0000, securedLoan: 0000},
+                {id: 234,  'created': '160913-01:28-12', sequence: 1, 'origin': 'ELF', 'alias':
+                'alien1', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000},
+                {id: 345,  'created': '160913-01:28-13', sequence: 2, 'origin': 'ELF', 'alias':
+                'alien2', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000},
                 ];
                 toastr.success('A new spaceship has landed...', 'Alpha landing bay');
             };
-            return players;
+            basePlayers = Restangular.all('players');
+            for (var i in players) {
+                basePlayers.post(player[i]);
+            }
+            return basePlayers;
         },
         listPlayers: function() {
             return players;
         },
         savePlayers: function(player) {
-            if (player.id == null) {
+            if (player.sequence == null) {
             // new player
-               player.id = uid++;
+               player.sequence = uid++;
                players.push(player);
             } else {
              // existing player
               for (var i in players) {
-                  if (players[i].id == player.id)
+                  if (players[i].sequence == player.sequence)
                      players[i] = player;}
             }
         },
-        getPlayer: function(id) {
+        getPlayerBySequence: function(sequence) {
             // existing player
             for (var i in players) {
-                if (players[i].id == id)
+                if (players[i].sequence == sequence)
                 return players[i];
             }
         },
-        deletePlayers: function(id) {
+        deletePlayerBySequence: function(sequence) {
             // existing player
             players.forEach(function () {
-                if (players[i].id == id)
+                if (players[i].sequence == sequence)
                 players.splice(i, 1);
             });
         }

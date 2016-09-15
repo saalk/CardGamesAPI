@@ -125,9 +125,9 @@ public final class Player {
         // java 8 has java.time and java.time.format instead of java.util.Date
         // get local date and a format use format() to store the result into id
         LocalDateTime localDateAndTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS");
         String result = localDateAndTime.format(formatter);
-        this.created = result.substring(2,14);
+        this.created = result.substring(2,17);
     }
 
     // static builder class generated with plugin Builder Generator and ALT+SHIFT+B
