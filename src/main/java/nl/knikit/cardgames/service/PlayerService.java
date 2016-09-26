@@ -24,13 +24,13 @@ public class PlayerService extends ResourceSupport {
 
     private ArrayList<Player> players = new ArrayList<Player>();
 
-    //TODO move to PLayerDAO instead of this temporary PlayerService
+    //TODO move to PLayerDAO instead of this temporary PlayerService constructor
     PlayerService() {
         players.add(new Player.PlayerBuilder()
                 .withSequence(-1)
                 .withCreated(null)
                 .withOrigin(Origin.ELF)
-                .withAlias("John Doe")
+                .withAlias("Java Doe")
                 .withIsHuman(true)
                 .withAiLevel(AiLevel.HUMAN)
                 .withCubits(0)
@@ -41,7 +41,7 @@ public class PlayerService extends ResourceSupport {
                 .withSequence(-1)
                 .withCreated(null)
                 .withOrigin(Origin.ELF)
-                .withAlias("Alien1")
+                .withAlias("JavaAlien1")
                 .withIsHuman(false)
                 .withAiLevel(AiLevel.MEDIUM)
                 .withCubits(0)
@@ -52,7 +52,7 @@ public class PlayerService extends ResourceSupport {
                 .withSequence(-1)
                 .withCreated(null)
                 .withOrigin(Origin.ELF)
-                .withAlias("Alien2")
+                .withAlias("JavaAlien2")
                 .withIsHuman(false)
                 .withAiLevel(AiLevel.MEDIUM)
                 .withCubits(0)

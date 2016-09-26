@@ -9,12 +9,12 @@ angular.module('myApp')
   };
 });
 
-CasinoController.$inject = ['$scope', 'PlayerService', 'toastr', 'restangular'];
-function CasinoController($scope, PlayerService, toastr, Restangular){
+CasinoController.$inject = ['PlayerService', 'toastr', 'Restangular'];
+function CasinoController(PlayerService, toastr, Restangular){
 
     var vm = this;
     vm.players = PlayerService.initPlayers();
-
+ 
     // flags + checks for ng-if
     vm.showListForDebug = false;
     vm.showalien1 = false;

@@ -51,16 +51,24 @@ angular.module('myApp')
         titleClass: 'toast-title',
         toastClass: 'toast'
     });
-    RestangularProvider.setBaseUrl('http://knikit.nl/api/');
-    RestangularProvider.setDefaultRequestParams({ apiKey: '4f847ad3e4b08a2eed5f3b54' })
-    RestangularProvider.setRestangularFields({
-            id: '_id.$oid'
-    });
-    RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
-        if (operation === 'put') {
-            elem._id = undefined;
-            return elem;
-        }
-        return elem;
-    })
+    var newBaseUrl = "";
+    if (window.location.hostname == "localhost") {
+        newBaseUrl = "http://localhost:8080/api";
+    } else {
+        //newBaseUrl = window.location.href.substring(0, window.location.href) + "/api";
+        newBaseUrl = "http://knikit.nl/api/";
+    }
+    RestangularProvider.setBaseUrl(newBaseUrl);       
+
+//    RestangularProvider.setDefaultRequestParams({ apiKey: '4f847ad3e4b08a2eed5f3b54' });
+//    RestangularProvider.setRestangularFields({
+//            id: '_id.$oid'
+//    });
+//    RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
+//        if (operation === 'put') {
+//            elem._id = undefined;
+//            return elem;
+//        }
+//        return elem;
+//    });
 });

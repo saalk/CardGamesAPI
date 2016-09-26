@@ -9,8 +9,8 @@ angular.module('myApp')
             };
         });
 
-TableController.$inject = ['$scope', 'PlayerService', 'toastr', 'restangular'];
-function TableController($scope, PlayerService, toastr, Restangular){
+TableController.$inject = ['PlayerService', 'toastr', 'Restangular'];
+function TableController(PlayerService, toastr, Restangular){
 
     var vm = this;
     vm.players = PlayerService.initPlayers();

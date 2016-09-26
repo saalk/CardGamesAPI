@@ -9,8 +9,8 @@ angular.module('myApp')
             };
         });
 
-HomeController.$inject = ['$scope', 'PlayerService','toastr', 'restangular'];
-function HomeController($scope, PlayerService, toastr, Restangular){
+HomeController.$inject = ['PlayerService','toastr', 'Restangular'];
+function HomeController(PlayerService, toastr, Restangular){
 
     var vm = this;
     vm.players = PlayerService.initPlayers();
@@ -24,7 +24,7 @@ function HomeController($scope, PlayerService, toastr, Restangular){
     //vm.minimum = 0;
     vm.setHumanName = function () {
         //toastr.clear();
-        vm.players[0].alias = 'John Doe';
+        vm.players[0].alias = 'Script Doe';
         toastr.info('Your name is set', 'Information');
         checkIfNameAndSecuredLoanAreSet();
     };
@@ -44,7 +44,8 @@ function HomeController($scope, PlayerService, toastr, Restangular){
             vm.gotocasino = false;
         };
         checkIfNameAndSecuredLoanAreSet();
-    }; 
+        PlayerService.savePlayer(vm.players[0]);
+    };
     
     // checks and functions
     function checkIfNameAndSecuredLoanAreSet() {

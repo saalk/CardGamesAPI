@@ -117,9 +117,10 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.Driver");
 
         driverManagerDataSource.setUsername(Password.decode("cm9cdA=="));
-        driverManagerDataSource.setPassword(Password.decode("a2xhYXM="));
+        //driverManagerDataSource.setPassword(Password.decode("a2xhYXM="));
 
-        driverManagerDataSource.setUrl("jdbc:mariadb://127.0.0.1:3306/knikit");
+        //driverManagerDataSource.setUrl("jdbc:mariadb://127.0.0.1:3306/knikit");
+        driverManagerDataSource.setUrl("jdbc:mariadb://192.168.2.100:3306/knikit");
 
         // driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.MySQLDataSource");
         // URL: jdbc:mysql://{HOST}[:{PORT}][/{DB}]
