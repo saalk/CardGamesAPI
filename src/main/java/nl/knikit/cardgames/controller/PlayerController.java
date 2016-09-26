@@ -38,6 +38,8 @@ package nl.knikit.cardgames.controller;
 */
 
 
+import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
+import nl.knikit.cardgames.exception.PlayerNotFoundForSequenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
 
@@ -45,14 +47,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import nl.knikit.cardgames.service.PlayerService;
 import nl.knikit.cardgames.model.Player;
@@ -60,8 +55,10 @@ import nl.knikit.cardgames.model.Player;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
 
 // @RestController = @Controller + @ResponseBody
 @RestController
@@ -83,19 +80,20 @@ public class PlayerController {
     }
 
     @GetMapping("/players/{id}")
-    public ResponseEntity getPlayer(@PathVariable("id") Long id) {
+    public ResponseEntity getPlayer(@PathVariable("id") Long id) throws PlayerNotFoundForIdException {
 
         Player player = playerService.get(id);
         if (player == null) {
 
-            // %s, %d print string an dinteger as is use with new line \n
-            String message = String.format("No Player found for path id: %d\n", id);
+            throw new PlayerNotFoundForIdException(id);
+            // %s, %d print string and integer as is use with new line \n
+            // String message = String.format("No Player found for path id: %d\n", id);
             // @Slf4j makes log available
 
-            log.warn(message);
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(message);
+            // log.warn(message);
+            // ResponseEntity
+            //        .status(HttpStatus.NOT_FOUND)
+            //        .body(message);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -103,17 +101,18 @@ public class PlayerController {
     }
 
     @GetMapping(value = "/players", params = "sequence")
-    public ResponseEntity getPlayerBySequence(@RequestParam("sequence") int sequence) {
+    public ResponseEntity getPlayerBySequence(@RequestParam("sequence") int sequence) throws PlayerNotFoundForSequenceException {
 
         Player player = playerService.getBySequence(sequence);
         if (player == null) {
 
-            String message = String.format("No Player found for param sequence: %d\n", sequence);
-            log.warn(message);
+            throw new PlayerNotFoundForSequenceException(sequence);
+            //String message = String.format("No Player found for param sequence: %d\n", sequence);
+            //log.warn(message);
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(message);
+            //return ResponseEntity
+            //        .status(HttpStatus.NOT_FOUND)
+            //        .body(message);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -205,4 +204,33 @@ public class PlayerController {
                 .status(HttpStatus.OK)
                 .body(newPlayer);
     }
+
+    // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
+    // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
+    @ExceptionHandler(PlayerNotFoundForIdException.class)
+    public ModelAndView handlePlayerNotFoundForIdException(HttpServletRequest request, Exception ex){
+        log.error("Requested URL="+request.getRequestURL());
+        log.error("Exception Raised="+ex);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("exception", ex);
+        modelAndView.addObject("url", request.getRequestURL());
+
+        modelAndView.setViewName("error");
+        return modelAndView;
+    }
+
+    @ExceptionHandler(PlayerNotFoundForSequenceException.class)
+    public ModelAndView handlePlayerNotFoundForSequenceException(HttpServletRequest request, Exception ex){
+        log.error("Requested URL="+request.getRequestURL());
+        log.error("Exception Raised="+ex);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("exception", ex);
+        modelAndView.addObject("url", request.getRequestURL());
+
+        modelAndView.setViewName("error");
+        return modelAndView;
+    }
+
 }

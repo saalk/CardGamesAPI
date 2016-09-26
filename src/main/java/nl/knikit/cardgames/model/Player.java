@@ -6,6 +6,7 @@ package nl.knikit.cardgames.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.ToString;
 import org.springframework.hateoas.core.Relation;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ import lombok.Setter;
 @Table(name = "PLAYERS")
 @Getter
 @Setter
+@ToString
 @Relation(value="player", collectionRelation="players")
 public final class Player {
 
@@ -132,6 +134,7 @@ public final class Player {
 
     // static builder class generated with plugin Builder Generator and ALT+SHIFT+B
     // when seperate class then builder and build class should both be protected instead of private
+    @ToString
     public static final class PlayerBuilder {
         private long id;
         private String created;

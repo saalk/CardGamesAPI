@@ -32,7 +32,7 @@ import lombok.ToString;
 public enum AiLevel {
 
     @Column(name="AI_LEVEL")
-    LOW("Dumb", "Dom"), MEDIUM("Avarage", "Gemiddeld"), HIGH("High", "Hoog"), HUMAN("Human",
+    LOW("Dumb", "Dom"), MEDIUM("Average", "Gemiddeld"), HIGH("High", "Hoog"), HUMAN("Human",
             "Mens"), NONE("None","Geen");
 
     @Transient
@@ -55,5 +55,12 @@ public enum AiLevel {
         this.englishName = englishName;
         this.dutchName = dutchName;
     }
-
-};
+    /*
+	 * Using @Override annotation while overriding method in Java is one of the
+	 * best practice in Java.
+     */
+    @Override
+    public String toString() {
+        return "" + englishName;
+    }
+}

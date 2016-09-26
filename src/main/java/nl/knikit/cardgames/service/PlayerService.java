@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 
 /**
@@ -18,6 +19,7 @@ import java.util.ArrayList;
  * @author Klaas van der Meulen
  */
 
+@Slf4j
 @Service
 @Scope("prototype")
 public class PlayerService extends ResourceSupport {
@@ -133,6 +135,11 @@ public class PlayerService extends ResourceSupport {
     }
 
     public Player create(Player player) {
+
+        // logging
+        String message = String.format("Player from api: %s", player.toString());
+        log.info(message);
+
         Player playerBuilder = new Player.PlayerBuilder()
                 .withId(player.getId())
                 .withSequence(-1)
@@ -143,9 +150,25 @@ public class PlayerService extends ResourceSupport {
                 .withCubits(player.getCubits())
                 .withSecuredLoan(player.getSecuredLoan())
                 .build();
+
+        // logging
+        message = String.format("Player after Builder pattern: %s", playerBuilder.toString());
+        log.info(message);
+
         players.add(playerBuilder);
+
+        // logging
+        message = String.format("Players after new player is added: %s\n", players.toString());
+        log.info(message);
+
         PlayerDAOImpl playerDao = null;
-        playerDao.saveOrUpdate(playerBuilder);
+
+        try {
+            playerDao.saveOrUpdate(playerBuilder);
+        } catch (Exception e) {
+            log.info("Exception while saving or updating Player: ", e);
+        }
+
         // return the new player by looking in array for playerBuilder new sequence;
         return players.get(playerBuilder.getSequence());
     }

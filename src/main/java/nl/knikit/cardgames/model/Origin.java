@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * <H1>Origin</H1> What species is applicable
@@ -17,6 +18,7 @@ import lombok.Getter;
 
 @Embeddable
 @Getter
+@ToString
 public enum Origin {
 
 	@Column(name="ORIGIN")
