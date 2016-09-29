@@ -12,16 +12,7 @@ import org.springframework.hateoas.core.Relation;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 
 import lombok.Getter;
@@ -35,40 +26,42 @@ import lombok.Setter;
  * - class is final so it can't be extended so inheritance is prohibited!
  * - the class variables are immutable ('private') so they can't be accessed outside class
  *
- *
  * @author Klaas van der Meulen
  */
 
 //@Entity is deprecated in Hibernate 4 so use JPA annotations directly in the model class
 //TODO @DynamicUpdate from Hibernate
-@Entity
-@Table(name = "PLAYERS")
+
 @Getter
 @Setter
 @ToString
-@Relation(value="player", collectionRelation="players")
+@Entity
+@Table(name = "PLAYERS",
+        indexes = {@Index(name = "PLAYERS_INDEX", columnList = "PLAYER_ID")})
+@Relation(value = "player", collectionRelation = "players")
 public final class Player {
 
     @Transient
-    private static int startId = 0;
+    private static int startId = 1;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @Column(name = "PLAYER_ID")
-    private long id;
-    @Column(name = "CREATED")
-    private String created;
+    private String playerId;
     @Column(name = "SEQUENCE")
     private int sequence;
-    @Embedded
     @Enumerated(EnumType.STRING)
+    @Column(name = "ORIGIN")
     private Origin origin;
     @Column(name = "ALIAS")
     private String alias;
     @Column(name = "HUMAN")
     private boolean isHuman;
-    @Embedded
     @Enumerated(EnumType.STRING)
+    @Column(name = "AI_LEVEL")
     private AiLevel aiLevel;
     @Column(name = "CUBITS")
     private int cubits;
@@ -82,17 +75,16 @@ public final class Player {
     @JsonCreator
     public Player(
             @JsonProperty("id") long id,
-            @JsonProperty("created") String created,
+            @JsonProperty("playerId") String playerId,
             @JsonProperty("sequence") int sequence,
             @JsonProperty("origin") Origin origin,
             @JsonProperty("alias") String alias,
             @JsonProperty("isHuman") boolean isHuman,
             @JsonProperty("aiLevel") AiLevel aiLevel,
             @JsonProperty("cubits") int cubits,
-            @JsonProperty("securedLoan") int securedLoan)
-    {
+            @JsonProperty("securedLoan") int securedLoan) {
         this.id = id;
-        this.created = created;
+        this.playerId = playerId;
         this.sequence = sequence;
         this.origin = origin;
         this.alias = alias;
@@ -102,42 +94,46 @@ public final class Player {
         this.securedLoan = securedLoan;
     }
 
-    private void setSequence() {
-        this.sequence = startId++;
-    }
-
     public void setSequence(int sequence) {
-        this.sequence = sequence;
+        if (sequence == 0) {
+            this.sequence = startId++;
+        } else {
+            this.sequence = sequence;
+        }
     }
 
     public static void setSequenceBackWithOne() {
-        if (startId > 0) {
+        if (startId > 1) {
             startId--;
         }
     }
 
-    public static void setSequenceToZero() {
-        if (startId > 0) {
-            startId = 0;
+    public static void setSequenceToFirst() {
+        if (startId > 1) {
+            startId = 1;
         }
     }
 
-    private void setCreated() {
-
-        // java 8 has java.time and java.time.format instead of java.util.Date
-        // get local date and a format use format() to store the result into id
-        LocalDateTime localDateAndTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS");
-        String result = localDateAndTime.format(formatter);
-        this.created = result.substring(2,17);
+    private void setPlayerId(String playerId) {
+        if (playerId == "" || playerId == null) {
+            // java 8 has java.time and java.time.format instead of java.util.Date
+            // get local date and a format use format() to store the result into id
+            LocalDateTime localDateAndTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS");
+            String result = localDateAndTime.format(formatter);
+            this.playerId = result.substring(2, 19);
+        } else {
+            this.playerId = playerId;
+        }
     }
+
 
     // static builder class generated with plugin Builder Generator and ALT+SHIFT+B
     // when seperate class then builder and build class should both be protected instead of private
     @ToString
     public static final class PlayerBuilder {
         private long id;
-        private String created;
+        private String playerId;
         private int sequence;
         private Origin origin;
         private String alias;
@@ -159,8 +155,8 @@ public final class Player {
             return this;
         }
 
-        public PlayerBuilder withCreated(String created) {
-            this.created = created;
+        public PlayerBuilder withPlayerId(String playerId) {
+            this.playerId = playerId;
             return this;
         }
 
@@ -200,15 +196,12 @@ public final class Player {
         }
 
         public Player build() {
-            Player player = new Player(id, created, sequence, origin, alias, isHuman, aiLevel,
+            Player player = new Player(id, playerId, sequence, origin, alias, isHuman, aiLevel,
                     cubits, securedLoan);
-            player.setCreated();
-            // when -1 use set sequence to auto generated a sequence otherwise it is a update
-            if (sequence >= 0) {
-                player.setSequence(sequence);
-            } else {
-                player.setSequence();
-            }
+
+            player.setPlayerId(playerId);
+            player.setSequence(sequence);
+
             return player;
         }
     }

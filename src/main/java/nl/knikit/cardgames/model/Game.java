@@ -32,8 +32,9 @@ public class Game {
     @GeneratedValue(strategy= GenerationType.AUTO)
 	@Column(name = "GAME_ID")
 	private long id;
-    @Embedded
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "CARD_GAME")
 	private CardGame cardGame;
 	@Column(name = "ROUNDS")
 	private int rounds;

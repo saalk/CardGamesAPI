@@ -6,11 +6,14 @@ import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Origin;
 import nl.knikit.cardgames.model.Player;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 
 /**
@@ -24,13 +27,17 @@ import java.util.ArrayList;
 @Scope("prototype")
 public class PlayerService extends ResourceSupport {
 
+    // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
+    @Autowired
+    private PlayerDAO playerDAO;
+
     private ArrayList<Player> players = new ArrayList<Player>();
 
     //TODO move to PLayerDAO instead of this temporary PlayerService constructor
     PlayerService() {
         players.add(new Player.PlayerBuilder()
-                .withSequence(-1)
-                .withCreated(null)
+                //.withSequence(-1)
+                //.withPlayerId(null)
                 .withOrigin(Origin.ELF)
                 .withAlias("Java Doe")
                 .withIsHuman(true)
@@ -40,8 +47,8 @@ public class PlayerService extends ResourceSupport {
                 .build()
         );
         players.add(new Player.PlayerBuilder()
-                .withSequence(-1)
-                .withCreated(null)
+                //.withSequence(-1)
+                //.withPlayerId(null)
                 .withOrigin(Origin.ELF)
                 .withAlias("JavaAlien1")
                 .withIsHuman(false)
@@ -51,8 +58,8 @@ public class PlayerService extends ResourceSupport {
                 .build()
         );
         players.add(new Player.PlayerBuilder()
-                .withSequence(-1)
-                .withCreated(null)
+                //.withSequence(-1)
+                //.withPlayerId(null)
                 .withOrigin(Origin.ELF)
                 .withAlias("JavaAlien2")
                 .withIsHuman(false)
@@ -119,9 +126,9 @@ public class PlayerService extends ResourceSupport {
                 break;
             }
         }
-        int index = 0;
+        int index = 1;
         if (found) {
-            // set all the next players with sequence - 1 to align them neatly
+            // set all the next player's sequence back with 1 to align them neatly
             for (Player p : players) {
                 p.setSequence(index);
                 players.set(index, p);
@@ -131,7 +138,7 @@ public class PlayerService extends ResourceSupport {
             Player.setSequenceBackWithOne();
         }
         // use ternary operator (ternary = conditional operator -> expression?true:false)
-        return (found ? sequence : -1);
+        return (found ? sequence : 0);
     }
 
     public Player create(Player player) {
@@ -141,8 +148,7 @@ public class PlayerService extends ResourceSupport {
         log.info(message);
 
         Player playerBuilder = new Player.PlayerBuilder()
-                .withId(player.getId())
-                .withSequence(-1)
+                .withSequence(0)
                 .withOrigin(player.getOrigin())
                 .withAlias(player.getAlias())
                 .withIsHuman(player.isHuman())
@@ -161,30 +167,28 @@ public class PlayerService extends ResourceSupport {
         message = String.format("Players after new player is added: %s\n", players.toString());
         log.info(message);
 
-        PlayerDAOImpl playerDao = null;
-
         try {
-            playerDao.saveOrUpdate(playerBuilder);
+            playerDAO.createOrUpdate(playerBuilder);
         } catch (Exception e) {
-            log.info("Exception while saving or updating Player: ", e);
+            log.error("Exception while saving or updating Player: ", e);
         }
 
-        // return the new player by looking in array for playerBuilder new sequence;
-        return players.get(playerBuilder.getSequence());
+        return playerBuilder;
     }
 
     public void deleteAll() {
         players.clear();
-        Player.setSequenceToZero();
+        Player.setSequenceToFirst();
     }
 
-    public Player update(Long id, Player player) {
+    public Player update(Player player) {
         int index = 0;
         for (Player p : players) {
-            if (p.getId() == id) {
+            if (p.getPlayerId() == player.getPlayerId()) {
                 // Use ArrayList remove and add to make a new sequence or set to change the current
                 Player playerBuilder = new Player.PlayerBuilder()
-                        .withId(player.getId())
+                        //.withId(player.getId())
+                        .withPlayerId(player.getPlayerId())
                         .withSequence(player.getSequence())
                         .withOrigin(player.getOrigin())
                         .withAlias(player.getAlias())
@@ -201,15 +205,14 @@ public class PlayerService extends ResourceSupport {
         return null;
     }
 
-    public Player updateBySequence(int sequence, Player player) {
+    public Player updateBySequence(Player player) {
         int index = 0;
         for (Player p : players) {
-            if (p.getSequence() == sequence) {
+            if (p.getSequence() == player.getSequence()) {
                 // Use ArrayList remove and add to make a new sequence or set to change the current
                 Player playerBuilder = new Player.PlayerBuilder()
-                        .withId(player.getId())
-                        .withSequence(sequence)
-                        .withCreated(player.getCreated())
+                        .withSequence(player.getSequence())
+                        .withPlayerId(player.getPlayerId())
                         .withOrigin(player.getOrigin())
                         .withAlias(player.getAlias())
                         .withIsHuman(player.isHuman())
@@ -222,7 +225,7 @@ public class PlayerService extends ResourceSupport {
                 // players.remove(p);
                 // players.add(playerBuilder);
                 return players.get(index);
-              }
+            }
             index++;
         }
         return null;

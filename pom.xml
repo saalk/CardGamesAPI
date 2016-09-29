@@ -420,7 +420,10 @@
             <version>${spring-hateoas.version}</version>
         </dependency>
 
-        <!-- add servlet since springs dispatcher servlet depends on it -->
+        <!-- add servlet since springs dispatcher servlet depends on it
+         set its scope as provided inside the pom.xml and maven will not place it
+         in the WEB-INF/lib of your project
+         -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -437,6 +440,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -465,15 +469,16 @@
             <version>${hibernate-validator.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>javax.el</artifactId>
             <version>2.2.4</version>
         </dependency> -->
+    <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>2.2.4</version>
+        <scope>provided</scope>
+    </dependency>
 
         <!-- database MariaDB + Connector/J jdbc driver for MySQL -->
         <dependency>

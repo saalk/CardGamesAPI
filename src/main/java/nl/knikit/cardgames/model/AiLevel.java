@@ -26,7 +26,7 @@ import lombok.ToString;
  * @version 1.0
  * @since v1 - console game
  */
-@Embeddable
+
 @Getter
 @ToString
 public enum AiLevel {

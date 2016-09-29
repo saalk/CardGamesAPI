@@ -1,17 +1,18 @@
 package nl.knikit.cardgames.dao;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.knikit.cardgames.model.Player;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
 // Implementing dao for all the crud in the dao interface
+@Slf4j
 @Repository
 public class PlayerDAOImpl implements PlayerDAO {
 
@@ -29,7 +30,8 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     @Override
     @Transactional
-    public ArrayList<Player> list() {
+    public ArrayList<Player> listAll() {
+
         @SuppressWarnings("unchecked")
         ArrayList<Player> listPlayer = (ArrayList<Player>) sessionFactory.getCurrentSession()
                 .createCriteria(Player.class)
@@ -40,23 +42,38 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     @Override
     @Transactional
-    public Player saveOrUpdate(Player player) {
+    public ArrayList<Player> findAllForCriteria(String criteria) {
+        @SuppressWarnings("unchecked")
+        ArrayList<Player> listPlayer = (ArrayList<Player>) sessionFactory.getCurrentSession()
+                .createCriteria(Player.class)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+
+        return listPlayer;
+    }
+
+    @Override
+    @Transactional
+    public void createOrUpdate(Player player) {
+        String message = String.format("Player in DAO: %s", player.toString());
+        log.info(message);
+
         sessionFactory.getCurrentSession().saveOrUpdate(player);
-        return player;
+
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
-        Player playerToDelete = new Player();
-        playerToDelete.setId(id);
-        sessionFactory.getCurrentSession().delete(playerToDelete);
+    public void delete(String playerId) {
+
+        Player userToDelete = get(playerId);
+        sessionFactory.getCurrentSession().delete(userToDelete);
+
     }
 
     @Override
     @Transactional
-    public Player get(Long id) {
-        String hql = "from Player where id=" + id;
+    public Player get(String playerId) {
+        String hql = "from Player where playerId=" + playerId;
         Query query = sessionFactory.getCurrentSession().createQuery(hql);
 
         @SuppressWarnings("unchecked")

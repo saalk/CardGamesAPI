@@ -9,11 +9,11 @@ function PlayerService(toastr, Restangular){
         initPlayers: function() {
             if (players[0] == null) {
             players = [
-                {id: 123,  'created': '160913-01:28-11', sequence: 0, 'origin': 'ELF', 'alias':
+                {id: 123,  'playerId': '160913-01:28-11', sequence: 0, 'origin': 'ELF', 'alias':
                 'stranger', 'aiLevel': 'Human', cubits: 0000, securedLoan: 0000},
-                {id: 234,  'created': '160913-01:28-12', sequence: 1, 'origin': 'ELF', 'alias':
+                {id: 234,  'playerId': '160913-01:28-12', sequence: 1, 'origin': 'ELF', 'alias':
                 'alien1', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000},
-                {id: 345,  'created': '160913-01:28-13', sequence: 2, 'origin': 'ELF', 'alias':
+                {id: 345,  'playerId': '160913-01:28-13', sequence: 2, 'origin': 'ELF', 'alias':
                 'alien2', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000}
                 ];
                 toastr.success('A new spaceship has landed...', 'Alpha landing bay');

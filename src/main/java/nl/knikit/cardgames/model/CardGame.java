@@ -18,7 +18,6 @@ import lombok.Getter;
  * @since v1 - console game
  */
 @Getter
-@Embeddable
 public enum CardGame {
 
     /**

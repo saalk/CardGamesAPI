@@ -16,7 +16,6 @@ import lombok.ToString;
  * @since v1 - console game
  */
 
-@Embeddable
 @Getter
 @ToString
 public enum Origin {

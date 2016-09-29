@@ -41,6 +41,7 @@ package nl.knikit.cardgames.controller;
 import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
 import nl.knikit.cardgames.exception.PlayerNotFoundForSequenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ExposesResourceFor;
 
 import org.springframework.http.HttpStatus;
@@ -65,6 +66,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 @ExposesResourceFor(Player.class)
 @Slf4j
+@Scope("prototype")
 public class PlayerController {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
@@ -175,10 +177,10 @@ public class PlayerController {
                 .body("All Players deleted");
     }
 
-    @PutMapping("/players/{id}")
+    @PutMapping("/players/{playerId}")
     public ResponseEntity updatePlayer(@PathVariable Long id, @RequestBody Player
             player) {
-        Player newPlayer = playerService.update(id, player);
+        Player newPlayer = playerService.update(player);
         if (null == newPlayer) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -193,7 +195,7 @@ public class PlayerController {
     public ResponseEntity updatePlayerBySequence(
             @RequestParam("sequence") int sequence, @RequestBody Player
             player) {
-        Player newPlayer = playerService.updateBySequence(sequence, player);
+        Player newPlayer = playerService.updateBySequence(player);
         if (null == newPlayer) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
