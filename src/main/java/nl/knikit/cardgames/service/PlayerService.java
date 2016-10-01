@@ -1,7 +1,6 @@
 package nl.knikit.cardgames.service;
 
 import nl.knikit.cardgames.dao.PlayerDAO;
-import nl.knikit.cardgames.dao.PlayerDAOImpl;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Origin;
 import nl.knikit.cardgames.model.Player;
@@ -28,6 +27,8 @@ import java.util.ArrayList;
 public class PlayerService extends ResourceSupport {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
+    // @Controller (presentation layer), @Service (service layer) and @Repository (dao layer) conver all beans
+
     @Autowired
     private PlayerDAO playerDAO;
 
@@ -35,43 +36,46 @@ public class PlayerService extends ResourceSupport {
 
     //TODO move to PLayerDAO instead of this temporary PlayerService constructor
     PlayerService() {
-        players.add(new Player.PlayerBuilder()
-                //.withSequence(-1)
-                //.withPlayerId(null)
-                .withOrigin(Origin.ELF)
-                .withAlias("Java Doe")
-                .withIsHuman(true)
-                .withAiLevel(AiLevel.HUMAN)
-                .withCubits(0)
-                .withSecuredLoan(0)
-                .build()
-        );
-        players.add(new Player.PlayerBuilder()
-                //.withSequence(-1)
-                //.withPlayerId(null)
-                .withOrigin(Origin.ELF)
-                .withAlias("JavaAlien1")
-                .withIsHuman(false)
-                .withAiLevel(AiLevel.MEDIUM)
-                .withCubits(0)
-                .withSecuredLoan(0)
-                .build()
-        );
-        players.add(new Player.PlayerBuilder()
-                //.withSequence(-1)
-                //.withPlayerId(null)
-                .withOrigin(Origin.ELF)
-                .withAlias("JavaAlien2")
-                .withIsHuman(false)
-                .withAiLevel(AiLevel.MEDIUM)
-                .withCubits(0)
-                .withSecuredLoan(0)
-                .build()
-        );
     }
 
     public ArrayList<Player> list() {
-        return players; }
+        if (players.size()==0) {
+            players.add(new Player.PlayerBuilder()
+                    //.withSequence(-1)
+                    //.withPlayerId(null)
+                    .withOrigin(Origin.ELF)
+                    .withAlias("Java Doe")
+                    .withIsHuman(true)
+                    .withAiLevel(AiLevel.HUMAN)
+                    .withCubits(0)
+                    .withSecuredLoan(0)
+                    .build()
+            );
+            players.add(new Player.PlayerBuilder()
+                    //.withSequence(-1)
+                    //.withPlayerId(null)
+                    .withOrigin(Origin.ELF)
+                    .withAlias("JavaAlien1")
+                    .withIsHuman(false)
+                    .withAiLevel(AiLevel.MEDIUM)
+                    .withCubits(0)
+                    .withSecuredLoan(0)
+                    .build()
+            );
+            players.add(new Player.PlayerBuilder()
+                    //.withSequence(-1)
+                    //.withPlayerId(null)
+                    .withOrigin(Origin.ELF)
+                    .withAlias("JavaAlien2")
+                    .withIsHuman(false)
+                    .withAiLevel(AiLevel.MEDIUM)
+                    .withCubits(0)
+                    .withSecuredLoan(0)
+                    .build()
+            );
+        }
+        return players;
+    }
 
     public Player get(Long id) {
 
@@ -187,7 +191,7 @@ public class PlayerService extends ResourceSupport {
             if (p.getPlayerId() == player.getPlayerId()) {
                 // Use ArrayList remove and add to make a new sequence or set to change the current
                 Player playerBuilder = new Player.PlayerBuilder()
-                        //.withId(player.getId())
+                        .withId(player.getId())
                         .withPlayerId(player.getPlayerId())
                         .withSequence(player.getSequence())
                         .withOrigin(player.getOrigin())

@@ -43,7 +43,7 @@ public class Tables {
 	@Id
 	@GeneratedValue(strategy= GenerationType.SEQUENCE)
 	@Column(name = "TABLE_ID")
-	private long id;
+	private Long id;
 	@OneToOne
 	@JoinColumn(name = "FK_GAME_ID", referencedColumnName = "GAME_ID")
 	Game game;

@@ -30,38 +30,53 @@
 
 </head>
 <body ng-app="myApp">
-    <div class="container">
-        <div ng-view></div>
-        <!-- ng-view angular placeholder for html partials
-            –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-        <section class="container">
-            <div class="row">
-                <div class="twelve columns">
-                    <div ng-cloak>
-                        &copy 2016 Saalk@KnikIT - trying to beat
+<div class="container">
+    <div ng-view></div>
+    <!-- ng-view angular placeholder for html partials
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <section class="container">
+        <div class="row">
+            <div class="twelve columns">
+                <div ng-cloak>
+                    &copy 2016 Saalk@KnikIT - trying to beat
                     <a href="http://www.dictionary.com/browse/sturgeon-s-law">sturgeon's law</a></div>
-                </div>
             </div>
-        </section>
-    </div>
-    <!-- Scripts
-    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <script src="vendor/angular/angular.min.js"></script>
-    <script src="vendor/angular-route/angular-route.min.js"></script>
-    <script src="vendor/angular-toastr/dist/angular-toastr.tpls.min.js"></script>
-    <script src="vendor/angular-animate/angular-animate.min.js"></script>
-    <script src="vendor/angular-resource/angular-resource.min.js"></script>
-    <script src="vendor/angular-cookies/angular-cookies.min.js"></script>
-    <!-- <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>-->
-    <script src="vendor/lodash/dist/lodash.min.js"></script>
-    <script src="vendor/restangular/dist/restangular.min.js"></script>
+        </div>
+    </section>
+</div>
+<!-- Scripts
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<script src="vendor/angular/angular.min.js"></script>
+<script src="vendor/angular-route/angular-route.min.js"></script>
+<script src="vendor/angular-toastr/dist/angular-toastr.tpls.min.js"></script>
+<script src="vendor/angular-animate/angular-animate.min.js"></script>
+<script src="vendor/angular-resource/angular-resource.min.js"></script>
+<script src="vendor/angular-cookies/angular-cookies.min.js"></script>
+<!-- <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>-->
+<script src="vendor/lodash/dist/lodash.min.js"></script>
+<script src="vendor/restangular/dist/restangular.min.js"></script>
 
-    <script src="javascript/app.js"></script>
-    <script src="javascript/controllers/homecontroller.js"></script>
-    <script src="javascript/controllers/casinocontroller.js"></script>
-    <script src="javascript/controllers/tablecontroller.js"></script>
-    <script src="javascript/controllers/resultscontroller.js"></script>
-    <script src="javascript/filters.js"></script>
-    <script src="javascript/services/playerfactory.js"></script>
+<script src="javascript/app.js"></script>
+<script src="javascript/controllers/homecontroller.js"></script>
+<script src="javascript/controllers/casinocontroller.js"></script>
+<script src="javascript/controllers/tablecontroller.js"></script>
+<script src="javascript/controllers/resultscontroller.js"></script>
+<script src="javascript/filters.js"></script>
+<script src="javascript/services/playerfactory.js"></script>
+<!-- Piwik -->
+<script type="text/javascript">
+        var _paq = _paq || [];
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+        var u="//192.168.2.100/piwik/";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', 1]);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+        })();
+    </script>
+<noscript><p><img src="//192.168.2.100/piwik/piwik.php?idsite=1" style="border:0;" alt=""/></p></noscript>
+<!-- End Piwik Code -->
 </body>
 </html>

@@ -1,10 +1,15 @@
 package nl.knikit.cardgames.dao;
 
 import nl.knikit.cardgames.model.Player;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 
+@Repository
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public interface PlayerDAO {
 
     public ArrayList<Player> listAll();

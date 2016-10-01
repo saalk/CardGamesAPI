@@ -74,7 +74,7 @@ public final class Player {
 
     @JsonCreator
     public Player(
-            @JsonProperty("id") long id,
+            @JsonProperty("id") Long id,
             @JsonProperty("playerId") String playerId,
             @JsonProperty("sequence") int sequence,
             @JsonProperty("origin") Origin origin,
@@ -119,9 +119,9 @@ public final class Player {
             // java 8 has java.time and java.time.format instead of java.util.Date
             // get local date and a format use format() to store the result into id
             LocalDateTime localDateAndTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
             String result = localDateAndTime.format(formatter);
-            this.playerId = result.substring(2, 19);
+            this.playerId = result.substring(2, 25);
         } else {
             this.playerId = playerId;
         }
@@ -132,7 +132,7 @@ public final class Player {
     // when seperate class then builder and build class should both be protected instead of private
     @ToString
     public static final class PlayerBuilder {
-        private long id;
+        private Long id;
         private String playerId;
         private int sequence;
         private Origin origin;
@@ -150,7 +150,7 @@ public final class Player {
             return new PlayerBuilder();
         }
 
-        public PlayerBuilder withId(long id) {
+        public PlayerBuilder withId(Long id) {
             this.id = id;
             return this;
         }
@@ -198,7 +198,6 @@ public final class Player {
         public Player build() {
             Player player = new Player(id, playerId, sequence, origin, alias, isHuman, aiLevel,
                     cubits, securedLoan);
-
             player.setPlayerId(playerId);
             player.setSequence(sequence);
 
