@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter;
 public class Casino implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "ID")
     @JsonProperty("id") private int id;
 

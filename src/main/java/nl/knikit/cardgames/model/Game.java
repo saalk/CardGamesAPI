@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 public class Game  implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "ID")
     @JsonProperty("id") private int id;
     @Column(name = "GAME_ID")

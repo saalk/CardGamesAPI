@@ -46,7 +46,7 @@ import lombok.Setter;
 public class Hand {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "ID")
     @JsonProperty("id")
     private int id;
