@@ -1,27 +1,27 @@
 package nl.knikit.cardgames.service.impl;
 
-import nl.knikit.cardgames.dao.IParentDao;
+import nl.knikit.cardgames.dao.IPlayerDao;
 import nl.knikit.cardgames.dao.common.IOperations;
-import nl.knikit.cardgames.model.Parent;
-import nl.knikit.cardgames.service.IParentService;
+import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.service.IPlayerService;
 import nl.knikit.cardgames.service.common.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ParentService extends AbstractService<Parent> implements IParentService {
+public class PlayerService extends AbstractService<Player> implements IPlayerService {
 
     @Autowired
-    private IParentDao dao;
+    private IPlayerDao dao;
 
-    public ParentService() {
+    public PlayerService() {
         super();
     }
 
     // API
 
     @Override
-    protected IOperations<Parent> getDao() {
+    protected IOperations<Player> getDao() {
         return dao;
     }
 

@@ -25,7 +25,7 @@ public enum Rank {
             "Five", "Vijf"), SIX("6", "Six", "Zes"), SEVEN("7", "Seven", "Zeven"), EIGHT("8", "Eight",
             "Acht"), NINE("9", "Nine", "Negen"), TEN("10", "Ten", "Tien"), JACK("J", "Jack", "Boer"), QUEEN("Q",
             "Queen", "Vrouw"), KING("K", "King", "Koning"), JOKER("R", "Joker", "Joker");
-    @Column(name="RANK")
+    @Column(name = "RANK")
     String shortName;
     @Transient
     String englishName;
@@ -54,15 +54,14 @@ public enum Rank {
      * Usually the Face cards (K,Q,J) are worth 13,12,11 points, each Aces are worth 1. But the
      * selected card game determines the playing value.
      * <p>
-     * Values for {@link CardGame}:
+     * Values for {@link CardGameType}:
      * 1. Vote if equal cards are a loss or correct guess (usually loss since only high low counts).
      * 2. No jokers.
      * 3. Ace is worth 1
-     *
      */
-    public int getValue(CardGame inputCardGame) {
+    public int getValue(CardGameType inputCardGameType) {
         int value = 0;
-        switch (inputCardGame) {
+        switch (inputCardGameType) {
             case HIGHLOW:
                 switch (this) {
                     case JOKER:
@@ -91,7 +90,9 @@ public enum Rank {
 
     @Override
     public String toString() {
-        return "" + shortName;
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Rank [value=").append(shortName).append("]");
+        return builder.toString();
     }
 
 }

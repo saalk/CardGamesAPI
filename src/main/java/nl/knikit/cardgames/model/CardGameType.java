@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * <H1>CardGame</H1> A selection of card games that can be selected to play. <p> More games will be
@@ -18,7 +19,7 @@ import lombok.Getter;
  * @since v1 - console game
  */
 @Getter
-public enum CardGame {
+public enum CardGameType {
 
     /**
      * HIGHLOW cardgame is a simple higher or lower guessing game. The dealer places one card
@@ -29,31 +30,28 @@ public enum CardGame {
      * the bet to another player, or go double or nothing on the next bet depending on the specific
      * variant of HIGHLOW.
      */
-    @Column(name = "CARDGAME")
-    HIGHLOW("Hi-Lo Card Game", "Hoog Laag Kaartspel");
-    // BLACKJACK("Blackjack (twenty-one)", "Blackjack (Eenentwintigen)");
+    @Column(name = "CARD_GAME_TYPE")
+    HIGHLOW("Hi-Lo Card Game", "Hoog Laag Kaartspel"),
+    BLACKJACK("Blackjack (twenty-one)", "Blackjack (Eenentwintigen)");
 
     @Transient
-    String englishName;
+    private String englishName;
     @Transient
-    String dutchName;
+    private String dutchName;
     @Transient
-    public static Set<CardGame> cardGamesList = EnumSet.of(HIGHLOW);
+    public static Set<CardGameType> cardGamesListType = EnumSet.of(HIGHLOW);
 
     // Constructor, each argument to the constructor shadows one of the object's
     // fields
-    CardGame(String englishName, String dutchName) {
+    CardGameType(String englishName, String dutchName) {
         this.englishName = englishName;
         this.dutchName = dutchName;
     }
 
-    /*
-     * Using @Override annotation while overriding method in Java is one of the
-     * best practice in Java.
-     */
     @Override
     public String toString() {
-        return "" + englishName;
+        final StringBuilder builder = new StringBuilder();
+        builder.append("CardGameType [name=").append(englishName).append("]");
+        return builder.toString();
     }
-
-};
+}

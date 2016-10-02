@@ -90,6 +90,7 @@ STOP_GAME -up-> SELECT_GAME: GAME_FINISHED
 
 import java.util.Random;
 
+import nl.knikit.cardgames.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,12 +101,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 
-import nl.knikit.cardgames.model.AiLevel;
-import nl.knikit.cardgames.model.CardGame;
-import nl.knikit.cardgames.model.CardGameVariant;
-import nl.knikit.cardgames.model.GameOld;
-import nl.knikit.cardgames.model.Origin;
-import nl.knikit.cardgames.model.PlayerOld;
+import nl.knikit.cardgames.model.CardGameType;
 import nl.knikit.cardgames.utils.Console;
 
 /**
@@ -113,7 +109,7 @@ import nl.knikit.cardgames.utils.Console;
  * runs on your desktop's console <li>offers card game 'HighLow' <li>each visitor starts with 1000
  * credits <li>choose between various card game variants <li>select up to 2 ai Players (bots) to
  * join a game <li>select their ai level (high, average, low) and try to beat them </ul>
- *
+ * <p>
  * <p><h2>GalacticCasino Class diagram</h2>Since this is class with the main method it uses lots of
  * 'HAS-A' relationship. Codified via <b>Associations</b><img src="../../../../../../src/main/resources/plantuml/GalacticCasino.png" alt="UML1">
  * <h2>Controller Class diagram 'state and triggers</h2><img src="../../../../../../src/main/resources/plantuml/StateMachine.png" alt="UML2">
@@ -121,7 +117,7 @@ import nl.knikit.cardgames.utils.Console;
  * @author Klaas van der Meulen
  * @version 1.0
  * @since v1 - console game
-**/
+ **/
 
 public class GalacticCasino {
 
@@ -217,7 +213,7 @@ public class GalacticCasino {
 
         // SETUP CASINO
         StateMachine<State, Trigger> galacticCasino = new StateMachine<>(State.SELECT_GAME, cardGameConfig);
-        CardGame cardGameSelected;
+        CardGameType cardGameTypeSelected;
         CardGameVariant cardGameVariantSelected;
         // why not null; instead of new GameOld(null); or just GameOld currentGameOld; ?
         GameOld currentGameOld = new GameOld(null);
@@ -233,9 +229,9 @@ public class GalacticCasino {
                 case SELECT_GAME:
 
                     // CHOOSE GAME
-                    String[] displayCardGames = new String[CardGame.cardGamesList.size() + 1];
+                    String[] displayCardGames = new String[CardGameType.cardGamesListType.size() + 1];
                     index = 0;
-                    for (CardGame cg : CardGame.cardGamesList) {
+                    for (CardGameType cg : CardGameType.cardGamesListType) {
                         displayCardGames[index] = cg.toString();
                         index++;
                     }
@@ -247,7 +243,7 @@ public class GalacticCasino {
 
                         // make a list of Strings available from CardGames enum's
                         // toString
-                        cardGameSelected = CardGame.HIGHLOW;
+                        cardGameTypeSelected = CardGameType.HIGHLOW;
 
                         String[] displayCardGameVariants = new String[CardGameVariant.highlowCardGameVariants.size()];
                         index = 0;
@@ -369,20 +365,20 @@ public class GalacticCasino {
                     }
 
                     // debug logging
-				log = new StringBuilder();
-                log.append(System.lineSeparator());
-				log.append("= Next player=============================");
-				log.append(System.lineSeparator());
-				log.append("  State: " + galacticCasino.getState());
-				log.append(System.lineSeparator());
-				log.append("  Permitted trigger: " + galacticCasino.getPermittedTriggers());
-				log.append(System.lineSeparator());
-				log.append("  Current GameOld: " + currentGameOld);
-				log.append(System.lineSeparator());
-				log.append("  Current PlayerOld: " + currentPlayerOld);
-				log.append(System.lineSeparator());
-				log.append("= End ====================================");
-				logger.debug(log.toString());
+                    log = new StringBuilder();
+                    log.append(System.lineSeparator());
+                    log.append("= Next player=============================");
+                    log.append(System.lineSeparator());
+                    log.append("  State: " + galacticCasino.getState());
+                    log.append(System.lineSeparator());
+                    log.append("  Permitted trigger: " + galacticCasino.getPermittedTriggers());
+                    log.append(System.lineSeparator());
+                    log.append("  Current GameOld: " + currentGameOld);
+                    log.append(System.lineSeparator());
+                    log.append("  Current PlayerOld: " + currentPlayerOld);
+                    log.append(System.lineSeparator());
+                    log.append("= End ====================================");
+                    logger.debug(log.toString());
 
                     // DEAL A INITIAL CARD AND SHOW
                     currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
@@ -458,23 +454,23 @@ public class GalacticCasino {
                     System.out.println(currentPlayerOld.toStringPlayers());
 
                     // debug logging
-				log = new StringBuilder();
-                log.append("");
-				log.append(System.lineSeparator());
-				log.append("= Loop Turn for current player ===========");
-				log.append(System.lineSeparator());
-				log.append("  State: " + galacticCasino.getState());
-				log.append(System.lineSeparator());
-				log.append("  Permitted trigger: " + galacticCasino.getPermittedTriggers());
-				log.append(System.lineSeparator());
-				log.append("  Current GameOld: " + currentGameOld);
-				log.append(System.lineSeparator());
-				log.append("  Anwer from player: " + prediction);
-				log.append(System.lineSeparator());
-				log.append("  Result from dealing: " + real);
-				log.append(System.lineSeparator());
-				log.append("= End ====================================");
-				logger.debug(log.toString());
+                    log = new StringBuilder();
+                    log.append("");
+                    log.append(System.lineSeparator());
+                    log.append("= Loop Turn for current player ===========");
+                    log.append(System.lineSeparator());
+                    log.append("  State: " + galacticCasino.getState());
+                    log.append(System.lineSeparator());
+                    log.append("  Permitted trigger: " + galacticCasino.getPermittedTriggers());
+                    log.append(System.lineSeparator());
+                    log.append("  Current GameOld: " + currentGameOld);
+                    log.append(System.lineSeparator());
+                    log.append("  Anwer from player: " + prediction);
+                    log.append(System.lineSeparator());
+                    log.append("  Result from dealing: " + real);
+                    log.append(System.lineSeparator());
+                    log.append("= End ====================================");
+                    logger.debug(log.toString());
 
                     // WIN, LOOSE OR JUST NEXT TURN
                     if (prediction == real) {

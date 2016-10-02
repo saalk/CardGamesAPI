@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 import lombok.Getter;
@@ -31,14 +30,14 @@ import lombok.ToString;
 @ToString
 public enum AiLevel {
 
-    @Column(name="AI_LEVEL")
+    @Column(name = "AI_LEVEL")
     LOW("Dumb", "Dom"), MEDIUM("Average", "Gemiddeld"), HIGH("High", "Hoog"), HUMAN("Human",
-            "Mens"), NONE("None","Geen");
+            "Mens"), NONE("None", "Geen");
 
     @Transient
-    String englishName;
+    private String englishName;
     @Transient
-    String dutchName;
+    private String dutchName;
 
     /**
      * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
@@ -55,8 +54,9 @@ public enum AiLevel {
         this.englishName = englishName;
         this.dutchName = dutchName;
     }
+
     /*
-	 * Using @Override annotation while overriding method in Java is one of the
+     * Using @Override annotation while overriding method in Java is one of the
 	 * best practice in Java.
      */
     @Override

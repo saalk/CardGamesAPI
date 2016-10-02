@@ -3,24 +3,14 @@
  */
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +21,7 @@ import lombok.Setter;
  * <p><h2> Hand IS-A list of Cards</h2>
  * Codify this via Hand extends Card. This is <u>Class Inheritance</u> via static (compile-time) binding.
  * When Hand implements Card this is called <u>Interface Inheritance</u>.
- * So Hand could extend or implement Card meaning a parent-child relationship having subclasses.
+ * So Hand could extend or implement Card meaning a player-child relationship having subclasses.
  * Since Hand is NOT a specific type of Cards we could better use a 'HAS-A' relationship.
  * <h2> Hand HAS-A list of Cards</h2>
  * Codify this via Card handCards = new Card(). This is <u>Object Composition</u> via dynamic (run-time)
@@ -43,46 +33,43 @@ import lombok.Setter;
  * @since v1 - console game
  */
 @Entity
-@Table(name = "HANDS", indexes = {
-        @Index(columnList = "FK_PLAYER_ID", name = "FK_PLAYER_ID_INDEX"),
-        @Index(columnList = "FK_TABLES_ID", name = "FK_TABLES_ID_INDEX")})
+@DynamicUpdate
+@Table( name = "HAND",
+        indexes = {
+            @Index(columnList = "FK_PLAYER", name = "FK_PLAYER_INDEX"),
+            @Index(columnList = "FK_CASINO", name = "FK_CASINO_INDEX")},
+        uniqueConstraints =
+            @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"FK_PLAYER","FK_CASINO"}))
 @Getter
 @Setter
-@Relation(value="hand", collectionRelation="hands")
+@Relation(value = "hand", collectionRelation = "hands")
 public class Hand {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE)
-    @Column(name = "HAND_ID")
-    private long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    @JsonProperty("id")
+    private int id;
 
-    @OneToOne
-    @JoinColumn(name = "FK_PLAYER_ID", referencedColumnName = "PLAYER_ID")
-    Player player;
 
-    @OneToOne
-    @JoinColumn(name = "FK_TABLES_ID", referencedColumnName = "TABLE_ID")
-    Tables tables;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JsonProperty("fkPlayer") private  Player fkPlayer;
 
-    @Embedded
-    private List<Card> cards;
+    @OneToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "FK_CASINO", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CASINO"))
+    @JsonProperty("fkCasino") private  Casino fkCasino;
+
+    @Column(name = "CARDS")
+    @JsonProperty("cards") private  ArrayList<Card> cards;
 
     public Hand() {
         this.cards = new ArrayList<>();
     }
 
-    /*
-     * public Hand(List<Card> cards) { this.cards = cards; }
-     */
     public Card getCard(int index) {
         return cards.get(index);
-
-    }
-
-    public List<Card> getCards() {
-        return cards;
-
-    }
+   }
 
     public void setCard(Card card) {
         this.cards.add(card);
@@ -93,7 +80,6 @@ public class Hand {
         // bugfix size for index always -1
         Card lastCard = this.cards.get(size - 1);
         return lastCard;
-
     }
 
     public void playCard(Card card) {
@@ -113,6 +99,8 @@ public class Hand {
 
     @Override
     public String toString() {
-        return "" + cards;
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Game [id=").append(id).append("]");
+        return builder.toString();
     }
 }

@@ -6,7 +6,7 @@ import org.junit.Test;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.HandOld;
 
-public class HighLowCardGameOldTest {
+public class HighLowCardGameTypeOldTest {
 
 	private Deck deck; 
 	private HandOld handOld1;

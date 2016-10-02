@@ -12,7 +12,7 @@ import java.util.List;
  * <p><h2> Hand IS-A list of Cards</h2>
  * Codify this via Hand extends Card. This is <u>Class Inheritance</u> via static (compile-time) binding.
  * When Hand implements Card this is called <u>Interface Inheritance</u>.
- * So Hand could extend or implement Card meaning a parent-child relationship having subclasses.
+ * So Hand could extend or implement Card meaning a player-child relationship having subclasses.
  * Since Hand is NOT a specific type of Cards we could better use a 'HAS-A' relationship.
  * <h2> Hand HAS-A list of Cards</h2>
  * Codify this via Card handCards = new Card(). This is <u>Object Composition</u> via dynamic (run-time)

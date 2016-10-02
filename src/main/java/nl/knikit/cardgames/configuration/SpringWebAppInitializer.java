@@ -4,23 +4,22 @@ package nl.knikit.cardgames.configuration;
  * This will register springs DispatcherServlet to use @Configuration annotated classed
  * Spring then scans at application startup this class that has one job: assemble the web app's
  * moving parts
- *
+ * <p>
  * Servlet = a java class that responds to http requests;
  * - servlet is an API specification (javax.servlet.http.*) used to extended HttpServlet
  * - then override doGet, doPost, doPu, doDelete, init and destroy for the HTTP request duration
  * - it extend the server with http capabilities when deployed in a servlet container like tomcat
  * - the class file must be located in webapps/ROOT/WEB-INF/classes/..
-.class by default
+ * .class by default
  * - webapps/ROOT/WEB-INF/web.xml contains the servlet class name and url pattern
- *
+ * <p>
  * Frameworks manage the init and destroy ie. the lifetime of a servlet to do its responding
  * they also hide technicalities by supplying annotations
- *
+ * <p>
  * Traditionally WEB-INF/web.xml was used to register Springs DispatcherServlet. Thanks to
  * Servlet 3.0 a class like this can now replace web.xml and map spring’s dispatcher servlet
- *
+ * <p>
  * http://www.codejava.net/frameworks/spring/spring-4-and-hibernate-4-integration-tutorial-part-2-java-based-configuration
- *
  */
 
 import org.springframework.web.WebApplicationInitializer;

@@ -16,34 +16,31 @@ import lombok.ToString;
  * @since v1 - console game
  */
 
+// Getters, no setters needed
 @Getter
-@ToString
 public enum Origin {
 
-	@Column(name="ORIGIN")
-	ELF("Elf", "Elf"), MAGICIAN("Magician", "Magier"), GOBLIN("Goblin", "Goblin"), ROMAN("Warrior", "Krijger");
+    @Column(name = "ORIGIN")
+    ELF("Elf", "Elf"), MAGICIAN("Magician", "Magier"), GOBLIN("Goblin", "Goblin"), ROMAN("Warrior", "Krijger");
 
-	@Transient
-	String englishName;
-	@Transient
-	String dutchName;
+    @Transient
+    String englishName;
+    @Transient
+    String dutchName;
 
-	// Constructor, each argument to the constructor shadows one of the object's
-	// fields
-	Origin(String englishName, String dutchName) {
-		this.englishName = englishName;
-		this.dutchName = dutchName;
-	}
+    // Constructor, each argument to the constructor shadows one of the object's
+    // fields
+    Origin(String englishName, String dutchName) {
 
-	// Getters, no setters needed
+        this.englishName = englishName;
+        this.dutchName = dutchName;
+    }
 
-	/*
-	 * Using @Override annotation while overriding method in Java is one of the
-	 * best practice in Java.
-	 */
-	@Override
-	public String toString() {
-		return "" + englishName;
-	}
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Origin [name=").append(englishName).append("]");
+        return builder.toString();
+    }
 
 };

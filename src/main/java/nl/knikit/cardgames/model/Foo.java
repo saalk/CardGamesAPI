@@ -9,7 +9,7 @@ public class Foo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(name = "name")
     private String name;
@@ -37,11 +37,11 @@ public class Foo implements Serializable {
         this.bar = bar;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final int id) {
         this.id = id;
     }
 

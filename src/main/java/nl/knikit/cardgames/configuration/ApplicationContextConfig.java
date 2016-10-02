@@ -2,9 +2,7 @@ package nl.knikit.cardgames.configuration;
 
 import java.util.Properties;
 
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,14 +84,14 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
     // A: Configure a session bean for Player from the session factory etc
     // SessionFactory is to create and manage Sessions, one per app and singleton
     // Session is to provide a CRUD interface for mapped classes, one per client
-    @Bean (name = "sessionFactory")
+    @Bean(name = "sessionFactory")
     public LocalSessionFactoryBean sessionFactory() throws UnsupportedEncodingException, SQLException {
         final LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         // If you want to add more classes -> (User.class, Object.class);
         // sessionBuilder.addAnnotatedClasses(Player.class);
         // or just scan the model package
         sessionFactory.setDataSource(restDataSource());
-        sessionFactory.setPackagesToScan(new String[] { "nl.knikit.cardgames" });
+        sessionFactory.setPackagesToScan(new String[]{"nl.knikit.cardgames"});
         sessionFactory.setHibernateProperties(hibernateProperties());
 
         return sessionFactory;
@@ -102,8 +100,8 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
     // B: create a DataSource is to be used with Hibernate’s SessionFactory
     // DataSource is a "Connection" to the database
     // Sessions work on the data via a datasource
-    @Bean (name = "restDataSource")
-    public DriverManagerDataSource restDataSource()  {
+    @Bean(name = "restDataSource")
+    public DriverManagerDataSource restDataSource() {
         //MariaDbDataSource driverManagerDataSource = new MariaDbDataSource();
         // org.mariadb.jdbc.MySQLDataSource or com.mariadb.jdbc.Driver
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
@@ -132,7 +130,7 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
     // C: By configuring a transaction manager, code in the dao class doesn’t have to take care of
     // transaction management explicitly. Instead, the @Transactional annotation can be used.
 
-    @Bean (name = "transactionManager")
+    @Bean(name = "transactionManager")
     @Autowired
     public HibernateTransactionManager transactionManager(final SessionFactory sessionFactory) {
         final HibernateTransactionManager txManager = new HibernateTransactionManager();
@@ -148,12 +146,6 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    // E: The following method configures a bean which is a PlayerDAOImpl implementation:
-    //@Autowired
-    //@Bean(name = "playerDao")
-    //public PlayerDAO getPlayerDao(SessionFactory sessionFactory) {
-    //    return new PlayerDAOImpl(sessionFactory);
-    //}
 
     // uses sessionBuilder.addProperties(getHibernateProperties()) in the session factory bean
     // or seat each property with sessionBuilder.setProperty("hibernate.show_sql", "true");
@@ -166,36 +158,10 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         //properties.put("hibernate.connection.driver_class", "com.mariadb.jdbc.Driver");
         hibernateProperties.put("hibernate.hbm2ddl.auto", "create");
-        hibernateProperties.setProperty("hibernate.connection.autocommit","false");
+        hibernateProperties.setProperty("hibernate.connection.autocommit", "false");
         hibernateProperties.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
         hibernateProperties.setProperty("hibernate.id.new_generator_mappings", "true");
 
         return hibernateProperties;
     }
 }
-
-/*
-Investigate the following:
-
-@Import({xxxConfiguration.class, yyyConfiguration.class})
-public class zzzConfiguration {
-
-    @Bean // org.springframework.context.
-    @Lazy
-    @Autowired // org.springframework.beans.factory.
-    @Qualifier("modelPackage")
-    public EntityManagerFactory
-
-    @Bean // org.springframework.context.
-    @Lazy
-    @Autowired // org.springframework.beans.factory.
-    public PlatformTransactionManager
-
-    @Bean
-    public HibernateExceptionTranslator
-
-    @Bean(name = "messageSource")
-    public ResourceBundleMessageSource
-
-}
-*/

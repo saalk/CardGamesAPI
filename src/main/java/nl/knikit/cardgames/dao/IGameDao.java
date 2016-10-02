@@ -1,8 +1,8 @@
 package nl.knikit.cardgames.dao;
 
 import nl.knikit.cardgames.dao.common.IOperations;
-import nl.knikit.cardgames.model.Foo;
+import nl.knikit.cardgames.model.Game;
 
-public interface IFooDao extends IOperations<Foo> {
+public interface IGameDao extends IOperations<Game> {
     //
 }

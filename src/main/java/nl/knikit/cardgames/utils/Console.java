@@ -4,101 +4,101 @@ import java.util.Scanner;
 
 public class Console {
 
-	String question = null;
-	String[] options = null;
+    String question = null;
+    String[] options = null;
 
-	public Console(String question, String[] options) {
-		this.question = question;
-		this.options = options;
-	}
+    public Console(String question, String[] options) {
+        this.question = question;
+        this.options = options;
+    }
 
-	public int getAnswerFromConsole(String inputQuestion, String[] inputOptions) throws Exception {
+    public int getAnswerFromConsole(String inputQuestion, String[] inputOptions) throws Exception {
 
-		if (inputQuestion == null || inputOptions == null) {
-			throw new Exception("No question or options supplied");
-		}
+        if (inputQuestion == null || inputOptions == null) {
+            throw new Exception("No question or options supplied");
+        }
 
-		String displayOptions;
-		displayOptions = appendOptionsToString(inputOptions);
-		System.out.print(inputQuestion + displayOptions);
+        String displayOptions;
+        displayOptions = appendOptionsToString(inputOptions);
+        System.out.print(inputQuestion + displayOptions);
 
-		boolean validChoice = false;
-		Scanner s = new Scanner(System.in);
-		int choice = 0;
+        boolean validChoice = false;
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
 
-		do {
-			validChoice = true;
-			
+        do {
+            validChoice = true;
 
-			try {
-				choice = safeParseInt(s.nextLine());
 
-			} catch (Exception ec) {
-				// s.reset()
-				choice = safeParseInt(s.next());
-			}
+            try {
+                choice = safeParseInt(s.nextLine());
 
-			if (choice == 0) {
-				validChoice = false;
-				System.out.print("That is not a valid number, choose again" + displayOptions);
-			} else if (choice < 0 || choice > inputOptions.length) {
-				validChoice = false;
-				System.out.print("That is not a valid option, choose again" + displayOptions);
-			}
-		} while (!validChoice);
-		s.reset();
-		return choice;
+            } catch (Exception ec) {
+                // s.reset()
+                choice = safeParseInt(s.next());
+            }
 
-	}
+            if (choice == 0) {
+                validChoice = false;
+                System.out.print("That is not a valid number, choose again" + displayOptions);
+            } else if (choice < 0 || choice > inputOptions.length) {
+                validChoice = false;
+                System.out.print("That is not a valid option, choose again" + displayOptions);
+            }
+        } while (!validChoice);
+        s.reset();
+        return choice;
 
-	public int autoAnswerOnConsole(String inputQuestion, String[] inputOptions, Integer overrideAnswer)
+    }
 
-			throws Exception {
+    public int autoAnswerOnConsole(String inputQuestion, String[] inputOptions, Integer overrideAnswer)
 
-		if (inputQuestion == null || inputOptions == null || overrideAnswer < 1) {
-			throw new Exception("No question, options or answer supplied");
-		}
+            throws Exception {
 
-		String displayOptions;
-		displayOptions = appendOptionsToString(inputOptions);
+        if (inputQuestion == null || inputOptions == null || overrideAnswer < 1) {
+            throw new Exception("No question, options or answer supplied");
+        }
 
-		System.out.println(inputQuestion + displayOptions + overrideAnswer);
-		return overrideAnswer;
-	}
+        String displayOptions;
+        displayOptions = appendOptionsToString(inputOptions);
 
-	public static int safeParseInt(String str) {
-		int result;
-		try {
-			result = Integer.parseInt(str);
-		} catch (NumberFormatException ex) {
-			result = 0;
-		}
-		return result;
-	}
+        System.out.println(inputQuestion + displayOptions + overrideAnswer);
+        return overrideAnswer;
+    }
 
-	private String appendOptionsToString(String[] inputOptions) {
+    public static int safeParseInt(String str) {
+        int result;
+        try {
+            result = Integer.parseInt(str);
+        } catch (NumberFormatException ex) {
+            result = 0;
+        }
+        return result;
+    }
 
-		// make a nice series of options to display from the inputOptions list
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(" [");
+    private String appendOptionsToString(String[] inputOptions) {
 
-		int optionsTotal = inputOptions.length;
-		int i = 0;
+        // make a nice series of options to display from the inputOptions list
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" [");
 
-		for (String o : inputOptions) {
-			i += 1;
-			stringBuilder.append(i);
-			stringBuilder.append("=");
-			stringBuilder.append(o);
-			if (optionsTotal > 1 && i != optionsTotal) {
-				stringBuilder.append(", ");
-			}
-		}
+        int optionsTotal = inputOptions.length;
+        int i = 0;
 
-		stringBuilder.append("]: ");
-		String displayOptions = stringBuilder.toString();
+        for (String o : inputOptions) {
+            i += 1;
+            stringBuilder.append(i);
+            stringBuilder.append("=");
+            stringBuilder.append(o);
+            if (optionsTotal > 1 && i != optionsTotal) {
+                stringBuilder.append(", ");
+            }
+        }
 
-		return displayOptions;
-	}
+        stringBuilder.append("]: ");
+        String displayOptions = stringBuilder.toString();
+
+        return displayOptions;
+    }
 
 }

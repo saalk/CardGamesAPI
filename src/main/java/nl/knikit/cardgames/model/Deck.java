@@ -26,6 +26,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -83,16 +85,17 @@ import lombok.Setter;
 @Embeddable
 public class Deck {
 
-    @Column(name="CARDS")
-    private ArrayList<Card> cards;
-    @Column(name="DEALED_TO")
-    private int dealedTo[];
+    @Column(name = "CARDS")
+    @JsonProperty("cards") private ArrayList<Card> cards;
+    @Column(name = "DEALED_TO")
+    @JsonProperty("dealedTo") private int dealedTo[];
 
     /**
      * First constructor, always work from the smallest constructor to the largest. When a no-arg
      * constructor calls an arg constructor is uses this(args). The this(args) must be the first
      * line and should initialize some or all of the variables.
      */
+    @JsonCreator
     public Deck() {
         this(0);
     }
@@ -247,14 +250,14 @@ public class Deck {
         return total;
     }
 
-    public int averageValueInDeck(CardGame inputCardGame) {
+    public int averageValueInDeck(CardGameType inputCardGameType) {
         int value = 0;
         int count = 0;
         // TODO check for empty list of cards in deck
         for (Card card : cards) {
             if (this.getDealedTo(count) == 0) {
                 // not yet dealed
-                value = value + card.getRank().getValue(inputCardGame);
+                value = value + card.getRank().getValue(inputCardGameType);
                 count++;
             }
         }
@@ -281,15 +284,8 @@ public class Deck {
 
     @Override
     public String toString() {
-
-        StringBuilder displayGame = new StringBuilder();
-        // displayPlayer.append("#"+id+"-");
-
-        displayGame.append("  > Deck    : " + cards);
-        displayGame.append(System.lineSeparator());
-        displayGame.append("  >         : " + Arrays.toString(this.dealedTo));
-
-        return displayGame.toString();
-
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Deck [cards=").append(cards).append("]");
+        return builder.toString();
     }
 }

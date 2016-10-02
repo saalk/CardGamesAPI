@@ -20,11 +20,10 @@ public enum CardGameVariant {
     /**
      * verwijs in deze enum van Regels naar de enum van CardGame voor 'nested enums', anders zullen
      * 2 enums naar eenzelfde interface moeten verwijzen en die is nu niet nodig
-     *
      */
-    HILOW_1ROUND(CardGame.HIGHLOW, "One round double or nothing "),
-    HILOW_3_IN_A_ROW_1SUIT(CardGame.HIGHLOW, "'3-in-a-row' one suit"),
-    HILOW_5_IN_A_ROW(CardGame.HIGHLOW, "'5-in-a-row'");
+    HILOW_1ROUND(CardGameType.HIGHLOW, "One round double or nothing "),
+    HILOW_3_IN_A_ROW_1SUIT(CardGameType.HIGHLOW, "'3-in-a-row' one suit"),
+    HILOW_5_IN_A_ROW(CardGameType.HIGHLOW, "'5-in-a-row'");
 
 
     //HILOW_DRINKING_WITH_OPPONENTS(CardGame.HIGHLOW, "Drinking with opponent(s)"),
@@ -58,7 +57,7 @@ public enum CardGameVariant {
 
     // Constructor, each argument to the constructor shadows one of the object's
     // fields
-    CardGameVariant(CardGame cardName, String ruleName) {
+    CardGameVariant(CardGameType cardName, String ruleName) {
         this.cardName = cardName.getEnglishName();
         this.ruleName = ruleName;
     }

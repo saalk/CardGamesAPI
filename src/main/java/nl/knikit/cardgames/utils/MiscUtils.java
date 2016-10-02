@@ -12,30 +12,30 @@ import java.util.UUID;
 // copied filereader for: .properties files
 public final class MiscUtils {
 
-	private MiscUtils() {
-	}
+    private MiscUtils() {
+    }
 
-	public static Properties loadProperties(final String filename, final Class<?> clazz) throws IOException {
-		Properties result = new Properties();
-		final ClassLoader classLoader = clazz.getClassLoader();
+    public static Properties loadProperties(final String filename, final Class<?> clazz) throws IOException {
+        Properties result = new Properties();
+        final ClassLoader classLoader = clazz.getClassLoader();
 
-		if (classLoader != null) {
-			final InputStream resourceAsStream = classLoader.getResourceAsStream(filename);
+        if (classLoader != null) {
+            final InputStream resourceAsStream = classLoader.getResourceAsStream(filename);
 
-			if (resourceAsStream == null) {
-				throw new FileNotFoundException("could not read from : "+ filename);
-			}
-			try {
-				result.load(resourceAsStream);
-			} finally {
-				resourceAsStream.close();
-			}
+            if (resourceAsStream == null) {
+                throw new FileNotFoundException("could not read from : " + filename);
+            }
+            try {
+                result.load(resourceAsStream);
+            } finally {
+                resourceAsStream.close();
+            }
 
-		} else {
-			String errorMessage = "could not get class loader : " + filename;
-			throw new DataSourceLookupFailureException(errorMessage);
-		}
-		return result;
-	}
+        } else {
+            String errorMessage = "could not get class loader : " + filename;
+            throw new DataSourceLookupFailureException(errorMessage);
+        }
+        return result;
+    }
 
 }

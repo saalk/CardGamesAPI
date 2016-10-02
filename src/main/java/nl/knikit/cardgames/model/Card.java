@@ -29,9 +29,9 @@ package nl.knikit.cardgames.model;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -53,32 +53,39 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @Embeddable
 public class Card {
 
     // 13 progressing ranks 2 to 10, jack, queen, king, ace.
-    @Embedded
+    @Column(name = "RAND")
     private Rank rank;
 
-    @Embedded
+    @Column(name = "SUIT")
     private Suit suit;
 
-    public Card(Rank rank, Suit suit) {
+    @JsonCreator
+    public Card(@JsonProperty("rank") Rank rank, @JsonProperty("suit") Suit suit) {
         this.rank = rank;
         this.suit = suit;
     }
 
-    public int compareTwoCards(Card o1, Card o2, CardGame cardGame) {
-        if (o1.getRank().getValue(cardGame) < o2.getRank().getValue(cardGame)) {
+    public int compareTwoCards(Card o1, Card o2, CardGameType cardGameType) {
+        if (o1.getRank().getValue(cardGameType) < o2.getRank().getValue(cardGameType)) {
             return 1;
         } else {
-            if (o1.getRank().getValue(cardGame) > o2.getRank().getValue(cardGame)) {
+            if (o1.getRank().getValue(cardGameType) > o2.getRank().getValue(cardGameType)) {
                 return -1;
             } else {
                 return 0;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Card [value=").append(rank).append(suit).append("]");
+        return builder.toString();
     }
 
 }

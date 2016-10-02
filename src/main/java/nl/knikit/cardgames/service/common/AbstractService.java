@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class AbstractService<T extends Serializable> implements IOperations<T> {
 
     @Override
-    public T findOne(final long id) {
+    public T findOne(final int id) {
         return getDao().findOne(id);
     }
 
@@ -35,7 +35,7 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
-    public void deleteById(final long entityId) {
+    public void deleteById(final int entityId) {
         getDao().deleteById(entityId);
     }
 

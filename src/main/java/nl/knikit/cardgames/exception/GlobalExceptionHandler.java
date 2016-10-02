@@ -16,53 +16,53 @@ import java.sql.SQLException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ExceptionJSONInfo> handleSQLException(Exception ex){
+    public ResponseEntity<ExceptionJSONInfo> handleSQLException(Exception ex) {
 
-        log.error("SQL Exception occurred: "+ex);
+        log.error("SQL Exception occurred: " + ex);
 
         ExceptionJSONInfo error = new ExceptionJSONInfo();
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setUrl("/api/*");
-        error.setMessage("Please contact the administrator. " + ex);
+        error.setMessage("Database exception, please contact the administrator. " + ex);
         return new ResponseEntity<ExceptionJSONInfo>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<ExceptionJSONInfo> handleIOException(Exception ex){
+    public ResponseEntity<ExceptionJSONInfo> handleIOException(Exception ex) {
 
-        log.error("File not found (IO) exception: "+ex);
+        log.error("File not found (IO) exception: " + ex);
 
         ExceptionJSONInfo error = new ExceptionJSONInfo();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setUrl("/api/*");
-        error.setMessage("Please contact the administrator. " + ex);
-        return new ResponseEntity<ExceptionJSONInfo>(error, HttpStatus.NOT_FOUND);
-
-    }
-
-    @ExceptionHandler(PlayerNotFoundForSequenceException.class)
-    public ResponseEntity<ExceptionJSONInfo> handlePlayerNotFoundForSequenceException(Exception ex){
-
-        log.error("PlayerNotFoundForSequenceException Occurred: "+ex);
-
-        ExceptionJSONInfo error = new ExceptionJSONInfo();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
-        error.setUrl("/api/players?sequence={sequence}");
-        error.setMessage("Please contact the administrator. " + ex);
+        error.setMessage("Missing file exception, Please contact the administrator. " + ex);
         return new ResponseEntity<ExceptionJSONInfo>(error, HttpStatus.NOT_FOUND);
 
     }
 
     @ExceptionHandler(PlayerNotFoundForIdException.class)
-    public ResponseEntity<ExceptionJSONInfo> handlePlayerNotFoundForIdException(Exception ex){
+    public ResponseEntity<ExceptionJSONInfo> handlePlayerNotFoundForIdException(Exception ex) {
 
-        log.error("PlayerNotFoundForIdException Occurred: "+ex);
+        log.error("PlayerNotFoundForIdException Occurred: " + ex);
 
         ExceptionJSONInfo error = new ExceptionJSONInfo();
         error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setUrl("/api/players/(id)");
-        error.setMessage("Please contact the administrator. " + ex);
+        error.setMessage("Missing player, supply a valid id. " + ex);
+        return new ResponseEntity<ExceptionJSONInfo>(error, HttpStatus.NOT_FOUND);
+
+    }
+
+    @ExceptionHandler(GameNotFoundForIdException.class)
+    public ResponseEntity<ExceptionJSONInfo> handleGameNotFoundForIdException(Exception ex) {
+
+        log.error("GameNotFoundForIdException Occurred: " + ex);
+
+        ExceptionJSONInfo error = new ExceptionJSONInfo();
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setUrl("/api/games/(id)");
+        error.setMessage("Missing game for reference, please contact the administrator. " + ex);
         return new ResponseEntity<ExceptionJSONInfo>(error, HttpStatus.NOT_FOUND);
 
     }
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
         ExceptionJSONInfo error = new ExceptionJSONInfo();
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setUrl("/api/*");
-        error.setMessage("Please contact the administrator. " + ex);
+        error.setMessage("Something went wrong, please contact the administrator. " + ex);
         return new ResponseEntity<ExceptionJSONInfo>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

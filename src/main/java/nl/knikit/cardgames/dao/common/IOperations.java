@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface IOperations<T extends Serializable> {
 
-    T findOne(final long id);
+    T findOne(final int id);
 
     List<T> findAll();
 
@@ -15,6 +15,6 @@ public interface IOperations<T extends Serializable> {
 
     void delete(final T entity);
 
-    void deleteById(final long entityId);
+    void deleteById(final int entityId);
 
 }

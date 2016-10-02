@@ -38,9 +38,9 @@ public class PlayerOld {
     private HandOld handOld;
 
     /**
-     * @param inputOrigin human or bot
+     * @param inputOrigin  human or bot
      * @param inputAiLevel dumb or smart
-     * @param humanOrNot human or not
+     * @param humanOrNot   human or not
      * @throws URISyntaxException
      * @throws IOException
      */
@@ -56,7 +56,11 @@ public class PlayerOld {
         this.securedLoan = 0;
         this.handOld = new HandOld();
     }
-    public PlayerOld() {};
+
+    public PlayerOld() {
+    }
+
+    ;
 
     public int getId() {
         return id;
@@ -98,7 +102,7 @@ public class PlayerOld {
 
 		/*
          * some math basics: PEMDAS (Please Excuse My Dear Aunt Sally) order P =
-		 * parenthesis, E = Exponents
+		 * playerhesis, E = Exponents
 		 * 
 		 * modulus = 22 % 6 = 4 because 22 / 6 = 3 with a remainder of 4
 		 * 
@@ -116,43 +120,53 @@ public class PlayerOld {
         int remainder = cubits;
 
         if (cubits >= 10000) {
-            displayCubits.append("" + (remainder / 10000) + "x[10.000]");}
+            displayCubits.append("" + (remainder / 10000) + "x[10.000]");
+        }
         remainder = remainder % 10000;
 
         if (cubits >= 1000) {
-            displayCubits.append("" + (remainder / 1000) + "x[1.000]");}
+            displayCubits.append("" + (remainder / 1000) + "x[1.000]");
+        }
         remainder = remainder % 1000;
 
         if (cubits >= 500) {
-            displayCubits.append("" + (remainder / 500) + "x[500]");}
+            displayCubits.append("" + (remainder / 500) + "x[500]");
+        }
         remainder = remainder % 500;
 
         if (cubits >= 100) {
-            displayCubits.append("" + (remainder / 100) + "x[100]");}
+            displayCubits.append("" + (remainder / 100) + "x[100]");
+        }
         remainder = remainder % 100;
 
         if (remainder >= 50) {
-            displayCubits.append("" + (remainder / 50) + "x[50]");}
+            displayCubits.append("" + (remainder / 50) + "x[50]");
+        }
         remainder = remainder % 50;
 
         if (remainder >= 20) {
-            displayCubits.append("" + (remainder / 20) + "x[20]");}
+            displayCubits.append("" + (remainder / 20) + "x[20]");
+        }
         remainder = remainder % 20;
 
         if (remainder >= 10) {
-            displayCubits.append("" + (remainder / 10) + "x[10]");}
+            displayCubits.append("" + (remainder / 10) + "x[10]");
+        }
         remainder = remainder % 10;
 
         if (remainder >= 5) {
-            displayCubits.append("" + (remainder / 5) + "x[5]");}
+            displayCubits.append("" + (remainder / 5) + "x[5]");
+        }
         remainder = remainder % 5;
 
         if (remainder >= 2) {
-            displayCubits.append("" + (remainder / 2) + "x[2]");}
+            displayCubits.append("" + (remainder / 2) + "x[2]");
+        }
         remainder = remainder % 2;
 
         if (remainder >= 1) {
-            displayCubits.append("" + (remainder / 1) + "x[1]");}
+            displayCubits.append("" + (remainder / 1) + "x[1]");
+        }
 
         return displayCubits.toString();
     }
@@ -186,7 +200,7 @@ public class PlayerOld {
         Predict prediction = null;
         int value = 0;
         Random rnd = new Random();
-        value = this.handOld.getLastCard().getRank().getValue(CardGame.HIGHLOW);
+        value = this.handOld.getLastCard().getRank().getValue(CardGameType.HIGHLOW);
 
         switch (this.aiLevel) {
             case HIGH:
@@ -216,10 +230,10 @@ public class PlayerOld {
     }
 
     private Predict predictHighOrLowOrEqual(Card lastCard, Card inputCard) {
-        if (lastCard.getRank().getValue(CardGame.HIGHLOW) < inputCard.getRank().getValue(CardGame.HIGHLOW)) {
+        if (lastCard.getRank().getValue(CardGameType.HIGHLOW) < inputCard.getRank().getValue(CardGameType.HIGHLOW)) {
             return Predict.HIGH; // new card is higher
         } else {
-            if (lastCard.getRank().getValue(CardGame.HIGHLOW) > inputCard.getRank().getValue(CardGame.HIGHLOW)) {
+            if (lastCard.getRank().getValue(CardGameType.HIGHLOW) > inputCard.getRank().getValue(CardGameType.HIGHLOW)) {
                 return Predict.LOW; // new card is lower
             } else {
                 return Predict.EQUAL; // new card is equal
@@ -250,7 +264,7 @@ public class PlayerOld {
         /*
 
          */
-        return "Alias"+startId;
+        return "Alias" + startId;
     }
 
     public String toString() {

@@ -38,8 +38,8 @@ function ResultsController(PlayerService, toastr, Restangular){
     vm.none = "This alien has left the game with ";
 
     // behaviour 
-    vm.changeAlien = function (sequence) {
-        loopAiLevel(sequence);
+    vm.changeAlien = function (playingOrder) {
+        loopAiLevel(playingOrder);
         checkIfAliensAreSet();    
     };
 
@@ -79,28 +79,28 @@ function ResultsController(PlayerService, toastr, Restangular){
             vm.showalien2 = true; 
         }
     };
-    function loopAiLevel(sequence) {
-        if (vm.players[sequence].aiLevel == 'None') {
-            if (vm.players[1].aiLevel == 'None' && sequence == 2) {
-                vm.players[sequence].aiLevel = 'None';
-                vm.players[sequence].label = vm.none;
+    function loopAiLevel(playingOrder) {
+        if (vm.players[playingOrder].aiLevel == 'None') {
+            if (vm.players[1].aiLevel == 'None' && playingOrder == 2) {
+                vm.players[playingOrder].aiLevel = 'None';
+                vm.players[playingOrder].label = vm.none;
             } else {
-                vm.players[sequence].aiLevel = 'Dumb';
-                vm.players[sequence].label = vm.dumb;
+                vm.players[playingOrder].aiLevel = 'Dumb';
+                vm.players[playingOrder].label = vm.dumb;
             };
-        } else if (vm.players[sequence].aiLevel == 'Dumb') {
-            vm.players[sequence].aiLevel = 'Average';
-            vm.players[sequence].label = vm.average;
-        } else if (vm.players[sequence].aiLevel == 'Average') {
-            vm.players[sequence].aiLevel = 'Smart';
-            vm.players[sequence].label = vm.smart;
-        } else if (vm.players[sequence].aiLevel == 'Smart') {
-            if (vm.players[2].aiLevel != 'None' && sequence == 1) {
-                vm.players[sequence].aiLevel = 'Dumb';
-                vm.players[sequence].label = vm.dumb;
+        } else if (vm.players[playingOrder].aiLevel == 'Dumb') {
+            vm.players[playingOrder].aiLevel = 'Average';
+            vm.players[playingOrder].label = vm.average;
+        } else if (vm.players[playingOrder].aiLevel == 'Average') {
+            vm.players[playingOrder].aiLevel = 'Smart';
+            vm.players[playingOrder].label = vm.smart;
+        } else if (vm.players[playingOrder].aiLevel == 'Smart') {
+            if (vm.players[2].aiLevel != 'None' && playingOrder == 1) {
+                vm.players[playingOrder].aiLevel = 'Dumb';
+                vm.players[playingOrder].label = vm.dumb;
             } else {
-                vm.players[sequence].aiLevel = 'None';
-                vm.players[sequence].label = vm.none;
+                vm.players[playingOrder].aiLevel = 'None';
+                vm.players[playingOrder].label = vm.none;
             };
         };
     };

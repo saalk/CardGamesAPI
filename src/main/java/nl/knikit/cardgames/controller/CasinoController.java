@@ -35,109 +35,104 @@ package nl.knikit.cardgames.controller;
 */
 
 
-import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
-import nl.knikit.cardgames.service.IPlayerService;
+import lombok.extern.slf4j.Slf4j;
+import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
+import nl.knikit.cardgames.model.Casino;
+import nl.knikit.cardgames.service.ICasinoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ExposesResourceFor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.bind.annotation.*;
-
-import nl.knikit.cardgames.model.Player;
-
-import java.util.ArrayList;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.ArrayList;
 
 // @RestController = @Controller + @ResponseBody
 @RestController
 @Component
-@ExposesResourceFor(Player.class)
+@ExposesResourceFor(Casino.class)
 @Slf4j
 @Scope("prototype")
-public class PlayerController {
+public class CasinoController {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private IPlayerService playerService;
+    private ICasinoService casinoService;
 
-    @GetMapping("/players")
-    public ResponseEntity<ArrayList<Player>> getPlayers() {
+    @GetMapping("/casinos")
+    public ResponseEntity<ArrayList<Casino>> getCasinos() {
 
-        ArrayList<Player> players;
-        players = (ArrayList) playerService.findAll();
-        return new ResponseEntity(players, HttpStatus.OK);
+        ArrayList<Casino> casinos;
+        casinos = (ArrayList) casinoService.findAll();
+        return new ResponseEntity(casinos, HttpStatus.OK);
     }
 
-    @GetMapping("/players/{id}")
-    public ResponseEntity getPlayer(@PathVariable("id") int id) throws PlayerNotFoundForIdException {
+    @GetMapping("/casinos/{id}")
+    public ResponseEntity getCasino(@PathVariable("id") int id) throws CasinoNotFoundForIdException {
 
-        Player player = playerService.findOne(id);
-        if (player == null) {
+        Casino casino = casinoService.findOne(id);
+        if (casino == null) {
 
-            throw new PlayerNotFoundForIdException(id);
+            throw new CasinoNotFoundForIdException(id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(player);
+                .body(casino);
     }
 
-    @PostMapping("/players")
-    public ResponseEntity createPlayer(@RequestBody Player player) {
+    @PostMapping("/casinos")
+    public ResponseEntity createCasino(@RequestBody Casino casino) {
 
-        if (player == null) {
+        if (casino == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Player supplied to create: " + player);
+                    .body("No Casino supplied to create: " + casino);
         }
-        playerService.create(player);
+        casinoService.create(casino);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(player);
+                .status(HttpStatus.OK)
+                .body(casino);
     }
 
-    @DeleteMapping("/players/{id}")
-    public ResponseEntity deletePlayer(@PathVariable int id) {
+    @DeleteMapping("/casinos/{id}")
+    public ResponseEntity deleteCasino(@PathVariable int id) {
 
         try {
-            playerService.deleteById(id);
+            casinoService.deleteById(id);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player with /{id}: " + id + " found to delete");
+                    .body("No Casino with /{id}: " + id + " found to delete");
             }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Player with /{id}: " + id + " deleted");
+                .body("Casino with /{id}: " + id + " deleted");
     }
 
-    @PutMapping("/players/{id}")
-    public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player
-            player) {
-        Player newPlayer = playerService.update(player);
-        if (null == newPlayer) {
+    @PutMapping("/casinos/{id}")
+    public ResponseEntity updateCasino(@PathVariable int id, @RequestBody Casino
+            casino) {
+        Casino newCasino = casinoService.update(casino);
+        if (null == newCasino) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found to change for path /{id): " + id);
+                    .body("No Casino found to change for path /{id): " + id);
         }
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(newPlayer);
+                .status(HttpStatus.OK)
+                .body(newCasino);
     }
 
     // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
     // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(PlayerNotFoundForIdException.class)
-    public ModelAndView handlePlayerNotFoundForIdException(HttpServletRequest request, Exception ex) {
+    @ExceptionHandler(CasinoNotFoundForIdException.class)
+    public ModelAndView handleCasinoNotFoundForIdException(HttpServletRequest request, Exception ex) {
         log.error("Requested URL=" + request.getRequestURL());
         log.error("Exception Raised=" + ex);
 

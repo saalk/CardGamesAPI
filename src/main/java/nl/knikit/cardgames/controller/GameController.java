@@ -13,12 +13,12 @@ package nl.knikit.cardgames.controller;
     @RequestMapping(method = RequestMethod.GET).
 
     6 REST Endpoint                 HTTP Method 	Description
-    /players 	                    GET             Returns the list of players
-    /players/{id}                   GET             Returns player detail for given player {id}
-    /players 	                    POST            Creates new player from the post data
-    /players/{id}                   PUT             Replace the details for given player {id}
-    /players 	                    DELETE          Deletes all players
-    /players/{id}                   DELETE          Delete the player for given player {id}
+    /games 	                    GET             Returns the list of games
+    /games/{id}                   GET             Returns game detail for given game {id}
+    /games 	                    POST            Creates new game from the post data
+    /games/{id}                   PUT             Replace the details for given game {id}
+    /games 	                    DELETE          Deletes all games
+    /games/{id}                   DELETE          Delete the game for given game {id}
 */
 
 
@@ -35,109 +35,104 @@ package nl.knikit.cardgames.controller;
 */
 
 
-import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
-import nl.knikit.cardgames.service.IPlayerService;
+import lombok.extern.slf4j.Slf4j;
+import nl.knikit.cardgames.exception.GameNotFoundForIdException;
+import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.service.IGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ExposesResourceFor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.bind.annotation.*;
-
-import nl.knikit.cardgames.model.Player;
-
-import java.util.ArrayList;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.ArrayList;
 
 // @RestController = @Controller + @ResponseBody
 @RestController
 @Component
-@ExposesResourceFor(Player.class)
+@ExposesResourceFor(Game.class)
 @Slf4j
 @Scope("prototype")
-public class PlayerController {
+public class GameController {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private IPlayerService playerService;
+    private IGameService gameService;
 
-    @GetMapping("/players")
-    public ResponseEntity<ArrayList<Player>> getPlayers() {
+    @GetMapping("/games")
+    public ResponseEntity<ArrayList<Game>> getGames() {
 
-        ArrayList<Player> players;
-        players = (ArrayList) playerService.findAll();
-        return new ResponseEntity(players, HttpStatus.OK);
+        ArrayList<Game> games;
+        games = (ArrayList) gameService.findAll();
+        return new ResponseEntity(games, HttpStatus.OK);
     }
 
-    @GetMapping("/players/{id}")
-    public ResponseEntity getPlayer(@PathVariable("id") int id) throws PlayerNotFoundForIdException {
+    @GetMapping("/games/{id}")
+    public ResponseEntity getGame(@PathVariable("id") int id) throws GameNotFoundForIdException {
 
-        Player player = playerService.findOne(id);
-        if (player == null) {
+        Game game = gameService.findOne(id);
+        if (game == null) {
 
-            throw new PlayerNotFoundForIdException(id);
+            throw new GameNotFoundForIdException(id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(player);
+                .body(game);
     }
 
-    @PostMapping("/players")
-    public ResponseEntity createPlayer(@RequestBody Player player) {
+    @PostMapping("/games")
+    public ResponseEntity createGame(@RequestBody Game game) {
 
-        if (player == null) {
+        if (game == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Player supplied to create: " + player);
+                    .body("No Game supplied to create: " + game);
         }
-        playerService.create(player);
+        gameService.create(game);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(player);
+                .body(game);
     }
 
-    @DeleteMapping("/players/{id}")
-    public ResponseEntity deletePlayer(@PathVariable int id) {
+    @DeleteMapping("/games/{id}")
+    public ResponseEntity deleteGame(@PathVariable int id) {
 
         try {
-            playerService.deleteById(id);
+            gameService.deleteById(id);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player with /{id}: " + id + " found to delete");
-            }
+                    .body("No Game with /{id}: " + id + " found to delete");
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Player with /{id}: " + id + " deleted");
+                .body("Game with /{id}: " + id + " deleted");
     }
 
-    @PutMapping("/players/{id}")
-    public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player
-            player) {
-        Player newPlayer = playerService.update(player);
-        if (null == newPlayer) {
+    @PutMapping("/games/{id}")
+    public ResponseEntity updateGame(@PathVariable int id, @RequestBody Game
+            game) {
+        Game newGame = gameService.update(game);
+        if (null == newGame) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found to change for path /{id): " + id);
+                    .body("No Game found to change for path /{id): " + id);
         }
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(newPlayer);
+                .status(HttpStatus.OK)
+                .body(newGame);
     }
 
     // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
     // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(PlayerNotFoundForIdException.class)
-    public ModelAndView handlePlayerNotFoundForIdException(HttpServletRequest request, Exception ex) {
+    @ExceptionHandler(GameNotFoundForIdException.class)
+    public ModelAndView handleGameNotFoundForIdException(HttpServletRequest request, Exception ex) {
         log.error("Requested URL=" + request.getRequestURL());
         log.error("Exception Raised=" + ex);
 

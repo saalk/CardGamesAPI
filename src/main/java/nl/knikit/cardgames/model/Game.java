@@ -1,68 +1,90 @@
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
-@Table(name = "GAMES" , indexes = {
-        @Index(columnList = "WINNER_ID", name = "WINNER_ID_INDEX")})
+@DynamicUpdate
+@Table(name = "GAME", indexes = {
+        @Index(columnList = "WINNER", name = "WINNER_INDEX")})
 @Getter
 @Setter
-@ToString
-@Relation(value="game", collectionRelation="games")
-public class Game {
+@Relation(value = "game", collectionRelation = "games")
+public class Game  implements Serializable {
 
-	@Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-	@Column(name = "GAME_ID")
-	private long id;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    @JsonProperty("id") private int id;
+    @Column(name = "GAME_ID")
+    @JsonProperty("gameId") private String gameId;
     @Enumerated(EnumType.STRING)
-    @Column(name = "CARD_GAME")
-	private CardGame cardGame;
-	@Column(name = "ROUNDS")
-	private int rounds;
-	@Column(name = "TURNS")
-	private int turns;
-	@Column(name = "MINIMAL_TURNS_BEFORE_PASS")
-	private int minimalTurnsBeforePass;
-	@Column(name = "MINIMAL_TURNS_TO_WIN")
-	private int minimalTurnsToWin;
+    @Column(name = "CARD_GAME_TYPE")
+    @JsonProperty("cardGameType") private CardGameType cardGameType;
 
-    @Embedded
-    private Deck deck;
-
+    @Column(name = "MAX_ROUNDS")
+    @JsonProperty("maxRounds") private int maxRounds;
+    @Column(name = "MIN_ROUNDS")
+    @JsonProperty("minRounds") private int minRounds;
     @Column(name = "CURRENT_ROUND")
-    private int currentRound;
-    @Column(name = "CURRENT_PLAYER")
-    private int currentPlayer;
+    @JsonProperty("currentRound") private int currentRound;
+
+    @Column(name = "MAX_TURNS")
+    @JsonProperty("maxTurns") private int maxTurns;
+    @Column(name = "MIN_TURNS")
+    @JsonProperty("minTurns") private int minTurns;
     @Column(name = "CURRENT_TURN")
-    private int currentTurn;
+    @JsonProperty("currentTurn") private int currentTurn;
+    @Column(name = "TURNS_TO_WIN")
+    @JsonProperty("turnsToWin") private int turnsToWin;
+
+    @Column(name = "DECK")
+    @JsonProperty("deck") private Deck deck;
+
     @Column(name = "ANTE")
-    private int ante;
+    @JsonProperty("ante") private int ante;
 
-    @OneToOne
-    @JoinColumn(name = "WINNER_ID", referencedColumnName = "PLAYER_ID")
-    Player winner;
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JsonProperty("winner") private  Player winner;
 
-    public int decreaseRoundsLeft() {
-        this.currentRound--;
+    public int increaseCurrentRound() {
+        this.currentRound++;
         return currentRound;
     }
+
+    public int increaseCurrentTurn() {
+        this.currentTurn--;
+        return currentTurn;
+    }
+    
+    @JsonCreator
+    public Game() {
+        super();
+        LocalDateTime localDateAndTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
+        String result = localDateAndTime.format(formatter);
+        this.gameId = result.substring(2, 25);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Game [id=").append(id).append("]");
+        return builder.toString();
+    }
+
 }
+

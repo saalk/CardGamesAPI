@@ -1,27 +1,27 @@
 package nl.knikit.cardgames.service.impl;
 
-import nl.knikit.cardgames.dao.IFooDao;
+import nl.knikit.cardgames.dao.IGameDao;
 import nl.knikit.cardgames.dao.common.IOperations;
-import nl.knikit.cardgames.model.Foo;
-import nl.knikit.cardgames.service.IFooService;
+import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.service.IGameService;
 import nl.knikit.cardgames.service.common.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FooService extends AbstractService<Foo> implements IFooService {
+public class GameService extends AbstractService<Game> implements IGameService {
 
     @Autowired
-    private IFooDao dao;
+    private IGameDao dao;
 
-    public FooService() {
+    public GameService() {
         super();
     }
 
     // API
 
     @Override
-    protected IOperations<Foo> getDao() {
+    protected IOperations<Game> getDao() {
         return dao;
     }
 
