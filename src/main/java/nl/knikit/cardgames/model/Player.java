@@ -43,11 +43,9 @@ public class Player implements Serializable {
 
     @Column(name = "PLAYER_ID")
     @JsonProperty("playerId") private String playerId;
-    @Column(name = "PLAYER_ORDER")
-    @JsonProperty("playingOrder") private int playingOrder;
     @Enumerated(EnumType.STRING)
-    @Column(name = "ORIGIN")
-    @JsonProperty("origin") private Origin origin;
+    @Column(name = "AVATAR")
+    @JsonProperty("avatar") private Avatar avatar;
     @Column(name = "ALIAS")
     @JsonProperty("alias") private String alias;
     @Column(name = "HUMAN")

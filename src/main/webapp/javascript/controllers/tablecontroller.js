@@ -13,7 +13,7 @@ TableController.$inject = ['PlayerService', 'toastr', 'Restangular'];
 function TableController(PlayerService, toastr, Restangular){
 
     var vm = this;
-    vm.players = PlayerService.initPlayers();
+    vm.players = PlayerService.initOrListPlayers();
 
     // flags + checks for ng-if
     vm.showListForDebug = false;
@@ -34,7 +34,7 @@ function TableController(PlayerService, toastr, Restangular){
             toastr.success('A good guess', 'Success');
             vm.players[vm.loopplayer].cubits = vm.players[vm.loopplayer].cubits + vm.ante;
         } else {
-            toastr.error('Next card differs from you guess', 'Bad luck');
+            toastr.error('Next card differs from your guess', 'Bad luck');
             vm.players[vm.loopplayer].cubits = vm.players[vm.loopplayer].cubits - vm.ante;
         };    
     };

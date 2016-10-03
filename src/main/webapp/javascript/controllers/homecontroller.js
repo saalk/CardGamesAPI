@@ -13,14 +13,18 @@ HomeController.$inject = ['PlayerService','toastr', 'Restangular'];
 function HomeController(PlayerService, toastr, Restangular){
 
     var vm = this;
-    vm.players = PlayerService.initPlayers();
+    vm.players = PlayerService.initOrListPlayers();
         
     // flags for ng-if
     vm.showListForDebug = false;
     vm.gotocasino = false;
     checkIfNameAndSecuredLoanAreSet();
 
-    // behaviour 
+    vm.gotothecasino = function() {
+       PlayerService.savePlayer(vm.players[0]);
+    };
+
+    // behaviour
     //vm.minimum = 0;
     vm.setHumanName = function () {
         //toastr.clear();
@@ -44,7 +48,7 @@ function HomeController(PlayerService, toastr, Restangular){
             vm.gotocasino = false;
         };
         checkIfNameAndSecuredLoanAreSet();
-        PlayerService.savePlayer(vm.players[0]);
+        //PlayerService.savePlayer(vm.players[0]);
     };
     
     // checks and functions

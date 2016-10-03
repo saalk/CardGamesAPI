@@ -13,7 +13,7 @@ CasinoController.$inject = ['PlayerService', 'toastr', 'Restangular'];
 function CasinoController(PlayerService, toastr, Restangular){
 
     var vm = this;
-    vm.players = PlayerService.initPlayers();
+    vm.players = PlayerService.initOrListPlayers();
  
     // flags + checks for ng-if
     vm.showListForDebug = false;
@@ -33,14 +33,14 @@ function CasinoController(PlayerService, toastr, Restangular){
        toastr.warning('Work in progress', 'Warning') };    
 
     // behaviour 
-    vm.changeAlien = function (playingOrder) {
-        loopAiLevel(playingOrder);
-        if (vm.players[playingOrder].aiLevel == 'None') {
-            vm.players[playingOrder].cubits = 0;
-            vm.players[playingOrder].securedLoan = vm.players[playingOrder].cubits;
+    vm.changeAlien = function (index) {
+        loopAiLevel(index);
+        if (vm.players[index].aiLevel == 'None') {
+            vm.players[index].cubits = 0;
+            vm.players[index].securedLoan = vm.players[index].cubits;
         } else {
-            vm.players[playingOrder].cubits = (Math.ceil(Math.random() * 500)+ 500);
-            vm.players[playingOrder].securedLoan = vm.players[playingOrder].cubits;
+            vm.players[index].cubits = (Math.ceil(Math.random() * 500)+ 500);
+            vm.players[index].securedLoan = vm.players[index].cubits;
         };
         checkIfAliensAreSet();    
     };
@@ -61,28 +61,28 @@ function CasinoController(PlayerService, toastr, Restangular){
             vm.showalien2 = true; 
         }
     };
-    function loopAiLevel(playingOrder) {
-        if (vm.players[playingOrder].aiLevel == 'None') {
-            if (vm.players[1].aiLevel == 'None' && playingOrder == 2) {
-                vm.players[playingOrder].aiLevel = 'None';
-                //vm.players[playingOrder].label = vm.none;
+    function loopAiLevel(index) {
+        if (vm.players[index].aiLevel == 'None') {
+            if (vm.players[1].aiLevel == 'None' && index == 2) {
+                vm.players[index].aiLevel = 'None';
+                //vm.players[index].label = vm.none;
             } else {
-                vm.players[playingOrder].aiLevel = 'Dumb';
-                //vm.players[playingOrder].label = vm.dumb;
+                vm.players[index].aiLevel = 'Dumb';
+                //vm.players[index].label = vm.dumb;
             };
-        } else if (vm.players[playingOrder].aiLevel == 'Dumb') {
-            vm.players[playingOrder].aiLevel = 'Average';
-            //vm.players[playingOrder].label = vm.average;
-        } else if (vm.players[playingOrder].aiLevel == 'Average') {
-            vm.players[playingOrder].aiLevel = 'Smart';
-            //vm.players[playingOrder].label = vm.smart;
-        } else if (vm.players[playingOrder].aiLevel == 'Smart') {
-            if (vm.players[2].aiLevel != 'None' && playingOrder == 1) {
-                vm.players[playingOrder].aiLevel = 'Dumb';
-                //vm.players[playingOrder].label = vm.dumb;
+        } else if (vm.players[index].aiLevel == 'Dumb') {
+            vm.players[index].aiLevel = 'Average';
+            //vm.players[index].label = vm.average;
+        } else if (vm.players[index].aiLevel == 'Average') {
+            vm.players[index].aiLevel = 'Smart';
+            //vm.players[index].label = vm.smart;
+        } else if (vm.players[index].aiLevel == 'Smart') {
+            if (vm.players[2].aiLevel != 'None' && index == 1) {
+                vm.players[index].aiLevel = 'Dumb';
+                //vm.players[index].label = vm.dumb;
             } else {
-                vm.players[playingOrder].aiLevel = 'None';
-                //vm.players[playingOrder].label = vm.none;
+                vm.players[index].aiLevel = 'None';
+                //vm.players[index].label = vm.none;
             };
         };
     };

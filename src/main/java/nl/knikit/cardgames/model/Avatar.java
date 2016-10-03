@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * <H1>Origin</H1> What species is applicable
+ * <H1>Avatar</H1> What species is applicable
  * <p> There are 4 species to choose from
  *
  * @author Klaas van der Meulen
@@ -18,9 +18,9 @@ import lombok.ToString;
 
 // Getters, no setters needed
 @Getter
-public enum Origin {
+public enum Avatar {
 
-    @Column(name = "ORIGIN")
+    @Column(name = "AVATAR")
     ELF("Elf", "Elf"), MAGICIAN("Magician", "Magier"), GOBLIN("Goblin", "Goblin"), ROMAN("Warrior", "Krijger");
 
     @Transient
@@ -30,7 +30,7 @@ public enum Origin {
 
     // Constructor, each argument to the constructor shadows one of the object's
     // fields
-    Origin(String englishName, String dutchName) {
+    Avatar(String englishName, String dutchName) {
 
         this.englishName = englishName;
         this.dutchName = dutchName;
@@ -39,7 +39,7 @@ public enum Origin {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Origin [name=").append(englishName).append("]");
+        builder.append("Avatar [name=").append(englishName).append("]");
         return builder.toString();
     }
 

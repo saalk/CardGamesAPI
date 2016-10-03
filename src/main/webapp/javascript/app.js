@@ -53,10 +53,10 @@ angular.module('myApp')
     });
     var newBaseUrl = "";
     if (window.location.hostname == "localhost") {
-        newBaseUrl = "http://localhost:8080/api";
+        newBaseUrl = "http://localhost:8383/api";
     } else {
         //newBaseUrl = window.location.href.substring(0, window.location.href) + "/api";
-        newBaseUrl = "http://knikit.nl/api/";
+        newBaseUrl = "http://knikit.nl/api";
     }
     RestangularProvider.setBaseUrl(newBaseUrl);       
 

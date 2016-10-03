@@ -42,18 +42,18 @@ public class Casino implements Serializable {
     @JsonProperty("casinoId") private String casinoId;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_GAME", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"))
+    @JoinColumn(name = "FK_GAME", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
     @JsonProperty("fkGame") private Game fkGame;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
     @JsonProperty("fkPlayer") private Player fkPlayer;
 
     @Column(name = "PLAYING_ORDER")
     @JsonProperty("playingOrder") private int playingOrder;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_HAND", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_HAND"))
+    @JoinColumn(name = "FK_HAND", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_HAND"), insertable = false, updatable = false)
     @JsonProperty("fkHand") private Hand fkHand;
 
     @JsonCreator

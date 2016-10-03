@@ -3,59 +3,45 @@ angular.module('myApp')
 PlayerService.$inject = ['toastr', 'Restangular'];
 function PlayerService(toastr, Restangular){
 
-   var players = [];
-   uid = 0;
+   //var players = [];
+   var players = Restangular.all('players').getList();
    return {
-        initPlayers: function() {
+        initOrListPlayers: function() {
+            //Restangular.all('players').getList().then(function(result) {
+            //    players = result;
+            //});
             if (players[0] == null) {
             players = [
-                {id: 123,  'playerId': '160913-01:28-11', playingOrder: 0, 'origin': 'ELF', 'alias':
-                'stranger', 'aiLevel': 'Human', cubits: 0000, securedLoan: 0000},
-                {id: 234,  'playerId': '160913-01:28-12', playingOrder: 1, 'origin': 'ELF', 'alias':
-                'alien1', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000},
-                {id: 345,  'playerId': '160913-01:28-13', playingOrder: 2, 'origin': 'ELF', 'alias':
-                'alien2', 'aiLevel': 'None', cubits: 0000, securedLoan: 0000}
-                ];
+                {id: 0,  'playerId': null, 'avatar': 'ELF', 'alias':
+                'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN', cubits: 0000, securedLoan: 0000}];
                 toastr.success('A new spaceship has landed...', 'Alpha landing bay');
             };
             return players;
+            //  players = Restangular.all('players');
+            //  $scope.Players = Restangular.all('players').getList().$object;
+
         },
+        pushAverageAiPlayerToList: function() {
+            players.push({id: 0,  'playerId': '', 'avatar': 'ELF', 'alias':
+                'alien', 'aiLevel': 'Average', cubits: 0000, securedLoan: 0000});
+         },
+        popLastPlayerFromList: function() {
+            players.pop(players.length-1);
+        },
+        // Restangular services
         listPlayers: function() {
             Restangular.all('players').getList().then(function(players) {
             return players;
           });
         },
+        getPlayer: function(player) {
+            Restangular.get(player);
+        },
         savePlayer: function(player) {
-            Restangular.post(player);
+            Restangular.one('players').customPOST(player);
         },
-
-        savePlayerInList: function(player) {
-            if (player.playingOrder == null) {
-            // new player
-               player.playingOrder = uid++;
-               players.push(player);
-            } else {
-             // existing player
-              for (var i in players) {
-                  if (players[i].playingOrder == player.playingOrder)
-                     players[i] = player;}
-            }
-        },
-        getPlayerByplayingOrder: function(playingOrder) {
-            // existing player
-            for (var i in players) {
-                if (players[i].playingOrder == playingOrder)
-                return players[i];
-            }
-        },
-        deletePlayerByplayingOrder: function(playingOrder) {
-            // existing player
-            i = 0;
-            players.forEach(function () {
-                if (players[i].playingOrder == playingOrder) {
-                players.splice(i, 1);
-                i++;}
-            });
+        updatePlayer: function(player) {
+            player.put; 
         }
-    }
+    };
 };

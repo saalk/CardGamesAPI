@@ -25,9 +25,9 @@ public class PlayerOldTest {
 		// cannot make instance variables here ?
 
 		// initialize the variables
-		testHumanPlayerOld1 = new PlayerOld(Origin.ELF, AiLevel.MEDIUM ,true);
-		testAiPlayerOld2 = new PlayerOld(Origin.ELF, AiLevel.MEDIUM, false);
-		testAiPlayerOld3 = new PlayerOld(Origin.ELF, AiLevel.MEDIUM, false);
+		testHumanPlayerOld1 = new PlayerOld(Avatar.ELF, AiLevel.MEDIUM ,true);
+		testAiPlayerOld2 = new PlayerOld(Avatar.ELF, AiLevel.MEDIUM, false);
+		testAiPlayerOld3 = new PlayerOld(Avatar.ELF, AiLevel.MEDIUM, false);
 
 	}
 

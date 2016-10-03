@@ -57,7 +57,7 @@ public class Game  implements Serializable {
     @JsonProperty("ante") private int ante;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
     @JsonProperty("winner") private  Player winner;
 
     public int increaseCurrentRound() {

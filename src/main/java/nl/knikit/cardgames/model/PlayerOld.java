@@ -34,22 +34,22 @@ public class PlayerOld {
     private AiLevel aiLevel;
     private int cubits;
     private int securedLoan;
-    private Origin origin;
+    private Avatar avatar;
     private HandOld handOld;
 
     /**
-     * @param inputOrigin  human or bot
+     * @param inputAvatar  human or bot
      * @param inputAiLevel dumb or smart
      * @param humanOrNot   human or not
      * @throws URISyntaxException
      * @throws IOException
      */
-    public PlayerOld(Origin inputOrigin, AiLevel inputAiLevel, boolean humanOrNot) throws IOException, URISyntaxException {
+    public PlayerOld(Avatar inputAvatar, AiLevel inputAiLevel, boolean humanOrNot) throws IOException, URISyntaxException {
 
         // increment startId at the same time with one after the assignment has been made!
         this.id = startId++;
-        this.origin = inputOrigin;
-        this.alias = generateName(inputOrigin);
+        this.avatar = inputAvatar;
+        this.alias = generateName(inputAvatar);
         this.isHuman = humanOrNot;
         this.aiLevel = inputAiLevel;
         this.cubits = 0;
@@ -74,8 +74,8 @@ public class PlayerOld {
         return aiLevel;
     }
 
-    public Origin getOrigin() {
-        return origin;
+    public Avatar getAvatar() {
+        return avatar;
     }
 
     public HandOld emptyHand() {
@@ -242,19 +242,19 @@ public class PlayerOld {
     }
 
     // Generate a name
-    public String generateName(Origin inputOrigin) throws IOException, URISyntaxException {
+    public String generateName(Avatar inputAvatar) throws IOException, URISyntaxException {
 
         // Don't fiddle with relative paths in java.io.File. They are dependent
         // on the current working directory over which you have totally no
         // control from inside the Java code.
 
         /*
-        String inputOriginFile = "" + inputOrigin
+        String inputAvatarFile = "" + inputAvatar
                 .getEnglishName() + "Names" +
                 ".txt";
 
         NameGenerator namegenerator;
-        namegenerator = new NameGenerator(inputOriginFile);
+        namegenerator = new NameGenerator(inputAvatarFile);
         int syls;
         Random random = new Random();
 

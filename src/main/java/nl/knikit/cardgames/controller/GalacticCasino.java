@@ -48,7 +48,7 @@ GalacticCasino .. PlayerOld.Predict
 GalacticCasino .. AiLevel
 GalacticCasino .. CardGame
 GalacticCasino .. CardGameVariant
-GalacticCasino .. Origin
+GalacticCasino .. Avatar
 }
 package "nl.deknik.cardgames" {
 package "utils" {
@@ -181,28 +181,28 @@ public class GalacticCasino {
         System.lineSeparator();
 
         // SETUP VISITOR
-        String[] origin = {"Elf", "Magician", "Goblin", "Warrior"};
-        answer = console.getAnswerFromConsole("> What is your origin? ", origin);
+        String[] avatar = {"Elf", "Magician", "Goblin", "Warrior"};
+        answer = console.getAnswerFromConsole("> What is your avatar? ", avatar);
 
-        Origin originChosen = null;
+        Avatar avatarChosen = null;
         switch (answer) {
             case 1:
-                originChosen = Origin.ELF;
+                avatarChosen = Avatar.ELF;
                 break;
             case 2:
-                originChosen = Origin.MAGICIAN;
+                avatarChosen = Avatar.MAGICIAN;
                 break;
             case 3:
-                originChosen = Origin.GOBLIN;
+                avatarChosen = Avatar.GOBLIN;
                 break;
             case 4:
-                originChosen = Origin.ROMAN;
+                avatarChosen = Avatar.ROMAN;
                 break;
             default:
-                originChosen = Origin.MAGICIAN;
+                avatarChosen = Avatar.MAGICIAN;
                 break;
         }
-        PlayerOld visitor = new PlayerOld(originChosen, null, true);
+        PlayerOld visitor = new PlayerOld(avatarChosen, null, true);
 
         Random random = new Random();
         int number = (random.nextInt(30) + 1);
@@ -217,7 +217,7 @@ public class GalacticCasino {
         CardGameVariant cardGameVariantSelected;
         // why not null; instead of new GameOld(null); or just GameOld currentGameOld; ?
         GameOld currentGameOld = new GameOld(null);
-        PlayerOld currentPlayerOld = new PlayerOld(visitor.getOrigin(), null, false);
+        PlayerOld currentPlayerOld = new PlayerOld(visitor.getAvatar(), null, false);
         PlayerOld.Predict prediction;
         PlayerOld.Predict real;
         int turn = 0;
@@ -298,19 +298,19 @@ public class GalacticCasino {
                         for (int i = 0; i < answer; i++) {
                             switch (secondAnswer) {
                                 case 1:
-                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.LOW, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(avatarChosen, AiLevel.LOW, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                                 case 2:
-                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(avatarChosen, AiLevel.MEDIUM, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                                 case 3:
-                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.HIGH, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(avatarChosen, AiLevel.HIGH, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                                 default:
-                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(originChosen, AiLevel.MEDIUM, false));
+                                    currentPlayerOld = currentGameOld.setPlayer(new PlayerOld(avatarChosen, AiLevel.MEDIUM, false));
                                     currentPlayerOld.setCubits(1000);
                                     break;
                             }
