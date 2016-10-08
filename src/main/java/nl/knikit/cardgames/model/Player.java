@@ -36,7 +36,7 @@ public class Player implements Serializable {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @JsonProperty("id") int id;
+    @JsonProperty("id") private int id;
 
     @Transient
     private static int startId = 1;

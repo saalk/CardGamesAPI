@@ -4,7 +4,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Well played {{ vm.players[0].alias }}</h2>
+                <h2 class="title">Well played {{ players[0].alias }}</h2>
                 <h5 class="subtitle">have a look at the results and repay your loan</h5>
             </div>
         </div>
@@ -29,11 +29,11 @@
             <div class="three columns main-prop">
                 <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
                      ng-click="vm.pawnHumanShipForCubits()">
-                <div ng-if="vm.players[0].securedLoan !== 0">
+                <div ng-if="players[0].securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Repay
-                        for: {{vm.players[0].securedLoan | leadingZeros }}</a>
+                        for: {{players[0].securedLoan | leadingZeros }}</a>
                 </div>
-                <div ng-if="vm.players[0].securedLoan === 0">
+                <div ng-if="players[0].securedLoan === 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Pawn
                         your ship</a>
                 </div>
