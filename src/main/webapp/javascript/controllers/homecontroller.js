@@ -18,6 +18,7 @@ function ($scope, playerService, toastr){
     // init the players collection
     $scope.players = [];
     // put a human player at index 0 in the collection
+    initDelete();
     initHome();
     // init due to local testing without backend
 //    if ($scope.players.length === 0) { 
@@ -135,23 +136,26 @@ function ($scope, playerService, toastr){
             )
         ;
     }
-    function initHome() {
+    function doNothing() {
+        //
+    }
+    function initDelete() {
         loadRemoteData(); // do a get all
         // TODO: read remote game from cookie > load related player
         // For now if remote players found -> delete them all
-        if ($scope.players[1].id !== null) {
-            for (i = 0, len = $scope.players.length; i < len; i++) {
-                playerService.removePlayer( $scope.players[i].id )
-                    .then( loadRemoteData, function( errorMessage ) {
-                        toastr.error('An error has occurred:' + errorMessage, 'Error');
-                        }
-                    )
-                ;
-            }
+        for (i = 0; i < $scope.players.length; i++) {
+                playerService.removePlayer( $scope.players[i] )
+                .then( doNothing, function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                    }
+                )
+            ;
         };
+    };
+    function initHome() {
         // Add a default human player
-        playerService.addPlayer( {'id':null, 'playerId': '', 'avatar': 'ELF', 
-                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',  
+        playerService.addPlayer( {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
+                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
                 cubits: 0, securedLoan: 0} )
             .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
@@ -159,6 +163,5 @@ function ($scope, playerService, toastr){
             )
         ;
         toastr.success('A new spaceship has landed...', 'Alpha landing bay');
-
     };
 }]);
