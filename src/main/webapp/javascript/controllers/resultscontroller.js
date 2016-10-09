@@ -1,5 +1,4 @@
 angular.module('myApp')
-        .controller('ResultsController', ResultsController)
         .directive('myResultsDirective', function() {
             return {
                 restrict: 'AE',
@@ -8,17 +7,25 @@ angular.module('myApp')
                 }
             };
         })
-        ;
+        .controller('ResultsController', ['$scope', 'playerService', 'toastr',
+function ($scope, playerService, toastr){
 
-ResultsController.$inject = ['$scope', 'playerService', 'toastr'];
-function ResultsController($scope, playerService, toastr){
-
+    // viewmodel for this controller
     var vm = this;
+        $scope.players = [];
     // list of players to be rendered, init due to local testing without backend
-    $scope.players = [{'id': null, 'avatar': 'ELF',
-                    'alias':'Stranger', 'isHuman' : true, 
-                    'aiLevel': 'HIGH',  cubits: 4, 
-                    securedLoan: 0}];  
+//    $scope.players = [[{'id': null, 'avatar': 'ELF',
+//                    'alias':'No Backend', 'isHuman' : true, 
+//                    'aiLevel': 'HUMAN',  cubits: 750, 
+//                    securedLoan: 750},
+//                    {'id': null, 'avatar': 'ELF',
+//                    'alias':'Alien1', 'isHuman' : false, 
+//                    'aiLevel': 'MEDIUM',  cubits: 750, 
+//                    securedLoan: 750},
+//                    {'id': null, 'avatar': 'ELF',
+//                    'alias':'Alien2', 'isHuman' : false, 
+//                    'aiLevel': 'MEDIUM',  cubits: 750, 
+//                    securedLoan: 750}]];  
     // load the Players
     loadRemoteData();
     // flags + checks for ng-if
@@ -47,7 +54,7 @@ function ResultsController($scope, playerService, toastr){
         playerService.savePlayer($scope.players[index]);
     };
     vm.pawnHumanShipForCubits = function () {
-        if ($scope.players[0].securedLoan == 0 ) {
+        if ($scope.players[0].securedLoan === 0 ) {
             $scope.players[0].securedLoan = (Math.ceil(Math.random() * 750)+250);
             $scope.players[0].cubits = $scope.players[0].cubits + $scope.players[0].securedLoan;
             toastr.info('Your ship is pawned', 'Information');
@@ -71,37 +78,37 @@ function ResultsController($scope, playerService, toastr){
         };
     };
     function checkIfAliensAreSet() {
-        if ($scope.players[0].cubits != 0 && $scope.players[1].cubits != 0 && $scope.players[1].aiLevel != 'NONE')  {
+        if ($scope.players[0].cubits !== 0 && $scope.players[1].cubits !== 0 && $scope.players[1].aiLevel !== 'NONE')  {
             vm.tothetable = true; 
         }
-        if ($scope.players[1].aiLevel == 'NONE') {
+        if ($scope.players[1].aiLevel === 'NONE') {
             vm.showalien1 = false; 
         } else {
             vm.showalien1 = true; 
         }
-        if ($scope.players[2].aiLevel == 'NONE') {
+        if ($scope.players[2].aiLevel === 'NONE') {
             vm.showalien2 = false;    
         } else {
             vm.showalien2 = true; 
         }
     };
     function loopAiLevel(index) {
-        if ($scope.players[index].aiLevel == 'NONE') {
-            if ($scope.players[1].aiLevel == 'NONE' && index == 2) {
+        if ($scope.players[index].aiLevel === 'NONE') {
+            if ($scope.players[1].aiLevel === 'NONE' && index === 2) {
                 $scope.players[index].aiLevel = 'NONE';
                 $scope.players[index].label = vm.none;
             } else {
                 $scope.players[index].aiLevel = 'LOW';
                 $scope.players[index].label = vm.dumb;
             };
-        } else if ($scope.players[index].aiLevel == 'LOW') {
+        } else if ($scope.players[index].aiLevel === 'LOW') {
             $scope.players[index].aiLevel = 'MEDIUM';
             $scope.players[index].label = vm.average;
-        } else if ($scope.players[index].aiLevel == 'MEDIUM') {
+        } else if ($scope.players[index].aiLevel === 'MEDIUM') {
             $scope.players[index].aiLevel = 'HIGH';
             $scope.players[index].label = vm.smart;
-        } else if ($scope.players[index].aiLevel == 'HIGH') {
-            if ($scope.players[2].aiLevel != 'NONE' && index == 1) {
+        } else if ($scope.players[index].aiLevel === 'HIGH') {
+            if ($scope.players[2].aiLevel !== 'NONE' && index === 1) {
                 $scope.players[index].aiLevel = 'LOW';
                 $scope.players[index].label = vm.dumb;
             } else {
@@ -126,15 +133,16 @@ function ResultsController($scope, playerService, toastr){
                 }
             )
         ;
-        // Reset the form once values have been consumed.
-        $scope.form.name = "";
     };
     // I update the given player from the current collection.
     $scope.updatePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.updatePlayer( player.id, player )
-            .then( loadRemoteData )
+            .then( loadRemoteData, function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
         ;
     };  
     // I remove the given friend from the current collection.
@@ -142,11 +150,14 @@ function ResultsController($scope, playerService, toastr){
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.removePlayer( player.id )
-            .then( loadRemoteData )
+            .then( loadRemoteData, function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
         ;
     };  
     // ---
-    // PRIVATE METHODS USED IN PUBLIC API METHODS
+    // PRIVATE METHODS USED IN PUBLIC API METHODS AND INIT
     // ---
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
@@ -163,4 +174,4 @@ function ResultsController($scope, playerService, toastr){
             )
         ;
     }
-};
+}]);

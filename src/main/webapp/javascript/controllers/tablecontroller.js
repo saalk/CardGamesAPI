@@ -1,5 +1,4 @@
 angular.module('myApp')
-        .controller('TableController', TableController)
         .directive('myTableDirective', function() {
             return {
                 restrict: 'AE',
@@ -8,18 +7,26 @@ angular.module('myApp')
                 }
             };
         })
-        ;
-
-TableController.$inject = ['$scope', 'playerService', 'toastr'];
-function TableController($scope, playerService, toastr){
+        .controller('TableController', ['$scope', 'playerService', 'toastr',
+function ($scope, playerService, toastr){
 
     var vm = this;
     // list of players to be rendered, init due to local testing without backend
-    $scope.players = [{'id': null, 'avatar': 'ELF',
-                    'alias':'Stranger', 'isHuman' : true, 
-                    'aiLevel': 'MEDIUM',  cubits: 3, 
-                    securedLoan: 0}];  
-    // load the Player
+//    $scope.players = [{'id': null, 'avatar': 'ELF',
+//                    'alias':'No Backend', 'isHuman' : true, 
+//                    'aiLevel': 'HUMAN',  cubits: 750, 
+//                    securedLoan: 750},
+//                    {'id': null, 'avatar': 'ELF',
+//                    'alias':'Alien1', 'isHuman' : false, 
+//                    'aiLevel': 'MEDIUM',  cubits: 750, 
+//                    securedLoan: 750},
+//                    {'id': null, 'avatar': 'ELF',
+//                    'alias':'Alien2', 'isHuman' : false, 
+//                    'aiLevel': 'MEDIUM',  cubits: 750, 
+//                    securedLoan: 750}];  
+    // init the players collection
+    $scope.players = [];
+    // load the Players
     loadRemoteData();
     // flags + checks for ng-if
     vm.showListForDebug = true;
@@ -32,14 +39,14 @@ function TableController($scope, playerService, toastr){
     vm.round = 1; 
     vm.showalien1 = false;
     vm.showalien2 = false;
-    init();
+    initTable();
     checkIfAliensAreSet();
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
      vm.doguess = function() { 
         vm.generateguess = (Math.random() >= 0.5); // (Math.ceil(Math.random() * 1)); 
-        if (vm.generateguess == 0) {
+        if (vm.generateguess === 0) {
             toastr.success('A good guess', 'Success');
             $scope.players[vm.loopplayer].cubits = $scope.players[vm.loopplayer].cubits + vm.ante;
         } else {
@@ -50,7 +57,7 @@ function TableController($scope, playerService, toastr){
     };
     vm.pass = function() { 
         if (vm.loopplayer < $scope.players.length -1 ) {
-            if ($scope.players[vm.loopplayer + 1].aiLevel == 'NONE') {
+            if ($scope.players[vm.loopplayer + 1].aiLevel === 'NONE') {
                 vm.loopplayer = 0; 
                 vm.round = vm.round + 1;
             } else {
@@ -64,23 +71,23 @@ function TableController($scope, playerService, toastr){
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
-    function init() {
-        if (vm.ante == 0) {
+    function initTable() {
+        if (vm.ante === 0) {
             vm.ante = 50;
         };
         for (var i in $scope.players) {
-            if ($scope.players[i].securedLoan == 0 && $scope.players[i].aiLevel != 'NONE') {
+            if ($scope.players[i].securedLoan === 0 && $scope.players[i].aiLevel !== 'NONE') {
                 $scope.players[i].securedLoan = $scope.players[i].cubits;
             };
         };       
     };
     function checkIfAliensAreSet() {
-        if ($scope.players[1].aiLevel == 'NONE') {
+        if ($scope.players[1].aiLevel === 'NONE') {
             vm.showalien1 = false; 
         } else {
             vm.showalien1 = true; 
         };
-        if ($scope.players[2].aiLevel == 'NONE') {
+        if ($scope.players[2].aiLevel === 'NONE') {
             vm.showalien2 = false;    
         } else {
             vm.showalien2 = true; 
@@ -110,7 +117,12 @@ function TableController($scope, playerService, toastr){
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.updatePlayer( player.id, player )
-            .then( loadRemoteData )
+            .then(
+                loadRemoteData,
+                function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
         ;
     };  
     // I remove the given friend from the current collection.
@@ -118,11 +130,16 @@ function TableController($scope, playerService, toastr){
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.removePlayer( player.id )
-            .then( loadRemoteData )
+            .then(
+                loadRemoteData,
+                function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
         ;
     };  
     // ---
-    // PRIVATE METHODS USED IN PUBLIC API METHODS
+    // PRIVATE METHODS USED IN PUBLIC API METHODS AND INIT
     // ---
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
@@ -139,4 +156,4 @@ function TableController($scope, playerService, toastr){
             )
         ;
     }
-};
+}]);

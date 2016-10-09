@@ -8,20 +8,16 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'toastr']);
 angular.module('myApp')
         .config(function($routeProvider, toastrConfig) {
 
-    $routeProvider.when('/home', {
-       templateUrl: 'partials/home.html',
-       controller: 'HomeController'
-    }).when('/casino', {
-       templateUrl: 'partials/casino.html',
-       controller: 'CasinoController'
-    }).when('/table', {
-       templateUrl: 'partials/table.html',
-       controller: 'TableController'
-    }).when('/results', {
-       templateUrl: 'partials/results.html',
-       controller: 'ResultsController'       
+    $routeProvider.when('/home/', {
+       templateUrl: 'partials/home.html'
+    }).when('/casino/', {
+       templateUrl: 'partials/casino.html'
+    }).when('/table/', {
+       templateUrl: 'partials/table.html'
+    }).when('/results/', {
+       templateUrl: 'partials/results.html'  
     }).otherwise({
-        redirectTo: '/home'
+        redirectTo: '/home/'
     });
 
     angular.extend(toastrConfig, {

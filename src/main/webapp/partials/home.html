@@ -50,8 +50,8 @@
                     </p>
                 <a class="button main-button" ng-click="vm.pawnHumanShipForCubits(750)"
                    href="#/home">Home</a>
-                <a class="button button-primary main-button" ng-if="vm.gotocasino" data-ng-click="vm.gotothecasino()"
-                   class="animate-if" ng-click="vm.checkIfNameAndSecuredLoanAreSet()" href="#/casino">Get me to the
+                <a class="button button-primary main-button animate-if" ng-if="vm.gotocasino" data-ng-click="savePlayer($scope.players[0])"
+                   ng-click="vm.checkIfNameAndSecuredLoanAreSet()" href="#/casino">Get me to the
                     Casino</a>
             </div>
             <div class="three columns main-prop">
@@ -60,12 +60,12 @@
                         players[0].cubits | leadingZeros }}</a>
                 <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
                      ng-click="vm.pawnHumanShipForCubits()">
-                <div ng-if="players[0].securedLoan != 0">
+                <div ng-if="players[0].securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Repay
                         for: {{
                         players[0].securedLoan | leadingZeros }}</a>
                 </div>
-                <div ng-if="players[0].securedLoan == 0">
+                <div ng-if="players[0].securedLoan === 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Pawn
                         your ship</a>
                 </div>
