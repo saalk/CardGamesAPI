@@ -1,10 +1,14 @@
 // filters for generic purpose
 angular
     .module('myApp')
-    .filter('leadingZeros', function(){
-    return function(input, size) {
-        // var zero = (size ? size : 4) - input.toString().length + 1;
-        var zero = 4 - input.toString().length + 1;
-        return new Array(+(zero > 0 && zero)).join("0") + input;
+    .filter('minLength', function(){
+        return function(input, len, pad){
+            if (input === undefined) { input = 0; };
+            input = input.toString(); 
+            if(input.length >= len) return input;
+            else{
+              pad = (pad || 0).toString(); 
+              return new Array(1 + len - input.length).join(pad) + input;
+            }
     };
 });

@@ -17,4 +17,6 @@ public interface IOperations<T extends Serializable> {
 
     void deleteById(final int entityId);
 
+    void deleteAll();
+
 }

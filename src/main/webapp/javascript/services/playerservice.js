@@ -4,18 +4,39 @@ angular.module('myApp')
        .service('playerService', ['$http', '$q', 'toastr',
 function ($http, $q, toastr){           
 
-    var baseUrl =  "" ; // "localhost:8181"
+    var baseUrl =  "http://localhost:8383"
     //$http.defaults.headers.common.Authorization = 'Basic YmVlcDpib29w';
     // Return public API
     return({
+            initHumanPlayer: initHumanPlayer,
             addPlayer: addPlayer,
             getPlayers: getPlayers,
             updatePlayer: updatePlayer,
-            removePlayer: removePlayer
+            removePlayer: removePlayer,
+            removePlayers: removePlayers,
+            
         });
     // ---
     // PUBLIC METHODS.
     // ---
+
+    // init a human player using the server' api
+    function initHumanPlayer() {
+        
+        var request = $http({
+            method: "post",
+            crossDomain: true,
+            url: baseUrl + "/api/players",
+            headers: {'Content-Type': 'application/json'},            //           params: {
+            //               action: "add"
+            //           },
+            data: {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
+                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
+                cubits: 0, securedLoan: 0}
+       });
+       return( request.then( handleSuccess, handleError ) );
+    }
+
     // get all players using the server' api
     function getPlayers() {
         // then() returns a new promise. We return that new promise.
@@ -24,10 +45,9 @@ function ($http, $q, toastr){
 
         var request = $http({
                 method: "get",
+                crossDomain: true,
                 url: baseUrl + "/api/players",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: {'Content-Type': 'application/json'}
 //                params: {
 //                    action: "get"
 //                }
@@ -36,16 +56,14 @@ function ($http, $q, toastr){
     }
     // add a player with the given details using the server' api
     function addPlayer( player ) {
-       var request = $http({
-           method: "post",
-           url: baseUrl + "/api/players",
-           headers: {
-                    'Content-Type': 'application/json'
-           },
-//           params: {
-//               action: "add"
-//           },
-           data: player
+        var request = $http({
+            method: "post",
+            crossDomain: true,
+            url: baseUrl + "/api/players",
+            headers: {'Content-Type': 'application/json'},            //           params: {
+            //               action: "add"
+            //           },
+            data: player
        });
        return( request.then( handleSuccess, handleError ) );
     }
@@ -53,8 +71,11 @@ function ($http, $q, toastr){
     function updatePlayer( player ) {
         var request = $http({
             method: "put",
+            crossDomain: true,
             url: baseUrl + "/api/players/" + player.id,
-//            params: {
+            headers: {'Content-Type': 'application/json'},   
+            //
+            //            params: {
 //                action: "update"
 //            },
            data: player
@@ -65,8 +86,23 @@ function ($http, $q, toastr){
     function removePlayer( player ) {
         var request = $http({
             method: "delete",
-            url: baseUrl + "/api/players/" + player.id
-//            params: {
+            crossDomain: true,
+            url: baseUrl + "/api/players/" + player.id,
+              headers: {'Content-Type': 'application/json'} 
+              //            params: {
+//                action: "delete"
+//            },
+        });
+        return( request.then( handleSuccess, handleError ) );
+    }
+    // remove all players using the server' api
+    function removePlayers() {
+        var request = $http({
+            method: "delete",
+            crossDomain: true,
+            url: baseUrl + "/api/players",
+              headers: {'Content-Type': 'application/json'} 
+              //            params: {
 //                action: "delete"
 //            },
         });

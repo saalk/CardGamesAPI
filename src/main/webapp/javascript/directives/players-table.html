@@ -3,7 +3,7 @@
         <img class="human-img" alt="you" src="img/aliensmall.jpg">
         <br>
         <h5>You: {{ players[0].alias }}</h5>
-        <p>{{ players[0].cubits - players[0].securedLoan }} of {{ players[0].securedLoan | leadingZeros
+        <p>{{ players[0].cubits - players[0].securedLoan }} of {{ players[0].securedLoan | minLength:4:"0"
             }} cubits won
             .</p>
     </div>
@@ -14,21 +14,21 @@
                 <br>
                 <h5>{{ players[1].aiLevel }}: {{ players[1].alias }}</h5>
                 
-                <p>{{ players[1].cubits - players[1].securedLoan }} of {{ players[1].securedLoan | leadingZeros }} cubits won
+                <p>{{ players[1].cubits - players[1].securedLoan }} of {{ players[1].securedLoan | minLength:4:"0" }} cubits won
                 .</p>                
             </div>
             <div ng-if="players[1].aiLevel == 'MEDIUM'">
                 <img alt="alien1" src="img/aimedium.jpg">
                 <br>
                 <h5>{{ players[1].aiLevel }}: {{ players[1].alias }}</h5>
-                <p>{{ players[1].cubits - players[1].securedLoan }} of {{ players[1].securedLoan | leadingZeros }} cubits won
+                <p>{{ players[1].cubits - players[1].securedLoan }} of {{ players[1].securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
             <div ng-if="players[1].aiLevel == 'HIGH'">
                 <img alt="alien1" src="img/aihigh.jpg">
                 <br>
                 <h5>{{ players[1].aiLevel }}: {{ players[1].alias }}</h5>
-                <p>{{ players[1].cubits - players[1].securedLoan }} of {{ players[1].securedLoan | leadingZeros }} cubits won
+                <p>{{ players[1].cubits - players[1].securedLoan }} of {{ players[1].securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
         </div>
@@ -39,21 +39,21 @@
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>
                 <h5>{{ players[2].aiLevel }}: {{ players[2].alias }}</h5>
-                <p>{{ players[2].cubits - players[2].securedLoan }} of {{ players[2].securedLoan | leadingZeros }} cubits won
+                <p>{{ players[2].cubits - players[2].securedLoan }} of {{ players[2].securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
             <div ng-if="players[2].aiLevel == 'MEDIUM'">
                 <img alt="alien2" src="img/aimedium.jpg">
                 <br>
                 <h5>{{ players[2].aiLevel }}: {{ players[2].alias }}</h5>
-                <p>{{ players[2].cubits - players[2].securedLoan }} of {{ players[2].securedLoan | leadingZeros }} cubits won
+                <p>{{ players[2].cubits - players[2].securedLoan }} of {{ players[2].securedLoan | minLength:4:"0" }} cubits won
                 .</p>                
             </div>
             <div ng-if="players[2].aiLevel == 'HIGH'">
                 <img alt="alien2" src="img/aihigh.jpg">
                 <br>
                 <h5>{{ players[2].aiLevel }}: {{ players[2].alias }}</h5>
-                <p>{{ players[2].cubits - players[2].securedLoan  }} of {{ players[2].securedLoan | leadingZeros }} cubits won
+                <p>{{ players[2].cubits - players[2].securedLoan  }} of {{ players[2].securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
         </div>

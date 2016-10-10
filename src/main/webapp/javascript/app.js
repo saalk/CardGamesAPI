@@ -6,7 +6,13 @@
 // 2. 'ngAnimate', 'toastr' is for angular-toastr (
 angular.module('myApp', ['ngRoute', 'ngAnimate', 'toastr']);
 angular.module('myApp')
-        .config(function($routeProvider, toastrConfig) {
+        .config(function($httpProvider, $routeProvider, toastrConfig) {
+            
+    $httpProvider.defaults.headers.common = {};
+    $httpProvider.defaults.headers.post = {};
+    $httpProvider.defaults.headers.put = {};
+    $httpProvider.defaults.headers.patch = {};
+
 
     $routeProvider.when('/home/', {
        templateUrl: 'partials/home.html'

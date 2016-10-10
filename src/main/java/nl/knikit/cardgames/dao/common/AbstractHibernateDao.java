@@ -72,6 +72,22 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         }
     }
 
+    @Override
+    public final void deleteAll() {
+        String idMessage = String.format("Entity to delete all in DAO: %s", clazz.getName());
+        log.info(idMessage);
+        final List<T> entities = findAll();
+        String message = String.format("Entities to delete by all in DAO: %s", clazz.getName());
+        log.info(message);
+        if (entities.size() > 0 ) {
+            try {
+                getCurrentSession().createQuery("delete from " + clazz.getName());
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+    }
+
     protected final Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }

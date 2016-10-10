@@ -57,6 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
 
 // @RestController = @Controller + @ResponseBody
+@CrossOrigin
 @RestController
 @Component
 @ExposesResourceFor(Player.class)
@@ -104,6 +105,16 @@ public class PlayerController {
                 .body(player);
     }
 
+    @DeleteMapping("/players")
+    public ResponseEntity deletePlayers() {
+
+        playerService.deleteAll();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("All Players deleted");
+
+    }
+
     @DeleteMapping("/players/{id}")
     public ResponseEntity deletePlayer(@PathVariable int id) {
 
@@ -113,7 +124,7 @@ public class PlayerController {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body("No Player with /{id}: " + id + " found to delete");
-            }
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)

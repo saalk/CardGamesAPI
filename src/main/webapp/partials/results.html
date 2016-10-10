@@ -31,7 +31,7 @@
                      ng-click="vm.pawnHumanShipForCubits()">
                 <div ng-if="players[0].securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Repay
-                        for: {{players[0].securedLoan | leadingZeros }}</a>
+                        for: {{players[0].securedLoan | minLength:4:"0" }}</a>
                 </div>
                 <div ng-if="players[0].securedLoan === 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits()">Pawn

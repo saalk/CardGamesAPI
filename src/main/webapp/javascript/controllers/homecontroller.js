@@ -18,15 +18,7 @@ function ($scope, playerService, toastr){
     // init the players collection
     $scope.players = [];
     // put a human player at index 0 in the collection
-    initDelete();
-    initHome();
-    // init due to local testing without backend
-//    if ($scope.players.length === 0) { 
-//        $scope.players = {'id': null, 'avatar': 'ELF',
-//                    'alias':'No backend', 'isHuman' : true, 
-//                    'aiLevel': 'HUMAN',  cubits: 0, 
-//                    securedLoan: 0};
-//    };
+    initHumanPlayer();
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
@@ -84,6 +76,7 @@ function ($scope, playerService, toastr){
     // ---
     // PUBLIC API METHODS
     // ---
+    
     // add the player
     $scope.addPlayer = function( player ) {
         // If the data we provide is invalid, the promise will be rejected,
@@ -121,6 +114,26 @@ function ($scope, playerService, toastr){
     // ---
     // PRIVATE METHODS USED IN PUBLIC API METHODS OR INIT SCREEN
     // ---
+
+    // add the human player
+    function initHumanPlayer() {
+        // If the data we provide is invalid, the promise will be rejected,
+        // at which point we can tell the user that something went wrong. In
+        // this case, toastr is used
+        playerService.removePlayers()
+            .then( loadRemoteData, function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
+        ;
+    
+        playerService.initHumanPlayer()
+            .then( loadRemoteData, function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
+        ;
+    };
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;
@@ -136,32 +149,4 @@ function ($scope, playerService, toastr){
             )
         ;
     }
-    function doNothing() {
-        //
-    }
-    function initDelete() {
-        loadRemoteData(); // do a get all
-        // TODO: read remote game from cookie > load related player
-        // For now if remote players found -> delete them all
-        for (i = 0; i < $scope.players.length; i++) {
-                playerService.removePlayer( $scope.players[i] )
-                .then( doNothing, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                    }
-                )
-            ;
-        };
-    };
-    function initHome() {
-        // Add a default human player
-        playerService.addPlayer( {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
-                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
-                cubits: 0, securedLoan: 0} )
-            .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                }
-            )
-        ;
-        toastr.success('A new spaceship has landed...', 'Alpha landing bay');
-    };
 }]);
