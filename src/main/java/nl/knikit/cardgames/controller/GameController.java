@@ -99,22 +99,6 @@ public class GameController {
                 .body(game);
     }
 
-    @DeleteMapping("/games/{id}")
-    public ResponseEntity deleteGame(@PathVariable int id) {
-
-        try {
-            gameService.deleteById(id);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Game with /{id}: " + id + " found to delete");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Game with /{id}: " + id + " deleted");
-    }
-
     @PutMapping("/games/{id}")
     public ResponseEntity updateGame(@PathVariable int id, @RequestBody Game
             game) {
@@ -127,6 +111,24 @@ public class GameController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(newGame);
+    }
+
+    @DeleteMapping("/games/{id}")
+    public ResponseEntity deleteGames(@PathVariable("id") int id) {
+
+        try {
+            Game classGame = new Game();
+            classGame.setId(id);
+            gameService.delete(classGame);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Casino with /{id}: " + id + " found to delete");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Casino with /{id}: " + id + " deleted");
     }
 
     // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.

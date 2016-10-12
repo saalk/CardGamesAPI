@@ -15,8 +15,7 @@ public interface IOperations<T extends Serializable> {
 
     void delete(final T entity);
 
-    void deleteById(final int entityId);
+    void deleteAllByWhereClause(final T entity, final String whereClause);
 
-    void deleteAll();
-
+    void deleteAllByIds(final T entity, final List<String> ids);
 }

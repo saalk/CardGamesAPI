@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.io.Serializable;
 import java.util.List;
@@ -49,45 +50,56 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         return (T) getCurrentSession().merge(entity);
     }
 
+    // the deletes
     @Override
     public final void delete(final T entity) {
         String message = String.format("Entity to delete in DAO: %s", entity.toString());
         log.info(message);
         Preconditions.checkNotNull(entity);
-        getCurrentSession().delete(entity);
+        try {
+            getCurrentSession().delete(entity);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
+
     @Override
-    public final void deleteById(final int entityId) {
-        String idMessage = String.format("Entity to delete id in DAO: %s", entityId);
+    @Modifying
+    public final void deleteAllByWhereClause(final T entity, final String whereClause) {
+        String idMessage = String.format("Entity to delete all DAO all by where clause in DAO: %s", entity.toString());
         log.info(idMessage);
-        final T entity = findOne(entityId);
-        String message = String.format("Entity to delete by id in DAO: %s", entity.toString());
-        log.info(message);
-        Preconditions.checkState(entity != null);
         try {
-            delete(entity);
+            getCurrentSession().createQuery("delete from " + entity.toString() + "where " + whereClause);
         } catch (Exception e) {
             throw e;
         }
     }
 
     @Override
-    public final void deleteAll() {
-        String idMessage = String.format("Entity to delete all in DAO: %s", clazz.getName());
-        log.info(idMessage);
-        final List<T> entities = findAll();
-        String message = String.format("Entities to delete by all in DAO: %s", clazz.getName());
-        log.info(message);
-        if (entities.size() > 0 ) {
-            try {
-                getCurrentSession().createQuery("delete from " + clazz.getName());
-            } catch (Exception e) {
-                throw e;
+    public final void deleteAllByIds(final T entity, final List<String> ids) {
+
+        try {
+
+            for (String id : ids ) {
+
+                String idMessage = String.format("Entity to delete all in DAO by list of ids has id: %s", id);
+                log.info(idMessage);
+                final T oneEntity = findOne(Integer.parseInt(id));
+
+                String message = String.format("Entity to delete by id in DAO: %s", entity.toString());
+                log.info(message);
+
+                Preconditions.checkState(oneEntity != null);
+
+                getCurrentSession().delete(oneEntity);
             }
+        } catch (Exception e) {
+            throw e;
         }
     }
 
+    // private method
     protected final Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }

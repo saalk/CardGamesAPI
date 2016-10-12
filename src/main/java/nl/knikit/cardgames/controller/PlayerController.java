@@ -50,11 +50,18 @@ import org.springframework.web.bind.annotation.*;
 import nl.knikit.cardgames.model.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 // @RestController = @Controller + @ResponseBody
 @CrossOrigin
@@ -105,32 +112,6 @@ public class PlayerController {
                 .body(player);
     }
 
-    @DeleteMapping("/players")
-    public ResponseEntity deletePlayers() {
-
-        playerService.deleteAll();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("All Players deleted");
-
-    }
-
-    @DeleteMapping("/players/{id}")
-    public ResponseEntity deletePlayer(@PathVariable int id) {
-
-        try {
-            playerService.deleteById(id);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Player with /{id}: " + id + " found to delete");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Player with /{id}: " + id + " deleted");
-    }
-
     @PutMapping("/players/{id}")
     public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player
             player) {
@@ -144,6 +125,81 @@ public class PlayerController {
                 .status(HttpStatus.CREATED)
                 .body(newPlayer);
     }
+
+    @DeleteMapping("/players/{id}")
+    public ResponseEntity deletePlayers(@PathVariable("id") int id) {
+
+        try {
+            Player classPlayer = new Player();
+            classPlayer.setId(id);
+            playerService.delete(classPlayer);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Players with /{id}: " + id + " found to delete");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Player with /{id}: " + id + " deleted");
+    }
+
+    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
+    //
+    // SPRING
+    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+    // you get the Date dataOrNull for ?date=12-05-2013
+    //
+    // JAX_RS
+    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+    // you get the boolean isHuman with value 'true' for ?isHuman=true
+
+    @DeleteMapping(value = "/players", params = { "isHuman" } )
+    public ResponseEntity deletePlayersByIsHuman(
+            @RequestParam(value = "isHuman", required = false, defaultValue = "true") String isHuman) {
+
+        try {
+            Player classPlayer = new Player();
+            String whereClause = "where isHuman = " + isHuman;
+            playerService.deleteAllByWhereClause(classPlayer, whereClause);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Players with isHuman: " + isHuman + " found to delete");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Players deleted");
+    }
+
+    // /players?id=1,id=2,id=3
+    @DeleteMapping("/players")
+    public ResponseEntity deletePlayersById(@Context UriInfo ui) {
+
+        // get all ids from the UriInfo as alternative to @QueryParam
+        List<String> ids = ui.getQueryParameters().get("id");
+        Player classPlayer = new Player();
+
+        // MultivaluedMap<String, String> queryParams = ui.getQueryParameters(); //
+        // MultivaluedMap<String, String> pathParams = ui.getPathParameters();
+        // if (queryParams == null) {
+        //    queryParams = new MultivaluedHashMap<>();
+        // }
+
+        try {
+            playerService.deleteAllByIds(classPlayer, ids);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Players with /{id}: " + id + " found to delete");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Player with /{id}: " + id + " deleted");
+    }
+
 
     // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
     // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200

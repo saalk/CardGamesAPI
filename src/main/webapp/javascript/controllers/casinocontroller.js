@@ -14,21 +14,20 @@ function ($scope, playerService, toastr){
     var vm = this;
     // init the players collection
     $scope.players = [];
-    // list of players to be rendered, init due to local testing without backend
-//    $scope.players = {'id': null, 'avatar': 'ELF',
-//                    'alias':'No Backend', 'isHuman' : true, 
-//                    'aiLevel': 'HUMAN',  cubits: 750, 
-//                    securedLoan: 750},
-//                    {'id': null, 'avatar': 'ELF',
-//                    'alias':'Alien1', 'isHuman' : false, 
-//                    'aiLevel': 'NONE',  cubits: 0000, 
-//                    securedLoan: 0000},
-//                    {'id': null, 'avatar': 'ELF',
-//                    'alias':'Alien2', 'isHuman' : false, 
-//                    'aiLevel': 'NONE',  cubits: 0000, 
-//                    securedLoan: 0000};  
-    // get the player
-    initCasino();
+    // 
+    playerService.removePlayersByIsHuman( false)
+    .then( loadRemoteData, function( errorMessage ) {
+            toastr.error('An error has occurred:' + errorMessage, 'Error');
+        }
+    )
+    ;
+    playerService.initPlayerForIsHuman( false )
+        .then( loadRemoteData, function( errorMessage ) {
+                toastr.error('An error has occurred:' + errorMessage, 'Error');
+            }
+        )
+    ;
+    
     // flags + checks for ng-if
     vm.showListForDebug = true;
     vm.showalien1 = false;
@@ -68,38 +67,7 @@ function ($scope, playerService, toastr){
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
-    function initCasino() {
-        loadRemoteData(); // do a get all
-        // TODO: read remote game from cookie > load related player
-        // For now if remote players found -> delete them all
-        if ($scope.players.length > 1) {
-            for (i = 1, len = $scope.players.length; i < len; i++) {
-                playerService.removePlayer( $scope.players[i].id )
-                    .then( loadRemoteData, function( errorMessage ) {
-                        toastr.error('An error has occurred:' + errorMessage, 'Error');
-                        }
-                    )
-                ;
-            }
-        };
-        // Add a default alien1+2 player
-        playerService.addPlayer( {'id':null, 'playerId': '', 'avatar': 'ELF',
-                'alias':'alien1', 'isHuman' : false, 'aiLevel': 'NONE',
-                cubits: 0, securedLoan: 0} )
-            .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                }
-            )
-        ;
-        playerService.addPlayer( {'id':null, 'playerId': '', 'avatar': 'ELF',
-                'alias':'alien2', 'isHuman' : false, 'aiLevel': 'NONE',
-                cubits: 0, securedLoan: 0} )
-            .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                }
-            )
-        ;
-     };
+
     // flags for show/hide the buttons alien1, alien2 and tothetable
     function checkIfAliensAreSet() {
         vm.tothetable = true;

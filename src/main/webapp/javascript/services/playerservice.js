@@ -1,19 +1,20 @@
 angular.module('myApp')
         // players in controller is an instance: get(), query(), save()
         // here
-       .service('playerService', ['$http', '$q', 'toastr',
-function ($http, $q, toastr){           
+       .service('playerService', ['$http', '$q', 'toastr', '$httpParamSerializerJQLike' ,
+function ($http, $q, toastr, $httpParamSerializerJQLike){           
 
-    var baseUrl =  "http://localhost:8383"
+    var baseUrl =  "http://localhost:8383";
     //$http.defaults.headers.common.Authorization = 'Basic YmVlcDpib29w';
     // Return public API
     return({
-            initHumanPlayer: initHumanPlayer,
+            initPlayerForIsHuman: initPlayerForIsHuman,
             addPlayer: addPlayer,
             getPlayers: getPlayers,
             updatePlayer: updatePlayer,
             removePlayer: removePlayer,
-            removePlayers: removePlayers,
+            removePlayersById: removePlayersById,
+            removePlayersByIsHuman: removePlayersByIsHuman
             
         });
     // ---
@@ -21,7 +22,7 @@ function ($http, $q, toastr){
     // ---
 
     // init a human player using the server' api
-    function initHumanPlayer() {
+    function initPlayerForIsHuman( isHuman ) {
         
         var request = $http({
             method: "post",
@@ -31,12 +32,13 @@ function ($http, $q, toastr){
             //               action: "add"
             //           },
             data: {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
-                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
+                'alias':'stranger', 'isHuman' : isHuman, 'aiLevel': 'HUMAN',
                 cubits: 0, securedLoan: 0}
-       });
-       return( request.then( handleSuccess, handleError ) );
+        });
+        return( request.then( handleSuccess, handleError ) );
+        
     }
-
+    
     // get all players using the server' api
     function getPlayers() {
         // then() returns a new promise. We return that new promise.
@@ -54,6 +56,7 @@ function ($http, $q, toastr){
             });
         return( request.then( handleSuccess, handleError ) );
     }
+    
     // add a player with the given details using the server' api
     function addPlayer( player ) {
         var request = $http({
@@ -95,12 +98,14 @@ function ($http, $q, toastr){
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    // remove all players using the server' api
-    function removePlayers() {
+    // remove all players passed using the server' api
+    function removePlayersById( players ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
             url: baseUrl + "/api/players",
+            params: players.id,
+            paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "delete"
@@ -108,6 +113,23 @@ function ($http, $q, toastr){
         });
         return( request.then( handleSuccess, handleError ) );
     }
+    
+    // remove all alien players using the server' api
+    function removePlayersByIsHuman( isHuman ) {
+
+        var request = $http({
+            method: "delete",
+            crossDomain: true,
+            url: baseUrl + "/api/players?isHuman=" + isHuman,
+              headers: {'Content-Type': 'application/json'} 
+              //            params: {
+//                action: "delete"
+//            },
+        });
+        return( request.then( handleSuccess, handleError ) );
+
+    }
+    
     // ---
     // PRIVATE METHODS.
     // ---
@@ -123,7 +145,6 @@ function ($http, $q, toastr){
             ! response.data.message
             ) {
             return( $q.reject( "An unknown error occurred." ) );
-            toastr.error('An API error has occurred, please try again (later)', 'Error');
         }
         // Otherwise, use expected error message.
         return( $q.reject( response.data.message ) );

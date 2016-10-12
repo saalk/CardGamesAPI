@@ -38,6 +38,7 @@ package nl.knikit.cardgames.controller;
 import lombok.extern.slf4j.Slf4j;
 import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
 import nl.knikit.cardgames.model.Casino;
+import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.ICasinoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -99,22 +100,6 @@ public class CasinoController {
                 .body(casino);
     }
 
-    @DeleteMapping("/casinos/{id}")
-    public ResponseEntity deleteCasino(@PathVariable int id) {
-
-        try {
-            casinoService.deleteById(id);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Casino with /{id}: " + id + " found to delete");
-            }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Casino with /{id}: " + id + " deleted");
-    }
-
     @PutMapping("/casinos/{id}")
     public ResponseEntity updateCasino(@PathVariable int id, @RequestBody Casino
             casino) {
@@ -127,6 +112,24 @@ public class CasinoController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(newCasino);
+    }
+
+    @DeleteMapping("/casinos/{id}")
+    public ResponseEntity deleteCasinos(@PathVariable("id") int id) {
+
+        try {
+            Casino classCasino = new Casino();
+            classCasino.setId(id);
+            casinoService.delete(classCasino);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Casino with /{id}: " + id + " found to delete");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Casino with /{id}: " + id + " deleted");
     }
 
     // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.

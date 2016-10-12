@@ -15,10 +15,22 @@ function ($scope, playerService, toastr){
     // flags for ng-if and check if player details are ok
     vm.showListForDebug = true;
     vm.gotocasino = false;
-    // init the players collection
-    $scope.players = [];
     // put a human player at index 0 in the collection
-    initHumanPlayer();
+    $scope.players = [];
+    loadRemoteData();
+    playerService.removePlayersById( $scope.players )
+    .then( loadRemoteData, function( errorMessage ) { 
+            toastr.error('Removing all players failed: ' + errorMessage, 'Error');
+        }
+    )
+    ;
+    playerService.initPlayerForIsHuman( true )
+        .then( loadRemoteData, function( errorMessage ) {
+                toastr.error('Initializing human failed: ' + errorMessage, 'Error');
+            }
+        )
+    ;
+
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
@@ -30,7 +42,7 @@ function ($scope, playerService, toastr){
         checkIfNameAndSecuredLoanAreSet();
         playerService.updatePlayer( $scope.players[0] )
             .then( loadRemoteData, function( errorMessage ) {
-                toastr.error('An error has occurred:' + errorMessage, 'Error');
+                toastr.error('Setting name failed: ' + errorMessage, 'Error');
                 }
             )
         ;
@@ -53,7 +65,7 @@ function ($scope, playerService, toastr){
         checkIfNameAndSecuredLoanAreSet();
         playerService.updatePlayer( $scope.players[0] )
             .then( loadRemoteData, function( errorMessage ) {
-                toastr.error('An error has occurred:' + errorMessage, 'Error');
+                toastr.error('Updating cubits failed: ' + errorMessage, 'Error');
                 }
             )
         ;
@@ -84,7 +96,7 @@ function ($scope, playerService, toastr){
         // this case, toastr is used
         playerService.addPlayer( player )
             .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                    toastr.error('Adding a player failed: ' + errorMessage, 'Error');
                 }
             )
         ;
@@ -95,7 +107,7 @@ function ($scope, playerService, toastr){
         // going to reload the remote data.
         playerService.updatePlayer( player )
             .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                    toastr.error('Updating player failed: ' + errorMessage, 'Error');
                 }
             )
         ;
@@ -106,7 +118,7 @@ function ($scope, playerService, toastr){
         // going to reload the remote data.
         playerService.removePlayer( player.id )
             .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                    toastr.error('Removing one player failed: ' + errorMessage, 'Error');
                 }
             )
         ;
@@ -115,25 +127,6 @@ function ($scope, playerService, toastr){
     // PRIVATE METHODS USED IN PUBLIC API METHODS OR INIT SCREEN
     // ---
 
-    // add the human player
-    function initHumanPlayer() {
-        // If the data we provide is invalid, the promise will be rejected,
-        // at which point we can tell the user that something went wrong. In
-        // this case, toastr is used
-        playerService.removePlayers()
-            .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                }
-            )
-        ;
-    
-        playerService.initHumanPlayer()
-            .then( loadRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                }
-            )
-        ;
-    };
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;

@@ -35,15 +35,13 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
-    public void deleteAll() {
-        getDao().deleteAll();
-    }
+    public void deleteAllByWhereClause(final T entity, final String whereClause)
+    { getDao().deleteAllByWhereClause(entity, whereClause);};
 
     @Override
-    public void deleteById(final int entityId) {
-        getDao().deleteById(entityId);
+    public void deleteAllByIds(final T entity, final List<String> ids) {
+        getDao().deleteAllByIds(entity, ids);
     }
-
     protected abstract IOperations<T> getDao();
 
 }
