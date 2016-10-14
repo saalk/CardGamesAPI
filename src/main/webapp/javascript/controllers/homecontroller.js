@@ -15,22 +15,10 @@ function ($scope, playerService, toastr){
     // flags for ng-if and check if player details are ok
     vm.showListForDebug = true;
     vm.gotocasino = false;
-    // put a human player at index 0 in the collection
+    // put a human player at index 0 in the collection, delete the rest
     $scope.players = [];
-    loadRemoteData();
-    playerService.removePlayersById( $scope.players )
-    .then( loadRemoteData, function( errorMessage ) { 
-            toastr.error('Removing all players failed: ' + errorMessage, 'Error');
-        }
-    )
-    ;
-    playerService.initPlayerForIsHuman( true )
-        .then( loadRemoteData, function( errorMessage ) {
-                toastr.error('Initializing human failed: ' + errorMessage, 'Error');
-            }
-        )
-    ;
-
+    initHumans(1);
+  
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
@@ -141,5 +129,41 @@ function ($scope, playerService, toastr){
                  }
             )
         ;
+    }
+    function initHumans( needed ) {
+        playerService.getPlayers()
+        .then( function( response ) {
+            $scope.players = response;
+            // count the aliens  
+            count = 0;
+            for (var i=0; i < $scope.players.length; i++) {
+                 if ($scope.players[i].isHuman) {
+                     count++; 
+                }
+            };
+            toastr.info('There are ' + count + ' human player(s) and ' + needed + ' is/are needed.', 'Info');
+
+            if (needed < count ) {
+                // more aliens than needed delete them all
+                // TODO delete only the extra aliens when less are needed
+                playerService.removePlayersById( $scope.players )
+                .then( loadRemoteData, function( errorMessage ) { 
+                        toastr.error('Removing all aliens failed: ' + errorMessage, 'Error');
+                    }
+                );
+            } else if (needed > count) {
+                // no humans or too few
+                extra = needed - count;
+                for (i = 0 ; i < extra; i++) {
+                    // add one or more aliens 
+                    playerService.initPlayerForIsHuman( true )
+                           .then( loadRemoteData, function( errorMessage ) {
+                               toastr.error('Initializing alien failed: ' + errorMessage, 'Error');
+                           }
+                       );
+                }
+            }
+        }
+        );
     }
 }]);

@@ -24,6 +24,16 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // init a human player using the server' api
     function initPlayerForIsHuman( isHuman ) {
         
+        if (isHuman) {
+           newPlayer = {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
+                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
+                cubits: 0, securedLoan: 0};
+        } else {
+            newPlayer = {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
+                'alias':'alien', 'isHuman' : false, 'aiLevel': 'MEDIUM',
+                cubits: 0, securedLoan: 0}
+        }
+        
         var request = $http({
             method: "post",
             crossDomain: true,
@@ -31,9 +41,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
-            data: {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
-                'alias':'stranger', 'isHuman' : isHuman, 'aiLevel': 'HUMAN',
-                cubits: 0, securedLoan: 0}
+            data: newPlayer
         });
         return( request.then( handleSuccess, handleError ) );
         

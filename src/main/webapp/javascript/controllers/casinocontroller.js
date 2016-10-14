@@ -14,19 +14,8 @@ function ($scope, playerService, toastr){
     var vm = this;
     // init the players collection
     $scope.players = [];
-    // 
-    playerService.removePlayersByIsHuman( false)
-    .then( loadRemoteData, function( errorMessage ) {
-            toastr.error('An error has occurred:' + errorMessage, 'Error');
-        }
-    )
-    ;
-    playerService.initPlayerForIsHuman( false )
-        .then( loadRemoteData, function( errorMessage ) {
-                toastr.error('An error has occurred:' + errorMessage, 'Error');
-            }
-        )
-    ;
+    // make sure there is only 1 alien
+    initAliens(2);
     
     // flags + checks for ng-if
     vm.showListForDebug = true;
@@ -48,6 +37,7 @@ function ($scope, playerService, toastr){
     };
     vm.changeAlien = function (index) {
 
+        initAliens(2);
         loopAiLevel(index);
         if ($scope.players[index].aiLevel === 'NONE') {
             $scope.players[index].cubits = 0;
@@ -149,7 +139,7 @@ function ($scope, playerService, toastr){
         ;
     };  
     // ---
-    // PRIVATE METHODS USED IN PUBLIC API METHODS
+    // PRIVATE METHODS USED IN PUBLIC API METHODS OR INIT
     // ---
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
@@ -164,5 +154,41 @@ function ($scope, playerService, toastr){
                     applyRemoteData( players );
                  }
             );
+    }
+    function initAliens( needed ) {
+        playerService.getPlayers()
+        .then( function( response ) {
+            $scope.players = response;
+            // count the aliens  
+            count = 0;
+            for (var i=0; i < $scope.players.length; i++) {
+                 if ($scope.players[i].isHuman === false) {
+                     count++; 
+                }
+            };
+            toastr.info('There are ' + count + ' alien player(s) and ' + needed + ' is/are needed.', 'Info');
+
+            if (needed < count ) {
+                // more aliens than needed delete them all
+                // TODO delete only the extra aliens or add needed ones
+                playerService.removePlayersById( $scope.players )
+                .then( loadRemoteData, function( errorMessage ) { 
+                        toastr.error('Removing all aliens failed: ' + errorMessage, 'Error');
+                    }
+                );
+            } else if (needed > count) {
+                // no aliens or too few
+                extra = needed - count;
+                for (i = 0 ; i < extra; i++) {
+                    // add one or more aliens 
+                    playerService.initPlayerForIsHuman( false )
+                           .then( loadRemoteData, function( errorMessage ) {
+                               toastr.error('Initializing alien failed: ' + errorMessage, 'Error');
+                           }
+                       );
+                }
+            }
+        }
+        );
     }
 }]);

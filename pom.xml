@@ -22,6 +22,7 @@
 
         <!-- VERSION 7 -->
         <tomcat-dbcp.version>7.0.55</tomcat-dbcp.version>
+        <tomcat-servlet-api.version>7.0.55</tomcat-servlet-api.version>
 
         <!-- VERSION 5 -->
         <mysql.connector.version>5.1.34</mysql.connector.version>
@@ -480,19 +481,21 @@
         <!-- add servlet since springs dispatcher servlet depends on it
          set its scope as provided inside the pom.xml and maven will not place it
          in the WEB-INF/lib of your project
+         its provided since tomcat has servlet a implementation
          -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
+            <version>3.0.1</version> <!--
+            <scope>provided</scope> -->
         </dependency>
+        <!-- scope means that it is not packaged to war
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.1</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
         <dependency> <!-- This dependency is required to use the JSP standard tag libray.  -->
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -567,6 +570,12 @@
             <artifactId>tomcat-dbcp</artifactId>
             <version>${tomcat-dbcp.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <version>${tomcat-servlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Cucumber http://cukes.info/install-cucumber-jvm.html
         running automated tests -->
         <dependency>
@@ -639,6 +648,12 @@
             <version>2.23</version>
             <scope>test</scope>
         </dependency>
+        <!-- add this to use annotations like uriinfo to work on tomcat -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.19.2</version>
+        </dependency>
 
         <!-- Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction
         for various logging frameworks -->
@@ -699,15 +714,15 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-            <scope>provided</scope>
         </dependency>
 
-        <!-- @Inject -->
+        <!-- add @Inject, @Scope, @Qualifier -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>1</version>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>

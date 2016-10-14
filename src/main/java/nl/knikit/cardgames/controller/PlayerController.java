@@ -5,12 +5,20 @@ package nl.knikit.cardgames.controller;
 
     This class is annotated with @RestController annotation. Also note that we are using
     new annotations @GetMapping, @PostMapping, @PutMapping and @DeleteMapping instead of
-    standard @RequestMapping.
+    standard @RequestMapping that are available since Spring MVC 4.3 and are standard way of
+    defining REST endpoints. They act as wrapper to @RequestMapping.
 
-    These annotations are available since Spring MVC 4.3 and are standard way of defining REST
-    endpoints. They act as wrapper to @RequestMapping.
     For example @GetMapping is a composed annotation that acts as a shortcut for
     @RequestMapping(method = RequestMethod.GET).
+
+    JAX-RS = Java API for RESTful Web Services since JAVA EE 6:
+    - @*Param and @GET, @PUT, @POST, @DELETE and @HEAD + @PATH and @Context
+
+    Jersey = a reference implementation of JAX-RS from sun
+    - an implementation together with test suites to server as Gold Standard
+    - natively supported only by Glassfish (oracle owned)
+    - Tomcat (aoache foundation) can run with the JRE and GlassFish requires the full JDK
+    - Tomcat supports only servlet and JSP standards
 
     6 REST Endpoint                 HTTP Method 	Description
     /players 	                    GET             Returns the list of players
@@ -44,13 +52,11 @@ import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.bind.annotation.*;
-
 import nl.knikit.cardgames.model.Player;
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -85,7 +91,8 @@ public class PlayerController {
     }
 
     @GetMapping("/players/{id}")
-    public ResponseEntity getPlayer(@PathVariable("id") int id) throws PlayerNotFoundForIdException {
+    public ResponseEntity getPlayer(
+            @PathVariable("id") int id) throws PlayerNotFoundForIdException {
 
         Player player = playerService.findOne(id);
         if (player == null) {
@@ -98,7 +105,8 @@ public class PlayerController {
     }
 
     @PostMapping("/players")
-    public ResponseEntity createPlayer(@RequestBody Player player) {
+    public ResponseEntity createPlayer(
+            @RequestBody Player player) {
 
         if (player == null) {
             return ResponseEntity
@@ -113,8 +121,9 @@ public class PlayerController {
     }
 
     @PutMapping("/players/{id}")
-    public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player
-            player) {
+    public ResponseEntity updatePlayer(
+            @PathVariable int id, @RequestBody Player player) {
+
         Player newPlayer = playerService.update(player);
         if (null == newPlayer) {
             return ResponseEntity
@@ -127,7 +136,8 @@ public class PlayerController {
     }
 
     @DeleteMapping("/players/{id}")
-    public ResponseEntity deletePlayers(@PathVariable("id") int id) {
+    public ResponseEntity deletePlayers(
+            @PathVariable("id") int id) {
 
         try {
             Player classPlayer = new Player();
@@ -175,29 +185,30 @@ public class PlayerController {
 
     // /players?id=1,id=2,id=3
     @DeleteMapping("/players")
-    public ResponseEntity deletePlayersById(@Context UriInfo ui) {
+    public ResponseEntity deletePlayersById(
+            @Context UriInfo ui) {
 
         // get all ids from the UriInfo as alternative to @QueryParam
-        List<String> ids = ui.getQueryParameters().get("id");
+        //List<String> ids = ui.getQueryParameters().get("id");
         Player classPlayer = new Player();
 
-        // MultivaluedMap<String, String> queryParams = ui.getQueryParameters(); //
-        // MultivaluedMap<String, String> pathParams = ui.getPathParameters();
-        // if (queryParams == null) {
-        //    queryParams = new MultivaluedHashMap<>();
-        // }
 
+        List<String> ids;
         try {
+            //MultivaluedMap<String, String> pathParams = ui.getPathParameters();
+            MultivaluedMap<String, String> queryParams = ui.getQueryParameters(); //
+            ids = listValues(queryParams, "id");
+
             playerService.deleteAllByIds(classPlayer, ids);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Players with /{id}: " + id + " found to delete");
+                    .body("No Players with /{id} found to delete, uri: " + ui);
         }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Player with /{id}: " + id + " deleted");
+                .body("Player with /{id}: " + ids + " deleted");
     }
 
 
@@ -214,6 +225,19 @@ public class PlayerController {
 
         modelAndView.setViewName("error");
         return modelAndView;
+    }
+
+    private List<String> listValues(MultivaluedMap<String, String> queryParams, String key) {
+
+        // so queryParams is a Map<K,List<V>> ie. a collection of values for each key
+         if (queryParams == null) {
+            queryParams = new MultivaluedHashMap<>();
+        }
+
+        List<String> values = new ArrayList<>();
+        values = queryParams.get(key);
+        return values;
+
     }
 
 }

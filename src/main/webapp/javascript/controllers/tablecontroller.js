@@ -11,20 +11,6 @@ angular.module('myApp')
 function ($scope, playerService, toastr){
 
     var vm = this;
-    // list of players to be rendered, init due to local testing without backend
-//    $scope.players = [{'id': null, 'avatar': 'ELF',
-//                    'alias':'No Backend', 'isHuman' : true, 
-//                    'aiLevel': 'HUMAN',  cubits: 750, 
-//                    securedLoan: 750},
-//                    {'id': null, 'avatar': 'ELF',
-//                    'alias':'Alien1', 'isHuman' : false, 
-//                    'aiLevel': 'MEDIUM',  cubits: 750, 
-//                    securedLoan: 750},
-//                    {'id': null, 'avatar': 'ELF',
-//                    'alias':'Alien2', 'isHuman' : false, 
-//                    'aiLevel': 'MEDIUM',  cubits: 750, 
-//                    securedLoan: 750}];  
-    // init the players collection
     $scope.players = [];
     // load the Players
     loadRemoteData();
@@ -40,7 +26,8 @@ function ($scope, playerService, toastr){
     vm.showalien1 = false;
     vm.showalien2 = false;
     initTable();
-    checkIfAliensAreSet();
+    toastr.info('There are ' + $scope.players.length + ' player(s).', 'Info');
+
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
@@ -53,7 +40,7 @@ function ($scope, playerService, toastr){
             toastr.error('Next card differs from your guess', 'Bad luck');
             $scope.players[vm.loopplayer].cubits = $scope.players[vm.loopplayer].cubits - vm.ante;
         }; 
-        playerService.savePlayer($scope.players[vm.loopplayer]);
+        $scope.updatePlayer($scope.players[vm.loopplayer]);
     };
     vm.pass = function() { 
         if (vm.loopplayer < $scope.players.length -1 ) {
@@ -144,6 +131,7 @@ function ($scope, playerService, toastr){
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;
+        checkIfAliensAreSet();
     }
     // load the remote data from the server.
     function loadRemoteData() {

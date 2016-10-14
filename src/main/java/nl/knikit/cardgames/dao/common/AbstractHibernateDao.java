@@ -59,6 +59,8 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         try {
             getCurrentSession().delete(entity);
         } catch (Exception e) {
+            String errorMessage = String.format("Entity to delete error: %s in DAO by entity: %s", e, entity);
+            log.error(errorMessage);
             throw e;
         }
     }
@@ -72,6 +74,8 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         try {
             getCurrentSession().createQuery("delete from " + entity.toString() + "where " + whereClause);
         } catch (Exception e) {
+            String errorMessage = String.format("Entity to delete all error: %s in DAO by where clause: %s", e, whereClause);
+            log.error(errorMessage);
             throw e;
         }
     }
@@ -95,6 +99,8 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
                 getCurrentSession().delete(oneEntity);
             }
         } catch (Exception e) {
+            String errorMessage = String.format("Entity to delete all error: %s in DAO by list of ids: %s", e, ids);
+            log.error(errorMessage);
             throw e;
         }
     }
