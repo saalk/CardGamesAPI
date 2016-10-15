@@ -13,6 +13,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             getPlayers: getPlayers,
             updatePlayer: updatePlayer,
             removePlayer: removePlayer,
+            removePlayerById: removePlayerById,
             removePlayersById: removePlayersById,
             removePlayersByIsHuman: removePlayersByIsHuman
             
@@ -25,13 +26,13 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     function initPlayerForIsHuman( isHuman ) {
         
         if (isHuman) {
-           newPlayer = {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
+           newPlayer = {'id':null, 'avatar': 'ELF',
                 'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
                 cubits: 0, securedLoan: 0};
         } else {
-            newPlayer = {'id':null, 'playerId': 'datetime', 'avatar': 'ELF',
-                'alias':'alien', 'isHuman' : false, 'aiLevel': 'MEDIUM',
-                cubits: 0, securedLoan: 0}
+            newPlayer = {'id':null, 'avatar': 'ELF',
+                'alias':'Alien', 'isHuman' : false, 'aiLevel': 'MEDIUM',
+                cubits: 0, securedLoan: 0};
         }
         
         var request = $http({
@@ -78,7 +79,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
        });
        return( request.then( handleSuccess, handleError ) );
     }
-    // update the player with the given ID using the server' api
+    // update the player with the given \id using the server' api
     function updatePlayer( player ) {
         var request = $http({
             method: "put",
@@ -93,7 +94,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    // remove the player with the given ID using the server' api
+    // remove the player with the given \id using the server' api
     function removePlayer( player ) {
         var request = $http({
             method: "delete",
@@ -106,12 +107,28 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    // remove all players passed using the server' api
-    function removePlayersById( players ) {
+    // remove a player passed in the body using the server' api
+    function removePlayerById( player ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
             url: baseUrl + "/api/players",
+            params: player.id,
+            paramSerializer: '$httpParamSerializerJQLike',
+              headers: {'Content-Type': 'application/json'} 
+              //            params: {
+//                action: "delete"
+//            },
+        });
+        return( request.then( handleSuccess, handleError ) );
+    }
+
+    // remove all players passed in the body using the server' api
+    function removePlayersById( players ) {
+        var request = $http({
+            method: "delete",
+            crossDomain: true,
+            url: baseUrl + "/api/players?id=",
             params: players.id,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 

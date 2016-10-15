@@ -67,7 +67,7 @@ public class GameController {
     public ResponseEntity<ArrayList<Game>> getGames() {
 
         ArrayList<Game> games;
-        games = (ArrayList) gameService.findAll();
+        games = (ArrayList) gameService.findAll("cardGameType", "ASC");
         return new ResponseEntity(games, HttpStatus.OK);
     }
 
@@ -119,7 +119,7 @@ public class GameController {
         try {
             Game classGame = new Game();
             classGame.setId(id);
-            gameService.delete(classGame);
+            gameService.deleteOne(classGame);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

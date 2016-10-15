@@ -1,6 +1,8 @@
 package nl.knikit.cardgames.service.common;
 
 import nl.knikit.cardgames.dao.common.IOperations;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -15,8 +17,9 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
-    public List<T> findAll() {
-        return getDao().findAll();
+    public List<T> findAll(String column, String direction) {
+
+        return getDao().findAll(column, direction);
     }
 
     @Override
@@ -30,13 +33,18 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
-    public void delete(final T entity) {
-        getDao().delete(entity);
+    public void deleteOne(final T entity) {
+        getDao().deleteOne(entity);
     }
 
     @Override
-    public void deleteAllByWhereClause(final T entity, final String whereClause)
-    { getDao().deleteAllByWhereClause(entity, whereClause);};
+    public void deleteAll(final T entity) {
+        getDao().deleteAll(entity);
+    }
+
+    @Override
+    public void deleteAllByWhereClause(final T entity, final String column, final String value)
+    { getDao().deleteAllByWhereClause(entity, column, value);};
 
     @Override
     public void deleteAllByIds(final T entity, final List<String> ids) {

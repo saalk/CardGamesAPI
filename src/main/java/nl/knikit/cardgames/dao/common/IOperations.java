@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.dao.common;
 
+import org.springframework.data.domain.Sort;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -7,15 +9,17 @@ public interface IOperations<T extends Serializable> {
 
     T findOne(final int id);
 
-    List<T> findAll();
+    List<T> findAll(String column, String direction);
 
     void create(final T entity);
 
     T update(final T entity);
 
-    void delete(final T entity);
+    void deleteOne(final T entity);
 
-    void deleteAllByWhereClause(final T entity, final String whereClause);
+    void deleteAll(final T entity);
+
+    void deleteAllByWhereClause(final T entity, final String column, final String value);
 
     void deleteAllByIds(final T entity, final List<String> ids);
 }

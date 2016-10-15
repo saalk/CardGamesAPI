@@ -59,6 +59,7 @@ import java.util.List;
 
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -86,7 +87,7 @@ public class PlayerController {
     public ResponseEntity<ArrayList<Player>> getPlayers() {
 
         ArrayList<Player> players;
-        players = (ArrayList) playerService.findAll();
+        players = (ArrayList) playerService.findAll("isHuman", "DESC");
         return new ResponseEntity(players, HttpStatus.OK);
     }
 
@@ -142,7 +143,7 @@ public class PlayerController {
         try {
             Player classPlayer = new Player();
             classPlayer.setId(id);
-            playerService.delete(classPlayer);
+            playerService.deleteOne(classPlayer);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -170,8 +171,7 @@ public class PlayerController {
 
         try {
             Player classPlayer = new Player();
-            String whereClause = "where isHuman = " + isHuman;
-            playerService.deleteAllByWhereClause(classPlayer, whereClause);
+            playerService.deleteAllByWhereClause(classPlayer, "isHuman", isHuman);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -183,32 +183,43 @@ public class PlayerController {
                 .body("Players deleted");
     }
 
+    // @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
+    //
+    // SPRING
+    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+    // you get the Date dataOrNull for ?date=12-05-2013
+    //
+    // JAX_RS
+    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+    // you get the boolean isHuman with value 'true' for ?isHuman=true
+
+
     // /players?id=1,id=2,id=3
-    @DeleteMapping("/players")
+    @DeleteMapping(value = "/players", params = { "id" } )
     public ResponseEntity deletePlayersById(
-            @Context UriInfo ui) {
+            @RequestParam(value = "id", required = false) List<String> ids) {
 
         // get all ids from the UriInfo as alternative to @QueryParam
         //List<String> ids = ui.getQueryParameters().get("id");
         Player classPlayer = new Player();
 
 
-        List<String> ids;
+        //List<String> ids;
         try {
             //MultivaluedMap<String, String> pathParams = ui.getPathParameters();
-            MultivaluedMap<String, String> queryParams = ui.getQueryParameters(); //
-            ids = listValues(queryParams, "id");
+            //MultivaluedMap<String, String> queryParams = ui.getQueryParameters(); //
+            //ids = listValues(queryParams, "id");
 
             playerService.deleteAllByIds(classPlayer, ids);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Players with /{id} found to delete, uri: " + ui);
+                    .body("No Players with /{id} found to delete, ids: " + ids);
         }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Player with /{id}: " + ids + " deleted");
+                .body("Player with ?id= : " + ids + " deleted");
     }
 
 

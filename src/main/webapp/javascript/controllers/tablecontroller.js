@@ -10,15 +10,17 @@ angular.module('myApp')
         .controller('TableController', ['$scope', 'playerService', 'toastr',
 function ($scope, playerService, toastr){
 
+    // viewmodel for this controller
     var vm = this;
+    
+    // init the players collection
     $scope.players = [];
-    // load the Players
-    loadRemoteData();
+    
     // flags + checks for ng-if
-    vm.showListForDebug = true;
+    vm.showListForDebug = false;
     vm.higher = true;
     vm.lower = true;
-    vm.pass = true;
+    //vm.pass = true;
     vm.generateguess = 0; 
     vm.loopplayer = 0;
     vm.ante = 0; 
@@ -26,21 +28,26 @@ function ($scope, playerService, toastr){
     vm.showalien1 = false;
     vm.showalien2 = false;
     initTable();
-    toastr.info('There are ' + $scope.players.length + ' player(s).', 'Info');
-
+ 
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
      vm.doguess = function() { 
-        vm.generateguess = (Math.random() >= 0.5); // (Math.ceil(Math.random() * 1)); 
-        if (vm.generateguess === 0) {
+        vm.generateguess = 0;
+        vm.generateguess = Math.round(Math.random() + 0.1 ); 
+        if (vm.generateguess === 1) {
             toastr.success('A good guess', 'Success');
             $scope.players[vm.loopplayer].cubits = $scope.players[vm.loopplayer].cubits + vm.ante;
         } else {
             toastr.error('Next card differs from your guess', 'Bad luck');
             $scope.players[vm.loopplayer].cubits = $scope.players[vm.loopplayer].cubits - vm.ante;
         }; 
-        $scope.updatePlayer($scope.players[vm.loopplayer]);
+        playerService.updatePlayer( $scope.players[vm.loopplayer] )
+            .then( loadRemoteData, function( errorMessage ) {
+                toastr.error('Setting cubits failed: ' + errorMessage, 'Error');
+                }
+            )
+        ;
     };
     vm.pass = function() { 
         if (vm.loopplayer < $scope.players.length -1 ) {
@@ -62,11 +69,7 @@ function ($scope, playerService, toastr){
         if (vm.ante === 0) {
             vm.ante = 50;
         };
-        for (var i in $scope.players) {
-            if ($scope.players[i].securedLoan === 0 && $scope.players[i].aiLevel !== 'NONE') {
-                $scope.players[i].securedLoan = $scope.players[i].cubits;
-            };
-        };       
+        loadRemoteData();
     };
     function checkIfAliensAreSet() {
         if ($scope.players[1].aiLevel === 'NONE') {
@@ -89,37 +92,29 @@ function ($scope, playerService, toastr){
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
         playerService.addPlayer( player )
-            .then(
-                loadRemoteData,
-                function( errorMessage ) {
+            .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
-        // Reset the form once values have been consumed.
-        $scope.form.name = "";
     };
-    // I update the given player from the current collection.
+    // update the given player from the current collection.
     $scope.updatePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.updatePlayer( player.id, player )
-            .then(
-                loadRemoteData,
-                function( errorMessage ) {
+            .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
     };  
-    // I remove the given friend from the current collection.
+    // remove the given friend from the current collection.
     $scope.removePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.removePlayer( player.id )
-            .then(
-                loadRemoteData,
-                function( errorMessage ) {
+            .then(loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
@@ -131,11 +126,12 @@ function ($scope, playerService, toastr){
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;
+        // set show / hide flags for the aliens
         checkIfAliensAreSet();
     }
     // load the remote data from the server.
     function loadRemoteData() {
-        // The friendService returns a promise.
+        // The service returns a promise.
         playerService.getPlayers()
             .then(
                 function( players ) {

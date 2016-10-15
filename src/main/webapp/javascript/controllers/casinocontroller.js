@@ -12,17 +12,19 @@ function ($scope, playerService, toastr){
 
     // viewmodel for this controller
     var vm = this;
+    
     // init the players collection
     $scope.players = [];
-    // make sure there is only 1 alien
+    
+    // make sure there are only 2 alien
     initAliens(2);
     
     // flags + checks for ng-if
-    vm.showListForDebug = true;
+    vm.showListForDebug = false;
     vm.showalien1 = false;
     vm.showalien2 = false;
     vm.tothetable = false;
-    checkIfAliensAreSet();
+    
     // fixed text
     vm.smart = "Most evolved alien species, this fellow starts with ";
     vm.average = "A nice competitor, he has a budget of ";
@@ -46,7 +48,6 @@ function ($scope, playerService, toastr){
             $scope.players[index].cubits = (Math.ceil(Math.random() * 500)+ 500);
             $scope.players[index].securedLoan = $scope.players[index].cubits;
         };
-        checkIfAliensAreSet();
         playerService.updatePlayer( $scope.players[index] )
             .then( loadRemoteData, function( errorMessage ) {
                 toastr.error('An error has occurred:' + errorMessage, 'Error');
@@ -116,7 +117,7 @@ function ($scope, playerService, toastr){
             )
         ;
     };
-    // I update the given player from the current collection.
+    // update the given player from the current collection.
     $scope.updatePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
@@ -127,12 +128,12 @@ function ($scope, playerService, toastr){
             )
         ;
     };  
-    // I remove the given friend from the current collection.
+    // remove the given friend from the current collection.
     $scope.removePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.removePlayer( player.id )
-             .then( loadRemoteData, function( errorMessage ) {
+            .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
@@ -144,6 +145,8 @@ function ($scope, playerService, toastr){
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;
+        // set or hide pictures and buttons
+        checkIfAliensAreSet();
     }
     // load the remote data from the server.
     function loadRemoteData() {
@@ -156,6 +159,7 @@ function ($scope, playerService, toastr){
             );
     }
     function initAliens( needed ) {
+        // first get all human and alien players
         playerService.getPlayers()
         .then( function( response ) {
             $scope.players = response;
@@ -169,15 +173,15 @@ function ($scope, playerService, toastr){
             toastr.info('There are ' + count + ' alien player(s) and ' + needed + ' is/are needed.', 'Info');
 
             if (needed < count ) {
-                // more aliens than needed delete them all
-                // TODO delete only the extra aliens or add needed ones
-                playerService.removePlayersById( $scope.players )
+                // more aliens than needed -> delete all aliens
+                // TODO delete only the extra/specific humans when less/one is/are needed
+                playerService.removePlayersByIsHuman( false )
                 .then( loadRemoteData, function( errorMessage ) { 
                         toastr.error('Removing all aliens failed: ' + errorMessage, 'Error');
                     }
                 );
             } else if (needed > count) {
-                // no aliens or too few
+                // no aliens or too few? -> keep adding one until ok 
                 extra = needed - count;
                 for (i = 0 ; i < extra; i++) {
                     // add one or more aliens 

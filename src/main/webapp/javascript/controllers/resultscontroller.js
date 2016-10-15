@@ -12,36 +12,27 @@ function ($scope, playerService, toastr){
 
     // viewmodel for this controller
     var vm = this;
-        $scope.players = [];
-    // list of players to be rendered, init due to local testing without backend
-//    $scope.players = [[{'id': null, 'avatar': 'ELF',
-//                    'alias':'No Backend', 'isHuman' : true, 
-//                    'aiLevel': 'HUMAN',  cubits: 750, 
-//                    securedLoan: 750},
-//                    {'id': null, 'avatar': 'ELF',
-//                    'alias':'Alien1', 'isHuman' : false, 
-//                    'aiLevel': 'MEDIUM',  cubits: 750, 
-//                    securedLoan: 750},
-//                    {'id': null, 'avatar': 'ELF',
-//                    'alias':'Alien2', 'isHuman' : false, 
-//                    'aiLevel': 'MEDIUM',  cubits: 750, 
-//                    securedLoan: 750}]];  
-    // load the Players
-    loadRemoteData();
+    
+    // init the players collection
+    $scope.players = [];
+    
     // flags + checks for ng-if
-    vm.showListForDebug = true;
+    vm.showListForDebug = false;
     vm.showalien1 = false;
     vm.showalien2 = false;
     vm.ante = 0; 
     vm.loopplayer = 0;
     vm.tothetable = false;
-    checkIfAliensAreSet();
-    setAnte();
+
     // fixed text
     vm.smart = "Most evolved alien species, this fellow starts with ";
     vm.average = "A nice competitor, he has a budget of ";
     vm.dumb = "Quick to beat, starting with ";
     vm.none = "This alien has left the game with ";
+    
+    // load players
+    setAnte();
+    
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
@@ -50,8 +41,16 @@ function ($scope, playerService, toastr){
     };    
     vm.changeAlien = function (index) {
         loopAiLevel(index);
-        checkIfAliensAreSet();  
-        playerService.savePlayer($scope.players[index]);
+        if ($scope.players[index].securedLoan === 0) {
+             $scope.players[index].cubits = (Math.ceil(Math.random() * 500)+ 500);
+            $scope.players[index].securedLoan = $scope.players[index].cubits;
+        };
+        playerService.updatePlayer( $scope.players[index] )
+            .then( loadRemoteData, function( errorMessage ) {
+                toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
+        ;
     };
     vm.pawnHumanShipForCubits = function () {
         if ($scope.players[0].securedLoan === 0 ) {
@@ -66,32 +65,37 @@ function ($scope, playerService, toastr){
             toastr.info('Your loan is repayed', 'Information');
             vm.tothetable = false;
         };
-        playerService.savePlayer($scope.players[0]);
-        checkIfAliensAreSet();
+        playerService.updatePlayer( $scope.players[0] );
     }; 
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
     function setAnte() {
-        if (vm.ante == 0) {
+        if (vm.ante === 0) {
             vm.ante = 50;
         };
+        loadRemoteData();
     };
+    // flags for show/hide the buttons alien1, alien2 and tothetable
+    // TODO a copy of the casinocontroller
     function checkIfAliensAreSet() {
-        if ($scope.players[0].cubits !== 0 && $scope.players[1].cubits !== 0 && $scope.players[1].aiLevel !== 'NONE')  {
-            vm.tothetable = true; 
-        }
-        if ($scope.players[1].aiLevel === 'NONE') {
-            vm.showalien1 = false; 
-        } else {
-            vm.showalien1 = true; 
-        }
-        if ($scope.players[2].aiLevel === 'NONE') {
-            vm.showalien2 = false;    
-        } else {
-            vm.showalien2 = true; 
+        vm.tothetable = true;
+        vm.showalien1 = true;
+        vm.showalien2 = true;
+        for (i=0, len = $scope.players.length; i < len -1; i++) {
+            if ($scope.players[i].aiLevel === 'NONE') {
+                vm.tothetable = false;
+            };
+            if (i === 1 && $scope.players[1].aiLevel === 'NONE') {
+                vm.showalien1 = false;
+            };
+            if (i === 2 && $scope.players[2].aiLevel === 'NONE') {
+                vm.showalien2 = false;
+            };
         }
     };
+    // proceed to the next aiLevel for the player at the index
+    // TODO a copy of the casinocontroller
     function loopAiLevel(index) {
         if ($scope.players[index].aiLevel === 'NONE') {
             if ($scope.players[1].aiLevel === 'NONE' && index === 2) {
@@ -126,15 +130,13 @@ function ($scope, playerService, toastr){
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
         playerService.addPlayer( player )
-            .then(
-                loadRemoteData,
-                function( errorMessage ) {
+            .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
     };
-    // I update the given player from the current collection.
+    // update the given player from the current collection.
     $scope.updatePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
@@ -145,7 +147,7 @@ function ($scope, playerService, toastr){
             )
         ;
     };  
-    // I remove the given friend from the current collection.
+    // remove the given friend from the current collection.
     $scope.removePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
@@ -157,11 +159,13 @@ function ($scope, playerService, toastr){
         ;
     };  
     // ---
-    // PRIVATE METHODS USED IN PUBLIC API METHODS AND INIT
+    // PRIVATE METHODS USED IN PUBLIC API METHODS OR INIT
     // ---
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;
+        // set or hide pictures and buttons
+        checkIfAliensAreSet();
     }
     // load the remote data from the server.
     function loadRemoteData() {

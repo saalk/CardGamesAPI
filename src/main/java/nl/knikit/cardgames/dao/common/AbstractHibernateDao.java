@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Slf4j
-@SuppressWarnings("unchecked")
+// @SuppressWarnings("unchecked")
 public abstract class AbstractHibernateDao<T extends Serializable> implements IOperations<T> {
     private Class<T> clazz;
 
@@ -29,30 +30,49 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final List<T> findAll() {
-        return getCurrentSession().createQuery("from " + clazz.getName()).list();
+    public List<T> findAll(String column, String direction) {
+        if (column == null || direction == null) {
+            return getCurrentSession().createQuery("from " + clazz.getName()).list();
+        } else {
+            return getCurrentSession().createQuery("from " + clazz.getName() + " order by " + column + " " + direction ).list();
+        }
     }
 
     @Override
     public final void create(final T entity) {
         String message = String.format("Entity to create in DAO: %s", entity.toString());
         log.info(message);
+
         Preconditions.checkNotNull(entity);
-        // getCurrentSession().persist(entity);
-        getCurrentSession().saveOrUpdate(entity);
+        try {
+            // getCurrentSession().persist(entity);
+            getCurrentSession().saveOrUpdate(entity);
+        } catch (Exception e) {
+            String errorMessage = String.format("Entity create error: %s in DAO by entity: %s", e, entity);
+            log.error(errorMessage);
+            throw e;
+        }
     }
 
     @Override
     public final T update(final T entity) {
         String message = String.format("Entity to update in DAO: %s", entity.toString());
         log.info(message);
+
         Preconditions.checkNotNull(entity);
-        return (T) getCurrentSession().merge(entity);
+        try {
+            return (T) getCurrentSession().merge(entity);
+        } catch (Exception e) {
+            String errorMessage = String.format("Entity to delete error: %s in DAO by entity: %s", e, entity);
+            log.error(errorMessage);
+            throw e;
+        }
+
     }
 
     // the deletes
     @Override
-    public final void delete(final T entity) {
+    public final void deleteOne(final T entity) {
         String message = String.format("Entity to delete in DAO: %s", entity.toString());
         log.info(message);
         Preconditions.checkNotNull(entity);
@@ -65,16 +85,31 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         }
     }
 
+    @Override
+    @Modifying
+    public final void deleteAll(final T entity) {
+        String message = String.format("Entity to delete in DAO: %s", entity.toString());
+        log.info(message);
+        Preconditions.checkNotNull(entity);
+        try {
+            getCurrentSession().createQuery("DELETE FROM "+ entity.toString()).executeUpdate();
+        } catch (Exception e) {
+            String errorMessage = String.format("Entity to delete error: %s in DAO by entity: %s", e, entity);
+            log.error(errorMessage);
+            throw e;
+        }
+    }
 
     @Override
     @Modifying
-    public final void deleteAllByWhereClause(final T entity, final String whereClause) {
+    public final void deleteAllByWhereClause(final T entity, final String column, final String inputValue) {
         String idMessage = String.format("Entity to delete all DAO all by where clause in DAO: %s", entity.toString());
         log.info(idMessage);
         try {
-            getCurrentSession().createQuery("delete from " + entity.toString() + "where " + whereClause);
+            getCurrentSession().createQuery("DELETE c FROM " + entity.toString() + " c WHERE c."+column+" IS :value")
+            .setParameter(""+column, inputValue);
         } catch (Exception e) {
-            String errorMessage = String.format("Entity to delete all error: %s in DAO by where clause: %s", e, whereClause);
+            String errorMessage = String.format("Entity to delete all error: %s in DAO by where clause: %s IS $s", e, column, inputValue);
             log.error(errorMessage);
             throw e;
         }
@@ -87,7 +122,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 
             for (String id : ids ) {
 
-                String idMessage = String.format("Entity to delete all in DAO by list of ids has id: %s", id);
+                String idMessage = String.format("Entity to delete in DAO by list of ids has id: %s", id);
                 log.info(idMessage);
                 final T oneEntity = findOne(Integer.parseInt(id));
 
@@ -99,7 +134,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
                 getCurrentSession().delete(oneEntity);
             }
         } catch (Exception e) {
-            String errorMessage = String.format("Entity to delete all error: %s in DAO by list of ids: %s", e, ids);
+            String errorMessage = String.format("Entity to delete error: %s in DAO by list of ids: %s", e, ids);
             log.error(errorMessage);
             throw e;
         }

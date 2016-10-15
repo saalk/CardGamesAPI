@@ -64,7 +64,7 @@ public class Player implements Serializable {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
-        this.playerId = result.substring(2, 25);
+        this.playerId = result.substring(2, 20);
     }
 
     @Override

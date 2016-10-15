@@ -12,9 +12,11 @@ function ($scope, playerService, toastr){
 
     // viewmodel for this controller
     var vm = this;
+    
     // flags for ng-if and check if player details are ok
-    vm.showListForDebug = true;
+    vm.showListForDebug = false;
     vm.gotocasino = false;
+    
     // put a human player at index 0 in the collection, delete the rest
     $scope.players = [];
     initHumans(1);
@@ -22,12 +24,11 @@ function ($scope, playerService, toastr){
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
-    //vm.minimum = 0;
+
     vm.setHumanName = function () {
         //toastr.clear();
         $scope.players[0].alias = 'Script Doe';
         toastr.info('Your name is set', 'Information');
-        checkIfNameAndSecuredLoanAreSet();
         playerService.updatePlayer( $scope.players[0] )
             .then( loadRemoteData, function( errorMessage ) {
                 toastr.error('Setting name failed: ' + errorMessage, 'Error');
@@ -35,8 +36,8 @@ function ($scope, playerService, toastr){
             )
         ;
     };
-    vm.pawnHumanShipForCubits = function (minimum) {
-        minimum;
+    vm.pawnHumanShipForCubits = function (extraCubits) {
+        minimum = 0 + extraCubits;
         if ($scope.players[0].securedLoan === 0 ) {
             $scope.players[0].securedLoan = (Math.ceil(Math.random() * (1000 - minimum))+ minimum);
             $scope.players[0].cubits = $scope.players[0].cubits + $scope.players[0].securedLoan;
@@ -50,14 +51,14 @@ function ($scope, playerService, toastr){
             toastr.info('Your loan is repayed', 'Information');
             vm.gotocasino = false;
         };
-        checkIfNameAndSecuredLoanAreSet();
         playerService.updatePlayer( $scope.players[0] )
             .then( loadRemoteData, function( errorMessage ) {
-                toastr.error('Updating cubits failed: ' + errorMessage, 'Error');
+                toastr.error('Setting pawn failed: ' + errorMessage, 'Error');
                 }
             )
         ;
     };
+   
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
@@ -118,6 +119,8 @@ function ($scope, playerService, toastr){
     // apply the remote data to the local scope.
     function applyRemoteData( newPlayers ) {
         $scope.players = newPlayers;
+        // set show / hide flags for pictures and buttons
+        checkIfNameAndSecuredLoanAreSet();
     }
     // load the remote data from the server.
     function loadRemoteData() {
@@ -131,10 +134,11 @@ function ($scope, playerService, toastr){
         ;
     }
     function initHumans( needed ) {
+        // first get all human and alien players        
         playerService.getPlayers()
         .then( function( response ) {
             $scope.players = response;
-            // count the aliens  
+            // count the humans  
             count = 0;
             for (var i=0; i < $scope.players.length; i++) {
                  if ($scope.players[i].isHuman) {
@@ -144,18 +148,18 @@ function ($scope, playerService, toastr){
             toastr.info('There are ' + count + ' human player(s) and ' + needed + ' is/are needed.', 'Info');
 
             if (needed < count ) {
-                // more aliens than needed delete them all
-                // TODO delete only the extra aliens when less are needed
-                playerService.removePlayersById( $scope.players )
+                // more humans than needed -> delete all Humans
+                // TODO delete only the extra/specific humans when less/one is/are needed
+                playerService.removePlayersByIsHuman( true )
                 .then( loadRemoteData, function( errorMessage ) { 
                         toastr.error('Removing all aliens failed: ' + errorMessage, 'Error');
                     }
                 );
             } else if (needed > count) {
-                // no humans or too few
+                // no humans or too few? -> keep adding one until ok
                 extra = needed - count;
                 for (i = 0 ; i < extra; i++) {
-                    // add one or more aliens 
+                    // add one or more humans 
                     playerService.initPlayerForIsHuman( true )
                            .then( loadRemoteData, function( errorMessage ) {
                                toastr.error('Initializing alien failed: ' + errorMessage, 'Error');

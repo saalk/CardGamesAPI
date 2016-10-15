@@ -68,7 +68,8 @@ public class CasinoController {
     public ResponseEntity<ArrayList<Casino>> getCasinos() {
 
         ArrayList<Casino> casinos;
-        casinos = (ArrayList) casinoService.findAll();
+        casinos = (ArrayList) casinoService.findAll("playingOrder", "ASC");
+
         return new ResponseEntity(casinos, HttpStatus.OK);
     }
 
@@ -120,7 +121,7 @@ public class CasinoController {
         try {
             Casino classCasino = new Casino();
             classCasino.setId(id);
-            casinoService.delete(classCasino);
+            casinoService.deleteOne(classCasino);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
