@@ -11,6 +11,8 @@ public interface IOperations<T extends Serializable> {
 
     List<T> findAll(String column, String direction);
 
+    List<T> findAllByFkId(final T entity, final String column, final String value);
+
     void create(final T entity);
 
     T update(final T entity);
@@ -18,8 +20,6 @@ public interface IOperations<T extends Serializable> {
     void deleteOne(final T entity);
 
     void deleteAll(final T entity);
-
-    void deleteAllByWhereClause(final T entity, final String column, final String value);
 
     void deleteAllByIds(final T entity, final List<String> ids);
 }

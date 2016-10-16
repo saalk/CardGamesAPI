@@ -18,9 +18,12 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
 
     @Override
     public List<T> findAll(String column, String direction) {
-
         return getDao().findAll(column, direction);
     }
+
+    @Override
+    public List<T> findAllByFkId(final T entity, final String column, final String value)
+    { return getDao().findAllByFkId(entity, column, value);}
 
     @Override
     public void create(final T entity) {
@@ -41,10 +44,6 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     public void deleteAll(final T entity) {
         getDao().deleteAll(entity);
     }
-
-    @Override
-    public void deleteAllByWhereClause(final T entity, final String column, final String value)
-    { getDao().deleteAllByWhereClause(entity, column, value);};
 
     @Override
     public void deleteAllByIds(final T entity, final List<String> ids) {

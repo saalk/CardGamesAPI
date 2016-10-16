@@ -105,6 +105,38 @@ public class PlayerController {
                 .body(player);
     }
 
+    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
+    //
+    // SPRING
+    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+    // you get the Date dataOrNull for ?date=12-05-2013
+    //
+    // JAX_RS
+    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+    // you get the boolean isHuman with value 'true' for ?isHuman=true
+
+    @GetMapping(value = "/players", params = { "isHuman" } )
+    public ResponseEntity deletePlayersByIsHuman(
+            @RequestParam(value = "isHuman", required = false, defaultValue = "true") String isHuman) {
+
+        try {
+            Player classPlayer = new Player();
+            // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
+            boolean isBumanBoolean = ( isHuman=="true")?true:false;
+            classPlayer.setHuman( isBumanBoolean );
+
+            playerService.findAllByFkId(classPlayer, "isHuman", isHuman);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Players with isHuman: " + isHuman + " found");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Players deleted");
+    }
+
     @PostMapping("/players")
     public ResponseEntity createPlayer(
             @RequestBody Player player) {
@@ -155,33 +187,6 @@ public class PlayerController {
                 .body("Player with /{id}: " + id + " deleted");
     }
 
-    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
-
-    @DeleteMapping(value = "/players", params = { "isHuman" } )
-    public ResponseEntity deletePlayersByIsHuman(
-            @RequestParam(value = "isHuman", required = false, defaultValue = "true") String isHuman) {
-
-        try {
-            Player classPlayer = new Player();
-            playerService.deleteAllByWhereClause(classPlayer, "isHuman", isHuman);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Players with isHuman: " + isHuman + " found to delete");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Players deleted");
-    }
 
     // @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
     //
@@ -193,23 +198,14 @@ public class PlayerController {
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
-
-    // /players?id=1,id=2,id=3
+    // /players?id=1,2,3,4
     @DeleteMapping(value = "/players", params = { "id" } )
     public ResponseEntity deletePlayersById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 
-        // get all ids from the UriInfo as alternative to @QueryParam
-        //List<String> ids = ui.getQueryParameters().get("id");
         Player classPlayer = new Player();
 
-
-        //List<String> ids;
         try {
-            //MultivaluedMap<String, String> pathParams = ui.getPathParameters();
-            //MultivaluedMap<String, String> queryParams = ui.getQueryParameters(); //
-            //ids = listValues(queryParams, "id");
-
             playerService.deleteAllByIds(classPlayer, ids);
         } catch (Exception e) {
             return ResponseEntity
