@@ -2,6 +2,7 @@ package nl.knikit.cardgames.dao.common;
 
 import com.google.common.base.Preconditions;
 
+import nl.knikit.cardgames.model.CardGameType;
 import nl.knikit.cardgames.model.Player;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public List<T> findAll(String column, String direction) {
+    public List<T> findAll(final String column, final String direction) {
         if (column == null || direction == null) {
             return getCurrentSession().createQuery("from " + clazz.getName()).list();
         } else {
@@ -49,16 +50,16 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final List<T> findAllByFkId(final T entity, final String column, final String inputValue) {
-        String idMessage = String.format("Entity to select all DAO all by where clause in DAO: %s", entity.toString());
+    public final List<T> findAllWhere(final T entity, final String column, final String inputValue) {
+        String idMessage = String.format("findAllWhere dao entity: %s", entity.toString());
         log.info(idMessage);
 
-        // JPA Criteria API Queries
+        // JPA Criteria API Query builder logic:
         // - cb=queryBuilder,
         // - q=query,
         // - c=class
         // - p=parameter
-        // - gt, lt, eq is <, > or =
+        // - gt, ge, lt, le, eq, like, ilike (case insensitive like) for operand
 
         // clazz.getClass() gets the runtime type of clazz
         // class.getName() gets the package + name of the class
@@ -68,26 +69,43 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         Root<T> rt  = cq.from(entity.getClass());
         cq.select(rt);
 
-        if (inputValue == "true" || inputValue == "false") {
-            ParameterExpression<Boolean> b = cb.parameter(Boolean.class, inputValue);
-            cq.where(cb.equal(rt.get(""+column), b));
-        } else {
-            try{
-                int num = Integer.parseInt(inputValue);
-                // is an integer!
-                ParameterExpression<Integer> i = cb.parameter(Integer.class, inputValue);
-                cq.where(cb.equal(rt.get("" + column), i));
-            } catch (NumberFormatException e) {
-                // not an integer!
-                ParameterExpression<String> s = cb.parameter(String.class, inputValue);
-                cq.where(cb.equal(rt.get("" + column), s));
-            }
+        switch (inputValue) {
+            case "HIGHLOW":
+                cq.where(cb.equal(rt.get(column), CardGameType.HIGHLOW));
+                idMessage = String.format("findAllWhere dao inputValue is ENUM: %s", inputValue);
+                break;
+            case "BLACKJACK":
+                cq.where(cb.equal(rt.get(column), CardGameType.BLACKJACK));
+                idMessage = String.format("findAllWhere dao inputValue is ENUM: %s", inputValue);
+                break;
+            case "true":
+                cq.where(cb.equal(rt.get(column), Boolean.TRUE));
+                idMessage = String.format("findAllWhere dao inputValue is true boolean: %s", inputValue);
+                break;
+            case "false":
+                cq.where(cb.equal(rt.get(column), Boolean.FALSE));
+                idMessage = String.format("findAllWhere dao inputValue is false boolean: %s", inputValue);
+                break;
+            default:
+                try{
+                    int num = Integer.parseInt(inputValue);
+
+                    // is an integer!
+                    cq.where(cb.equal(rt.get(column), num));
+                    idMessage = String.format("findAllWhere dao inputValue is integer: %d", num);
+                } catch (NumberFormatException e) {
+
+                    // not an integer!
+                    cq.where(cb.equal(rt.get(column), inputValue));
+                    idMessage = String.format("findAllWhere dao inputValue is string: %s", inputValue);
+                }
         }
+        log.info(idMessage);
 
         try {
             return getCurrentSession().createQuery(cq).list();
         } catch (Exception e) {
-            String errorMessage = String.format("Entity to select all error: %s in DAO by where clause column: %s value: $s", e, column, inputValue);
+            String errorMessage = String.format("Error findAllWhere, column: %s inputValue: %s query: %s error: %s", column, inputValue, cq ,e);
             log.error(errorMessage);
             throw e;
         }

@@ -116,25 +116,28 @@ public class PlayerController {
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/players", params = { "isHuman" } )
-    public ResponseEntity deletePlayersByIsHuman(
-            @RequestParam(value = "isHuman", required = false, defaultValue = "true") String isHuman) {
+    public ResponseEntity<ArrayList<Player>> findAllWhere(
+            @RequestParam(value = "isHuman", required = true) String param) {
+
+        Player classPlayer = new Player();
+        // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
+        // boolean isHumanBoolean = ( param=="true")?true:false;
+        // classPlayer.setHuman( isHumanBoolean );
 
         try {
-            Player classPlayer = new Player();
-            // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
-            boolean isBumanBoolean = ( isHuman=="true")?true:false;
-            classPlayer.setHuman( isBumanBoolean );
 
-            playerService.findAllByFkId(classPlayer, "isHuman", isHuman);
+            ArrayList<Player> players = (ArrayList) playerService.findAllWhere(classPlayer, "isHuman", param);
+            if (players == null || players.isEmpty()) {
+                throw new PlayerNotFoundForIdException(999);
+            }
+
+            return new ResponseEntity(players, HttpStatus.OK);
+
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Players with isHuman: " + isHuman + " found");
+                    .body(new ArrayList<Player>() );
         }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Players deleted");
     }
 
     @PostMapping("/players")
@@ -232,19 +235,6 @@ public class PlayerController {
 
         modelAndView.setViewName("error");
         return modelAndView;
-    }
-
-    private List<String> listValues(MultivaluedMap<String, String> queryParams, String key) {
-
-        // so queryParams is a Map<K,List<V>> ie. a collection of values for each key
-         if (queryParams == null) {
-            queryParams = new MultivaluedHashMap<>();
-        }
-
-        List<String> values = new ArrayList<>();
-        values = queryParams.get(key);
-        return values;
-
     }
 
 }

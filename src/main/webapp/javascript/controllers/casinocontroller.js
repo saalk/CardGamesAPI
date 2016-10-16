@@ -7,17 +7,19 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('CasinoController', ['$scope', 'playerService', 'toastr',
-function ($scope, playerService, toastr){
+        .controller('CasinoController', ['$scope', 'playerService', 'gameService','toastr',
+function ($scope, playerService, gameService, toastr){
 
     // viewmodel for this controller
     var vm = this;
     
     // init the players collection
     $scope.players = [];
+    $scope.games = [];
     
-    // make sure there are only 2 alien
+    // make sure there are only 2 alien and 1 game
     initAliens(2);
+    initGames(1);
     
     // flags + checks for ng-if
     vm.showListForDebug = false;
@@ -165,7 +167,7 @@ function ($scope, playerService, toastr){
             $scope.players = response;
             // count the aliens  
             count = 0;
-            for (var i=0; i < $scope.players.length; i++) {
+            for (i=0; i < $scope.players.length; i++) {
                  if ($scope.players[i].isHuman === false) {
                      count++; 
                 }
@@ -173,21 +175,93 @@ function ($scope, playerService, toastr){
             toastr.info('There are ' + count + ' alien player(s) and ' + needed + ' is/are needed.', 'Info');
 
             if (needed < count ) {
-                // more aliens than needed -> delete all aliens
-                // TODO delete only the extra/specific humans when less/one is/are needed
-                playerService.removePlayersByIsHuman( false )
-                .then( loadRemoteData, function( errorMessage ) { 
-                        toastr.error('Removing all aliens failed: ' + errorMessage, 'Error');
+                // more humans than needed -> delete all Aliens
+                // TODO delete only the extra/specific aliens when less/one is/are needed
+                 for (i=0; i < $scope.players.length; i++) {
+                    if ($scope.players[i].isHuman === false) {
+                        playerService.removePlayer( $scope.players[i] )
+                        .then( loadRemoteData, function( errorMessage ) {
+                            toastr.error('Removing one alien failed: ' + errorMessage, 'Error');
+                            }
+                        );
                     }
-                );
+                };
+                for (i = 0 ; i < needed; i++) {
+                    // add one or more aliens until needed
+                    playerService.initPlayerForIsHuman( false )
+                           .then( loadRemoteData, function( errorMessage ) {
+                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
+                           }
+                       );
+                }
             } else if (needed > count) {
-                // no aliens or too few? -> keep adding one until ok 
+                // no aliens or too few? -> keep adding one until ok
                 extra = needed - count;
                 for (i = 0 ; i < extra; i++) {
                     // add one or more aliens 
                     playerService.initPlayerForIsHuman( false )
                            .then( loadRemoteData, function( errorMessage ) {
-                               toastr.error('Initializing alien failed: ' + errorMessage, 'Error');
+                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
+                           }
+                       );
+                }
+            }
+        }
+        );
+    }
+    function applyRemoteGameData( newGames ) {
+        $scope.games = newGames;
+        // set or hide pictures and buttons
+     }
+    // load the remote data from the server.
+    function loadRemoteGameData() {
+        // The playerService returns a promise.
+        gameService.getGames()
+            .then(
+                function( games ) {
+                    applyRemoteGameData( games );
+                 }
+            );
+    }
+    function initGames( needed ) {
+        // first get all games
+        gameService.getGames()
+        .then( function( response ) {
+            $scope.games = response;
+            // count the games  
+            count = 0;
+            count = $scope.games.length;
+            
+            toastr.info('There are ' + count + ' games and ' + needed + ' is/are needed.', 'Info');
+
+            if (needed < count ) {
+                // more games than needed -> delete all games
+                // TODO delete only the extra/specific games when less/one is/are needed
+                 for (i=0; i < $scope.games.length; i++) {
+
+                    gameService.removeGame( $scope.games[i] )
+                    .then( loadRemoteGameData, function( errorMessage ) {
+                        toastr.error('Removing one game failed: ' + errorMessage, 'Error');
+                        }
+                    );
+
+                };
+                for (i = 0 ; i < needed; i++) {
+                    // add one or more aliens until needed
+                    gameService.initGameForCardGameType( "HILOW_1ROUND" )
+                           .then( loadRemoteGameData, function( errorMessage ) {
+                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
+                           }
+                       );
+                }
+            } else if (needed > count) {
+                // no aliens or too few? -> keep adding one until ok
+                extra = needed - count;
+                for (i = 0 ; i < extra; i++) {
+                    // add one or more aliens 
+                    gameService.initGameForCardGameType( "HILOW_1ROUND" )
+                           .then( loadRemoteGameData, function( errorMessage ) {
+                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
                            }
                        );
                 }

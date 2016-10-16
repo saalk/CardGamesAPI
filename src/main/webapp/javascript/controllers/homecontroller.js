@@ -140,7 +140,7 @@ function ($scope, playerService, toastr){
             $scope.players = response;
             // count the humans  
             count = 0;
-            for (var i=0; i < $scope.players.length; i++) {
+            for (i=0; i < $scope.players.length; i++) {
                  if ($scope.players[i].isHuman) {
                      count++; 
                 }
@@ -150,11 +150,23 @@ function ($scope, playerService, toastr){
             if (needed < count ) {
                 // more humans than needed -> delete all Humans
                 // TODO delete only the extra/specific humans when less/one is/are needed
-                playerService.removePlayersByIsHuman( true )
-                .then( loadRemoteData, function( errorMessage ) { 
-                        toastr.error('Removing all aliens failed: ' + errorMessage, 'Error');
+                 for (i=0; i < $scope.players.length; i++) {
+                    if ($scope.players[i].isHuman) {
+                        playerService.removePlayer( $scope.players[i] )
+                        .then( loadRemoteData, function( errorMessage ) {
+                            toastr.error('Removing one player failed: ' + errorMessage, 'Error');
+                            }
+                        );
                     }
-                );
+                };
+                for (i = 0 ; i < needed; i++) {
+                    // add one or more humans until needed
+                    playerService.initPlayerForIsHuman( true )
+                           .then( loadRemoteData, function( errorMessage ) {
+                               toastr.error('Initializing new player failed: ' + errorMessage, 'Error');
+                           }
+                       );
+                }
             } else if (needed > count) {
                 // no humans or too few? -> keep adding one until ok
                 extra = needed - count;
@@ -162,7 +174,7 @@ function ($scope, playerService, toastr){
                     // add one or more humans 
                     playerService.initPlayerForIsHuman( true )
                            .then( loadRemoteData, function( errorMessage ) {
-                               toastr.error('Initializing alien failed: ' + errorMessage, 'Error');
+                               toastr.error('Initializing new player failed: ' + errorMessage, 'Error');
                            }
                        );
                 }

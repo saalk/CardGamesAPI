@@ -1,63 +1,70 @@
 angular.module('myApp')
-        // players in controller is an instance: get(), query(), save()
+        // games in controller is an instance: get(), query(), save()
         // here
-       .service('playerService', ['$http', '$q', 'toastr', '$httpParamSerializerJQLike' ,
+       .service('gameService', ['$http', '$q', 'toastr', '$httpParamSerializerJQLike' ,
 function ($http, $q, toastr, $httpParamSerializerJQLike){           
 
     var baseUrl =  "http://localhost:8383";
     //$http.defaults.headers.common.Authorization = 'Basic YmVlcDpib29w';
     // Return public API
     return({
-            initPlayerForIsHuman: initPlayerForIsHuman,
-            addPlayer: addPlayer,
-            getPlayers: getPlayers,
-            getPlayersWhere: getPlayersWhere,
-            updatePlayer: updatePlayer,
-            removePlayer: removePlayer,
-            removePlayerById: removePlayerById,
-            removePlayersById: removePlayersById
+            initGameForCardGameType: initGameForCardGameType,
+            addGame: addGame,
+            getGames: getGames,
+            getGamesWhere: getGamesWhere,
+            updateGame: updateGame,
+            removeGame: removeGame,
+            removeGameById: removeGameById,
+            removeGamesById: removeGamesById
             
         });
     // ---
     // PUBLIC METHODS.
     // ---
 
-    // init a human player using the server' api
-    function initPlayerForIsHuman( isHuman ) {
-        
-        if (isHuman) {
-           newPlayer = {'id':null, 'avatar': 'ELF',
-                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
-                cubits: 0, securedLoan: 0};
+    // init a human game using the server' api
+    function initGameForCardGameType( cardGameType ) {
+ 
+        // TODO new game options:
+        // 
+        //    HILOW_1ROUND(CardGameType.HIGHLOW, "One round double or nothing "),
+        //    HILOW_3_IN_A_ROW_1SUIT(CardGameType.HIGHLOW, "'3-in-a-row' one suit"),
+        //    HILOW_5_IN_A_ROW(CardGameType.HIGHLOW, "'5-in-a-row'");
+    
+        if (cardGameType === "HILOW_3_IN_A_ROW_1SUIT") {
+           newGame = { "cardGameType": "HIGHLOW", "maxRounds": 9, "minRounds": 1,
+            "currentRound": 0, "maxTurns": 3, "minTurns": 1, "currentTurn": 0,
+            "turnsToWin": 3, "deck": null, "ante": 50, "winner": null };
         } else {
-            newPlayer = {'id':null, 'avatar': 'ELF',
-                'alias':'Alien', 'isHuman' : false, 'aiLevel': 'MEDIUM',
-                cubits: 0, securedLoan: 0};
+            // default HILOW_1ROUND rules
+           newGame = { "cardGameType": "HIGHLOW", "maxRounds": 1, "minRounds": 1,
+            "currentRound": 0, "maxTurns": 9, "minTurns": 1, "currentTurn": 0,
+            "turnsToWin": 0, "deck": null, "ante": 50, "winner": null };
         }
         
         var request = $http({
             method: "post",
             crossDomain: true,
-            url: baseUrl + "/api/players",
+            url: baseUrl + "/api/games",
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
-            data: newPlayer
+            data: newGame
         });
         return( request.then( handleSuccess, handleError ) );
         
     }
     
-    // get all players using the server' api
-    function getPlayers() {
+    // get all games using the server' api
+    function getGames() {
         // then() returns a new promise. We return that new promise.
         // that new promise is resolved via response.data, 
-        // i.e. the players in the private method handleSuccess
+        // i.e. the games in the private method handleSuccess
 
         var request = $http({
                 method: "get",
                 crossDomain: true,
-                url: baseUrl + "/api/players",
+                url: baseUrl + "/api/games",
                 headers: {'Content-Type': 'application/json'}
 //                params: {
 //                    action: "get"
@@ -66,13 +73,13 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         return( request.then( handleSuccess, handleError ) );
     }
      
-    // get all players for a condition using the server' api
-    function getPlayersWhere( isHuman ) {
+    // get all games for a condition using the server' api
+    function getGamesWhere( cardGameType ) {
 
         var request = $http({
             method: "get",
             crossDomain: true,
-            url: baseUrl + "/api/players?isHuman=" + isHuman,
+            url: baseUrl + "/api/games?cardGameType=" + cardGameType,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "get"
@@ -81,40 +88,40 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         return( request.then( handleSuccess, handleError ) );
 
     }   
-    // add a player with the given details using the server' api
-    function addPlayer( player ) {
+    // add a game with the given details using the server' api
+    function addGame( game ) {
         var request = $http({
             method: "post",
             crossDomain: true,
-            url: baseUrl + "/api/players",
+            url: baseUrl + "/api/games",
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
-            data: player
+            data: game
        });
        return( request.then( handleSuccess, handleError ) );
     }
-    // update the player with the given \id using the server' api
-    function updatePlayer( player ) {
+    // update the game with the given \id using the server' api
+    function updateGame( game ) {
         var request = $http({
             method: "put",
             crossDomain: true,
-            url: baseUrl + "/api/players/" + player.id,
+            url: baseUrl + "/api/games/" + game.id,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
 //                action: "update"
 //            },
-           data: player
+           data: game
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    // remove the player with the given \id using the server' api
-    function removePlayer( player ) {
+    // remove the game with the given \id using the server' api
+    function removeGame( game ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: baseUrl + "/api/players/" + player.id,
+            url: baseUrl + "/api/games/" + game.id,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "delete"
@@ -122,14 +129,14 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    // remove a player passed in the body using the server' api
+    // remove a game passed in the body using the server' api
     // TODO never tested
-    function removePlayerById( player ) {
+    function removeGameById( game ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: baseUrl + "/api/players",
-            params: player.id,
+            url: baseUrl + "/api/games",
+            params: game.id,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {
@@ -139,14 +146,14 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         return( request.then( handleSuccess, handleError ) );
     }
 
-    // remove all players passed in the body using the server' api
+    // remove all games passed in the body using the server' api
     // TODO never tested
-    function removePlayersById( players ) {
+    function removeGamesById( games ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: baseUrl + "/api/players?id=",
-            params: players.id,
+            url: baseUrl + "/api/games?id=",
+            params: games.id,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {

@@ -22,8 +22,8 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
-    public List<T> findAllByFkId(final T entity, final String column, final String value)
-    { return getDao().findAllByFkId(entity, column, value);}
+    public List<T> findAllWhere(final T entity, final String column, final String inputValue)
+    { return getDao().findAllWhere(entity, column, inputValue);}
 
     @Override
     public void create(final T entity) {
