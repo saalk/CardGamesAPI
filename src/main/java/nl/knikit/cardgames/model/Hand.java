@@ -60,8 +60,10 @@ public class Hand {
     @JoinColumn(name = "FK_CASINO", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CASINO"))
     @JsonProperty("fkCasino") private  Casino fkCasino;
 
+    @OneToMany
     @Column(name = "CARDS")
-    @JsonProperty("cards") private  ArrayList<Card> cards;
+    @ElementCollection(targetClass=Card.class)
+    @JsonProperty("cards") private  List<Card> cards;
 
     public Hand() {
         this.cards = new ArrayList<>();

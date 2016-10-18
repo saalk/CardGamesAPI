@@ -27,7 +27,7 @@ public enum Suit {
     JOKERS("⋆", "J", "Joker", "Joker");
     @Transient
     String shortSymbol;
-    @Column(name = "SUIT")
+    @Column(name = "SUIT" , length = 25)
     String shortName;
     @Transient
     String englishName;

@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.controller;
 
 import nl.knikit.cardgames.exception.GameNotFoundForIdException;
+import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -69,9 +70,9 @@ public class GameController {
     public ResponseEntity<ArrayList<Game>> findAllWhere(
             @RequestParam(value = "cardGameType", required = true) String param) {
 
-        Game classGame = new Game();
+        Game classGame = new Game(0);
         // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
-        // boolean isHumanBoolean = ( param=="true")?true:false;
+        // boolean isHumanBoolean = ( param=="true" )?true:false;
         // classGame.setHuman( isHumanBoolean );
 
         try {
@@ -90,10 +91,28 @@ public class GameController {
         }
     }
 
-    @PostMapping("/games")
+    @PostMapping(name = "/games")
     public ResponseEntity createGame(
             @RequestBody Game game) {
 
+        if (game == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Game supplied to create: " + game);
+        }
+        gameService.create(game);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(game);
+    }
+
+    @PostMapping(name = "/games", params = { "jokers" } )
+    public ResponseEntity createGame(
+            @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
+            @RequestBody Game game) {
+
+        // TODO jokers param
         if (game == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
@@ -126,7 +145,7 @@ public class GameController {
             @PathVariable("id") int id) {
 
         try {
-            Game classGame = new Game();
+            Game classGame = new Game(0);
             classGame.setId(id);
             gameService.deleteOne(classGame);
         } catch (Exception e) {
@@ -156,7 +175,7 @@ public class GameController {
     public ResponseEntity deleteGamesById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 
-        Game classGame = new Game();
+        Game classGame = new Game(0);
 
         try {
             gameService.deleteAllByIds(classGame, ids);

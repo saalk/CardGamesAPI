@@ -4,7 +4,8 @@ angular.module('myApp')
        .service('gameService', ['$http', '$q', 'toastr', '$httpParamSerializerJQLike' ,
 function ($http, $q, toastr, $httpParamSerializerJQLike){           
 
-    var baseUrl =  "http://localhost:8383";
+    //var baseUrl =  "http://localhost:8383";
+    var baseUrl = "http://knikit.nl";
     //$http.defaults.headers.common.Authorization = 'Basic YmVlcDpib29w';
     // Return public API
     return({

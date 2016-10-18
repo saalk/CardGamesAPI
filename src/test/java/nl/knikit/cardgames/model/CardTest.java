@@ -26,7 +26,7 @@ public class CardTest {
 		
 		// initialize the variables
 		testCards = new ArrayList<>();
-		testCard = new Card(null, null);
+		testCard = new Card(Rank.ACE, Suit.SPADES);
 				
 	}
 

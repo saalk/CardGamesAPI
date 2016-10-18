@@ -358,11 +358,11 @@ public class GalacticCasino {
                     turn = 0;
 
                     // CHECK CARDS LEFT STOP WHEN ZERO
-                    if (currentGameOld.getDeck().searchNextCardNotInHand() == -1) {
-                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias(),
-                                dummy);
-                        galacticCasino.fire(Trigger.DECK_EMPTY);
-                    }
+//                    if (currentGameOld.getDeck().searchNextCardNotInHand() == -1) {
+//                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias(),
+//                                dummy);
+//                        galacticCasino.fire(Trigger.DECK_EMPTY);
+//                    }
 
                     // debug logging
                     log = new StringBuilder();
@@ -381,8 +381,8 @@ public class GalacticCasino {
                     logger.debug(log.toString());
 
                     // DEAL A INITIAL CARD AND SHOW
-                    currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
-                    System.out.println("" + currentPlayerOld.toStringPlayers());
+//                    currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
+//                    System.out.println("" + currentPlayerOld.toStringPlayers());
 
                     galacticCasino.fire(Trigger.TURN_STARTED);
                     break;
@@ -390,14 +390,14 @@ public class GalacticCasino {
                 case ITERATE_TURNS:
 
                     // CHECK CARDS LEFT IN DECK
-                    if (currentGameOld.getDeck().searchNextCardNotInHand() == -1) {
-                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias()
-                                + ", keep the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
-                        currentPlayerOld.setCubits(currentGameOld.getAnte() * (int) Math.pow(2, turn - 1));
-                        galacticCasino.fire(Trigger.DECK_EMPTY);
-                        break;
-                    }
-                    turn++;
+//                    if (currentGameOld.getDeck().searchNextCardNotInHand() == -1) {
+//                        answer = console.getAnswerFromConsole("> No more cards, the game ends " + currentPlayerOld.getAlias()
+//                                + ", keep the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+//                        currentPlayerOld.setCubits(currentGameOld.getAnte() * (int) Math.pow(2, turn - 1));
+//                        galacticCasino.fire(Trigger.DECK_EMPTY);
+//                        break;
+//                    }
+//                    turn++;
 
                     // GET (AI) PLAYER ACTION
                     if (turn == 1) {
@@ -450,8 +450,8 @@ public class GalacticCasino {
                     }
 
                     // TURN THE CARD AND SHOW
-                    real = currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
-                    System.out.println(currentPlayerOld.toStringPlayers());
+//                    real = currentPlayerOld.addCardToHand(currentGameOld.getDeck().deal(currentPlayerOld.getId()));
+//                    System.out.println(currentPlayerOld.toStringPlayers());
 
                     // debug logging
                     log = new StringBuilder();
@@ -467,38 +467,38 @@ public class GalacticCasino {
                     log.append(System.lineSeparator());
                     log.append("  Anwer from player: " + prediction);
                     log.append(System.lineSeparator());
-                    log.append("  Result from dealing: " + real);
-                    log.append(System.lineSeparator());
+//                    log.append("  Result from dealing: " + real);
+//                    log.append(System.lineSeparator());
                     log.append("= End ====================================");
                     logger.debug(log.toString());
 
                     // WIN, LOOSE OR JUST NEXT TURN
-                    if (prediction == real) {
-                        if (turn >= currentGameOld.getTurnsToWin()) {
-                            // TODO depend upon game variant
-                            answer = console.getAnswerFromConsole("> " + turn + " in a row, you won!", dummy);
-                            currentPlayerOld.setCubits((currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)));
-                            currentGameOld.setWinner(currentPlayerOld);
-
-                            System.out.println(currentGameOld);
-                            galacticCasino.fire(Trigger.PLAYER_WINS);
-                        } else {
-                            answer = console.getAnswerFromConsole("> Nice guess " + currentPlayerOld.getAlias() + "!", dummy);
-                            galacticCasino.fire(Trigger.ANOTHER_TURN);
-                        }
-                    } else {
-                        if (real == PlayerOld.Predict.EQUAL) {
-                            answer = console.getAnswerFromConsole("> Equal cards " + currentPlayerOld.getAlias()
-                                    + ", so hand over the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
-                        } else {
-                            answer = console.getAnswerFromConsole("> Bad guess " + currentPlayerOld.getAlias()
-                                    + ", i'll take the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
-                        }
-                        galacticCasino.fire(Trigger.TURN_ENDED);
-                        currentPlayerOld.setCubits(-(currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)));
-                        System.out.println(currentGameOld);
-                    }
-                    break;
+//                    if (prediction == real) {
+//                        if (turn >= currentGameOld.getTurnsToWin()) {
+//                            // TODO depend upon game variant
+//                            answer = console.getAnswerFromConsole("> " + turn + " in a row, you won!", dummy);
+//                            currentPlayerOld.setCubits((currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)));
+//                            currentGameOld.setWinner(currentPlayerOld);
+//
+//                            System.out.println(currentGameOld);
+//                            galacticCasino.fire(Trigger.PLAYER_WINS);
+//                        } else {
+//                            answer = console.getAnswerFromConsole("> Nice guess " + currentPlayerOld.getAlias() + "!", dummy);
+//                            galacticCasino.fire(Trigger.ANOTHER_TURN);
+//                        }
+//                    } else {
+//                        if (real == PlayerOld.Predict.EQUAL) {
+//                            answer = console.getAnswerFromConsole("> Equal cards " + currentPlayerOld.getAlias()
+//                                    + ", so hand over the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+//                        } else {
+//                            answer = console.getAnswerFromConsole("> Bad guess " + currentPlayerOld.getAlias()
+//                                    + ", i'll take the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+//                        }
+//                        galacticCasino.fire(Trigger.TURN_ENDED);
+//                        currentPlayerOld.setCubits(-(currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)));
+//                        System.out.println(currentGameOld);
+//                    }
+//                    break;
 
                 case STOP_GAME:
 

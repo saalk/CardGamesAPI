@@ -20,7 +20,7 @@ import lombok.ToString;
 @Getter
 public enum Avatar {
 
-    @Column(name = "AVATAR")
+    @Column(name = "AVATAR", length = 25)
     ELF("Elf", "Elf"), MAGICIAN("Magician", "Magier"), GOBLIN("Goblin", "Goblin"), ROMAN("Warrior", "Krijger");
 
     @Transient

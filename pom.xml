@@ -344,6 +344,23 @@
                 </configuration>
             </plugin>
             -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="D:\Work\Projects\workspace\CardGamesAPI\target\card-games-webapp##0.0.1-SNAPSHOT.war"
+                                      tofile="D:\Work\Projects\workspace\CardGamesAPI\target\ROOT.war"  overwrite="true"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

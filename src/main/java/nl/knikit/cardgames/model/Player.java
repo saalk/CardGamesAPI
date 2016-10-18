@@ -28,8 +28,8 @@ import java.util.List;
 @Setter
 @Entity
 @DynamicUpdate
-@Table(name = "PLAYER",
-        indexes = {@Index(name = "PLAYER_INDEX", columnList = "PLAYER_ID")})
+// @Table(name = "PLAYER", indexes = {@Index(name = "PLAYER_INDEX", columnList = "PLAYER_ID")})
+@Table(name = "PLAYER")
 @Relation(value = "player", collectionRelation = "players")
 public class Player implements Serializable {
 
@@ -41,8 +41,8 @@ public class Player implements Serializable {
     @Transient
     private static int startId = 1;
 
-    @Column(name = "PLAYER_ID")
-    @JsonProperty("playerId") private String playerId;
+    @Column(name = "CREATED", length = 25)
+    @JsonProperty("created") private String created;
     @Enumerated(EnumType.STRING)
     @Column(name = "AVATAR")
     @JsonProperty("avatar") private Avatar avatar;
@@ -64,7 +64,7 @@ public class Player implements Serializable {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
-        this.playerId = result.substring(2, 20);
+        this.created = result.substring(2, 20);
     }
 
     @Override

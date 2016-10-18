@@ -21,10 +21,22 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -82,13 +94,26 @@ import lombok.Setter;
  * @version 1.0
  * @since v1 - console game
  */
+@Getter
+@Setter
 @Embeddable
 public class Deck {
 
-    @Column(name = "CARDS")
-    @JsonProperty("cards") private ArrayList<Card> cards;
-    @Column(name = "DEALED_TO")
-    @JsonProperty("dealedTo") private int dealedTo[];
+    @ElementCollection(targetClass=Card.class)
+    @OneToMany
+    @JoinTable(
+            name = "DECK",
+            joinColumns = @JoinColumn(name = "GAME_FK"),
+            inverseJoinColumns = @JoinColumn(name = "CARD_FK")
+    )
+    @JsonProperty("cards") private List<Card> cards;
+
+    @Column(name = "DEALT_TO_PLAYER")
+    @JsonProperty("dealtToPlayer") private int id;
+
+/* //@Column(name = "DEALED_TO")
+    @Transient
+    private int dealedTo[];*/
 
     /**
      * First constructor, always work from the smallest constructor to the largest. When a no-arg
@@ -123,8 +148,6 @@ public class Deck {
          */
         cards = new ArrayList<>();
 
-        //TODO get out of constructor and into setter
-        dealedTo = new int[52 + totalJokers]; // auto init with zero
         for (Suit suit : Suit.values()) {
             /*
              * without the values() method use allOf
@@ -146,14 +169,18 @@ public class Deck {
         return cards;
     }
 
-    public int getDealedTo(int position) {
+/*    public void setDealedTo(int totalJokers){
+        dealedTo = new int[52 + totalJokers]; // auto init with zero
+    }*/
+
+/*    public int getDealedTo(int position) {
         int dealedToHand = dealedTo[position];
         return dealedToHand;
     }
 
     public int[] getDealedTo() {
         return dealedTo;
-    }
+    }*/
 
     /**
      * alternative with bubble sort routine:
@@ -175,7 +202,7 @@ public class Deck {
     public void shuffle() {
 
         Random randomNumber = new Random();
-        ArrayList<Card> shuffledCards = new ArrayList<Card>();
+        List<Card> shuffledCards = new ArrayList<Card>();
 
         for (Card card : cards) {
             if (shuffledCards.size() == 0) {
@@ -195,12 +222,12 @@ public class Deck {
         /*
          * init the dealedTo with zero's
 		 */
-        for (int i = 0; i < dealedTo.length; i++) {
+/*        for (int i = 0; i < dealedTo.length; i++) {
             dealedTo[i] = 0;
-        }
+        }*/
     }
 
-    public int searchNextCardNotInHand() {
+/*    public int searchNextCardNotInHand() {
         int topCard;
         for (int i = 0; i < dealedTo.length; i++) {
             if (dealedTo[i] == 0) {
@@ -209,9 +236,9 @@ public class Deck {
             }
         }
         return -1;
-    }
+    }*/
 
-    public Card deal(int hand) throws IllegalArgumentException {
+/*    public Card deal(int hand) throws IllegalArgumentException {
         if (hand == 0) {
             throw new IllegalArgumentException("Hand for dealing cards is zero!");
         }
@@ -223,7 +250,7 @@ public class Deck {
             dealedTo[topCard] = hand;
         }
         return cards.get(topCard);
-    }
+    }*/
 
     public int searchCard(Card searchCard) {
         // TODO why does this not work ?
@@ -250,7 +277,7 @@ public class Deck {
         return total;
     }
 
-    public int averageValueInDeck(CardGameType inputCardGameType) {
+    /*public int averageValueInDeck(CardGameType inputCardGameType) {
         int value = 0;
         int count = 0;
         // TODO check for empty list of cards in deck
@@ -262,11 +289,11 @@ public class Deck {
             }
         }
         return value / count;
-    }
+    }*/
 
     public void removeSuit(Set<Suit> removeSuits) {
 
-        ArrayList<Card> newDeck = cards;
+        List<Card> newDeck = this.cards;
         int index = cards.lastIndexOf(cards);
 
         for (Suit removeSuit : removeSuits) {
@@ -275,8 +302,8 @@ public class Deck {
                     newDeck.remove(card);
                 }
             }
-            index = index - 13;
-            dealedTo = new int[index];
+/*            index = index - 13;
+            dealedTo = new int[index];*/
         }
         this.cards = newDeck;
 

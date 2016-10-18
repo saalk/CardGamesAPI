@@ -30,7 +30,7 @@ import lombok.ToString;
 @ToString
 public enum AiLevel {
 
-    @Column(name = "AI_LEVEL")
+    @Column(name = "AI_LEVEL" , length = 10)
     LOW("Dumb", "Dom"), MEDIUM("Average", "Gemiddeld"), HIGH("High", "Hoog"), HUMAN("Human",
             "Mens"), NONE("None", "Geen");
 

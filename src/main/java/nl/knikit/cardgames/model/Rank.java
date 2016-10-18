@@ -25,7 +25,7 @@ public enum Rank {
             "Five", "Vijf"), SIX("6", "Six", "Zes"), SEVEN("7", "Seven", "Zeven"), EIGHT("8", "Eight",
             "Acht"), NINE("9", "Nine", "Negen"), TEN("10", "Ten", "Tien"), JACK("J", "Jack", "Boer"), QUEEN("Q",
             "Queen", "Vrouw"), KING("K", "King", "Koning"), JOKER("R", "Joker", "Joker");
-    @Column(name = "RANK")
+    @Column(name = "RANK", length = 25)
     String shortName;
     @Transient
     String englishName;

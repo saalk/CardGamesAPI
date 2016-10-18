@@ -38,8 +38,8 @@ public class Casino implements Serializable {
     @Column(name = "ID")
     @JsonProperty("id") private int id;
 
-    @Column(name = "CASINO_ID")
-    @JsonProperty("casinoId") private String casinoId;
+    @Column(name = "CREATED", length = 25)
+    @JsonProperty("created") private String created;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FK_GAME", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
@@ -62,7 +62,7 @@ public class Casino implements Serializable {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
-        this.casinoId = result.substring(2, 25);
+        this.created = result.substring(2, 25);
     }
 
     @Override

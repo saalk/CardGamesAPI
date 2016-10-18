@@ -26,12 +26,25 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.hateoas.core.Relation;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -51,22 +64,34 @@ import lombok.ToString;
  * @since v1 - console game
  */
 
+@Entity
+@DynamicUpdate
+@Table(name = "CARD")
 @Getter
 @Setter
-@Embeddable
+@Relation(value = "card", collectionRelation = "cards")
 public class Card {
 
     // 13 progressing ranks 2 to 10, jack, queen, king, ace.
-    @Column(name = "RAND")
-    private Rank rank;
+    @Id
+    @Column(name = "SHORT_NAME", length = 2)
+    @JsonProperty("card") private String card;
 
-    @Column(name = "SUIT")
-    private Suit suit;
+    @Column(name = "RANK", length = 10)
+    @JsonProperty("rank") private Rank rank;
+
+    @Column(name = "SUIT", length = 10)
+    @JsonProperty("suit") private Suit suit;
+
+    @Column(name = "VALUE")
+    @JsonProperty("value") private int value;
 
     @JsonCreator
     public Card(@JsonProperty("rank") Rank rank, @JsonProperty("suit") Suit suit) {
         this.rank = rank;
         this.suit = suit;
+        final StringBuilder builder = new StringBuilder();
+        this.card = builder.append(rank.getShortName()).append(suit.getShortName()).toString();
     }
 
     public int compareTwoCards(Card o1, Card o2, CardGameType cardGameType) {
