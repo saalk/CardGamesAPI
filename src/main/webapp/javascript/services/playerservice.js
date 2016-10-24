@@ -27,11 +27,11 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     function initPlayerForIsHuman( isHuman ) {
         
         if (isHuman) {
-           newPlayer = {'id':null, 'avatar': 'ELF',
+           newPlayer = {'avatar': 'ELF',
                 'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
                 cubits: 0, securedLoan: 0};
         } else {
-            newPlayer = {'id':null, 'avatar': 'ELF',
+            newPlayer = {'avatar': 'ELF',
                 'alias':'Alien', 'isHuman' : false, 'aiLevel': 'MEDIUM',
                 cubits: 0, securedLoan: 0};
         }

@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.controller;
+package nl.knikit.cardgames.resource;
 
 /*
     http://viralpatel.net/blogs/spring-4-mvc-rest-example-json/
@@ -77,7 +77,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @ExposesResourceFor(Player.class)
 @Slf4j
 @Scope("prototype")
-public class PlayerController {
+public class PlayerResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired

@@ -14,6 +14,8 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -29,6 +31,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -40,6 +46,10 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.hateoas.core.Relation;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -94,26 +104,39 @@ import lombok.Setter;
  * @version 1.0
  * @since v1 - console game
  */
+@Entity
+@DynamicUpdate
+@Table(name = "DECK", indexes = {
+        @Index(columnList = "GAME_ID", name = "GAME_INDEX")})
 @Getter
 @Setter
-@Embeddable
+@Relation(value = "deck", collectionRelation = "decks")
 public class Deck {
 
-    @ElementCollection(targetClass=Card.class)
-    @OneToMany
-    @JoinTable(
-            name = "DECK",
-            joinColumns = @JoinColumn(name = "GAME_FK"),
-            inverseJoinColumns = @JoinColumn(name = "CARD_FK")
-    )
-    @JsonProperty("cards") private List<Card> cards;
 
-    @Column(name = "DEALT_TO_PLAYER")
-    @JsonProperty("dealtToPlayer") private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(name = "ID")
+    @JsonProperty("id") private int id;
 
-/* //@Column(name = "DEALED_TO")
-    @Transient
-    private int dealedTo[];*/
+    @Column(name = "CREATED", length = 25)
+    @JsonProperty("created") private String created;
+
+    // OneToOne since Game has one Deck, each Deck has one Game
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "GAME_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"))
+    @JsonProperty("game") private  Game game;
+
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "CARD_FK", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
+    @JsonProperty("card") private Card card;
+
+    @Column(name = "ORDER")
+    @JsonProperty("order") private int order;
+
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "PLAYER_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JsonProperty("dealtTo") private Player dealtTo;
 
     /**
      * First constructor, always work from the smallest constructor to the largest. When a no-arg
@@ -123,6 +146,10 @@ public class Deck {
     @JsonCreator
     public Deck() {
         this(0);
+        LocalDateTime localDateAndTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
+        String result = localDateAndTime.format(formatter);
+        this.created = result.substring(2, 25);
     }
 
     /**
@@ -146,12 +173,12 @@ public class Deck {
          * underscores.
          *
          */
-        cards = new ArrayList<>();
+/*        cards = new ArrayList<>();
 
         for (Suit suit : Suit.values()) {
-            /*
+            *//*
              * without the values() method use allOf
-			 */
+			 *//*
             for (Rank rank : EnumSet.allOf(Rank.class)) {
                 if (!(rank.equals(Rank.JOKER) || suit.equals(Suit.JOKERS))) {
                     cards.add(new Card(rank, suit));
@@ -161,15 +188,10 @@ public class Deck {
 
         for (int i = 0; i < totalJokers; i++) {
             cards.add(new Card(Rank.JOKER, Suit.JOKERS));
-        }
+        }*/
     }
 
-    // generated getter, setter is the constructor
-    public List<Card> getCards() {
-        return cards;
-    }
-
-/*    public void setDealedTo(int totalJokers){
+ /*    public void setDealedTo(int totalJokers){
         dealedTo = new int[52 + totalJokers]; // auto init with zero
     }*/
 
@@ -199,7 +221,7 @@ public class Deck {
      * }
      * </pre>
      */
-    public void shuffle() {
+ /*   public void shuffle() {
 
         Random randomNumber = new Random();
         List<Card> shuffledCards = new ArrayList<Card>();
@@ -219,15 +241,15 @@ public class Deck {
         }
 
         cards = shuffledCards;
-        /*
+        *//*
          * init the dealedTo with zero's
-		 */
-/*        for (int i = 0; i < dealedTo.length; i++) {
+		 *//*
+*//*        for (int i = 0; i < dealedTo.length; i++) {
             dealedTo[i] = 0;
-        }*/
+        }*//*
     }
 
-/*    public int searchNextCardNotInHand() {
+*//*    public int searchNextCardNotInHand() {
         int topCard;
         for (int i = 0; i < dealedTo.length; i++) {
             if (dealedTo[i] == 0) {
@@ -236,9 +258,9 @@ public class Deck {
             }
         }
         return -1;
-    }*/
+    }*//*
 
-/*    public Card deal(int hand) throws IllegalArgumentException {
+*//*    public Card deal(int hand) throws IllegalArgumentException {
         if (hand == 0) {
             throw new IllegalArgumentException("Hand for dealing cards is zero!");
         }
@@ -250,7 +272,7 @@ public class Deck {
             dealedTo[topCard] = hand;
         }
         return cards.get(topCard);
-    }*/
+    }*//*
 
     public int searchCard(Card searchCard) {
         // TODO why does this not work ?
@@ -277,7 +299,7 @@ public class Deck {
         return total;
     }
 
-    /*public int averageValueInDeck(CardGameType inputCardGameType) {
+    *//*public int averageValueInDeck(CardGameType inputCardGameType) {
         int value = 0;
         int count = 0;
         // TODO check for empty list of cards in deck
@@ -289,7 +311,7 @@ public class Deck {
             }
         }
         return value / count;
-    }*/
+    }*//*
 
     public void removeSuit(Set<Suit> removeSuits) {
 
@@ -302,17 +324,17 @@ public class Deck {
                     newDeck.remove(card);
                 }
             }
-/*            index = index - 13;
-            dealedTo = new int[index];*/
+*//*            index = index - 13;
+            dealedTo = new int[index];*//*
         }
         this.cards = newDeck;
 
     }
-
+*/
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Deck [cards=").append(cards).append("]");
+        builder.append("Deck [id=").append(id).append("]");
         return builder.toString();
     }
 }

@@ -1,4 +1,5 @@
-package nl.knikit.cardgames.controller;
+package nl.knikit.cardgames.resource;
+
 
 import nl.knikit.cardgames.exception.GameNotFoundForIdException;
 import nl.knikit.cardgames.model.Player;
@@ -28,7 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 @ExposesResourceFor(Game.class)
 @Slf4j
 @Scope("prototype")
-public class GameController {
+public class GameResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired

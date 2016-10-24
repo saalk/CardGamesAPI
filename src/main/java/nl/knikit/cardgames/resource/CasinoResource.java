@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.controller;
+package nl.knikit.cardgames.resource;
 
 /*
     http://viralpatel.net/blogs/spring-4-mvc-rest-example-json/
@@ -58,7 +58,7 @@ import java.util.ArrayList;
 @ExposesResourceFor(Casino.class)
 @Slf4j
 @Scope("prototype")
-public class CasinoController {
+public class CasinoResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
