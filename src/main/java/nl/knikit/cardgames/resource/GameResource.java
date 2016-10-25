@@ -71,7 +71,7 @@ public class GameResource {
     public ResponseEntity<ArrayList<Game>> findAllWhere(
             @RequestParam(value = "cardGameType", required = true) String param) {
 
-        Game classGame = new Game(0);
+        Game classGame = new Game();
         // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
         // boolean isHumanBoolean = ( param=="true" )?true:false;
         // classGame.setHuman( isHumanBoolean );
@@ -146,7 +146,7 @@ public class GameResource {
             @PathVariable("id") int id) {
 
         try {
-            Game classGame = new Game(0);
+            Game classGame = new Game();
             classGame.setId(id);
             gameService.deleteOne(classGame);
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class GameResource {
     public ResponseEntity deleteGamesById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 
-        Game classGame = new Game(0);
+        Game classGame = new Game();
 
         try {
             gameService.deleteAllByIds(classGame, ids);

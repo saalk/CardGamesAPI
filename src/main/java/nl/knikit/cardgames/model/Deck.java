@@ -14,41 +14,24 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.hateoas.core.Relation;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.hateoas.core.Relation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -105,14 +88,12 @@ import lombok.Setter;
  * @since v1 - console game
  */
 @Entity
-@DynamicUpdate
 @Table(name = "DECK", indexes = {
-        @Index(columnList = "GAME_ID", name = "GAME_INDEX")})
+        @Index(columnList = "GAME_FK", name = "GAME_INDEX")})
 @Getter
 @Setter
 @Relation(value = "deck", collectionRelation = "decks")
 public class Deck {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -123,18 +104,18 @@ public class Deck {
     @JsonProperty("created") private String created;
 
     // OneToOne since Game has one Deck, each Deck has one Game
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "GAME_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"))
     @JsonProperty("game") private  Game game;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "CARD_FK", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
     @JsonProperty("card") private Card card;
 
     @Column(name = "ORDER")
     @JsonProperty("order") private int order;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "PLAYER_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
     @JsonProperty("dealtTo") private Player dealtTo;
 

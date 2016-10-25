@@ -52,7 +52,7 @@ import lombok.ToString;
 /**
  * <H2>Description</H2> A playing card used for playing card games. A complete set of cards is called a
  * pack (UK English), deck (US English), or set (Universal), and the subset of cards held at one
- * time by a {@link PlayerOld player} during a {@link GameOld game} is commonly called a {@link HandOld
+ * time by a {@link Player player} during a {@link Game game} is commonly called a {@link Hand
  * hand}.
  * <H2>Relations</H2>
  * Card is associated to {@link Rank enum Rank} and {@link Suit enum Suit}. Because you must have
@@ -65,7 +65,6 @@ import lombok.ToString;
  */
 
 @Entity
-@DynamicUpdate
 @Table(name = "CARD")
 @Getter
 @Setter

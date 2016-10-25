@@ -3,23 +3,32 @@ package nl.knikit.cardgames.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AccessLevel;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
-
-import javax.persistence.*;
-
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 
 @Entity
-@DynamicUpdate
 /*@Table(name = "GAME", indexes = {
         @Index(columnList = "WINNER", name = "WINNER_INDEX")})*/
 @Table(name = "GAME")
@@ -36,13 +45,11 @@ public class Game  implements Serializable {
     @Column(name = "CREATED", length = 25)
     @JsonProperty("created") private String created;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.PROTECTED)
-    @Column(name = "CURRENT_STATE")
-    private String currentState;
+    @Column(name = "STATE", length = 25)
+    @JsonProperty("state") private String state;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "CARD_GAME_TYPE")
+    @Column(name = "CARD_GAME_TYPE", length = 25)
     @JsonProperty("cardGameType") private CardGameType cardGameType;
 
     @Column(name = "MAX_ROUNDS")
@@ -60,11 +67,6 @@ public class Game  implements Serializable {
     @JsonProperty("currentTurn") private int currentTurn;
     @Column(name = "TURNS_TO_WIN")
     @JsonProperty("turnsToWin") private int turnsToWin;
-
-    // OneToOne since Game has one Deck, each Deck has one Game
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "DECK_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_DECK"))
-    @JsonProperty("deck") private  Deck deck;
 
 /*
     - merge         (copy using same id)
@@ -101,12 +103,12 @@ public class Game  implements Serializable {
     @JsonProperty("winner") private  Player winner;
 
 
-    public State getCurrentState() {
-        return State.valueOf(currentState);
+    public State getState() {
+        return State.valueOf(state);
     }
 
-    public void setCurrentState(String currentState) {
-        this.currentState = currentState;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public int increaseCurrentRound() {
@@ -126,17 +128,7 @@ public class Game  implements Serializable {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 25);
-        setDeck(0);
         this.ante = 50;
-    }
-
-    public Game(int jokers) {
-        super();
-        setDeck(jokers);
-    }
-
-    public void setDeck(int jokers) {
-        this.deck = new Deck(jokers);
     }
 
     @Override
