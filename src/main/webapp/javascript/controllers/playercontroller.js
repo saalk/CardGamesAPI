@@ -1,5 +1,5 @@
 angular.module('myApp')
-        .directive('myHomeDirective', function() {
+        .directive('myPlayerDirective', function() {
             return {
                 restrict: 'AE',
                 templateUrl: function(elem, attrs) {
@@ -7,7 +7,7 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('HomeController', ['$scope', 'playerService', 'toastr',
+        .controller('PlayerController', ['$scope', 'playerService', 'toastr',
 function ($scope, playerService, toastr){
 
     // viewmodel for this controller
@@ -15,7 +15,7 @@ function ($scope, playerService, toastr){
     
     // flags for ng-if and check if player details are ok
     vm.showListForDebug = false;
-    vm.gotocasino = false;
+    vm.gotogame = false;
     
     // put a human player at index 0 in the collection, delete the rest
     $scope.players = [];
@@ -49,7 +49,7 @@ function ($scope, playerService, toastr){
             $scope.players[0].cubits = $scope.players[0].cubits - $scope.players[0].securedLoan;
             $scope.players[0].securedLoan = 0;
             toastr.info('Your loan is repayed', 'Information');
-            vm.gotocasino = false;
+            vm.gotogame = false;
         };
         playerService.updatePlayer( $scope.players[0] )
             .then( loadRemoteData, function( errorMessage ) {
@@ -64,7 +64,7 @@ function ($scope, playerService, toastr){
     // ---
     function checkIfNameAndSecuredLoanAreSet() {
         if ($scope.players[0].securedLoan !== 0 && $scope.players[0].alias !== 'stranger') {
-            vm.gotocasino = true;
+            vm.gotogame = true;
         };
         if ($scope.players[0].alias === 'stranger' && $scope.players[0].cubits !== 0) {
             setTimeout(function() {

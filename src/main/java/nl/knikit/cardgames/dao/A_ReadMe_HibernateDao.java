@@ -5,7 +5,10 @@ public class A_ReadMe_HibernateDao {
 /*
 
      http://www.baeldung.com/simplifying-the-data-access-layer-with-spring-and-java-generics
-     This baeldung article discussed the simplification of the Data Access Layer by providing a single, reusable implementation of a generic DAO. This implementation was presented in both a Hibernate and a JPA based environment. The result is a streamlined persistence layer, with no unnecessary clutter.
+     This baeldung article discussed the simplification of the Data Access Layer by providing a
+     single, reusable implementation of a generic DAO. This implementation was presented in both a
+     Hibernate and a JPA based environment. The result is a streamlined persistence layer,
+     with no unnecessary clutter.
 
 
      // common hibernate crud base layer using the safety of generics class<T> for model classes:

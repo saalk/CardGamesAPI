@@ -16,9 +16,9 @@ angular.module('pCreditcardsSwitchRepaymentOffApp')
 
         $ctrl.init = function() {
             for (var i = 0; i < progressService.cardsForSwitchOff.length; i++) {
-                var card = progressService.cardsForSwitchOff[i].card;
-                card.image = progressService.cardsForSwitchOff[i].image;
-                $ctrl.cards.push(card);
+                var shortName = progressService.cardsForSwitchOff[i].shortName;
+                shortName.image = progressService.cardsForSwitchOff[i].image;
+                $ctrl.cards.push(shortName);
             }
         };
 

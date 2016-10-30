@@ -14,16 +14,16 @@ angular.module('myApp')
     $httpProvider.defaults.headers.patch = {};
 
 
-    $routeProvider.when('/home/', {
-       templateUrl: 'partials/home.html'
+    $routeProvider.when('/player/', {
+       templateUrl: 'partials/player.html'
+    }).when('/game/', {
+       templateUrl: 'partials/game.html'
     }).when('/casino/', {
        templateUrl: 'partials/casino.html'
-    }).when('/table/', {
-       templateUrl: 'partials/table.html'
     }).when('/results/', {
        templateUrl: 'partials/results.html'  
     }).otherwise({
-        redirectTo: '/home/'
+        redirectTo: '/player/'
     });
 
     angular.extend(toastrConfig, {

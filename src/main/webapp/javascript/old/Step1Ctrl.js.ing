@@ -42,7 +42,7 @@ angular.module('pCreditcardsSwitchRepaymentOffApp')
         };
 
         $scope.$watch(checkCreditcardList, function() {
-            // checks whether there is only one card available in the list, and selects it for the user.
+            // checks whether there is only one shortName available in the list, and selects it for the user.
             if ($scope.cardModel.selectedCreditcard !== null && $scope.cardModel.selectedCreditcard.length === 1) {
                 if (progressService.selectedCreditcard === null) {
                     $scope.isCreditcardsFound = true;
@@ -51,12 +51,12 @@ angular.module('pCreditcardsSwitchRepaymentOffApp')
             }
         });
 
-        // watcher to check if the user selects a card
+        // watcher to check if the user selects a shortName
         $scope.$on('ing-rich-select-change-creditcard-selector', function(e, data) {
             selectCard(data);
         });
 
-        // sets the selected card in the progressService and gets the creditcard details.
+        // sets the selected shortName in the progressService and gets the creditcard details.
         var selectCard = function(creditcard) {
             clearSelection();
             setCreditcard(creditcard);
@@ -65,14 +65,14 @@ angular.module('pCreditcardsSwitchRepaymentOffApp')
 
         // Function to set the details of the selected creditcard to the creditcardDto which is sent to the API service.
         var setCreditcard = function(selectedCreditcard) {
-            progressService.selectedCreditcard = selectedCreditcard.card;
+            progressService.selectedCreditcard = selectedCreditcard.shortName;
 
             // Dto info required for API service call
-            progressService.creditcardDto.cardId = selectedCreditcard.card.cardId;
+            progressService.creditcardDto.cardId = selectedCreditcard.shortName.cardId;
 
             // details to use when user navigates back from page 2 to page1
             progressService.selectedCreditcard.selected = true;
-            progressService.selectedCreditcard.id = selectedCreditcard.card.cardId;
+            progressService.selectedCreditcard.id = selectedCreditcard.shortName.cardId;
         };
 
         // retrieve the details of the creditcard that was selected from the list

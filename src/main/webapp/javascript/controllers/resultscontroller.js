@@ -22,7 +22,7 @@ function ($scope, playerService, toastr){
     vm.showalien2 = false;
     vm.ante = 0; 
     vm.loopplayer = 0;
-    vm.tothetable = false;
+    vm.tothecasino = false;
 
     // fixed text
     vm.smart = "Most evolved alien species, this fellow starts with ";
@@ -63,7 +63,7 @@ function ($scope, playerService, toastr){
             $scope.players[0].cubits = $scope.players[0].cubits - $scope.players[0].securedLoan;
             $scope.players[0].securedLoan = 0;
             toastr.info('Your loan is repayed', 'Information');
-            vm.tothetable = false;
+            vm.tothecasino = false;
         };
         playerService.updatePlayer( $scope.players[0] );
     }; 
@@ -76,15 +76,15 @@ function ($scope, playerService, toastr){
         };
         loadRemoteData();
     };
-    // flags for show/hide the buttons alien1, alien2 and tothetable
-    // TODO a copy of the casinocontroller
+    // flags for show/hide the buttons alien1, alien2 and tothecasino
+    // TODO a copy of the gamecontroller
     function checkIfAliensAreSet() {
-        vm.tothetable = true;
+        vm.tothecasino = true;
         vm.showalien1 = true;
         vm.showalien2 = true;
         for (i=0, len = $scope.players.length; i < len -1; i++) {
             if ($scope.players[i].aiLevel === 'NONE') {
-                vm.tothetable = false;
+                vm.tothecasino = false;
             };
             if (i === 1 && $scope.players[1].aiLevel === 'NONE') {
                 vm.showalien1 = false;
@@ -95,7 +95,7 @@ function ($scope, playerService, toastr){
         }
     };
     // proceed to the next aiLevel for the player at the index
-    // TODO a copy of the casinocontroller
+    // TODO a copy of the gamecontroller
     function loopAiLevel(index) {
         if ($scope.players[index].aiLevel === 'NONE') {
             if ($scope.players[1].aiLevel === 'NONE' && index === 2) {

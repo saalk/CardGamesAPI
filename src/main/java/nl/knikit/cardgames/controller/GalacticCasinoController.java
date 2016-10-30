@@ -124,25 +124,27 @@ public class GalacticCasinoController {
     static {
         cardGameConfig.configure(State.SELECT_GAME)
                 .permit(Trigger.GAME_SELECTED, State.SETUP_GAME)
-                .permit(Trigger.QUIT, State.OFFER_FICHES);
+                .permit(Trigger.QUIT, State.SELECT_GAME);
+
         cardGameConfig.configure(State.SETUP_GAME)
                 .permit(Trigger.GAME_STOPPED, State.SELECT_GAME)
                 .permit(Trigger.GAME_SETUP, State.ITERATE_PLAYERS);
+
         cardGameConfig.configure(State.ITERATE_PLAYERS)
                 .permit(Trigger.GAME_STOPPED, State.SELECT_GAME)
                 .permit(Trigger.TURN_STARTED, State.ITERATE_TURNS)
                 .permit(Trigger.DECK_EMPTY, State.STOP_GAME)
                 .permit(Trigger.ROUNDS_ENDED, State.STOP_GAME);
+
         cardGameConfig.configure(State.ITERATE_TURNS)
                 .permitReentry(Trigger.ANOTHER_TURN)
                 .permit(Trigger.TURN_ENDED, State.ITERATE_PLAYERS)
                 .permit(Trigger.DECK_EMPTY, State.STOP_GAME)
                 .permit(Trigger.PLAYER_WINS, State.STOP_GAME);
+
         cardGameConfig.configure(State.STOP_GAME)
                 .permit(Trigger.GAME_FINISHED, State.SELECT_GAME);
-        cardGameConfig.configure(State.OFFER_FICHES)
-                .permit(Trigger.OFFER_ACCEPTED, State.SELECT_GAME)
-                .permitReentry(Trigger.QUIT);
+
         // @formatter:on
     }
 //        // SETUP CONSOLE
@@ -379,7 +381,7 @@ public class GalacticCasinoController {
 //                    // GET (AI) PLAYER ACTION
 //                    if (turn == 1) {
 //                        action = new String[]{"Lower", "Higher"};
-//                        question = "> Stake is set to " + currentGameOld.getAnte() + ", what will your next card be "
+//                        question = "> Stake is set to " + currentGameOld.getAnte() + ", what will your next casino be "
 //                                + currentPlayerOld.getAlias() + "?";
 //                    } else {
 //                        action = new String[]{"Lower", "Higher", "Pass"};

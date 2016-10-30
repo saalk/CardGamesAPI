@@ -131,7 +131,7 @@
                                 <warRunDependency>
                                     <dependency>
                                         <groupId>nl.knikit.cardgames</groupId>
-                                        <artifactId>card-games-webapp</artifactId>
+                                        <artifactId>shortName-games-webapp</artifactId>
                                         <version>0.0.1-SNAPSHOT</version>
                                         <type>war</type>
                                     </dependency>
@@ -322,7 +322,7 @@
                 </dependencies>
                 -->
             </plugin>
-            <!-- fill user and psw
+            <!-- make a database while doing mvn install -> just fill user and psw
             <plugin>
                 <groupId>de.juplo</groupId>
                 <artifactId>hibernate-maven-plugin</artifactId>
@@ -339,11 +339,11 @@
                     <driver>org.mariadb.jdbc.Driver</driver>
                     <dialect>org.hibernate.dialect.MySQLDialect</dialect>
                     <url><![CDATA[jdbc:mariadb://192.168.2.100:3306/knikit]]></url>
-                    <username></username>
-                    <password></password>
+                    <username>root</username>
+                    <password>klaas</password>
                 </configuration>
             </plugin>
-            -->
+             -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>

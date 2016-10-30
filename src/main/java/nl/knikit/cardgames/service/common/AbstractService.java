@@ -17,6 +17,11 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
+    public T findOne(final String id) {
+        return getDao().findOne(id);
+    }
+
+    @Override
     public List<T> findAll(String column, String direction) {
         return getDao().findAll(column, direction);
     }

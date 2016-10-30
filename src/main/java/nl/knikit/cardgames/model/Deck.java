@@ -19,10 +19,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.core.Relation;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -30,6 +33,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -93,15 +97,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Relation(value = "deck", collectionRelation = "decks")
-public class Deck {
+public class Deck implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "ID")
     @JsonProperty("id") private int id;
-
-    @Column(name = "CREATED", length = 25)
-    @JsonProperty("created") private String created;
 
     // OneToOne since Game has one Deck, each Deck has one Game
     @OneToOne
@@ -109,34 +110,25 @@ public class Deck {
     @JsonProperty("game") private  Game game;
 
     @OneToOne
-    @JoinColumn(name = "CARD_FK", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
+    @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
     @JsonProperty("card") private Card card;
 
-    @Column(name = "ORDER")
-    @JsonProperty("order") private int order;
+/*    @OneToMany
+    @Column(name = "CARDS")
+    @ElementCollection(targetClass=Card.class)
+    @JsonProperty("cards") private List<Card> cards;*/
+
+    @Column(name = "CARD_ORDER")
+    @JsonProperty("cardOrder") private int cardOrder;
 
     @OneToOne
     @JoinColumn(name = "PLAYER_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
     @JsonProperty("dealtTo") private Player dealtTo;
 
     /**
-     * First constructor, always work from the smallest constructor to the largest. When a no-arg
-     * constructor calls an arg constructor is uses this(args). The this(args) must be the first
-     * line and should initialize some or all of the variables.
-     */
-    @JsonCreator
-    public Deck() {
-        this(0);
-        LocalDateTime localDateAndTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
-        String result = localDateAndTime.format(formatter);
-        this.created = result.substring(2, 25);
-    }
-
-    /**
      * Second constructor, always work from the smallest constructor to the largest.
      */
-    public Deck(int totalJokers) {
+    public Deck() {
 
         /*
          * Do not do: List<Card> cards = new ArrayList<Card>()

@@ -1,56 +1,30 @@
 package nl.knikit.cardgames.resource;
 
-/*
-    http://viralpatel.net/blogs/spring-4-mvc-rest-example-json/
-
-    This class is annotated with @RestController annotation. Also note that we are using
-    new annotations @GetMapping, @PostMapping, @PutMapping and @DeleteMapping instead of
-    standard @RequestMapping.
-
-    These annotations are available since Spring MVC 4.3 and are standard way of defining REST
-    endpoints. They act as wrapper to @RequestMapping.
-    For example @GetMapping is a composed annotation that acts as a shortcut for
-    @RequestMapping(method = RequestMethod.GET).
-
-    6 REST Endpoint                 HTTP Method 	Description
-    /players 	                    GET             Returns the list of players
-    /players/{id}                   GET             Returns player detail for given player {id}
-    /players 	                    POST            Creates new player from the post data
-    /players/{id}                   PUT             Replace the details for given player {id}
-    /players 	                    DELETE          Deletes all players
-    /players/{id}                   DELETE          Delete the player for given player {id}
-*/
-
-
-/*  The log levels in Java Logging API are different to other standard logging libraries
-    Log4j/Logback	Java Logging
-    fatal	        SEVERE
-    error	        SEVERE
-    warn	        WARNING
-    info	        INFO
-                    CONFIG
-    debug	        FINE
-                    FINER
-    trace	        FINEST
-*/
-
-
-import lombok.extern.slf4j.Slf4j;
 import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
 import nl.knikit.cardgames.model.Casino;
-import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.ICasinoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletRequest;
+
+import lombok.extern.slf4j.Slf4j;
 
 // @RestController = @Controller + @ResponseBody
 @RestController

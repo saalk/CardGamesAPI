@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Relation(value = "hand", collectionRelation = "hands")
-public class Hand {
+public class Hand implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -60,49 +61,20 @@ public class Hand {
     @JoinColumn(name = "FK_CASINO", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CASINO"))
     @JsonProperty("fkCasino") private  Casino fkCasino;
 
-    @OneToMany
+    @OneToOne
+    @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
+    @JsonProperty("card") private Card card;
+
+/*    @OneToMany
     @Column(name = "CARDS")
     @ElementCollection(targetClass=Card.class)
     @JsonProperty("cards") private  List<Card> cards;
-
-    public Hand() {
-        this.cards = new ArrayList<>();
-    }
-
-    public Card getCard(int index) {
-        return cards.get(index);
-   }
-
-    public void setCard(Card card) {
-        this.cards.add(card);
-    }
-
-    public Card getLastCard() {
-        int size = this.cards.size();
-        // bugfix size for index always -1
-        Card lastCard = this.cards.get(size - 1);
-        return lastCard;
-    }
-
-    public void playCard(Card card) {
-        this.cards.remove(card);
-    }
-
-    public List<Card> showCards(boolean ordered) {
-        // do not actually order the cards in the hand but only show them
-        // ordered
-        // TODO show cards ordered by a default order
-        return cards;
-    }
-
-    public int countNumberOfCards() {
-        return cards.size();
-    }
+    */
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Game [id=").append(id).append("]");
+        builder.append("Hand [id=").append(id).append("]");
         return builder.toString();
     }
 }

@@ -33,9 +33,9 @@
 //	public void testAdd3CardToHandShouldShow3Cards() {
 //
 //		// run
-//		testHandOld1.setCard(testAceOfSpades);
-//		testHandOld1.setCard(testJoker);
-//		testHandOld1.setCard(testAceOfSpades);
+//		testHandOld1.setShortName(testAceOfSpades);
+//		testHandOld1.setShortName(testJoker);
+//		testHandOld1.setShortName(testAceOfSpades);
 //
 //		// verify
 //		assertTrue("Hand should show 3 cards", testHandOld1.showCards(false).size()==3);
@@ -45,7 +45,7 @@
 //	@Test
 //	public void testPlayAceOfSpadesFromHand() {
 //		// run
-//		testHandOld1.setCard(testAceOfSpades);
+//		testHandOld1.setShortName(testAceOfSpades);
 //		testHandOld1.playCard(testAceOfSpades);
 //
 //		//verify

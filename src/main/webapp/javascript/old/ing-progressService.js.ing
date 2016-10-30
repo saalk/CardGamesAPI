@@ -6,7 +6,7 @@
  */
 angular.module('pCreditcardsSwitchRepaymentOffApp').service('progressService', function() {
 
-    // the credit card that was selected from the list
+    // the credit shortName that was selected from the list
     this.selectedCreditcard = null;
 
     // array of creditcards that will be switched off, i.e. response data. will be more than one if extra cards are present

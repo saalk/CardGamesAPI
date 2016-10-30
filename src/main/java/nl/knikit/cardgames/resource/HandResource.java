@@ -1,8 +1,9 @@
 package nl.knikit.cardgames.resource;
 
-import nl.knikit.cardgames.exception.GameNotFoundForIdException;
-import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.service.IGameService;
+
+import nl.knikit.cardgames.exception.HandNotFoundForIdException;
+import nl.knikit.cardgames.model.Hand;
+import nl.knikit.cardgames.service.IHandService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -33,35 +34,35 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @RestController
 @Component
-@ExposesResourceFor(Game.class)
+@ExposesResourceFor(Hand.class)
 @Slf4j
 @Scope("prototype")
-public class GameResource {
+public class HandResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private IGameService gameService;
+    private IHandService HandService;
 
-    @GetMapping("/games")
-    public ResponseEntity<ArrayList<Game>> getGames() {
+    @GetMapping("/Hands")
+    public ResponseEntity<ArrayList<Hand>> getHands() {
 
-        ArrayList<Game> games;
-        games = (ArrayList) gameService.findAll("cardGameType", "ASC");
-        return new ResponseEntity(games, HttpStatus.OK);
+        ArrayList<Hand> Hands;
+        Hands = (ArrayList) HandService.findAll("isHuman", "DESC");
+        return new ResponseEntity(Hands, HttpStatus.OK);
     }
 
-    @GetMapping("/games/{id}")
-    public ResponseEntity getGame(
-            @PathVariable("id") int id) throws GameNotFoundForIdException {
+    @GetMapping("/Hands/{id}")
+    public ResponseEntity getHand(
+            @PathVariable("id") int id) throws HandNotFoundForIdException {
 
-        Game game = gameService.findOne(id);
-        if (game == null) {
+        Hand Hand = HandService.findOne(id);
+        if (Hand == null) {
 
-            throw new GameNotFoundForIdException(id);
+            throw new HandNotFoundForIdException(id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(game);
+                .body(Hand);
     }
 
     // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
@@ -74,97 +75,79 @@ public class GameResource {
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
-    @GetMapping(value = "/games", params = { "cardGameType" } )
-    public ResponseEntity<ArrayList<Game>> findAllWhere(
-            @RequestParam(value = "cardGameType", required = true) String param) {
+    @GetMapping(value = "/Hands", params = { "isHuman" } )
+    public ResponseEntity<ArrayList<Hand>> findAllWhere(
+            @RequestParam(value = "isHuman", required = true) String param) {
 
-        Game classGame = new Game();
+        Hand classHand = new Hand();
         // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
-        // boolean isHumanBoolean = ( param=="true" )?true:false;
-        // classGame.setHuman( isHumanBoolean );
+        // boolean isHumanBoolean = ( param=="true")?true:false;
+        // classHand.setHuman( isHumanBoolean );
 
         try {
 
-            ArrayList<Game> games = (ArrayList) gameService.findAllWhere(classGame, "cardGameType", param);
-            if (games == null || games.isEmpty()) {
-                throw new GameNotFoundForIdException(999);
+            ArrayList<Hand> Hands = (ArrayList) HandService.findAllWhere(classHand, "isHuman", param);
+            if (Hands == null || Hands.isEmpty()) {
+                throw new HandNotFoundForIdException(999);
             }
 
-            return new ResponseEntity(games, HttpStatus.OK);
+            return new ResponseEntity(Hands, HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new ArrayList<Game>() );
+                    .body(new ArrayList<Hand>() );
         }
     }
 
-    @PostMapping(name = "/games")
-    public ResponseEntity createGame(
-            @RequestBody Game game) {
+    @PostMapping("/Hands")
+    public ResponseEntity createHand(
+            @RequestBody Hand Hand) {
 
-        if (game == null) {
+        if (Hand == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied to create: " + game);
+                    .body("No Hand supplied to create: " + Hand);
         }
-        gameService.create(game);
+        HandService.create(Hand);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(game);
+                .body(Hand);
     }
 
-    @PostMapping(name = "/games", params = { "jokers" } )
-    public ResponseEntity createGame(
-            @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
-            @RequestBody Game game) {
+    @PutMapping("/Hands/{id}")
+    public ResponseEntity updateHand(
+            @PathVariable int id, @RequestBody Hand Hand) {
 
-        // TODO jokers param
-        if (game == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied to create: " + game);
-        }
-        gameService.create(game);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(game);
-    }
-
-    @PutMapping("/games/{id}")
-    public ResponseEntity updateGame(
-            @PathVariable int id, @RequestBody Game game) {
-
-        Game newGame = gameService.update(game);
-        if (null == newGame) {
+        Hand newHand = HandService.update(Hand);
+        if (null == newHand) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Game found to change for path /{id): " + id);
+                    .body("No Hand found to change for path /{id): " + id);
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(newGame);
+                .body(newHand);
     }
 
-    @DeleteMapping("/games/{id}")
-    public ResponseEntity deleteGames(
+    @DeleteMapping("/Hands/{id}")
+    public ResponseEntity deleteHands(
             @PathVariable("id") int id) {
 
         try {
-            Game classGame = new Game();
-            classGame.setId(id);
-            gameService.deleteOne(classGame);
+            Hand classHand = new Hand();
+            classHand.setId(id);
+            HandService.deleteOne(classHand);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Games with /{id}: " + id + " found to delete");
+                    .body("No Hands with /{id}: " + id + " found to delete");
         }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Game with /{id}: " + id + " deleted");
+                .body("Hand with /{id}: " + id + " deleted");
     }
 
 
@@ -178,31 +161,31 @@ public class GameResource {
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
-    // /games?id=1,2,3,4
-    @DeleteMapping(value = "/games", params = { "id" } )
-    public ResponseEntity deleteGamesById(
+    // /Hands?id=1,2,3,4
+    @DeleteMapping(value = "/Hands", params = { "id" } )
+    public ResponseEntity deleteHandsById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 
-        Game classGame = new Game();
+        Hand classHand = new Hand();
 
         try {
-            gameService.deleteAllByIds(classGame, ids);
+            HandService.deleteAllByIds(classHand, ids);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Games with /{id} found to delete, ids: " + ids);
+                    .body("No Hands with /{id} found to delete, ids: " + ids);
         }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Game with ?id= : " + ids + " deleted");
+                .body("Hand with ?id= : " + ids + " deleted");
     }
 
 
     // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
     // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(GameNotFoundForIdException.class)
-    public ModelAndView handleGameNotFoundForIdException(HttpServletRequest request, Exception ex) {
+    @ExceptionHandler(HandNotFoundForIdException.class)
+    public ModelAndView handleHandNotFoundForIdException(HttpServletRequest request, Exception ex) {
         log.error("Requested URL=" + request.getRequestURL());
         log.error("Exception Raised=" + ex);
 

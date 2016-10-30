@@ -3,24 +3,20 @@ package nl.knikit.cardgames.dao.common;
 import com.google.common.base.Preconditions;
 
 import nl.knikit.cardgames.model.CardGameType;
-import nl.knikit.cardgames.model.Player;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // @SuppressWarnings("unchecked")
@@ -38,6 +34,10 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 
     @Override
     public final T findOne(final int id) {return (T) getCurrentSession().get(clazz, id);
+    }
+
+    @Override
+    public final T findOne(final String id) {return (T) getCurrentSession().get(clazz, id);
     }
 
     @Override
