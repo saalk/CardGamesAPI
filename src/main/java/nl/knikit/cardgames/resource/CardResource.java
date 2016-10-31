@@ -45,15 +45,15 @@ public class CardResource {
     @Autowired
     private ICardService CardService;
 
-    @GetMapping("/Cards")
+    @GetMapping("/cards")
     public ResponseEntity<ArrayList<Card>> getCards() {
 
         ArrayList<Card> Cards;
-        Cards = (ArrayList) CardService.findAll("isHuman", "DESC");
+        Cards = (ArrayList) CardService.findAll(null,null);
         return new ResponseEntity(Cards, HttpStatus.OK);
     }
 
-    @GetMapping("/Cards/{shortName}")
+    @GetMapping("/cards/{shortName}")
     public ResponseEntity getCard(
             @PathVariable("shortName") String shortName) throws CardNotFoundForIdException {
 
@@ -77,7 +77,7 @@ public class CardResource {
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
-    @GetMapping(value = "/Cards", params = { "suit" } )
+    @GetMapping(value = "/cards", params = { "suit" } )
     public ResponseEntity<ArrayList<Card>> findAllWhere(
             @RequestParam(value = "suit", required = true) String param) {
 
@@ -102,7 +102,7 @@ public class CardResource {
         }
     }
 
-    @PostMapping("/Cards")
+    @PostMapping("/cards")
     public ResponseEntity createCard(
             @RequestBody Card Card) {
 
@@ -118,7 +118,7 @@ public class CardResource {
                 .body(Card);
     }
 
-    @PutMapping("/Cards/{shortName}")
+    @PutMapping("/cards/{shortName}")
     public ResponseEntity updateCard(
             @PathVariable String shortName, @RequestBody Card Card) {
 
@@ -133,7 +133,7 @@ public class CardResource {
                 .body(newCard);
     }
 
-    @DeleteMapping("/Cards/{shortName}")
+    @DeleteMapping("/cards/{shortName}")
     public ResponseEntity deleteCards(
             @PathVariable("shortName") String shortName) {
 
@@ -164,7 +164,7 @@ public class CardResource {
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Cards?id=1,2,3,4
-    @DeleteMapping(value = "/Cards", params = { "shortName" } )
+    @DeleteMapping(value = "/cards", params = { "shortName" } )
     public ResponseEntity deleteCardsById(
             @RequestParam(value = "shortName", required = false) List<String> shortNames) {
 

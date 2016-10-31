@@ -88,6 +88,12 @@
                     <include>*.txt</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources/sql</directory>
+                <includes>
+                    <include>*.sql</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>

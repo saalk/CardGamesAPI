@@ -43,7 +43,7 @@ public class HandResource {
     @Autowired
     private IHandService HandService;
 
-    @GetMapping("/Hands")
+    @GetMapping("/hands")
     public ResponseEntity<ArrayList<Hand>> getHands() {
 
         ArrayList<Hand> Hands;
@@ -51,7 +51,7 @@ public class HandResource {
         return new ResponseEntity(Hands, HttpStatus.OK);
     }
 
-    @GetMapping("/Hands/{id}")
+    @GetMapping("/hands/{id}")
     public ResponseEntity getHand(
             @PathVariable("id") int id) throws HandNotFoundForIdException {
 
@@ -75,9 +75,9 @@ public class HandResource {
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
-    @GetMapping(value = "/Hands", params = { "isHuman" } )
+    @GetMapping(value = "/hands", params = { "casino" } )
     public ResponseEntity<ArrayList<Hand>> findAllWhere(
-            @RequestParam(value = "isHuman", required = true) String param) {
+            @RequestParam(value = "casino", required = true) String param) {
 
         Hand classHand = new Hand();
         // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
@@ -100,7 +100,7 @@ public class HandResource {
         }
     }
 
-    @PostMapping("/Hands")
+    @PostMapping("/hands")
     public ResponseEntity createHand(
             @RequestBody Hand Hand) {
 
@@ -116,7 +116,7 @@ public class HandResource {
                 .body(Hand);
     }
 
-    @PutMapping("/Hands/{id}")
+    @PutMapping("/hands/{id}")
     public ResponseEntity updateHand(
             @PathVariable int id, @RequestBody Hand Hand) {
 
@@ -131,7 +131,7 @@ public class HandResource {
                 .body(newHand);
     }
 
-    @DeleteMapping("/Hands/{id}")
+    @DeleteMapping("/hands/{id}")
     public ResponseEntity deleteHands(
             @PathVariable("id") int id) {
 
@@ -162,7 +162,7 @@ public class HandResource {
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Hands?id=1,2,3,4
-    @DeleteMapping(value = "/Hands", params = { "id" } )
+    @DeleteMapping(value = "/hands", params = { "id" } )
     public ResponseEntity deleteHandsById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 

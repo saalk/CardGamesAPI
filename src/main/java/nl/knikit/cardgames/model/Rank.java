@@ -1,7 +1,34 @@
 package nl.knikit.cardgames.model;
 
+/*public enum Status {
+    WAITING(0),
+    READY(1),
+    SKIPPED(-1),
+    COMPLETED(5);
+
+    private static final Map<Integer,Status> lookup
+            = new HashMap<Integer,Status>();
+
+    static {
+        for(Status s : EnumSet.allOf(Status.class))
+            lookup.put(s.getCode(), s);
+    }
+
+    private int code;
+
+    private Status(int code) {
+        this.code = code;
+    }
+
+    public int getCode() { return code; }
+
+    public static Status get(int code) {
+        return lookup.get(code);
+    }*/
+
+import java.io.Serializable;
+
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 /**
@@ -12,8 +39,7 @@ import javax.persistence.Transient;
  * @version 1.0
  * @since v1 - console game
  */
-@Embeddable
-public enum Rank {
+public enum Rank implements Serializable {
 
     /**
      * Because enum are constants, the names of an enum type's fields are in uppercase letters. In
@@ -32,7 +58,14 @@ public enum Rank {
     @Transient
     String dutchName;
 
+    Rank() {
+        this.shortName = "";
+        this.englishName = "";
+        this.dutchName = "";
+    }
+
     Rank(String shortName, String englishName, String dutchName) {
+        this();
         this.shortName = shortName;
         this.englishName = englishName;
         this.dutchName = dutchName;

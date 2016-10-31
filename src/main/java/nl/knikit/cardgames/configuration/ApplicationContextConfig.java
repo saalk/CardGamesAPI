@@ -158,6 +158,7 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         //properties.put("hibernate.connection.driver_class", "com.mariadb.jdbc.Driver");
         hibernateProperties.put("hibernate.hbm2ddl.auto", "create");
+        hibernateProperties.put("hibernate.hbm2ddl.import_files", "initial_data.sql");
         hibernateProperties.setProperty("hibernate.connection.autocommit", "false");
         hibernateProperties.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
         hibernateProperties.setProperty("hibernate.id.new_generator_mappings", "true");

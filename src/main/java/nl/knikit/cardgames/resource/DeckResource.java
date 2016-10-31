@@ -43,15 +43,15 @@ public class DeckResource {
     @Autowired
     private IDeckService DeckService;
 
-    @GetMapping("/Decks")
+    @GetMapping("/decks")
     public ResponseEntity<ArrayList<Deck>> getDecks() {
 
         ArrayList<Deck> Decks;
-        Decks = (ArrayList) DeckService.findAll("isHuman", "DESC");
+        Decks = (ArrayList) DeckService.findAll("game", "ASC");
         return new ResponseEntity(Decks, HttpStatus.OK);
     }
 
-    @GetMapping("/Decks/{id}")
+    @GetMapping("/decks/{id}")
     public ResponseEntity getDeck(
             @PathVariable("id") int id) throws DeckNotFoundForIdException {
 
@@ -75,9 +75,9 @@ public class DeckResource {
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
-    @GetMapping(value = "/Decks", params = { "isHuman" } )
+    @GetMapping(value = "/decks", params = { "game" } )
     public ResponseEntity<ArrayList<Deck>> findAllWhere(
-            @RequestParam(value = "isHuman", required = true) String param) {
+            @RequestParam(value = "game", required = true) String param) {
 
         Deck classDeck = new Deck();
         // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
@@ -100,7 +100,7 @@ public class DeckResource {
         }
     }
 
-    @PostMapping("/Decks")
+    @PostMapping("/decks")
     public ResponseEntity createDeck(
             @RequestBody Deck Deck) {
 
@@ -116,7 +116,7 @@ public class DeckResource {
                 .body(Deck);
     }
 
-    @PutMapping("/Decks/{id}")
+    @PutMapping("/decks/{id}")
     public ResponseEntity updateDeck(
             @PathVariable int id, @RequestBody Deck Deck) {
 
@@ -131,7 +131,7 @@ public class DeckResource {
                 .body(newDeck);
     }
 
-    @DeleteMapping("/Decks/{id}")
+    @DeleteMapping("/decks/{id}")
     public ResponseEntity deleteDecks(
             @PathVariable("id") int id) {
 
@@ -162,7 +162,7 @@ public class DeckResource {
     // you get the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Decks?id=1,2,3,4
-    @DeleteMapping(value = "/Decks", params = { "id" } )
+    @DeleteMapping(value = "/decks", params = { "id" } )
     public ResponseEntity deleteDecksById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 

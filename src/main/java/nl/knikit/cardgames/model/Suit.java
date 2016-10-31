@@ -1,7 +1,8 @@
 package nl.knikit.cardgames.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 /**
@@ -11,8 +12,8 @@ import javax.persistence.Transient;
  * @version 1.0
  * @since v1 - console game
  */
-@Embeddable
-public enum Suit {
+
+public enum Suit implements Serializable {
 
     /**
      * Because enum are constants, the names of an enum type's fields are in uppercase letters.
@@ -34,8 +35,16 @@ public enum Suit {
     @Transient
     String dutchName;
 
+    Suit() {
+        this.shortSymbol = "";
+        this.shortName = "";
+        this.englishName = "";
+        this.dutchName = "";
+    }
+
     // Constructor, each argument to the constructor shadows one of the object's fields
     Suit(String shortSymbol, String shortName, String englishName, String dutchName) {
+        this();
         this.shortSymbol = shortSymbol;
         this.shortName = shortName;
         this.englishName = englishName;

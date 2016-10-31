@@ -26,17 +26,19 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -65,20 +67,30 @@ public class Card implements Serializable {
 
     // 13 progressing ranks 2 to 10, jack, queen, king, ace.
     @Id
-    @Column(name = "SHORT_NAME", length = 2)
+    @Column(name = "SHORT_NAME", length = 3)
     @JsonProperty("shortName") private String shortName;
 
     @Column(name = "RANK", length = 10)
+    @Enumerated(EnumType.STRING)
     @JsonProperty("rank") private Rank rank;
 
     @Column(name = "SUIT", length = 10)
+    @Enumerated(EnumType.STRING)
     @JsonProperty("suit") private Suit suit;
 
     @Column(name = "VALUE")
     @JsonProperty("value") private int value;
 
     @JsonCreator
+    public Card() {
+        this.rank = null;
+        this.suit = null;
+        this.shortName = "";
+    }
+
+    @JsonCreator
     public Card(@JsonProperty("rank") Rank rank, @JsonProperty("suit") Suit suit) {
+        this();
         this.rank = rank;
         this.suit = suit;
         final StringBuilder builder = new StringBuilder();

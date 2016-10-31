@@ -55,11 +55,11 @@ public class Hand implements Serializable {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
-    @JsonProperty("fkPlayer") private  Player fkPlayer;
+    @JsonProperty("player") private  Player player;
 
     @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "FK_CASINO", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CASINO"))
-    @JsonProperty("fkCasino") private  Casino fkCasino;
+    @JsonProperty("casino") private  Casino casino;
 
     @OneToOne
     @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
