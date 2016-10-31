@@ -89,12 +89,12 @@ public class Card implements Serializable {
     }
 
     @JsonCreator
-    public Card(@JsonProperty("rank") Rank rank, @JsonProperty("suit") Suit suit) {
+    public Card(String rank, String suit) {
         this();
-        this.rank = rank;
-        this.suit = suit;
+        this.rank = Rank.get(rank);
+        this.suit = Suit.get(suit);
         final StringBuilder builder = new StringBuilder();
-        this.shortName = builder.append(rank.getShortName()).append(suit.getShortName()).toString();
+        this.shortName = builder.append(rank).append(suit).toString();
     }
 
     public int compareTwoCards(Card o1, Card o2, CardGameType cardGameType) {

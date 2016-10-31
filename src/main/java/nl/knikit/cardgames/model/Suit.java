@@ -1,9 +1,11 @@
 package nl.knikit.cardgames.model;
 
 import java.io.Serializable;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.Transient;
+import lombok.Getter;
 
 /**
  * <H1>Suit</H1>
@@ -13,68 +15,58 @@ import javax.persistence.Transient;
  * @since v1 - console game
  */
 
+@Getter
 public enum Suit implements Serializable {
 
     /**
      * Because enum are constants, the names of an enum type's fields are in uppercase letters.
-     * In this enum Suit the 4 constants are declared with the properties of the English and Dutch names
-     * In addition the Joker is added
+     * Behind the enum is the code (int) or the name (String) of the enum.
+     * Make a static lookup and use a private name int or String
      */
-    @Transient
-    CLUBS("♣", "C", "Clubs", "Klaver"),
-    DIAMONDS("♦", "D", "Diamonds", "Ruiten"),
-    HEARTS("♥", "H", "Hearts", "Harten"),
-    SPADES("♠", "S", "Spades", "Schoppen"),
-    JOKERS("⋆", "J", "Joker", "Joker");
-    @Transient
-    String shortSymbol;
-    @Column(name = "SUIT" , length = 25)
-    String shortName;
-    @Transient
-    String englishName;
-    @Transient
-    String dutchName;
+    CLUBS("C"),
+    DIAMONDS("D"),
+    HEARTS("H"),
+    SPADES("S"),
+    JOKERS("J");
+
+    /**
+     * Make a :
+     * - a static HashMap lookup with key value pairs -> key= code/name, value= the ENUM
+     * - a private field code/name and a method getCode/Name()
+     * - a static get(code/name) that returns the ENUM based on the lookup key
+     * -> the static get could better be called byLetter, byValue to distinguish from @Getter
+     *
+     * Now you can us a method get() that return with the ENUM based on a int/name
+     * eg. "A" -> RANK.ACE
+     *
+     * HashMap:
+     * - static hashMap.put(key, value)
+     * - value = hashMap.get(key)
+     */
+    private static final Map<String,Suit> lookup
+            = new HashMap<>();
+    static {
+        for(Suit suit : EnumSet.allOf(Suit.class))
+            lookup.put(suit.getName(), suit);
+    }
+    private String name;
 
     Suit() {
-        this.shortSymbol = "";
-        this.shortName = "";
-        this.englishName = "";
-        this.dutchName = "";
+        this.name = "";
     }
-
-    // Constructor, each argument to the constructor shadows one of the object's fields
-    Suit(String shortSymbol, String shortName, String englishName, String dutchName) {
+    Suit(String name) {
         this();
-        this.shortSymbol = shortSymbol;
-        this.shortName = shortName;
-        this.englishName = englishName;
-        this.dutchName = dutchName;
+        this.name = name;
     }
 
-    // Getters, no setters needed
-
-
-    String getShortSymbol() {
-        return shortSymbol;
-    }
-
-    String getShortName() {
-        return shortName;
-    }
-
-    String getEnglishName() {
-        return englishName;
-    }
-
-    String getDutchName() {
-        return dutchName;
+    public static Suit get(String name) {
+        return lookup.get(name);
     }
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Suit [value=").append(shortName).append("]");
+        builder.append("Suit [value=").append(name).append("]");
         return builder.toString();
     }
-
-};
+}

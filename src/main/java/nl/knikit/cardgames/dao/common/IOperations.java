@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface IOperations<T extends Serializable> {
 
-    T findOne(final int id);
+    T findOneWithString(final String id);
 
-    T findOne(final String id);
+    T findOne(final int id);
 
     List<T> findAll(String column, String direction);
 

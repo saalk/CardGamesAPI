@@ -86,7 +86,7 @@ public class DeckResource {
 
         try {
 
-            ArrayList<Deck> Decks = (ArrayList) DeckService.findAllWhere(classDeck, "isHuman", param);
+            ArrayList<Deck> Decks = (ArrayList) DeckService.findAllWhere(classDeck, "game", param);
             if (Decks == null || Decks.isEmpty()) {
                 throw new DeckNotFoundForIdException(999);
             }

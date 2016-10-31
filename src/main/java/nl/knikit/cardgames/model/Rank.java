@@ -1,35 +1,11 @@
 package nl.knikit.cardgames.model;
 
-/*public enum Status {
-    WAITING(0),
-    READY(1),
-    SKIPPED(-1),
-    COMPLETED(5);
-
-    private static final Map<Integer,Status> lookup
-            = new HashMap<Integer,Status>();
-
-    static {
-        for(Status s : EnumSet.allOf(Status.class))
-            lookup.put(s.getCode(), s);
-    }
-
-    private int code;
-
-    private Status(int code) {
-        this.code = code;
-    }
-
-    public int getCode() { return code; }
-
-    public static Status get(int code) {
-        return lookup.get(code);
-    }*/
-
 import java.io.Serializable;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.Transient;
+import lombok.Getter;
 
 /**
  * <H1>Rank</H1> Progressive value for a card. <p> There are thirteen ranks of each of the four
@@ -39,48 +15,53 @@ import javax.persistence.Transient;
  * @version 1.0
  * @since v1 - console game
  */
+
+@Getter
 public enum Rank implements Serializable {
 
     /**
-     * Because enum are constants, the names of an enum type's fields are in uppercase letters. In
-     * this enum Rank the 13 constants are declared with various properties, in addition the Joker
-     * is added
+     * Because enum are constants, the names of an enum type's fields are in uppercase letters.
      */
-    @Transient
-    ACE("A", "Ace", "Aas"), TWO("2", "Two", "Twee"), THREE("3", "Three", "Drie"), FOUR("4", "Four", "Vier"), FIVE("5",
-            "Five", "Vijf"), SIX("6", "Six", "Zes"), SEVEN("7", "Seven", "Zeven"), EIGHT("8", "Eight",
-            "Acht"), NINE("9", "Nine", "Negen"), TEN("10", "Ten", "Tien"), JACK("J", "Jack", "Boer"), QUEEN("Q",
-            "Queen", "Vrouw"), KING("K", "King", "Koning"), JOKER("R", "Joker", "Joker");
-    @Column(name = "RANK", length = 25)
-    String shortName;
-    @Transient
-    String englishName;
-    @Transient
-    String dutchName;
+
+    ACE("A"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"),
+    NINE("9"), TEN("10"), JACK("J"), QUEEN("Q"), KING("K"), JOKER("R");
+
+    /**
+     * Make a :
+     * - a static HashMap lookup with key value pairs -> key= code/name, value= the ENUM
+     * - a private field code/name and a method getCode/Name()
+     * - a static get(code/name) that returns the ENUM based on the lookup key
+     * -> the static get could better be called byLetter, byValue to distinguish from @Getter
+     *
+     * Now you can us a method get() that return with the ENUM based on a int/name
+     * eg. "A" -> RANK.ACE
+     *
+     * HashMap:
+     * - static hashMap.put(key, value)
+     * - value = hashMap.get(key)
+     */
+
+    private static final Map<String,Rank> lookup
+            = new HashMap<>();
+    static {
+        for(Rank rank : EnumSet.allOf(Rank.class))
+            lookup.put(rank.getName(), rank);
+    }
+
+    private String name;
 
     Rank() {
-        this.shortName = "";
-        this.englishName = "";
-        this.dutchName = "";
+        this.name = "";
     }
 
-    Rank(String shortName, String englishName, String dutchName) {
+    Rank(String name) {
         this();
-        this.shortName = shortName;
-        this.englishName = englishName;
-        this.dutchName = dutchName;
+        this.name = name;
     }
 
-    String getShortName() {
-        return this.shortName;
-    }
 
-    String getEnglishName() {
-        return this.englishName;
-    }
-
-    String getdutchName() {
-        return this.dutchName;
+    public static Rank get(String name) {
+        return lookup.get(name);
     }
 
     /**
@@ -113,7 +94,7 @@ public enum Rank implements Serializable {
                         value = 11;
                         break;
                     default:
-                        value = Integer.parseInt(shortName);
+                        value = Integer.parseInt(name);
                 }
             default:
                 break;
@@ -124,7 +105,7 @@ public enum Rank implements Serializable {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Rank [value=").append(shortName).append("]");
+        builder.append("Rank [value=").append(name).append("]");
         return builder.toString();
     }
 

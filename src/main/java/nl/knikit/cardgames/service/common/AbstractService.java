@@ -12,12 +12,12 @@ import java.util.List;
 public abstract class AbstractService<T extends Serializable> implements IOperations<T> {
 
     @Override
-    public T findOne(final int id) {
-        return getDao().findOne(id);
+    public T findOneWithString(final String id) {
+        return getDao().findOneWithString(id);
     }
 
     @Override
-    public T findOne(final String id) {
+    public T findOne(final int id) {
         return getDao().findOne(id);
     }
 

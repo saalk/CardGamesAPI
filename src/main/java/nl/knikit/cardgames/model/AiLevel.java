@@ -1,6 +1,8 @@
 package nl.knikit.cardgames.model;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -11,7 +13,7 @@ import lombok.ToString;
 
 /**
  * <H1>AIlevel</H1> Artificial Intelligence level for simulation human-like intelligence to
- * {@link PlayerOld PlayerOld}s that are bots. AiLevel is an enum
+ * {@link Player}s that are bots. AiLevel is an enum
  * since the levels are a predefined list of values.
  * AIlevels that can be used are
  * <ul>
@@ -19,6 +21,7 @@ import lombok.ToString;
  * <li> {@link #MEDIUM}
  * <li> {@link #LOW}
  * <li> {@link #HUMAN}
+ * <li> {@link #NONE}
  * </ul>
  *
  * @author Klaas van der Meulen
@@ -30,14 +33,31 @@ import lombok.ToString;
 @ToString
 public enum AiLevel {
 
-    @Column(name = "AI_LEVEL" , length = 10)
-    LOW("Dumb", "Dom"), MEDIUM("Average", "Gemiddeld"), HIGH("High", "Hoog"), HUMAN("Human",
-            "Mens"), NONE("None", "Geen");
+    LOW("Low"), MEDIUM("Medium"), HIGH("High"), HUMAN("Human"), NONE("None");
 
-    @Transient
-    private String englishName;
-    @Transient
-    private String dutchName;
+    /**
+     * A static HashMap lookup with key + value is created to use in a getter
+     * to get the Enum based on the name eg. key "Low" -> value AiLevel.LOW
+     */
+    private static final Map<String,AiLevel> lookup
+            = new HashMap<>();
+    static {
+        for(AiLevel aiLevel : EnumSet.allOf(AiLevel.class))
+            lookup.put(aiLevel.getName(), aiLevel);
+    }
+    private String name;
+
+    AiLevel() {
+        this.name = "";
+    }
+    AiLevel(String name) {
+        this();
+        this.name = name;
+    }
+
+    public static AiLevel get(String name) {
+        return lookup.get(name);
+    }
 
     /**
      * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
@@ -45,15 +65,7 @@ public enum AiLevel {
      * factory methods for creating an instance like creating groups from enums.
      * Here it is used to group all enums.
      */
-    @Transient
-    public static Set<AiLevel> aiLevels = EnumSet.of(LOW, MEDIUM, HIGH, HUMAN);
-
-    // Constructor, each argument to the constructor shadows one of the object's
-    // fields
-    AiLevel(String englishName, String dutchName) {
-        this.englishName = englishName;
-        this.dutchName = dutchName;
-    }
+    public static Set<AiLevel> aiLevels = EnumSet.of(LOW, MEDIUM, HIGH, HUMAN, NONE);
 
     /*
      * Using @Override annotation while overriding method in Java is one of the
@@ -61,6 +73,6 @@ public enum AiLevel {
      */
     @Override
     public String toString() {
-        return "" + englishName;
+        return "" + name;
     }
 }

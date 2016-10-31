@@ -57,7 +57,7 @@ public class CardResource {
     public ResponseEntity getCard(
             @PathVariable("shortName") String shortName) throws CardNotFoundForIdException {
 
-        Card Card = CardService.findOne(shortName);
+        Card Card = CardService.findOneWithString(shortName);
         if (Card == null) {
 
             throw new CardNotFoundForIdException(shortName);
@@ -81,7 +81,7 @@ public class CardResource {
     public ResponseEntity<ArrayList<Card>> findAllWhere(
             @RequestParam(value = "suit", required = true) String param) {
 
-        Card classCard = new Card(Rank.ACE, Suit.SPADES);
+        Card classCard = new Card();
         // ternary operator = if for conditional assignment -> The ? : operator in Java
         // boolean isHumanBoolean = ( param=="true")?true:false;
         // classCard.setHuman( isHumanBoolean );
@@ -138,7 +138,7 @@ public class CardResource {
             @PathVariable("shortName") String shortName) {
 
         try {
-            Card classCard = new Card(Rank.ACE, Suit.SPADES);
+            Card classCard = new Card();
             classCard.setShortName(shortName);
             CardService.deleteOne(classCard);
         } catch (Exception e) {
@@ -168,7 +168,7 @@ public class CardResource {
     public ResponseEntity deleteCardsById(
             @RequestParam(value = "shortName", required = false) List<String> shortNames) {
 
-        Card classCard = new Card(Rank.ACE, Suit.SPADES);
+        Card classCard = new Card();
 
         try {
             CardService.deleteAllByIds(classCard, shortNames);
