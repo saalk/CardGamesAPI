@@ -1,5 +1,9 @@
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
+
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -17,7 +21,7 @@ import lombok.Getter;
  */
 
 @Getter
-public enum Rank implements Serializable {
+public enum Rank implements LabeledEnum {
 
     /**
      * Because enum are constants, the names of an enum type's fields are in uppercase letters.
@@ -30,38 +34,33 @@ public enum Rank implements Serializable {
      * Make a :
      * - a static HashMap lookup with key value pairs -> key= code/name, value= the ENUM
      * - a private field code/name and a method getCode/Name()
-     * - a static get(code/name) that returns the ENUM based on the lookup key
-     * -> the static get could better be called byLetter, byValue to distinguish from @Getter
+     * - a static fromRankName(code/name) that returns the ENUM based on the lookup key
+     * -> the static fromRankName could better be called byLetter, byValue to distinguish from @Getter
      *
-     * Now you can us a method get() that return with the ENUM based on a int/name
+     * Now you can us a method fromRankName() that return with the ENUM based on a int/name
      * eg. "A" -> RANK.ACE
      *
      * HashMap:
      * - static hashMap.put(key, value)
-     * - value = hashMap.get(key)
+     * - value = hashMap.fromRankName(key)
      */
 
     private static final Map<String,Rank> lookup
             = new HashMap<>();
     static {
         for(Rank rank : EnumSet.allOf(Rank.class))
-            lookup.put(rank.getName(), rank);
+            lookup.put(rank.getLabel(), rank);
     }
 
-    private String name;
+    private String label;
 
-    Rank() {
-        this.name = "";
-    }
-
-    Rank(String name) {
-        this();
-        this.name = name;
+    Rank(String label) {
+        this.label = label;
     }
 
 
-    public static Rank get(String name) {
-        return lookup.get(name);
+    public static Rank fromRankName(String label) {
+        return lookup.get(label);
     }
 
     /**
@@ -94,7 +93,7 @@ public enum Rank implements Serializable {
                         value = 11;
                         break;
                     default:
-                        value = Integer.parseInt(name);
+                        value = Integer.parseInt(label);
                 }
             default:
                 break;
@@ -105,7 +104,7 @@ public enum Rank implements Serializable {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Rank [value=").append(name).append("]");
+        builder.append("Rank [value=").append(label).append("]");
         return builder.toString();
     }
 

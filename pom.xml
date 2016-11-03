@@ -137,7 +137,7 @@
                                 <warRunDependency>
                                     <dependency>
                                         <groupId>nl.knikit.cardgames</groupId>
-                                        <artifactId>shortName-games-webapp</artifactId>
+                                        <artifactId>card-games-webapp</artifactId>
                                         <version>0.0.1-SNAPSHOT</version>
                                         <type>war</type>
                                     </dependency>

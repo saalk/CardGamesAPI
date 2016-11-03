@@ -1,6 +1,8 @@
 package nl.knikit.cardgames.resource;
 
+import nl.knikit.cardgames.exception.CardNotFoundForIdException;
 import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
+import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.service.ICasinoService;
 
@@ -10,6 +12,7 @@ import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -27,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 // @RestController = @Controller + @ResponseBody
+@CrossOrigin
 @RestController
 @Component
 @ExposesResourceFor(Casino.class)
@@ -58,6 +63,36 @@ public class CasinoResource {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(casino);
+    }
+
+    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
+    //
+    // SPRING
+    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    //
+    // JAX_RS
+    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+
+    @GetMapping(value = "/casinos", params = { "game" } )
+    public ResponseEntity<ArrayList<Card>> findAllWhere(
+            @RequestParam(value = "game", required = true) String param) {
+
+        try {
+
+            ArrayList<Casino> casinos = (ArrayList) casinoService.findAllWhere("game", param);
+            if (casinos == null || casinos.isEmpty()) {
+                throw new CardNotFoundForIdException(param);
+            }
+
+            return new ResponseEntity(casinos, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ArrayList<Card>() );
+        }
     }
 
     @PostMapping("/casinos")

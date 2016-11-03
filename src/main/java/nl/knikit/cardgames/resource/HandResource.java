@@ -69,24 +69,18 @@ public class HandResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/hands", params = { "casino" } )
     public ResponseEntity<ArrayList<Hand>> findAllWhere(
             @RequestParam(value = "casino", required = true) String param) {
 
-        Hand classHand = new Hand();
-        // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
-        // boolean isHumanBoolean = ( param=="true")?true:false;
-        // classHand.setHuman( isHumanBoolean );
-
         try {
-
-            ArrayList<Hand> Hands = (ArrayList) HandService.findAllWhere(classHand, "isHuman", param);
+            ArrayList<Hand> Hands = (ArrayList) HandService.findAllWhere("isHuman", param);
             if (Hands == null || Hands.isEmpty()) {
                 throw new HandNotFoundForIdException(999);
             }
@@ -155,11 +149,11 @@ public class HandResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Hands?id=1,2,3,4
     @DeleteMapping(value = "/hands", params = { "id" } )

@@ -1,6 +1,10 @@
 package nl.knikit.cardgames.model;
 
+import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
+
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -19,7 +23,7 @@ import lombok.ToString;
  * @since v1 - console game
  */
 @Getter
-public enum CardGameType {
+public enum CardGameType implements LabeledEnum {
 
     /**
      * HIGHLOW cardgame is a simple higher or lower guessing game. The dealer places one card
@@ -31,27 +35,37 @@ public enum CardGameType {
      * variant of HIGHLOW.
      */
     @Column(name = "CARD_GAME_TYPE")
-    HIGHLOW("Hi-Lo Card Game", "Hoog Laag Kaartspel"),
-    BLACKJACK("Blackjack (twenty-one)", "Blackjack (Eenentwintigen)");
+    HIGHLOW("Hi-Lo"),
+    BLACKJACK("Blackjack");
 
-    @Transient
-    private String englishName;
-    @Transient
-    private String dutchName;
+    /**
+     * A static HashMap lookup with key + value is created to use in a getter
+     * to fromRankName the Enum based on the name eg. key "Low" -> value AiLevel.LOW
+     */
+    private static final Map<String,CardGameType> lookup
+            = new HashMap<>();
+    static {
+        for(CardGameType cardGameType : EnumSet.allOf(CardGameType.class))
+            lookup.put(cardGameType.getLabel(), cardGameType);
+    }
+    private String label;
+
+    CardGameType(String label) {
+        this.label = label;
+    }
+
+    public static CardGameType fromCardGameTypeName(String label) {
+        return lookup.get(label);
+    }
+
+
     @Transient
     public static Set<CardGameType> cardGamesListType = EnumSet.of(HIGHLOW);
-
-    // Constructor, each argument to the constructor shadows one of the object's
-    // fields
-    CardGameType(String englishName, String dutchName) {
-        this.englishName = englishName;
-        this.dutchName = dutchName;
-    }
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("CardGameType [name=").append(englishName).append("]");
+        builder.append("CardGameType [name=").append(label).append("]");
         return builder.toString();
     }
 }

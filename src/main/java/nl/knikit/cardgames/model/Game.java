@@ -3,6 +3,7 @@ package nl.knikit.cardgames.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.hibernate.annotations.Type;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -48,7 +49,8 @@ public class Game  implements Serializable {
     @Column(name = "STATE", length = 25)
     @JsonProperty("state") private String state;
 
-    @Enumerated(EnumType.STRING)
+    //@Enumerated(EnumType.STRING)
+    @Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
     @Column(name = "CARD_GAME_TYPE", length = 25)
     @JsonProperty("cardGameType") private CardGameType cardGameType;
 

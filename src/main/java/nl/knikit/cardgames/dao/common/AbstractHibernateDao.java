@@ -50,8 +50,8 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final List<T> findAllWhere(final T entity, final String column, final String inputValue) {
-        String idMessage = String.format("findAllWhere dao entity: %s", entity.toString());
+    public final List<T> findAllWhere(final String column, final String inputValue) {
+        String idMessage = String.format("findAll where dao entity: %s", clazz.getName().getClass());
         log.info(idMessage);
 
         // JPA Criteria API Query builder logic:
@@ -66,7 +66,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 
         CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(clazz);
-        Root<T> rt  = cq.from(entity.getClass());
+        Root<T> rt  = cq.from(clazz.getName().getClass());
         cq.select(rt);
 
         switch (inputValue) {

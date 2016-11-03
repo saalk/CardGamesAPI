@@ -68,24 +68,19 @@ public class GameResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/games", params = { "cardGameType" } )
     public ResponseEntity<ArrayList<Game>> findAllWhere(
             @RequestParam(value = "cardGameType", required = true) String param) {
 
-        Game classGame = new Game();
-        // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
-        // boolean isHumanBoolean = ( param=="true" )?true:false;
-        // classGame.setHuman( isHumanBoolean );
-
         try {
 
-            ArrayList<Game> games = (ArrayList) gameService.findAllWhere(classGame, "cardGameType", param);
+            ArrayList<Game> games = (ArrayList) gameService.findAllWhere("cardGameType", param);
             if (games == null || games.isEmpty()) {
                 throw new GameNotFoundForIdException(999);
             }
@@ -172,11 +167,11 @@ public class GameResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
 
     // /games?id=1,2,3,4
     @DeleteMapping(value = "/games", params = { "id" } )

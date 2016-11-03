@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.model;
 
+import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
+
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -16,7 +18,7 @@ import lombok.Getter;
  */
 
 @Getter
-public enum Suit implements Serializable {
+public enum Suit implements LabeledEnum {
 
     /**
      * Because enum are constants, the names of an enum type's fields are in uppercase letters.
@@ -33,40 +35,36 @@ public enum Suit implements Serializable {
      * Make a :
      * - a static HashMap lookup with key value pairs -> key= code/name, value= the ENUM
      * - a private field code/name and a method getCode/Name()
-     * - a static get(code/name) that returns the ENUM based on the lookup key
-     * -> the static get could better be called byLetter, byValue to distinguish from @Getter
+     * - a static fromRankName(code/name) that returns the ENUM based on the lookup key
+     * -> the static fromRankName could better be called byLetter, byValue to distinguish from @Getter
      *
-     * Now you can us a method get() that return with the ENUM based on a int/name
+     * Now you can us a method fromRankName() that return with the ENUM based on a int/name
      * eg. "A" -> RANK.ACE
      *
      * HashMap:
      * - static hashMap.put(key, value)
-     * - value = hashMap.get(key)
+     * - value = hashMap.fromRankName(key)
      */
     private static final Map<String,Suit> lookup
             = new HashMap<>();
     static {
         for(Suit suit : EnumSet.allOf(Suit.class))
-            lookup.put(suit.getName(), suit);
+            lookup.put(suit.getLabel(), suit);
     }
-    private String name;
+    private String label;
 
-    Suit() {
-        this.name = "";
-    }
-    Suit(String name) {
-        this();
-        this.name = name;
+    Suit(String label) {
+        this.label = label;
     }
 
-    public static Suit get(String name) {
-        return lookup.get(name);
+    public static Suit fromSuitName(String label) {
+        return lookup.get(label);
     }
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Suit [value=").append(name).append("]");
+        builder.append("Suit [value=").append(label).append("]");
         return builder.toString();
     }
 }

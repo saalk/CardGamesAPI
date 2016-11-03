@@ -250,7 +250,7 @@ public class NameGenerator {
 
             do {
                 b[i] = (int) (Math.random() * mid.size());
-                //System.out.println("exp " +expecting+" vocalF:"+vocalFirst(mid.get(b[i]))+" syl: "+mid.get(b[i]));
+                //System.out.println("exp " +expecting+" vocalF:"+vocalFirst(mid.fromRankName(b[i]))+" syl: "+mid.fromRankName(b[i]));
             }
             while (expecting == 1 && vocalFirst(pureSyl(mid.get(b[i]))) == false || expecting == 2 && consonantFirst(pureSyl(mid.get(b[i]))) == false
                     || last == 1 && hatesPreviousVocals(mid.get(b[i])) || last == 2 && hatesPreviousConsonants(mid.get(b[i])));

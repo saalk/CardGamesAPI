@@ -11,7 +11,7 @@ public interface IOperations<T extends Serializable> {
 
     List<T> findAll(String column, String direction);
 
-    List<T> findAllWhere(final T entity, final String column, final String inputValue);
+    List<T> findAllWhere(final String column, final String inputValue);
 
     void create(final T entity);
 

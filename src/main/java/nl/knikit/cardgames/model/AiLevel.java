@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.model;
 
+import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,32 +33,28 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public enum AiLevel {
+public enum AiLevel implements LabeledEnum {
 
     LOW("Low"), MEDIUM("Medium"), HIGH("High"), HUMAN("Human"), NONE("None");
 
     /**
      * A static HashMap lookup with key + value is created to use in a getter
-     * to get the Enum based on the name eg. key "Low" -> value AiLevel.LOW
+     * to fromRankName the Enum based on the name eg. key "Low" -> value AiLevel.LOW
      */
     private static final Map<String,AiLevel> lookup
             = new HashMap<>();
     static {
         for(AiLevel aiLevel : EnumSet.allOf(AiLevel.class))
-            lookup.put(aiLevel.getName(), aiLevel);
+            lookup.put(aiLevel.getLabel(), aiLevel);
     }
-    private String name;
+    private String label;
 
-    AiLevel() {
-        this.name = "";
-    }
-    AiLevel(String name) {
-        this();
-        this.name = name;
+    AiLevel(String label) {
+        this.label = label;
     }
 
-    public static AiLevel get(String name) {
-        return lookup.get(name);
+    public static AiLevel fromAiLevelName(String label) {
+        return lookup.get(label);
     }
 
     /**
@@ -73,6 +71,6 @@ public enum AiLevel {
      */
     @Override
     public String toString() {
-        return "" + name;
+        return "" + label;
     }
 }

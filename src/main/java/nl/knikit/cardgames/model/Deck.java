@@ -14,6 +14,7 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.core.Relation;
@@ -122,6 +123,7 @@ public class Deck implements Serializable {
     /**
      * Second constructor, always work from the smallest constructor to the largest.
      */
+    @JsonCreator
     public Deck() {
 
         /*
@@ -179,8 +181,8 @@ public class Deck implements Serializable {
      *  for (int i = 0; i < deck.size(); i++)
      *   { for (int j = 0; j < deck.size() - 1; j++)
      *     { if (rnd.nextBoolean())
-     *       { Card tmp = deck.get(j);
-     *       deck.set(j, deck.get(j + 1));
+     *       { Card tmp = deck.fromRankName(j);
+     *       deck.set(j, deck.fromRankName(j + 1));
      *       deck.set(j + 1, tmp);
      *      }
      *      }
@@ -238,14 +240,14 @@ public class Deck implements Serializable {
         } else {
             dealedTo[topCard] = hand;
         }
-        return cards.get(topCard);
+        return cards.fromRankName(topCard);
     }*//*
 
     public int searchCard(Card searchCard) {
         // TODO why does this not work ?
         // int position = cards.indexOf(searchCard);
         // return position;
-        // this is a useless method since get index does the job
+        // this is a useless method since fromRankName index does the job
         int position = 1;
         for (Card card : cards) {
             if (card.getRank().equals(searchCard.getRank()) && card.getSuit().equals(searchCard.getSuit())) {

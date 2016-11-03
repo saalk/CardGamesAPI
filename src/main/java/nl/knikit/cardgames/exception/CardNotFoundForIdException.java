@@ -9,6 +9,6 @@ public class CardNotFoundForIdException extends Exception {
     private static final long serialVersionUID = -3332292346834265371L;
 
     public CardNotFoundForIdException(String shortName) {
-        super(String.format("No data found for /shortName in path: %s\n", shortName));
+        super(String.format("No data found for /card in path: %s\n", shortName));
     }
 }

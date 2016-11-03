@@ -69,11 +69,11 @@ public class DeckResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/decks", params = { "game" } )
     public ResponseEntity<ArrayList<Deck>> findAllWhere(
@@ -86,7 +86,7 @@ public class DeckResource {
 
         try {
 
-            ArrayList<Deck> Decks = (ArrayList) DeckService.findAllWhere(classDeck, "game", param);
+            ArrayList<Deck> Decks = (ArrayList) DeckService.findAllWhere("game", param);
             if (Decks == null || Decks.isEmpty()) {
                 throw new DeckNotFoundForIdException(999);
             }
@@ -155,11 +155,11 @@ public class DeckResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you get the Date dataOrNull for ?date=12-05-2013
+    // you fromRankName the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you get the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Decks?id=1,2,3,4
     @DeleteMapping(value = "/decks", params = { "id" } )

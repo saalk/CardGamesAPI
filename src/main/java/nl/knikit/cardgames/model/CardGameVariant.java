@@ -58,7 +58,7 @@ public enum CardGameVariant {
     // Constructor, each argument to the constructor shadows one of the object's
     // fields
     CardGameVariant(CardGameType cardName, String ruleName) {
-        this.cardName = cardName.getEnglishName();
+        this.cardName = cardName.getLabel();
         this.ruleName = ruleName;
     }
 

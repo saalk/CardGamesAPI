@@ -186,7 +186,7 @@ public class GalacticCasinoController {
 //        Random random = new Random();
 //        int number = (random.nextInt(30) + 1);
 //        System.out.println(
-//                "> You're the " + number + "th visitor today " + visitor.getAlias() + "; get 1000 chips for free!");
+//                "> You're the " + number + "th visitor today " + visitor.getAlias() + "; fromRankName 1000 chips for free!");
 //        visitor.setCubits(1000);
 //        System.out.println(visitor.displayCubits());
 //
@@ -498,7 +498,7 @@ public class GalacticCasinoController {
 //            }
 //
 //            if (galacticCasino.getState().equals(State.OFFER_FICHES)) {
-//                action = new String[]{"Stay and get another 500 chips for free!", "Cash and leave"};
+//                action = new String[]{"Stay and fromRankName another 500 chips for free!", "Cash and leave"};
 //                answer = console.getAnswerFromConsole("> Leaving Casino", action);
 //
 //                if (answer == 1) {

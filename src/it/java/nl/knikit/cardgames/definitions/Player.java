@@ -17,7 +17,7 @@ public class Player {
 
     }
 
-    @When("^users want to get information on the (.+) project$")
+    @When("^users want to fromRankName information on the (.+) project$")
     public void usersGetInformationOnAProject(String projectName) throws IOException {
 
     }

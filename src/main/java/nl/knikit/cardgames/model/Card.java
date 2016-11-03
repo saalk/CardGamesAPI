@@ -29,6 +29,7 @@ package nl.knikit.cardgames.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.hibernate.annotations.Type;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -71,30 +72,46 @@ public class Card implements Serializable {
     @JsonProperty("shortName") private String shortName;
 
     @Column(name = "RANK", length = 10)
-    @Enumerated(EnumType.STRING)
+    //@Enumerated(EnumType.STRING)
+    @Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
     @JsonProperty("rank") private Rank rank;
 
     @Column(name = "SUIT", length = 10)
-    @Enumerated(EnumType.STRING)
+    //@Enumerated(EnumType.STRING)
+    @Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
     @JsonProperty("suit") private Suit suit;
 
     @Column(name = "VALUE")
     @JsonProperty("value") private int value;
 
+    //  @JsonCreator annotation is used for constructors or static factory methods to construct
+    //  instances from Json
     @JsonCreator
-    public Card() {
-        this.rank = null;
-        this.suit = null;
-        this.shortName = "";
-    }
-
-    @JsonCreator
-    public Card(String rank, String suit) {
-        this();
-        this.rank = Rank.get(rank);
-        this.suit = Suit.get(suit);
+    public Card(@JsonProperty("rank") String rank, @JsonProperty("suit") String suit) {
+        this.rank = Rank.fromRankName(rank);
+        this.suit = Suit.fromSuitName(suit);
         final StringBuilder builder = new StringBuilder();
         this.shortName = builder.append(rank).append(suit).toString();
+        switch (Rank.fromRankName(rank)) {
+            case JOKER:
+                value = 0;
+                break;
+            case ACE:
+                value = 1;
+                break;
+            case KING:
+                value = 13;
+                break;
+            case QUEEN:
+                value = 12;
+                break;
+            case JACK:
+                value = 11;
+                break;
+            default:
+                value = Integer.parseInt(rank);
+                this.value = Rank.fromRankName(rank).getValue(CardGameType.HIGHLOW);
+        }
     }
 
     public int compareTwoCards(Card o1, Card o2, CardGameType cardGameType) {
@@ -112,7 +129,7 @@ public class Card implements Serializable {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Card [value=").append(rank).append(suit).append("]");
+        builder.append("Card [value=").append(rank.getLabel()).append(suit.getLabel()).append("]");
         return builder.toString();
     }
 
