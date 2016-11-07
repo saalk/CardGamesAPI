@@ -9,7 +9,11 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.Transient;
+
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * <H1>Rank</H1> Progressive value for a card. <p> There are thirteen ranks of each of the four
@@ -20,6 +24,7 @@ import lombok.Getter;
  * @since v1 - console game
  */
 
+//@ToString
 @Getter
 public enum Rank implements LabeledEnum {
 
@@ -27,6 +32,7 @@ public enum Rank implements LabeledEnum {
      * Because enum are constants, the names of an enum type's fields are in uppercase letters.
      */
 
+    @Column(name = "RANK", length = 10, nullable = false)
     ACE("A"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"),
     NINE("9"), TEN("10"), JACK("J"), QUEEN("Q"), KING("K"), JOKER("R");
 
@@ -52,9 +58,13 @@ public enum Rank implements LabeledEnum {
             lookup.put(rank.getLabel(), rank);
     }
 
+    @Transient
     private String label;
 
+    Rank(){}
+
     Rank(String label) {
+        this();
         this.label = label;
     }
 
@@ -76,7 +86,8 @@ public enum Rank implements LabeledEnum {
         int value = 0;
         switch (inputCardGameType) {
             case HIGHLOW:
-                switch (this) {
+                // name() return the enum name like ACE or KING
+                switch (fromRankName(this.name())) {
                     case JOKER:
                         value = 0;
                         break;
@@ -93,19 +104,15 @@ public enum Rank implements LabeledEnum {
                         value = 11;
                         break;
                     default:
-                        value = Integer.parseInt(label);
+                        // toString() returns the enum  A ,2 ,3 etc
+                        value = Integer.parseInt(this.toString());
+                        break;
                 }
             default:
                 break;
+
         }
         return value;
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Rank [value=").append(label).append("]");
-        return builder.toString();
-    }
-
 }
+

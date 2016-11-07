@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.mapping.Collection;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -46,12 +49,12 @@ public class Game  implements Serializable {
     @Column(name = "CREATED", length = 25)
     @JsonProperty("created") private String created;
 
-    @Column(name = "STATE", length = 25)
+    @Column(name = "STATE", length = 25, nullable = false)
     @JsonProperty("state") private String state;
 
-    //@Enumerated(EnumType.STRING)
-    @Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-    @Column(name = "CARD_GAME_TYPE", length = 25)
+    @Enumerated(EnumType.STRING)
+    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+    @Column(name = "CARD_GAME_TYPE", nullable = false)
     @JsonProperty("cardGameType") private CardGameType cardGameType;
 
     @Column(name = "MAX_ROUNDS")
@@ -70,36 +73,44 @@ public class Game  implements Serializable {
     @Column(name = "TURNS_TO_WIN")
     @JsonProperty("turnsToWin") private int turnsToWin;
 
-/*
-    - merge         (copy using same id)
-    - persist       (persist the transient instance)
-    - save          (persists the transient instance with new id)
-    - saveOrUpdate  (either save or update depending on unsaved-value check)
-    - update        (updates the persistent instance with the id)
-
-    1 - Create parent:      game = new Game("HIGHLOW")
-    2 - Persist it:         persist(game)
-    3 - Create child class  deck = new Deck/Card(jokers)
-    4 - Associate child with it's parent
-                            card.setGameId(game.getId())
-    5 - Persist child       persist(deck/card)
-
-    Retrieval
-    1 - Get childs          card = game.getDeck/Cards()
-
-    if you do 1, 3, game.getDeck.Cards().add(deck), 5
-    the deck is not initialized
-
-    if you do 1,2,3,5 and then game.getDeck/Cards().add(Deck) the
-    with cascade=CascadeType.Persist takes care of relations
-*/
-
-    // OneToMany on Parent - cascade all
-    // mappedBy: contains parent class, the owner of the association
     @Column(name = "ANTE")
     @JsonProperty("ante") private int ante;
 
-    // ManyToOne on Child - @JoinColumn for the fk)
+/*
+    OneToMany can be in Parent class Player (one player can be a winner in many games)
+    - you can do only the ManyToOne on the child and do not do this OneToMany....
+    - but then you cannot navigate to list all games for a specific winner!
+
+    - cascade = CascadeType.ALL -> means delete childs
+    - cascade = CascadeType.DETACH -> means a special state; not managed by entitymanger
+    - mappedBy = "parent class" -> the owner of the association
+
+    ManyToOne always in Child class Game (Game is the 'many' part of the relationship)
+    - optional=false -> means each Game should always a winner immediately (default is true! )
+
+    ManyToMany to create a join table,
+
+    - inside game do, this the owner of the relation (eg. order owns product)
+        @ManyToMany(fetch=FetchType.EAGER)
+        @JoinTable(name="DECK",
+                   joinColumns=
+                   @JoinColumn(name="GAME_ID", referencedColumnName="GAME_ID"),
+             inverseJoinColumns=
+                   @JoinColumn(name="CARD_ID", referencedColumnName="CARD_ID")
+        )
+        private List<Card> cardList;
+
+    - inside card do, (eg. product is owned by order, refer to order)
+           @ManyToMany(mappedBy="cardList",fetch=FetchType.EAGER)
+      private List<Game> gameList;
+
+*/
+
+
+    @OneToMany(mappedBy="game",targetEntity=Deck.class,
+            fetch=FetchType.EAGER)
+    @JsonProperty("decks") private List<Deck> deck;
+
     @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
     @JsonProperty("winner") private  Player winner;

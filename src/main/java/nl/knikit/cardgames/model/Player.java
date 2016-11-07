@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
 import org.springframework.hateoas.core.Relation;
 
 import javax.persistence.*;
@@ -43,21 +44,58 @@ public class Player implements Serializable {
 
     @Column(name = "CREATED", length = 25)
     @JsonProperty("created") private String created;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "AVATAR")
+    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+    @Column(name = "AVATAR", nullable = false)
     @JsonProperty("avatar") private Avatar avatar;
+
     @Column(name = "ALIAS")
     @JsonProperty("alias") private String alias;
     @Column(name = "HUMAN")
     @JsonProperty("isHuman") private boolean isHuman;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "AI_LEVEL")
+    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+    @Column(name = "AI_LEVEL", nullable = false)
     @JsonProperty("aiLevel") private AiLevel aiLevel;
+
     @Column(name = "CUBITS")
     @JsonProperty("cubits") private int cubits;
     @Column(name = "SECURED_LOAN")
     @JsonProperty("securedLoan") private int securedLoan;
 
+    /* if you want to get all games for a specific winner...
+    @OneToMany(mappedBy="player",targetEntity=Game.class,
+            fetch=FetchType.EAGER)
+    private Collection games;
+    */
+
+    /*
+    Get
+    - The number of games a player (top ten) has attended
+    - The games won by that player
+
+    Query query = em.createQuery("SELECT player FROM PLAYER player WHERE playerId = x");
+    List list= query.getResultList();
+
+    for(Player player:list){
+        List gameList = new ArrayList();
+        List gameListWon = new ArrayList();
+        // get the casinos attended, filters players not in a casino (todo)
+        if(player.getCasinos()!=null){
+            for(Casinos allCasinos: player.getCasinos()){
+                if(allCasinos.getGame().getGameWon() == null){
+                    //Find out how many games each player has
+                    gameList.addAll(allCasinos.getGamesList());
+                }else{
+                    //Find out how many games won by the player
+                    gameListWon.addAll(allCasinos.getGamesList());
+                }
+            }
+        }
+    }
+    */
     @JsonCreator
     public Player() {
         super();

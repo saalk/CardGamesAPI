@@ -3,8 +3,6 @@ package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.exception.CardNotFoundForIdException;
 import nl.knikit.cardgames.model.Card;
-import nl.knikit.cardgames.model.Rank;
-import nl.knikit.cardgames.model.Suit;
 import nl.knikit.cardgames.service.ICardService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,28 +36,28 @@ public class CardResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private ICardService CardService;
+    private ICardService cardService;
 
     @GetMapping("/cards")
     public ResponseEntity<ArrayList<Card>> getCards() {
 
-        ArrayList<Card> Cards;
-        Cards = (ArrayList) CardService.findAll(null,null);
-        return new ResponseEntity(Cards, HttpStatus.OK);
+        ArrayList<Card> cards;
+        cards = (ArrayList) cardService.findAll("shortName", "ASC");
+        return new ResponseEntity(cards, HttpStatus.OK);
     }
 
     @GetMapping("/cards/{shortName}")
     public ResponseEntity getCard(
             @PathVariable("shortName") String shortName) throws CardNotFoundForIdException {
 
-        Card Card = CardService.findOneWithString(shortName);
-        if (Card == null) {
+        Card card = cardService.findOneWithString(shortName);
+        if (card == null) {
 
             throw new CardNotFoundForIdException(shortName);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(Card);
+                .body(card);
     }
 
     // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
@@ -88,7 +81,7 @@ public class CardResource {
 
         try {
 
-            ArrayList<Card> Cards = (ArrayList) CardService.findAllWhere("suit", param);
+            ArrayList<Card> Cards = (ArrayList) cardService.findAllWhere("suit", param);
             if (Cards == null || Cards.isEmpty()) {
                 throw new CardNotFoundForIdException(param);
             }

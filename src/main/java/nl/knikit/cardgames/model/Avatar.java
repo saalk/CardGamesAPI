@@ -1,5 +1,9 @@
 package nl.knikit.cardgames.model;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
@@ -18,29 +22,35 @@ import lombok.ToString;
 
 // Getters, no setters needed
 @Getter
+@ToString
 public enum Avatar {
 
     @Column(name = "AVATAR", length = 25)
-    ELF("Elf", "Elf"), MAGICIAN("Magician", "Magier"), GOBLIN("Goblin", "Goblin"), ROMAN("Warrior", "Krijger");
+    ELF("Elf"), MAGICIAN("Magician"), GOBLIN("Goblin"), ROMAN("Warrior");
 
-    @Transient
-    String englishName;
-    @Transient
-    String dutchName;
 
-    // Constructor, each argument to the constructor shadows one of the object's
-    // fields
-    Avatar(String englishName, String dutchName) {
+    /**
+     * A static HashMap lookup with key + value is created to use in a getter
+     * to fromName the Enum based on the name eg. key "Elf" -> value Avatar.ELF
+     */
+    private static final Map<String,Avatar> lookup
+            = new HashMap<>();
+    static {
+        for(Avatar avatar : EnumSet.allOf(Avatar.class))
+            lookup.put(avatar.getLabel(), avatar);
+    }
+    private String label;
 
-        this.englishName = englishName;
-        this.dutchName = dutchName;
+    Avatar(){
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Avatar [name=").append(englishName).append("]");
-        return builder.toString();
+    Avatar(String label) {
+        this();
+        this.label = label;
+    }
+
+    public static Avatar fromAvatarName(String label) {
+        return lookup.get(label);
     }
 
 };

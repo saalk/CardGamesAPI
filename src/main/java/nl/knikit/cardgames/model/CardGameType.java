@@ -23,6 +23,7 @@ import lombok.ToString;
  * @since v1 - console game
  */
 @Getter
+@ToString
 public enum CardGameType implements LabeledEnum {
 
     /**
@@ -34,9 +35,8 @@ public enum CardGameType implements LabeledEnum {
      * the bet to another player, or go double or nothing on the next bet depending on the specific
      * variant of HIGHLOW.
      */
-    @Column(name = "CARD_GAME_TYPE")
-    HIGHLOW("Hi-Lo"),
-    BLACKJACK("Blackjack");
+    @Column(name = "CARD_GAME_TYPE", length = 25, nullable = false)
+    HIGHLOW("Hi-Lo"), BLACKJACK("Blackjack");
 
     /**
      * A static HashMap lookup with key + value is created to use in a getter
@@ -48,9 +48,14 @@ public enum CardGameType implements LabeledEnum {
         for(CardGameType cardGameType : EnumSet.allOf(CardGameType.class))
             lookup.put(cardGameType.getLabel(), cardGameType);
     }
+    @Transient
     private String label;
 
+    CardGameType(){
+    }
+
     CardGameType(String label) {
+        this();
         this.label = label;
     }
 
@@ -62,10 +67,4 @@ public enum CardGameType implements LabeledEnum {
     @Transient
     public static Set<CardGameType> cardGamesListType = EnumSet.of(HIGHLOW);
 
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("CardGameType [name=").append(label).append("]");
-        return builder.toString();
-    }
 }

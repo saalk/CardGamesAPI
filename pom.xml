@@ -328,7 +328,7 @@
                 </dependencies>
                 -->
             </plugin>
-            <!-- make a database while doing mvn install -> just fill user and psw
+            <!-- make a database while doing mvn install -> just fill user and psw -->
             <plugin>
                 <groupId>de.juplo</groupId>
                 <artifactId>hibernate-maven-plugin</artifactId>
@@ -349,7 +349,7 @@
                     <password>klaas</password>
                 </configuration>
             </plugin>
-             -->
+             <!-- -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -756,7 +756,12 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>RELEASE</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -58,12 +58,21 @@ public class Casino implements Serializable {
 
     @JsonCreator
     public Casino() {
-        super();
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 25);
     }
+
+    @JsonCreator
+    public Casino(Game fkGame, Player fkPlayer, int playingOrder) {
+        super();
+        this.fkGame = fkGame;
+        this.fkPlayer = fkPlayer;
+        this.playingOrder = playingOrder;
+        this.fkHand = null;
+    }
+
 
     @Override
     public String toString() {

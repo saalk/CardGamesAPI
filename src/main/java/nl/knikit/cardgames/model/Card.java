@@ -71,18 +71,26 @@ public class Card implements Serializable {
     @Column(name = "SHORT_NAME", length = 3)
     @JsonProperty("shortName") private String shortName;
 
-    @Column(name = "RANK", length = 10)
-    //@Enumerated(EnumType.STRING)
-    @Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+
+    @Enumerated(EnumType.STRING)
+    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+    @Column(name = "RANK")
     @JsonProperty("rank") private Rank rank;
 
-    @Column(name = "SUIT", length = 10)
-    //@Enumerated(EnumType.STRING)
-    @Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+    @Enumerated(EnumType.STRING)
+    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+    @Column(name = "SUIT")
     @JsonProperty("suit") private Suit suit;
 
     @Column(name = "VALUE")
     @JsonProperty("value") private int value;
+
+    public Card(){
+        this.shortName = "RJ";
+        this.rank = Rank.JOKER;
+        this.suit = Suit.JOKERS;
+        this.value = 0;
+    }
 
     //  @JsonCreator annotation is used for constructors or static factory methods to construct
     //  instances from Json
@@ -110,8 +118,8 @@ public class Card implements Serializable {
                 break;
             default:
                 value = Integer.parseInt(rank);
-                this.value = Rank.fromRankName(rank).getValue(CardGameType.HIGHLOW);
         }
+        this.value = Rank.fromRankName(rank).getValue(CardGameType.HIGHLOW);
     }
 
     public int compareTwoCards(Card o1, Card o2, CardGameType cardGameType) {

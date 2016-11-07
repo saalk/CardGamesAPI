@@ -2,9 +2,12 @@ package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.exception.CardNotFoundForIdException;
 import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
+import nl.knikit.cardgames.exception.GameNotFoundForIdException;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.service.ICasinoService;
+import nl.knikit.cardgames.service.IGameService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -42,6 +45,9 @@ public class CasinoResource {
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
     private ICasinoService casinoService;
+
+    @Autowired
+    private IGameService gameService;
 
     @GetMapping("/casinos")
     public ResponseEntity<ArrayList<Casino>> getCasinos() {
@@ -109,6 +115,59 @@ public class CasinoResource {
                 .status(HttpStatus.OK)
                 .body(casino);
     }
+    /*
+        Transient entity vs detached entity for save and persist:
+        - Transient = make a new() object, set and save the object a get the generated id
+        - Detached = get a saved object and in a new session set and save the object with a new id
+        - Detached = get a saved object and in a new session set and persist the object with the same id
+
+        Hibernate methods:
+        - merge         (copy using same id)
+        - persist       (saves the transient instance at flush, returns void: use in extended session context)
+        - save          (saves the transient instance directly, returns direct with new generated id)
+        - saveOrUpdate  (either save or update depending on unsaved-value check)
+        - update        (updates the persistent instance with the id)
+
+        1 - Create parent:      game = new Game("HIGHLOW")
+        2 - Persist it:         persist(game)
+        3 - Create child class  deck = new Deck/Card(jokers)
+        4 - Associate child with it's parent
+                                card.setGameId(game.getId())
+        5 - Persist child       persist(deck/card)
+
+        Retrieval:
+        1 - Get childs          card = game.getDeck/Cards()
+
+        if you do 1, 3, game.getDeck.Cards().add(deck), 5
+        the deck is not initialized
+
+        if you do 1,2,3,5 and then game.getDeck/Cards().add(Deck) the
+        with cascade=CascadeType.Persist takes care of relations
+    */
+
+    @PostMapping(value = "/casinos", params = { "game" } )
+    public ResponseEntity createCasino(@RequestBody Casino casino, @RequestParam(value = "game", required = true) String param) {
+
+        Game game = gameService.findOne(Integer.parseInt(param));
+        if (game == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Game supplied for Casino to create: " + casino);
+        }
+
+        if (casino == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Casino supplied to create: " + casino);
+        }
+        Casino newCasino = new Casino();
+        newCasino.setFkGame(game);
+        casinoService.create(newCasino);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(newCasino);
+    }
 
     @PutMapping("/casinos/{id}")
     public ResponseEntity updateCasino(@PathVariable int id, @RequestBody Casino
@@ -146,6 +205,19 @@ public class CasinoResource {
     // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
     @ExceptionHandler(CasinoNotFoundForIdException.class)
     public ModelAndView handleCasinoNotFoundForIdException(HttpServletRequest request, Exception ex) {
+        log.error("Requested URL=" + request.getRequestURL());
+        log.error("Exception Raised=" + ex);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("exception", ex);
+        modelAndView.addObject("url", request.getRequestURL());
+
+        modelAndView.setViewName("error");
+        return modelAndView;
+    }
+
+    @ExceptionHandler(GameNotFoundForIdException.class)
+    public ModelAndView handleGameNotFoundForIdException(HttpServletRequest request, Exception ex) {
         log.error("Requested URL=" + request.getRequestURL());
         log.error("Exception Raised=" + ex);
 

@@ -62,7 +62,7 @@ public final class LabeledEnumType<T extends LabeledEnum>  implements DynamicPar
                 }
             }
         }
-        throw new IllegalStateException("Unknown " + returnedClass().getSimpleName() + " label");
+        throw new IllegalStateException("Unknown " + returnedClass().getSimpleName() + " enum for enum string: "+ label);
     }
 
     @Override

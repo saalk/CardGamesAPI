@@ -1,8 +1,12 @@
 package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.exception.GameNotFoundForIdException;
+import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
+import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IGameService;
+import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -41,6 +45,9 @@ public class GameResource {
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
     private IGameService gameService;
+
+    @Autowired
+    private IPlayerService playerService;
 
     @GetMapping("/games")
     public ResponseEntity<ArrayList<Game>> getGames() {
@@ -141,6 +148,32 @@ public class GameResource {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(newGame);
+    }
+
+    @PutMapping(value = "/games/{id}", params = { "winner" } )
+    public ResponseEntity updateGameWithWinner(@PathVariable int id, @RequestBody Game game, @RequestParam(value = "winner", required = true) String winner) {
+
+        Player player = playerService.findOne(Integer.parseInt(winner));
+        if (player == null) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Player supplied for Casino for path /{id): " + id);
+        }
+
+        if (game == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Casino supplied to create: " + game);
+        }
+        Game newGame = new Game();
+        newGame.setWinner(player);
+
+        Game updGame = gameService.update(newGame);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(updGame);
     }
 
     @DeleteMapping("/games/{id}")

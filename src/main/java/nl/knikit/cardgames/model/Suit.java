@@ -7,7 +7,12 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.Transient;
+
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * <H1>Suit</H1>
@@ -17,6 +22,7 @@ import lombok.Getter;
  * @since v1 - console game
  */
 
+@ToString
 @Getter
 public enum Suit implements LabeledEnum {
 
@@ -25,6 +31,7 @@ public enum Suit implements LabeledEnum {
      * Behind the enum is the code (int) or the name (String) of the enum.
      * Make a static lookup and use a private name int or String
      */
+    @Column(name = "SUIT", length = 10, nullable = false)
     CLUBS("C"),
     DIAMONDS("D"),
     HEARTS("H"),
@@ -51,9 +58,15 @@ public enum Suit implements LabeledEnum {
         for(Suit suit : EnumSet.allOf(Suit.class))
             lookup.put(suit.getLabel(), suit);
     }
+
+    @Transient
     private String label;
 
+    Suit() {
+    }
+
     Suit(String label) {
+        this();
         this.label = label;
     }
 
@@ -61,10 +74,4 @@ public enum Suit implements LabeledEnum {
         return lookup.get(label);
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Suit [value=").append(label).append("]");
-        return builder.toString();
-    }
 }

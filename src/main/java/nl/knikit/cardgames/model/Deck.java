@@ -21,14 +21,17 @@ import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -99,8 +102,7 @@ public class Deck implements Serializable {
     @Column(name = "ID")
     @JsonProperty("id") private int id;
 
-    // OneToOne since Game has one Deck, each Deck has one Game
-    @OneToOne
+    @ManyToOne(fetch= FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "GAME_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"))
     @JsonProperty("game") private  Game game;
 
@@ -108,7 +110,7 @@ public class Deck implements Serializable {
     @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
     @JsonProperty("card") private Card card;
 
-/*    @OneToMany
+/*  @OneToMany
     @Column(name = "CARDS")
     @ElementCollection(targetClass=Card.class)
     @JsonProperty("cards") private List<Card> cards;*/
@@ -121,57 +123,21 @@ public class Deck implements Serializable {
     @JsonProperty("dealtTo") private Player dealtTo;
 
     /**
-     * Second constructor, always work from the smallest constructor to the largest.
+     * Hibernate, and code in general that creates objects via reflection use Class<T>.newInstance()
+     * to create a new instance of your classes. This method requires a public or private
+     * no-arg constructor to be able to instantiate the object.
      */
     @JsonCreator
     public Deck() {
-
-        /*
-         * Do not do: List<Card> cards = new ArrayList<Card>()
-         * <P>
-         * since that means another declaration in the constructor When
-         * initializing you use a assignment statement '='.
-         * <P>
-         * Do not do: cards = new ArrayList<Card>();
-         * <P>
-         * since cards already is initialize as Card.
-         * <P>
-         * You can combine the declaration at the same time as its
-         * initialization. The variable name is known as identifier, do not
-         * start with digits and only $ symbol is allowed besides letters and
-         * underscores.
-         *
-         */
-/*        cards = new ArrayList<>();
-
-        for (Suit suit : Suit.values()) {
-            *//*
-             * without the values() method use allOf
-			 *//*
-            for (Rank rank : EnumSet.allOf(Rank.class)) {
-                if (!(rank.equals(Rank.JOKER) || suit.equals(Suit.JOKERS))) {
-                    cards.add(new Card(rank, suit));
-                }
-            }
-        }
-
-        for (int i = 0; i < totalJokers; i++) {
-            cards.add(new Card(Rank.JOKER, Suit.JOKERS));
-        }*/
     }
 
- /*    public void setDealedTo(int totalJokers){
-        dealedTo = new int[52 + totalJokers]; // auto init with zero
-    }*/
-
-/*    public int getDealedTo(int position) {
-        int dealedToHand = dealedTo[position];
-        return dealedToHand;
+    public Deck(@JsonProperty("game") Game game, @JsonProperty("card")Card card, @JsonProperty("cardOrder") int cardOrder) {
+        this();
+        this.game = game;
+        this.card = card;
+        this.cardOrder = cardOrder;
+        this.dealtTo = null;
     }
-
-    public int[] getDealedTo() {
-        return dealedTo;
-    }*/
 
     /**
      * alternative with bubble sort routine:

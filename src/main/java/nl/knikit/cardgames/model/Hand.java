@@ -65,11 +65,25 @@ public class Hand implements Serializable {
     @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
     @JsonProperty("card") private Card card;
 
+    @Column(name = "CARD_ORDER")
+    @JsonProperty("cardOrder") private int cardOrder;
+
 /*    @OneToMany
     @Column(name = "CARDS")
     @ElementCollection(targetClass=Card.class)
     @JsonProperty("cards") private  List<Card> cards;
     */
+
+    public Hand(){
+    }
+
+    public Hand(@JsonProperty("player") Player player, @JsonProperty("casino") Casino casino,
+                @JsonProperty("card") Card card, @JsonProperty("cardOrder") int cardOrder){
+        this.player = player;
+        this.casino = casino;
+        this.card = card;
+        this.cardOrder = cardOrder;
+    }
 
     @Override
     public String toString() {

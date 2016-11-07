@@ -2,8 +2,12 @@ package nl.knikit.cardgames.resource;
 
 
 import nl.knikit.cardgames.exception.DeckNotFoundForIdException;
+import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
+import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.service.ICardService;
 import nl.knikit.cardgames.service.IDeckService;
+import nl.knikit.cardgames.service.IGameService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -41,13 +45,19 @@ public class DeckResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private IDeckService DeckService;
+    private IDeckService deckService;
+
+    @Autowired
+    private IGameService gameService;
+
+    @Autowired
+    private ICardService cardService;
 
     @GetMapping("/decks")
     public ResponseEntity<ArrayList<Deck>> getDecks() {
 
         ArrayList<Deck> Decks;
-        Decks = (ArrayList) DeckService.findAll("game", "ASC");
+        Decks = (ArrayList) deckService.findAll("game", "ASC");
         return new ResponseEntity(Decks, HttpStatus.OK);
     }
 
@@ -55,7 +65,7 @@ public class DeckResource {
     public ResponseEntity getDeck(
             @PathVariable("id") int id) throws DeckNotFoundForIdException {
 
-        Deck Deck = DeckService.findOne(id);
+        Deck Deck = deckService.findOne(id);
         if (Deck == null) {
 
             throw new DeckNotFoundForIdException(id);
@@ -86,7 +96,7 @@ public class DeckResource {
 
         try {
 
-            ArrayList<Deck> Decks = (ArrayList) DeckService.findAllWhere("game", param);
+            ArrayList<Deck> Decks = (ArrayList) deckService.findAllWhere("game", param);
             if (Decks == null || Decks.isEmpty()) {
                 throw new DeckNotFoundForIdException(999);
             }
@@ -100,27 +110,44 @@ public class DeckResource {
         }
     }
 
-    @PostMapping("/decks")
-    public ResponseEntity createDeck(
-            @RequestBody Deck Deck) {
+    @PostMapping(value = "/decks", params = { "game" } )
+    public ResponseEntity createDeckForGame(
+        @RequestBody Deck deck, @RequestParam(value = "game", required = true) String game) {
 
-        if (Deck == null) {
+        if (game == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Deck supplied to create: " + Deck);
+                    .body("No Game supplied for Deck to create " + deck);
         }
-        DeckService.create(Deck);
+        Game currentGame = gameService.findOne(Integer.parseInt(game));
+
+        if (deck == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Deck supplied to create: " + deck);
+        }
+
+        ArrayList<Card> cards;
+        cards = (ArrayList) cardService.findAll("value", "ASC");
+
+        for (Card card: cards){
+
+            Deck newDeck = new Deck();
+            newDeck.setGame(currentGame);
+            newDeck.setCard(card);
+            deckService.create(newDeck);
+        }
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(Deck);
+                .body(new StringBuilder(game.toString() + cards.toString()));
     }
 
     @PutMapping("/decks/{id}")
     public ResponseEntity updateDeck(
-            @PathVariable int id, @RequestBody Deck Deck) {
+            @PathVariable int id, @RequestBody Deck deck) {
 
-        Deck newDeck = DeckService.update(Deck);
+        Deck newDeck = deckService.update(deck);
         if (null == newDeck) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -138,7 +165,7 @@ public class DeckResource {
         try {
             Deck classDeck = new Deck();
             classDeck.setId(id);
-            DeckService.deleteOne(classDeck);
+            deckService.deleteOne(classDeck);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -169,7 +196,7 @@ public class DeckResource {
         Deck classDeck = new Deck();
 
         try {
-            DeckService.deleteAllByIds(classDeck, ids);
+            deckService.deleteAllByIds(classDeck, ids);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

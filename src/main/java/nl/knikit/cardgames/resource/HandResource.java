@@ -41,13 +41,13 @@ public class HandResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
-    private IHandService HandService;
+    private IHandService handService;
 
     @GetMapping("/hands")
     public ResponseEntity<ArrayList<Hand>> getHands() {
 
         ArrayList<Hand> Hands;
-        Hands = (ArrayList) HandService.findAll("isHuman", "DESC");
+        Hands = (ArrayList) handService.findAll("isHuman", "DESC");
         return new ResponseEntity(Hands, HttpStatus.OK);
     }
 
@@ -55,7 +55,7 @@ public class HandResource {
     public ResponseEntity getHand(
             @PathVariable("id") int id) throws HandNotFoundForIdException {
 
-        Hand Hand = HandService.findOne(id);
+        Hand Hand = handService.findOne(id);
         if (Hand == null) {
 
             throw new HandNotFoundForIdException(id);
@@ -80,7 +80,7 @@ public class HandResource {
             @RequestParam(value = "casino", required = true) String param) {
 
         try {
-            ArrayList<Hand> Hands = (ArrayList) HandService.findAllWhere("isHuman", param);
+            ArrayList<Hand> Hands = (ArrayList) handService.findAllWhere("isHuman", param);
             if (Hands == null || Hands.isEmpty()) {
                 throw new HandNotFoundForIdException(999);
             }
@@ -103,7 +103,7 @@ public class HandResource {
                     .status(HttpStatus.NOT_ACCEPTABLE)
                     .body("No Hand supplied to create: " + Hand);
         }
-        HandService.create(Hand);
+        handService.create(Hand);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -114,7 +114,7 @@ public class HandResource {
     public ResponseEntity updateHand(
             @PathVariable int id, @RequestBody Hand Hand) {
 
-        Hand newHand = HandService.update(Hand);
+        Hand newHand = handService.update(Hand);
         if (null == newHand) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -132,7 +132,7 @@ public class HandResource {
         try {
             Hand classHand = new Hand();
             classHand.setId(id);
-            HandService.deleteOne(classHand);
+            handService.deleteOne(classHand);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -163,7 +163,7 @@ public class HandResource {
         Hand classHand = new Hand();
 
         try {
-            HandService.deleteAllByIds(classHand, ids);
+            handService.deleteAllByIds(classHand, ids);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

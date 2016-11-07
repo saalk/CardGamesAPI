@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.exception;
 
+import com.google.common.base.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Slf4j
 // A class which annotated with @ControllerAdvice will be registered as the global exception handler.
@@ -70,7 +74,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionJSONInfo> handleException(Exception ex) {
 
-        log.error("Exception Occurred: " + ex);
+        log.error("Exception Occurred. Please investigate: "
+                + ex + "\n"
+                + Arrays.asList(ex.getStackTrace())
+                .stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("\n")) + "\n"
+        );
+
 
         ExceptionJSONInfo error = new ExceptionJSONInfo();
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

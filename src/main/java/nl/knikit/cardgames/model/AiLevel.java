@@ -35,6 +35,7 @@ import lombok.ToString;
 @ToString
 public enum AiLevel implements LabeledEnum {
 
+    @Column(name = "AI_LEVEL", length = 10, nullable = false)
     LOW("Low"), MEDIUM("Medium"), HIGH("High"), HUMAN("Human"), NONE("None");
 
     /**
@@ -49,7 +50,11 @@ public enum AiLevel implements LabeledEnum {
     }
     private String label;
 
+    AiLevel(){
+
+    }
     AiLevel(String label) {
+        this();
         this.label = label;
     }
 

@@ -6,6 +6,9 @@ package nl.knikit.cardgames.model;
 import java.util.EnumSet;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.ToString;
+
 
 /**
  * <H1>CardGameVariant</H1> A selection of variants to a specific card games that can be selected to
@@ -15,6 +18,9 @@ import java.util.Set;
  * @version 1.0
  * @since v1 - console game
  */
+
+@Getter
+@ToString
 public enum CardGameVariant {
 
     /**
@@ -62,18 +68,5 @@ public enum CardGameVariant {
         this.ruleName = ruleName;
     }
 
-    // Getters, no setters needed
-    String getCardName() {
-        return cardName;
-    }
-
-    String getRuleName() {
-        return ruleName;
-    }
-
-    @Override
-    public String toString() {
-        return ruleName;
-    }
 
 };
