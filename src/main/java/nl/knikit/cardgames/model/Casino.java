@@ -49,14 +49,13 @@ public class Casino implements Serializable {
     @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
     @JsonProperty("fkPlayer") private Player fkPlayer;
 
-    @Column(name = "PLAYING_ORDER")
-    @JsonProperty("playingOrder") private int playingOrder;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FK_HAND", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_HAND"), insertable = false, updatable = false)
     @JsonProperty("fkHand") private Hand fkHand;
 
-    @JsonCreator
+    @Column(name = "PLAYING_ORDER")
+    @JsonProperty("playingOrder") private int playingOrder;
+
     public Casino() {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
@@ -65,12 +64,13 @@ public class Casino implements Serializable {
     }
 
     @JsonCreator
-    public Casino(Game fkGame, Player fkPlayer, int playingOrder) {
-        super();
+    public Casino(@JsonProperty("fkGame") Game fkGame, @JsonProperty("fkPlayer") Player fkPlayer,
+                  @JsonProperty("fkHand") Hand fkHand, @JsonProperty("playingOrder") int playingOrder) {
+        this();
         this.fkGame = fkGame;
         this.fkPlayer = fkPlayer;
+        this.fkHand = fkHand;
         this.playingOrder = playingOrder;
-        this.fkHand = null;
     }
 
 

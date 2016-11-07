@@ -81,8 +81,8 @@ public class Game  implements Serializable {
     - you can do only the ManyToOne on the child and do not do this OneToMany....
     - but then you cannot navigate to list all games for a specific winner!
 
-    - cascade = CascadeType.ALL -> means delete childs
-    - cascade = CascadeType.DETACH -> means a special state; not managed by entitymanger
+    - cascade = CascadeType.ALL -> means delete child
+    - cascade = CascadeType.DETACH -> means a special state; not managed by entitymanager
     - mappedBy = "parent class" -> the owner of the association
 
     ManyToOne always in Child class Game (Game is the 'many' part of the relationship)
@@ -107,11 +107,10 @@ public class Game  implements Serializable {
 */
 
 
-    @OneToMany(mappedBy="game",targetEntity=Deck.class,
-            fetch=FetchType.EAGER)
-    @JsonProperty("decks") private List<Deck> deck;
+    @OneToMany(mappedBy="fkGame",targetEntity=Deck.class)
+    @JsonProperty("decks") private List<Deck> decks;
 
-    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
     @JsonProperty("winner") private  Player winner;
 
@@ -136,12 +135,24 @@ public class Game  implements Serializable {
 
     @JsonCreator
     public Game() {
-        super();
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 25);
-        this.ante = 50;
+
+    }
+
+
+    @JsonCreator
+    public Game(@JsonProperty("state") String state, @JsonProperty("cardGameType") CardGameType cardGameType,
+                  @JsonProperty("decks") List<Deck> decks, @JsonProperty("winner") Player winner,
+                @JsonProperty("ante") int ante) {
+        this();
+        this.state = state;
+        this.cardGameType = cardGameType;
+        this.decks = decks;
+        this.winner = winner;
+        this.ante = ante==0?50:ante;
     }
 
     @Override

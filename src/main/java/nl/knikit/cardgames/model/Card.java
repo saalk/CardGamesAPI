@@ -95,12 +95,13 @@ public class Card implements Serializable {
     //  @JsonCreator annotation is used for constructors or static factory methods to construct
     //  instances from Json
     @JsonCreator
-    public Card(@JsonProperty("rank") String rank, @JsonProperty("suit") String suit) {
-        this.rank = Rank.fromRankName(rank);
-        this.suit = Suit.fromSuitName(suit);
+    public Card(@JsonProperty("shortName") String shortName, @JsonProperty("rank") Rank rank, @JsonProperty("suit") Suit suit, @JsonProperty("value") int value) {
+        this();
+        this.rank = rank;
+        this.suit = suit;
         final StringBuilder builder = new StringBuilder();
-        this.shortName = builder.append(rank).append(suit).toString();
-        switch (Rank.fromRankName(rank)) {
+        this.shortName = shortName.isEmpty()?builder.append(rank).append(suit).toString():shortName;
+        switch (rank) {
             case JOKER:
                 value = 0;
                 break;
@@ -117,9 +118,9 @@ public class Card implements Serializable {
                 value = 11;
                 break;
             default:
-                value = Integer.parseInt(rank);
+                value = Integer.parseInt(rank.getLabel());
         }
-        this.value = Rank.fromRankName(rank).getValue(CardGameType.HIGHLOW);
+        this.value = value!=0?rank.getValue(CardGameType.HIGHLOW):0 ;
     }
 
     public int compareTwoCards(Card o1, Card o2, CardGameType cardGameType) {

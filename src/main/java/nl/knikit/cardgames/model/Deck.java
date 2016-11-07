@@ -102,13 +102,13 @@ public class Deck implements Serializable {
     @Column(name = "ID")
     @JsonProperty("id") private int id;
 
-    @ManyToOne(fetch= FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "GAME_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"))
-    @JsonProperty("game") private  Game game;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "GAME_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
+    @JsonProperty("fkGame") private  Game fkGame;
 
     @OneToOne
-    @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
-    @JsonProperty("card") private Card card;
+    @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"), insertable = false, updatable = false)
+    @JsonProperty("fkCard") private Card fkCard;
 
 /*  @OneToMany
     @Column(name = "CARDS")
@@ -127,16 +127,17 @@ public class Deck implements Serializable {
      * to create a new instance of your classes. This method requires a public or private
      * no-arg constructor to be able to instantiate the object.
      */
-    @JsonCreator
+
     public Deck() {
     }
 
-    public Deck(@JsonProperty("game") Game game, @JsonProperty("card")Card card, @JsonProperty("cardOrder") int cardOrder) {
+    @JsonCreator
+    public Deck(@JsonProperty("fkGame") Game fkGame, @JsonProperty("fkCard")Card fkCard, @JsonProperty("cardOrder") int cardOrder, @JsonProperty("dealtTo") Player dealtTo) {
         this();
-        this.game = game;
-        this.card = card;
+        this.fkGame = fkGame;
+        this.fkCard = fkCard;
         this.cardOrder = cardOrder;
-        this.dealtTo = null;
+        this.dealtTo = dealtTo;
     }
 
     /**

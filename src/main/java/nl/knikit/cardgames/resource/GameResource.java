@@ -158,22 +158,35 @@ public class GameResource {
 
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Player supplied for Casino for path /{id): " + id);
+                    .body("No winner supplied for Game to update for path /{id): " + id);
         }
 
         if (game == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Casino supplied to create: " + game);
+                    .body("No Game supplied to update winner for: " + game);
         }
-        Game newGame = new Game();
-        newGame.setWinner(player);
 
-        Game updGame = gameService.update(newGame);
+        Game updateGame = gameService.findOne(id);
+        if (updateGame == null) {
 
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Game found for path /{id): " + id);
+        }
+        updateGame.setWinner(player);
+
+        try {
+            gameService.update(updateGame);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Update Games with /{id}: " + id + " and winner: "+ winner + " failed");
+        }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(updGame);
+                .body(updateGame);
+
     }
 
     @DeleteMapping("/games/{id}")

@@ -3,6 +3,7 @@
  */
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * <H1>Hand</H1> A players hand that can hold one or more cards. <p>For Hand to reuses the Card
@@ -43,6 +45,7 @@ import lombok.Setter;
             @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"FK_PLAYER","FK_CASINO"}))
 @Getter
 @Setter
+@ToString
 @Relation(value = "hand", collectionRelation = "hands")
 public class Hand implements Serializable {
 
@@ -55,15 +58,15 @@ public class Hand implements Serializable {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
-    @JsonProperty("player") private  Player player;
+    @JsonProperty("fkPlayer") private  Player fkPlayer;
 
     @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "FK_CASINO", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CASINO"))
-    @JsonProperty("casino") private  Casino casino;
+    @JsonProperty("fkCasino") private  Casino fkCasino;
 
     @OneToOne
-    @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
-    @JsonProperty("card") private Card card;
+    @JoinColumn(name = "FK_ CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
+    @JsonProperty("fkCard") private Card fkCard;
 
     @Column(name = "CARD_ORDER")
     @JsonProperty("cardOrder") private int cardOrder;
@@ -77,18 +80,14 @@ public class Hand implements Serializable {
     public Hand(){
     }
 
-    public Hand(@JsonProperty("player") Player player, @JsonProperty("casino") Casino casino,
-                @JsonProperty("card") Card card, @JsonProperty("cardOrder") int cardOrder){
-        this.player = player;
-        this.casino = casino;
-        this.card = card;
+    @JsonCreator
+    public Hand(@JsonProperty("fkPlayer") Player fkPlayer, @JsonProperty("fkCasino") Casino fkCasino,
+                @JsonProperty("fkCard") Card fkCard, @JsonProperty("cardOrder") int cardOrder){
+        this();
+        this.fkPlayer = fkPlayer;
+        this.fkCasino = fkCasino;
+        this.fkCard = fkCard;
         this.cardOrder = cardOrder;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Hand [id=").append(id).append("]");
-        return builder.toString();
-    }
 }

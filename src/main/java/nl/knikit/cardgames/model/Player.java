@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.springframework.hateoas.core.Relation;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @Entity
 @DynamicUpdate
 // @Table(name = "PLAYER", indexes = {@Index(name = "PLAYER_INDEX", columnList = "PLAYER_ID")})
@@ -98,18 +101,10 @@ public class Player implements Serializable {
     */
     @JsonCreator
     public Player() {
-        super();
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 20);
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Player [id=").append(id).append("]");
-        return builder.toString();
     }
 }
 

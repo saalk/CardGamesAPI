@@ -57,7 +57,7 @@ public class DeckResource {
     public ResponseEntity<ArrayList<Deck>> getDecks() {
 
         ArrayList<Deck> Decks;
-        Decks = (ArrayList) deckService.findAll("game", "ASC");
+        Decks = (ArrayList) deckService.findAll("fkGame", "ASC");
         return new ResponseEntity(Decks, HttpStatus.OK);
     }
 
@@ -65,14 +65,14 @@ public class DeckResource {
     public ResponseEntity getDeck(
             @PathVariable("id") int id) throws DeckNotFoundForIdException {
 
-        Deck Deck = deckService.findOne(id);
-        if (Deck == null) {
+        Deck deck = deckService.findOne(id);
+        if (deck == null) {
 
             throw new DeckNotFoundForIdException(id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(Deck);
+                .body(deck);
     }
 
     // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
@@ -89,19 +89,13 @@ public class DeckResource {
     public ResponseEntity<ArrayList<Deck>> findAllWhere(
             @RequestParam(value = "game", required = true) String param) {
 
-        Deck classDeck = new Deck();
-        // ternary operator = shorthand if for conditional assignment -> The ? : operator in Java
-        // boolean isHumanBoolean = ( param=="true")?true:false;
-        // classDeck.setHuman( isHumanBoolean );
-
-        try {
-
-            ArrayList<Deck> Decks = (ArrayList) deckService.findAllWhere("game", param);
-            if (Decks == null || Decks.isEmpty()) {
+         try {
+            ArrayList<Deck> decks = (ArrayList) deckService.findAllWhere("game", param);
+            if (decks == null || decks.isEmpty()) {
                 throw new DeckNotFoundForIdException(999);
             }
 
-            return new ResponseEntity(Decks, HttpStatus.OK);
+            return new ResponseEntity(decks, HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity
@@ -110,37 +104,36 @@ public class DeckResource {
         }
     }
 
-    @PostMapping(value = "/decks", params = { "game" } )
-    public ResponseEntity createDeckForGame(
-        @RequestBody Deck deck, @RequestParam(value = "game", required = true) String game) {
-
-        if (game == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied for Deck to create " + deck);
-        }
-        Game currentGame = gameService.findOne(Integer.parseInt(game));
+    @PostMapping(value = "/decks")
+    public ResponseEntity createDeck(
+        @RequestBody Deck deck) {
 
         if (deck == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Deck supplied to create: " + deck);
+                    .body("No Game supplied for Deck to create " + deck);
+        }
+        Game currentGame = gameService.findOne(deck.getFkGame().getId());
+
+        if (currentGame == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("No Game supplied to relate Deck to: " + deck);
         }
 
-        ArrayList<Card> cards;
-        cards = (ArrayList) cardService.findAll("value", "ASC");
+        ArrayList<Card> cards = (ArrayList) cardService.findAll("shortName", "ASC");
 
+        int order = 1;
         for (Card card: cards){
-
-            Deck newDeck = new Deck();
-            newDeck.setGame(currentGame);
-            newDeck.setCard(card);
-            deckService.create(newDeck);
+            deck.setFkCard(card);
+            deck.setCardOrder(order++);
+            deck.setDealtTo(null);
+            deckService.create(deck);
         }
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new StringBuilder(game.toString() + cards.toString()));
+                .body(deck);
     }
 
     @PutMapping("/decks/{id}")
