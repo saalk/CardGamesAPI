@@ -1,10 +1,9 @@
 package nl.knikit.cardgames.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
-import org.hibernate.annotations.Type;
-import org.hibernate.mapping.Collection;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -17,7 +16,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,6 +37,7 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @Getter
 @Setter
 @Relation(value = "game", collectionRelation = "games")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Game  implements Serializable {
 
     @Id
@@ -110,7 +109,7 @@ public class Game  implements Serializable {
     @OneToMany(mappedBy="fkGame",targetEntity=Deck.class)
     @JsonProperty("decks") private List<Deck> decks;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
     @JsonProperty("winner") private  Player winner;
 
@@ -133,7 +132,6 @@ public class Game  implements Serializable {
         return currentTurn;
     }
 
-    @JsonCreator
     public Game() {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
@@ -142,11 +140,7 @@ public class Game  implements Serializable {
 
     }
 
-
-    @JsonCreator
-    public Game(@JsonProperty("state") String state, @JsonProperty("cardGameType") CardGameType cardGameType,
-                  @JsonProperty("decks") List<Deck> decks, @JsonProperty("winner") Player winner,
-                @JsonProperty("ante") int ante) {
+    public Game( String state,  CardGameType cardGameType, List<Deck> decks, Player winner, int ante) {
         this();
         this.state = state;
         this.cardGameType = cardGameType;

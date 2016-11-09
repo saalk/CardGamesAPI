@@ -14,8 +14,9 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import org.springframework.hateoas.core.Relation;
 
@@ -24,7 +25,6 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -91,10 +91,11 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "DECK", indexes = {
-        @Index(columnList = "GAME_FK", name = "GAME_INDEX")})
+        @Index(columnList = "FK_GAME", name = "FK_GAME_INDEX")})
 @Getter
 @Setter
 @Relation(value = "deck", collectionRelation = "decks")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Deck implements Serializable {
 
     @Id
@@ -103,11 +104,11 @@ public class Deck implements Serializable {
     @JsonProperty("id") private int id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "GAME_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
+    @JoinColumn(name = "FK_GAME", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
     @JsonProperty("fkGame") private  Game fkGame;
 
     @OneToOne
-    @JoinColumn(name = "CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"), insertable = false, updatable = false)
+    @JoinColumn(name = "FK_CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"), insertable = false, updatable = false)
     @JsonProperty("fkCard") private Card fkCard;
 
 /*  @OneToMany
@@ -119,7 +120,7 @@ public class Deck implements Serializable {
     @JsonProperty("cardOrder") private int cardOrder;
 
     @OneToOne
-    @JoinColumn(name = "PLAYER_FK", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
     @JsonProperty("dealtTo") private Player dealtTo;
 
     /**
@@ -131,8 +132,7 @@ public class Deck implements Serializable {
     public Deck() {
     }
 
-    @JsonCreator
-    public Deck(@JsonProperty("fkGame") Game fkGame, @JsonProperty("fkCard")Card fkCard, @JsonProperty("cardOrder") int cardOrder, @JsonProperty("dealtTo") Player dealtTo) {
+    public Deck(Game fkGame, Card fkCard, int cardOrder, Player dealtTo) {
         this();
         this.fkGame = fkGame;
         this.fkCard = fkCard;

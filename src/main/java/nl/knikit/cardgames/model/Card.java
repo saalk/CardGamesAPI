@@ -26,10 +26,10 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
-import org.hibernate.annotations.Type;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -64,6 +64,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Relation(value = "card", collectionRelation = "cards")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Card implements Serializable {
 
     // 13 progressing ranks 2 to 10, jack, queen, king, ace.
@@ -92,10 +93,7 @@ public class Card implements Serializable {
         this.value = 0;
     }
 
-    //  @JsonCreator annotation is used for constructors or static factory methods to construct
-    //  instances from Json
-    @JsonCreator
-    public Card(@JsonProperty("shortName") String shortName, @JsonProperty("rank") Rank rank, @JsonProperty("suit") Suit suit, @JsonProperty("value") int value) {
+    public Card(String shortName, Rank rank, Suit suit) {
         this();
         this.rank = rank;
         this.suit = suit;
