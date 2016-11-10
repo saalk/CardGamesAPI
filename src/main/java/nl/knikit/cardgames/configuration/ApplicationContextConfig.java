@@ -162,6 +162,7 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         hibernateProperties.setProperty("hibernate.connection.autocommit", "false");
         hibernateProperties.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
         hibernateProperties.setProperty("hibernate.id.new_generator_mappings", "true");
+        hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", "true");
 
         return hibernateProperties;
     }

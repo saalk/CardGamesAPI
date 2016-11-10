@@ -105,7 +105,7 @@ function ($scope, playerService, toastr){
     $scope.removePlayer = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.removePlayer( player.id )
+        playerService.removePlayer( player.playerId )
             .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('Removing one player failed: ' + errorMessage, 'Error');
                 }

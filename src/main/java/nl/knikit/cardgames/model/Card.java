@@ -27,9 +27,11 @@ package nl.knikit.cardgames.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -43,6 +45,7 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * <H2>Description</H2> A playing card used for playing card games. A complete set of cards is called a
@@ -61,16 +64,19 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "CARD")
+@DynamicUpdate
 @Getter
 @Setter
+@ToString
 @Relation(value = "card", collectionRelation = "cards")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Card implements Serializable {
 
     // 13 progressing ranks 2 to 10, jack, queen, king, ace.
+    @JsonIgnore
     @Id
-    @Column(name = "SHORT_NAME", length = 3)
-    @JsonProperty("shortName") private String shortName;
+    @Column(name = "CARD_ID", length = 3)
+    @JsonProperty("cardId") private String cardId;
 
 
     @Enumerated(EnumType.STRING)
@@ -87,18 +93,14 @@ public class Card implements Serializable {
     @JsonProperty("value") private int value;
 
     public Card(){
-        this.shortName = "RJ";
-        this.rank = Rank.JOKER;
-        this.suit = Suit.JOKERS;
-        this.value = 0;
     }
 
-    public Card(String shortName, Rank rank, Suit suit) {
+    public Card(String cardId, Rank rank, Suit suit) {
         this();
         this.rank = rank;
         this.suit = suit;
         final StringBuilder builder = new StringBuilder();
-        this.shortName = shortName.isEmpty()?builder.append(rank).append(suit).toString():shortName;
+        this.cardId = cardId.isEmpty()?builder.append(rank).append(suit).toString():cardId;
         switch (rank) {
             case JOKER:
                 value = 0;
@@ -132,12 +134,4 @@ public class Card implements Serializable {
             }
         }
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Card [value=").append(rank.getLabel()).append(suit.getLabel()).append("]");
-        return builder.toString();
-    }
-
 }

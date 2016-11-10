@@ -1,14 +1,18 @@
 package nl.knikit.cardgames.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -16,6 +20,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,23 +32,26 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 
+@Getter
+@Setter
+@ToString
 @Entity
+@DynamicUpdate
 /*@Table(name = "GAME", indexes = {
         @Index(columnList = "WINNER", name = "WINNER_INDEX")})*/
 @Table(name = "GAME")
-@Getter
-@Setter
 @Relation(value = "game", collectionRelation = "games")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Game  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "ID")
-    @JsonProperty("id") private int id;
+    @Column(name = "GAME_ID")
+    @JsonProperty("gameId") private int gameId;
 
     @Column(name = "CREATED", length = 25)
     @JsonProperty("created") private String created;
@@ -75,42 +83,13 @@ public class Game  implements Serializable {
     @Column(name = "ANTE")
     @JsonProperty("ante") private int ante;
 
-/*
-    OneToMany can be in Parent class Player (one player can be a winner in many games)
-    - you can do only the ManyToOne on the child and do not do this OneToMany....
-    - but then you cannot navigate to list all games for a specific winner!
+    @JsonIgnore
+    @OneToMany(mappedBy="gameObj",targetEntity=Deck.class)
+    @JsonProperty("decks") private List<Deck> decks  = new ArrayList<>();
 
-    - cascade = CascadeType.ALL -> means delete child
-    - cascade = CascadeType.DETACH -> means a special state; not managed by entitymanager
-    - mappedBy = "parent class" -> the owner of the association
-
-    ManyToOne always in Child class Game (Game is the 'many' part of the relationship)
-    - optional=false -> means each Game should always a winner immediately (default is true! )
-
-    ManyToMany to create a join table,
-
-    - inside game do, this the owner of the relation (eg. order owns product)
-        @ManyToMany(fetch=FetchType.EAGER)
-        @JoinTable(name="DECK",
-                   joinColumns=
-                   @JoinColumn(name="GAME_ID", referencedColumnName="GAME_ID"),
-             inverseJoinColumns=
-                   @JoinColumn(name="CARD_ID", referencedColumnName="CARD_ID")
-        )
-        private List<Card> cardList;
-
-    - inside card do, (eg. product is owned by order, refer to order)
-           @ManyToMany(mappedBy="cardList",fetch=FetchType.EAGER)
-      private List<Game> gameList;
-
-*/
-
-
-    @OneToMany(mappedBy="fkGame",targetEntity=Deck.class)
-    @JsonProperty("decks") private List<Deck> decks;
-
-     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "WINNER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID")
     @JsonProperty("winner") private  Player winner;
 
 
@@ -136,7 +115,7 @@ public class Game  implements Serializable {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
-        this.created = result.substring(2, 25);
+        this.created = result.substring(2, 20);
 
     }
 
@@ -147,13 +126,6 @@ public class Game  implements Serializable {
         this.decks = decks;
         this.winner = winner;
         this.ante = ante==0?50:ante;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Game [id=").append(id).append("]");
-        return builder.toString();
     }
 
 }

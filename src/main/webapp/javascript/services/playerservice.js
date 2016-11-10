@@ -27,13 +27,13 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     function initPlayerForIsHuman( isHuman ) {
         
         if (isHuman) {
-           newPlayer = {'avatar': 'ELF',
-                'alias':'stranger', 'isHuman' : true, 'aiLevel': 'HUMAN',
-                cubits: 0, securedLoan: 0};
+           newPlayer = {"avatar": "ELF",
+                "alias":"stranger", "isHuman" : true, "aiLevel": 'HUMAN',
+                "cubits": 0, "securedLoan": 0};
         } else {
-            newPlayer = {'avatar': 'ELF',
-                'alias':'Alien', 'isHuman' : false, 'aiLevel': 'MEDIUM',
-                cubits: 0, securedLoan: 0};
+            newPlayer = {"avatar": "ELF",
+                "alias":"alien", "isHuman" : false, "aiLevel": 'NONE',
+                "cubits": 0, "securedLoan": 0};
         }
         
         var request = $http({
@@ -100,7 +100,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         var request = $http({
             method: "put",
             crossDomain: true,
-            url: baseUrl + "/api/players/" + player.id,
+            url: baseUrl + "/api/players/" + player.playerId,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
@@ -115,7 +115,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: baseUrl + "/api/players/" + player.id,
+            url: baseUrl + "/api/players/" + player.playerId,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "delete"
@@ -130,7 +130,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             method: "delete",
             crossDomain: true,
             url: baseUrl + "/api/players",
-            params: player.id,
+            params: player.playerId,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {
@@ -147,7 +147,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             method: "delete",
             crossDomain: true,
             url: baseUrl + "/api/players?id=",
-            params: players.id,
+            params: players.playerId,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {

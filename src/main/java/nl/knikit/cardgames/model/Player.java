@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
@@ -10,14 +11,21 @@ import org.springframework.hateoas.core.Relation;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -47,9 +55,9 @@ import lombok.ToString;
 public class Player implements Serializable {
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "PLAYER_ID")
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @JsonProperty("id") private int id;
+    @JsonProperty("playerId") private int playerId;
 
     @Transient
     private static int startId = 1;
@@ -76,6 +84,12 @@ public class Player implements Serializable {
     @JsonProperty("cubits") private int cubits;
     @Column(name = "SECURED_LOAN")
     @JsonProperty("securedLoan") private int securedLoan;
+
+    @JsonIgnore
+    @OneToMany
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
+    @JsonProperty("gameObjs") private List<Game> gameObjs = new ArrayList<>();
+
 
     /* if you want to get all games for a specific winner...
     @OneToMany(mappedBy="player",targetEntity=Game.class,

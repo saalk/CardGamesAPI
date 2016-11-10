@@ -161,7 +161,7 @@ public class CasinoResource {
                     .body("No Casino supplied to create: " + casino);
         }
         Casino newCasino = new Casino();
-        newCasino.setFkGame(game);
+        newCasino.setGameObj(game);
         casinoService.create(newCasino);
 
         return ResponseEntity
@@ -188,7 +188,7 @@ public class CasinoResource {
 
         try {
             Casino classCasino = new Casino();
-            classCasino.setId(id);
+            classCasino.setCasinoId(id);
             casinoService.deleteOne(classCasino);
         } catch (Exception e) {
             return ResponseEntity

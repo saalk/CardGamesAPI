@@ -35,12 +35,12 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         if (cardGameType === "HILOW_3_IN_A_ROW_1SUIT") {
            newGame = { "cardGameType": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 9, "minRounds": 1,
             "currentRound": 0, "maxTurns": 3, "minTurns": 1, "currentTurn": 0,
-            "turnsToWin": 3, "deck": null, "ante": 50, "winner": null };
+            "turnsToWin": 3, "deck": null, "ante": 50, "playerId": null };
         } else {
             // default HILOW_1ROUND rules
            newGame = { "cardGameType": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 1, "minRounds": 1,
             "currentRound": 0, "maxTurns": 9, "minTurns": 1, "currentTurn": 0,
-            "turnsToWin": 0, "deck": null, "ante": 50, "winner": null };
+            "turnsToWin": 0, "deck": null, "ante": 50, "playerId": null };
         }
         
         var request = $http({
@@ -107,7 +107,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         var request = $http({
             method: "put",
             crossDomain: true,
-            url: baseUrl + "/api/games/" + game.id,
+            url: baseUrl + "/api/games/" + game.gameId,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
@@ -122,7 +122,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: baseUrl + "/api/games/" + game.id,
+            url: baseUrl + "/api/games/" + game.gameId,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "delete"
@@ -137,7 +137,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             method: "delete",
             crossDomain: true,
             url: baseUrl + "/api/games",
-            params: game.id,
+            params: game.gameId,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {
@@ -154,7 +154,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             method: "delete",
             crossDomain: true,
             url: baseUrl + "/api/games?id=",
-            params: games.id,
+            params: games.gameId,
             paramSerializer: '$httpParamSerializerJQLike',
               headers: {'Content-Type': 'application/json'} 
               //            params: {

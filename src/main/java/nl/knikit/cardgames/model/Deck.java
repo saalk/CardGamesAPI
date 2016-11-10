@@ -15,9 +15,12 @@ package nl.knikit.cardgames.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -25,6 +28,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,6 +41,7 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * <H2>Description</H2>A "standard" deck of playing cards consists of 52 {@link Card Cards}; 13 in each of
@@ -91,36 +96,35 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "DECK", indexes = {
-        @Index(columnList = "FK_GAME", name = "FK_GAME_INDEX")})
+        @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")})
+@Relation(value = "deck", collectionRelation = "decks")
 @Getter
 @Setter
-@Relation(value = "deck", collectionRelation = "decks")
+@ToString
+@DynamicUpdate
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Deck implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "ID")
-    @JsonProperty("id") private int id;
+    @Column(name = "DECK_ID")
+    @JsonProperty("deckId") private int deckId;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_GAME", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
-    @JsonProperty("fkGame") private  Game fkGame;
+    @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
+    @JsonProperty("gameObj") private  Game gameObj;
 
-    @OneToOne
-    @JoinColumn(name = "FK_CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"), insertable = false, updatable = false)
-    @JsonProperty("fkCard") private Card fkCard;
-
-/*  @OneToMany
-    @Column(name = "CARDS")
-    @ElementCollection(targetClass=Card.class)
-    @JsonProperty("cards") private List<Card> cards;*/
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
+    @JsonProperty("cardObj") private Card cardObj;
 
     @Column(name = "CARD_ORDER")
     @JsonProperty("cardOrder") private int cardOrder;
 
+    @JsonIgnore
     @OneToOne
-    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
     @JsonProperty("dealtTo") private Player dealtTo;
 
     /**
@@ -128,14 +132,13 @@ public class Deck implements Serializable {
      * to create a new instance of your classes. This method requires a public or private
      * no-arg constructor to be able to instantiate the object.
      */
-
     public Deck() {
     }
 
-    public Deck(Game fkGame, Card fkCard, int cardOrder, Player dealtTo) {
+    public Deck(Game gameObj, Card cardObj, int cardOrder, Player dealtTo) {
         this();
-        this.fkGame = fkGame;
-        this.fkCard = fkCard;
+        this.gameObj = gameObj;
+        this.cardObj = cardObj;
         this.cardOrder = cardOrder;
         this.dealtTo = dealtTo;
     }
@@ -267,10 +270,4 @@ public class Deck implements Serializable {
 
     }
 */
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Deck [id=").append(id).append("]");
-        return builder.toString();
-    }
 }

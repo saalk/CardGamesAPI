@@ -171,7 +171,7 @@ public class PlayerResource {
 
         try {
             Player classPlayer = new Player();
-            classPlayer.setId(id);
+            classPlayer.setPlayerId(id);
             playerService.deleteOne(classPlayer);
         } catch (Exception e) {
             return ResponseEntity

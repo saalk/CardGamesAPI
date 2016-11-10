@@ -4,10 +4,12 @@
 package nl.knikit.cardgames.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -51,33 +54,36 @@ import lombok.ToString;
 @DynamicUpdate
 @Table(name = "HAND",
         indexes = {
-            @Index(columnList = "FK_PLAYER", name = "FK_PLAYER_INDEX"),
-            @Index(columnList = "FK_CASINO", name = "FK_CASINO_INDEX")},
+            @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX"),
+            @Index(columnList = "CASINO_ID", name = "CASINO_ID_INDEX")},
         uniqueConstraints =
-            @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"FK_PLAYER","FK_CASINO"}))
-@Getter
-@Setter
+            @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"PLAYER_ID","CASINO_ID"}))
 @ToString
 @Relation(value = "hand", collectionRelation = "hands")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
+@Getter
+@Setter
 public class Hand implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "ID")
-    @JsonProperty("id") private int id;
+    @Column(name = "HAND_ID")
+    @JsonProperty("handId") private int handId;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"))
-    @JsonProperty("fkPlayer") private  Player fkPlayer;
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
+    @JsonProperty("playerObj") private  Player playerObj;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_CASINO", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CASINO"))
-    @JsonProperty("fkCasino") private  Casino fkCasino;
+    @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
+    @JsonProperty("casinoObj") private  Casino casinoObj;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_CARD", referencedColumnName = "SHORT_NAME", foreignKey = @ForeignKey(name = "FK_CARD"))
-    @JsonProperty("fkCard") private Card fkCard;
+    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
+    @JsonProperty("cardObj") private Card cardObj;
 
     @Column(name = "CARD_ORDER")
     @JsonProperty("cardOrder") private int cardOrder;
@@ -91,11 +97,11 @@ public class Hand implements Serializable {
     public Hand(){
     }
 
-    public Hand(Player fkPlayer, Casino fkCasino, Card fkCard, int cardOrder){
+    public Hand(Player playerObj, Casino casinoObj, Card cardObj, int cardOrder){
         this();
-        this.fkPlayer = fkPlayer;
-        this.fkCasino = fkCasino;
-        this.fkCard = fkCard;
+        this.playerObj = playerObj;
+        this.casinoObj = casinoObj;
+        this.cardObj = cardObj;
         this.cardOrder = cardOrder;
     }
 

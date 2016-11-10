@@ -42,18 +42,18 @@ public class CardResource {
     public ResponseEntity<ArrayList<Card>> getCards() {
 
         ArrayList<Card> cards;
-        cards = (ArrayList) cardService.findAll("shortName", "ASC");
+        cards = (ArrayList) cardService.findAll("cardId", "ASC");
         return new ResponseEntity(cards, HttpStatus.OK);
     }
 
-    @GetMapping("/cards/{shortName}")
+    @GetMapping("/cards/{cardId}")
     public ResponseEntity getCard(
-            @PathVariable("shortName") String shortName) throws CardNotFoundForIdException {
+            @PathVariable("cardId") String cardId) throws CardNotFoundForIdException {
 
-        Card card = cardService.findOneWithString(shortName);
+        Card card = cardService.findOneWithString(cardId);
         if (card == null) {
 
-            throw new CardNotFoundForIdException(shortName);
+            throw new CardNotFoundForIdException(cardId);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)

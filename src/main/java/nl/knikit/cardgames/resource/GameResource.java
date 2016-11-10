@@ -195,7 +195,7 @@ public class GameResource {
 
         try {
             Game classGame = new Game();
-            classGame.setId(id);
+            classGame.setGameId(id);
             gameService.deleteOne(classGame);
         } catch (Exception e) {
             return ResponseEntity

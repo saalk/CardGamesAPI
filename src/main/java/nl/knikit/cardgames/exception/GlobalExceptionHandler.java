@@ -82,7 +82,6 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("\n")) + "\n"
         );
 
-
         ExceptionJSONInfo error = new ExceptionJSONInfo();
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setUrl("/api/*");

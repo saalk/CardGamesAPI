@@ -57,7 +57,7 @@ public class DeckResource {
     public ResponseEntity<ArrayList<Deck>> getDecks() {
 
         ArrayList<Deck> Decks;
-        Decks = (ArrayList) deckService.findAll("fkGame", "ASC");
+        Decks = (ArrayList) deckService.findAll("gameObj", "ASC");
         return new ResponseEntity(Decks, HttpStatus.OK);
     }
 
@@ -113,7 +113,7 @@ public class DeckResource {
                     .status(HttpStatus.NOT_ACCEPTABLE)
                     .body("No Game supplied for Deck to create " + deck);
         }
-        Game currentGame = gameService.findOne(deck.getFkGame().getId());
+        Game currentGame = gameService.findOne(deck.getGameObj().getGameId());
 
         if (currentGame == null) {
             return ResponseEntity
@@ -121,11 +121,11 @@ public class DeckResource {
                     .body("No Game supplied to relate Deck to: " + deck);
         }
 
-        ArrayList<Card> cards = (ArrayList) cardService.findAll("shortName", "ASC");
+        ArrayList<Card> cards = (ArrayList) cardService.findAll("cardId", "ASC");
 
         int order = 1;
         for (Card card: cards){
-            deck.setFkCard(card);
+            deck.setCardObj(card);
             deck.setCardOrder(order++);
             deck.setDealtTo(null);
             deckService.create(deck);
@@ -146,6 +146,7 @@ public class DeckResource {
                     .status(HttpStatus.NOT_FOUND)
                     .body("No Deck found to change for path /{id): " + id);
         }
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(newDeck);
@@ -156,9 +157,9 @@ public class DeckResource {
             @PathVariable("id") int id) {
 
         try {
-            Deck classDeck = new Deck();
-            classDeck.setId(id);
-            deckService.deleteOne(classDeck);
+            Deck deleteDeck = new Deck();
+            deleteDeck.setDeckId(id);
+            deckService.deleteOne(deleteDeck);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

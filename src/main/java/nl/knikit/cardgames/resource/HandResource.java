@@ -80,7 +80,7 @@ public class HandResource {
             @RequestParam(value = "casino", required = true) String param) {
 
         try {
-            ArrayList<Hand> Hands = (ArrayList) handService.findAllWhere("isHuman", param);
+            ArrayList<Hand> Hands = (ArrayList) handService.findAllWhere("playerId", param);
             if (Hands == null || Hands.isEmpty()) {
                 throw new HandNotFoundForIdException(999);
             }
@@ -131,7 +131,7 @@ public class HandResource {
 
         try {
             Hand classHand = new Hand();
-            classHand.setId(id);
+            classHand.setHandId(id);
             handService.deleteOne(classHand);
         } catch (Exception e) {
             return ResponseEntity

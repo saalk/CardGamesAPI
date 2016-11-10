@@ -4,10 +4,12 @@
 package nl.knikit.cardgames.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -17,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,42 +33,47 @@ import javax.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @DynamicUpdate
 @Table(name = "CASINO",
         indexes = {
-                @Index(columnList = "FK_GAME", name = "FK_GAME_INDEX"),
-                @Index(columnList = "FK_PLAYER", name = "FK_PLAYER_INDEX"),
-                @Index(columnList = "FK_HAND", name = "FK_HAND_INDEX")},
+                @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX"),
+                @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX"),
+                @Index(columnList = "HAND_ID", name = "HAND_ID_INDEX")},
         uniqueConstraints = {
-                @UniqueConstraint(name="UC_GAME_PLAYER_HAND", columnNames = {"FK_GAME", "FK_PLAYER", "FK_HAND"})
+                @UniqueConstraint(name="UC_GAME_PLAYER_HAND", columnNames = {"GAME_ID", "PLAYER_ID", "HAND_ID"})
         })
+@Relation(value = "casino", collectionRelation = "casinos")
 @Getter
 @Setter
-@Relation(value = "casino", collectionRelation = "casinos")
+@ToString
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Casino implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "ID")
-    @JsonProperty("id") private int id;
+    @Column(name = "CASINO_ID")
+    @JsonProperty("casinoId") private int casinoId;
 
     @Column(name = "CREATED", length = 25)
     @JsonProperty("created") private String created;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_GAME", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_GAME"), insertable = false, updatable = false)
-    @JsonProperty("fkGame") private Game fkGame;
+    @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
+    @JsonProperty("gameObj") private Game gameObj;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_PLAYER", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_PLAYER"), insertable = false, updatable = false)
-    @JsonProperty("fkPlayer") private Player fkPlayer;
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
+    @JsonProperty("playerObj") private Player playerObj;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_HAND", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_HAND"), insertable = false, updatable = false)
-    @JsonProperty("fkHand") private Hand fkHand;
+    @JoinColumn(name = "HAND_ID", referencedColumnName = "HAND_ID", foreignKey = @ForeignKey(name = "HAND_ID"))
+    @JsonProperty("handObj") private Hand handObj;
 
     @Column(name = "PLAYING_ORDER")
     @JsonProperty("playingOrder") private int playingOrder;
@@ -74,23 +82,14 @@ public class Casino implements Serializable {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
-        this.created = result.substring(2, 25);
+        this.created = result.substring(2, 20);
     }
 
-    public Casino(Game fkGame, Player fkPlayer,
-                  Hand fkHand, int playingOrder) {
+    public Casino(Game gameObj, Player playerObj, Hand handObj, int playingOrder) {
         this();
-        this.fkGame = fkGame;
-        this.fkPlayer = fkPlayer;
-        this.fkHand = fkHand;
+        this.gameObj = gameObj;
+        this.playerObj = playerObj;
+        this.handObj = handObj;
         this.playingOrder = playingOrder;
-    }
-
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Casino [id=").append(id).append("]");
-        return builder.toString();
     }
 }
