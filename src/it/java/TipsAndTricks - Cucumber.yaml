@@ -1,0 +1,106 @@
+## Cucumber
+Cucumber is used for testing other software.
+It runs automated acceptance tests written in a behavior-driven development (BDD) style
+
+# 1 - Maven dependencies
+<groupId>info.cukes</groupId> <artifactId>cucumber-java</artifactId>
+<groupId>info.cukes</groupId> <artifactId>cucumber-junit</artifactId>
+
+
+# 2 - Configuring JUnit to Work with Cucumber
+JUnit tests are started using the JUnitCore class. JUnitCore then uses reflection to find an
+appropriate Runner for the passed test classes. One step here is to look for a @RunWith annotations.
+If no other Runner is found the default runner: (BlockJUnit4ClassRunner) will be used.
+In order for JUnit to be aware of Cucumber and read feature files when running,
+the Cucumber class: must be declared as the Runner.
+NB
+A JUnit Runner is the class that extends JUnit's abstract Runner class.
+- The Suite Runner is used to create test suites. Suites are collections of tests (or other suites).
+- Mockito provides MockitoJUnitRunner for automatic mock initialization.
+- GuiceJUnitRunner gives you the option to inject Guice components in JUnit tests.
+- Spring's SpringJUnit4ClassRunner helps you test Spring framework applications.
+
+# JUnit will invoke the Cucumber class it references to run the tests in that class instead of
+# the runner built into JUnit.
+@RunWith(Cucumber.class)
+@CucumberOptions(features = "classpath:Feature")
+public class CucumberTest { // }
+
+
+# 2 - Gherkin: the language that Cucumber uses to define test cases TDD or BDD
+Feature: A feature is a Use Case that describes a specific function
+Scenario: Each Feature is made of a collection of scenarios.
+Given 	= STATE current state of the system to be explored
+When 	= EVENT describes an event or stimulus to that system
+Then 	= NEW STATE describes the resulting state of the system, invoking an action
+And 	= Logical and
+But 	= Logically the same as And, but used in the negative form
+
+GIVEN/WHEN/THEN is nothing more than a description of a state transition,
+and the sum of all the GIVEN/WHEN/THEN statement is nothing more than a Finite State Machine.
+
+If we are in the LOCKED state, and we get a COIN event, then we go to the UNLOCKED state,
+and we invoke the Unlock action.
+
+If we are in the LOCKED state, and we get a PASS event, then we stay in the LOCKED state,
+and we invoke the Alarm action.
+
+# A Scenario Outline provides a technique to specify multiple examples to test against
+# a template scenario by using placeholders
+Scenario Outline: A user withdraws money from an ATM
+    Given <Name> has a valid Credit or Debit card
+    And their account balance is <OriginalBalance>
+    When they insert their card
+    And withdraw <WithdrawalAmount>
+    Then the ATM should return <WithdrawalAmount>
+    And their account balance is <NewBalance>
+
+    Examples:
+      | Name   | OriginalBalance | WithdrawalAmount | NewBalance |
+      | Eric   | 100             | 45               | 55         |
+      | Pranav | 100             | 40               | 60         |
+      | Ed     | 1000            | 200              | 800        |
+
+# At runtime the scenario is run against each row in the table. Column values are substituted
+# for each of the named placeholders in the scenario.
+Another important element, called glue, provides paths to step definitions. However, if the test
+case and step definitions are in the same package, that element may be dropped.
+
+
+# 3 - Writing Step definitions
+When Cucumber parses steps, it will search for methods annotated with Gherkin keywords to locate
+the matching step definitions.
+The ^...$
+
+Example 1:
+@Given("(.*) has a valid Credit or Debit card")
+public void has_card(String name) {
+    // // method implementation
+}
+Example 2:
+@When("^users want to get information on the (.+) project$")
+public void usersGetInformationOnAProject(String projectName) throws IOException {
+}
+(.+) : argument
+Method for example 2:
+HttpGet request = new HttpGet("http://localhost:8080/projects/" + projectName.toLowerCase());
+request.addHeader("accept", "application/json");
+HttpResponse httpResponse = httpClient.execute(request);
+Or:
+// jsonString => a JSON string { "name" "value"}
+HttpPost request = new HttpPost("http://localhost:8080/create");
+StringEntity entity = new StringEntity(jsonString);
+request.addHeader("content-type", "application/json");
+request.setEntity(entity);
+HttpResponse response = httpClient.execute(request);
+Assert the POST:
+assertEquals(200, response.getStatusLine().getStatusCode());
+verify(postRequestedFor(urlEqualTo("/create"))
+  .withHeader("content-type", equalTo("application/json")));
+assertThat(responseString, containsString( some tring));
+
+
+# 4 - Formatter plugins
+Cucumber uses Formatter Plugins to provide output. Several common formats are provided by default,
+including JSON, HTML, JUnit
+

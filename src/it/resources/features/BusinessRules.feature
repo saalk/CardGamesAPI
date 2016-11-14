@@ -1,7 +1,7 @@
 Feature: BusinessRules.feature. To assert the correct behaviour of business rules in change repayment
   Customer will not pass the kan dat when the business rules fail
 
-  @stub
+  @live
   Scenario: student account rule
     Given an active session for BusinessRulesFailStudent
     When POST to / with body:
@@ -15,7 +15,7 @@ Feature: BusinessRules.feature. To assert the correct behaviour of business rule
     Then the HTTP status code should be 200
     Then the errorCode should be 509
 
-  @stub
+  @live
   Scenario: closed account rule
     Given an active session for BusinessRulesFailClosed
     When POST to / with body:
@@ -29,7 +29,7 @@ Feature: BusinessRules.feature. To assert the correct behaviour of business rule
     Then the HTTP status code should be 200
     Then the errorCode should be 507
 
-  @stub
+  @live
   Scenario: cancelled account rule
     Given an active session for BusinessRulesFailCancelled
     When POST to / with body:
@@ -43,7 +43,7 @@ Feature: BusinessRules.feature. To assert the correct behaviour of business rule
     Then the HTTP status code should be 200
     Then the errorCode should be 508
 
-  @stub
+  @live
   Scenario: blocked account rule
     Given an active session for BusinessRulesFailBlocked
     When POST to / with body:
@@ -57,7 +57,7 @@ Feature: BusinessRules.feature. To assert the correct behaviour of business rule
     Then the HTTP status code should be 200
     Then the errorCode should be 504
 
-  @stub
+  @live
   Scenario: pending requests rule
     Given an active session for Partikulier
     When POST to / with body:

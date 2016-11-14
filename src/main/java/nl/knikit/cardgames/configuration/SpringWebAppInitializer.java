@@ -39,7 +39,7 @@ public class SpringWebAppInitializer implements WebApplicationInitializer {
         System.out.println("***** Initializing Application for " + servletContext.getServerInfo() + " *****");
 
         // 1: Create the 'root' spring web aware application context, the central interface.
-        // Difference between AC and BF in spring (both fromRankName beans) is :
+        // Difference between AC and BF in spring (both fromLabel beans) is :
         // - application context = creates singleton bean when container is started
         // - beanfactory = only instantiates bean when called
         // (both use getBean from spring ioc)

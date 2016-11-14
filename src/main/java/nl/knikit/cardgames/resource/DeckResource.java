@@ -28,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,9 +58,9 @@ public class DeckResource {
     @GetMapping("/decks")
     public ResponseEntity<ArrayList<Deck>> getDecks() {
 
-        ArrayList<Deck> Decks;
-        Decks = (ArrayList) deckService.findAll("gameObj", "ASC");
-        return new ResponseEntity(Decks, HttpStatus.OK);
+        ArrayList<Deck> decks;
+        decks = (ArrayList<Deck>) deckService.findAll("gameObj", "ASC");
+        return new ResponseEntity(decks, HttpStatus.OK);
     }
 
     @GetMapping("/decks/{id}")
@@ -79,11 +81,11 @@ public class DeckResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/decks", params = { "game" } )
     public ResponseEntity<ArrayList<Deck>> findAllWhere(
@@ -104,27 +106,37 @@ public class DeckResource {
         }
     }
 
-    @PostMapping(value = "/decks")
-    public ResponseEntity createDeck(
-        @RequestBody Deck deck) {
+    @PostMapping(value = "/decks", params = { "jokers" } )
+	public ResponseEntity createDeck(
+        @RequestBody Deck deck, @RequestParam(value = "jokers", required = true) String param) {
 
-        if (deck == null) {
+	    // check for gameObj
+        if (!(deck.getGameObj().getGameId()>0)) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
                     .body("No Game supplied for Deck to create " + deck);
         }
         Game currentGame = gameService.findOne(deck.getGameObj().getGameId());
-
-        if (currentGame == null) {
+	    if (currentGame == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
                     .body("No Game supplied to relate Deck to: " + deck);
         }
 
-        ArrayList<Card> cards = (ArrayList) cardService.findAll("cardId", "ASC");
-
+	    // check if param has int
+	    boolean isInteger = isInteger(param);
+	    if (!isInteger) {
+		    return ResponseEntity
+				           .status(HttpStatus.NOT_ACCEPTABLE)
+				           .body("Param jokers has no valid value but has: " + param);
+	    }
+	    
         int order = 1;
-        for (Card card: cards){
+	    List<Card> newDeck = Card.newDeck(0);
+	    // shuffle the list
+	    Collections.shuffle(newDeck);
+	    
+        for (Card card: newDeck){
             deck.setCardObj(card);
             deck.setCardOrder(order++);
             deck.setDealtTo(null);
@@ -176,11 +188,11 @@ public class DeckResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Decks?id=1,2,3,4
     @DeleteMapping(value = "/decks", params = { "id" } )
@@ -217,5 +229,18 @@ public class DeckResource {
         modelAndView.setViewName("error");
         return modelAndView;
     }
+	
+    // Helper for params
+	public static boolean isInteger(String s) {
+		try
+		{
+			Integer.parseInt(s); // s is a valid integer
+			return true;
+		}
+		catch (NumberFormatException ex)
+		{
+			return false;
+		}
+	}
 
 }

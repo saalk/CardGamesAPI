@@ -1,6 +1,6 @@
 Feature: SubmitAndReset.feature. Executes the reset of change repayment
 
-  @stub @live
+  @live
   Scenario: customer submits but then resets the request, and submits again
     Given an active session for Partikulier
     When POST to / with body:
@@ -25,7 +25,7 @@ Feature: SubmitAndReset.feature. Executes the reset of change repayment
       }
     """
 
-  @confidence
+  @live
   Scenario: customer submits but then resets the request, and submits again
     Given an active session for xenwmtd4
     When POST to / with body:
@@ -49,7 +49,7 @@ Feature: SubmitAndReset.feature. Executes the reset of change repayment
     }
     """
 
-  @stub @live
+  @live
   Scenario: customer selects a card but then resets the request, and finally submits
     Given an active session for Partikulier
     When POST to / with body:
@@ -78,7 +78,7 @@ Feature: SubmitAndReset.feature. Executes the reset of change repayment
       }
     """
 
-  @stub @live
+  @live
   Scenario: customer selects a card, submits and resets twice
     Given an active session for Partikulier
     When POST to / with body:

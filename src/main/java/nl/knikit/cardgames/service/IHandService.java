@@ -1,9 +1,9 @@
 package nl.knikit.cardgames.service;
 
 import nl.knikit.cardgames.dao.common.IOperations;
-import nl.knikit.cardgames.model.Hand;
+import nl.knikit.cardgames.model.hand;
 
-public interface IHandService extends IOperations<Hand> {
+public interface IHandService extends IOperations<hand> {
 
     //
 }

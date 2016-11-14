@@ -2,7 +2,7 @@ Feature: Select.feature. To execute the select for change repayment
   In order to initiate of the request for change repayment
   I should call the api of /api/consumer-credit-cards/requests/change-repayment/off/
 
-  @stub @live
+  @live
   Scenario: customer is selecting with his own card
     Given an active session for customer_vet
     When POST to / with body:
@@ -40,7 +40,7 @@ Feature: Select.feature. To execute the select for change repayment
     }
     """
 
-  @stub @live
+  @live
   Scenario: customer is selecting a card of which he is not the main holder
     Given an active session for 6_klantzes
     When POST to / with body:
@@ -79,8 +79,7 @@ Feature: Select.feature. To execute the select for change repayment
       }
     """
 
-
-  @confidence
+  @live
   Scenario: customer is selecting with his own card
     Given an active session for xenwmtd4
     When POST to / with body:
@@ -118,7 +117,7 @@ Feature: Select.feature. To execute the select for change repayment
       }
     """
 
-  @stub @live
+  @live
   Scenario: customer is NOT selecting with his own card
     Given an active session for Partikulier
     When POST to / with body:

@@ -3,15 +3,25 @@ package nl.knikit.cardgames.resource;
 /*
     http://viralpatel.net/blogs/spring-4-mvc-rest-example-json/
 
-    This class is annotated with @RestController annotation. Also note that we are using
-    new annotations @GetMapping, @PostMapping, @PutMapping and @DeleteMapping instead of
-    standard @RequestMapping that are available since Spring MVC 4.3 and are standard way of
-    defining REST endpoints. They act as wrapper to @RequestMapping.
+    | Annotation | Meaning in SPRING                                   |
+    +------------+-----------------------------------------------------+
+    | @Component | generic stereotype for any Spring-managed component |
+    | @Repository| stereotype for persistence layer                    |
+    | @Service   | stereotype for service layer                        |
+    | @Controller| stereotype for presentation layer (spring-mvc)      |
 
-    For example @GetMapping is a composed annotation that acts as a shortcut for
-    @RequestMapping(method = RequestMethod.GET).
+    @RestController = @Controller + @ResponseBody
+    You can only use @RequestMapping on @Controller annotated classes.
+
+    new Spring MVC 4.3 REST annotations @GetMapping, @PostMapping, @PutMapping and @DeleteMapping
+    instead of standard @RequestMapping. They act as wrapper to @RequestMapping.
+
+
+
+    @GetMapping = @RequestMapping(method = RequestMethod.GET).
 
     JAX-RS = Java API for RESTful Web Services since JAVA EE 6:
+    - @Path is from Java EE and identifies the URI path template to which the resource responds
     - @*Param and @GET, @PUT, @POST, @DELETE and @HEAD + @PATH and @Context
 
     Jersey = a reference implementation of JAX-RS from sun
@@ -44,39 +54,45 @@ package nl.knikit.cardgames.resource;
 
 
 import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
+import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IPlayerService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ExposesResourceFor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-import nl.knikit.cardgames.model.Player;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-
+import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.ModelAndView;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
-// @RestController = @Controller + @ResponseBody
 @CrossOrigin
 @RestController
 @Component
 @ExposesResourceFor(Player.class)
 @Slf4j
 @Scope("prototype")
+@RequestScoped
 public class PlayerResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
@@ -84,14 +100,16 @@ public class PlayerResource {
     private IPlayerService playerService;
 
     @GetMapping("/players")
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity<ArrayList<Player>> getPlayers() {
 
         ArrayList<Player> players;
-        players = (ArrayList) playerService.findAll("isHuman", "DESC");
+        players = (ArrayList<Player>) playerService.findAll("isHuman", "DESC");
         return new ResponseEntity(players, HttpStatus.OK);
     }
 
     @GetMapping("/players/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity getPlayer(
             @PathVariable("id") int id) throws PlayerNotFoundForIdException {
 
@@ -109,13 +127,14 @@ public class PlayerResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/players", params = { "isHuman" } )
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity<ArrayList<Player>> findAllWhere(
             @RequestParam(value = "isHuman", required = true) String param) {
 
@@ -135,6 +154,7 @@ public class PlayerResource {
     }
 
     @PostMapping("/players")
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity createPlayer(
             @RequestBody Player player) {
 
@@ -151,6 +171,7 @@ public class PlayerResource {
     }
 
     @PutMapping("/players/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity updatePlayer(
             @PathVariable int id, @RequestBody Player player) {
 
@@ -166,6 +187,7 @@ public class PlayerResource {
     }
 
     @DeleteMapping("/players/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity deletePlayers(
             @PathVariable("id") int id) {
 
@@ -189,14 +211,15 @@ public class PlayerResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     // /players?id=1,2,3,4
     @DeleteMapping(value = "/players", params = { "id" } )
+    @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity deletePlayersById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 

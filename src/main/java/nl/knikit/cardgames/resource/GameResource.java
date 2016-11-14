@@ -1,8 +1,6 @@
 package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.exception.GameNotFoundForIdException;
-import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
-import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IGameService;
@@ -30,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +52,7 @@ public class GameResource {
     public ResponseEntity<ArrayList<Game>> getGames() {
 
         ArrayList<Game> games;
-        games = (ArrayList) gameService.findAll("cardGameType", "ASC");
+        games = (ArrayList<Game>) gameService.findAll("cardGameType", "ASC");
         return new ResponseEntity(games, HttpStatus.OK);
     }
 
@@ -75,13 +74,13 @@ public class GameResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
-    @GetMapping(value = "/games", params = { "cardGameType" } )
+    @GetMapping(value = "/games/", params = { "cardGameType" } )
     public ResponseEntity<ArrayList<Game>> findAllWhere(
             @RequestParam(value = "cardGameType", required = true) String param) {
 
@@ -118,7 +117,7 @@ public class GameResource {
     }
 
     @PostMapping(name = "/games", params = { "jokers" } )
-    public ResponseEntity createGame(
+    public ResponseEntity createGameWithJokers(
             @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
             @RequestBody Game game) {
 
@@ -213,14 +212,14 @@ public class GameResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     // /games?id=1,2,3,4
-    @DeleteMapping(value = "/games", params = { "id" } )
+    @DeleteMapping(value = "/games/", params = { "id" } )
     public ResponseEntity deleteGamesById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 

@@ -40,7 +40,7 @@ public enum AiLevel implements LabeledEnum {
 
     /**
      * A static HashMap lookup with key + value is created to use in a getter
-     * to fromRankName the Enum based on the name eg. key "Low" -> value AiLevel.LOW
+     * to fromLabel the Enum based on the name eg. key "Low" -> value AiLevel.LOW
      */
     private static final Map<String,AiLevel> lookup
             = new HashMap<>();

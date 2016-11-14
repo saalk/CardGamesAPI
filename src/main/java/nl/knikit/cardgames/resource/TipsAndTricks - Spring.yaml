@@ -1,0 +1,93 @@
+## Core Spring Annotations
+These annotations are used by Spring to guide creation and injection of beans.
+
+@Autowired: 	Constructor, Field, Method
+Declares a constructor, field, setter method, or configuration method to be autowired by type. Items annotated with
+@Autowired do not have to be public.
+
+@Configurable: 	Type
+Used with <context:springconfigured> to declare types whose properties should be injected, even if they are not instantiated by Spring. Typically used to inject the properties of domain objects.
+
+@Qualifier: 	Field, Parameter, Type, Annotation Type
+Guides autowiring to be performed by means other than by type.
+
+@Required: 	Method (setters)
+Specifies that a particular property must be injected or else the configuration will fail.
+
+@Scope: 	Type
+Specifies the scope of a bean, either singleton, prototype, request, session, or some custom scope.
+
+# J2EE alternatives
+
+
+## Stereotyping Annotations
+These annotations are used to stereotype classes with regard to the application tier that they belong to.
+Classes that are annotated with one of these annotations will automatically be registered in the Spring application context.
+
+@Component: 	Type
+Generic stereotype annotation for any Spring-managed component. By default, all beans in Spring,
+including auto-configured beans, are scoped as singleton. But you can specify the scope using the @Scope annotation.
+@Component @Scope("prototype") public class Pirate { ... }
+
+Make your own:
+@Component public @interface MyComponent { String value() default ""; }
+@MyComponent public class Pirate {...}
+
+@Controller: 	Type
+Stereotypes a component as a Spring MVC controller.
+
+@Repository: 	Type
+Stereotypes a component as a repository. Also indicates that SQLExceptions thrown from the
+component's methods should be translated into Spring DataAccessExceptions.
+
+@Service: 	Type
+Stereotypes a component as a service.
+
+# example
+@Component
+public class Pirate {
+	private String name;
+	private TreasureMap treasureMap;
+	public Pirate(String name) { this.name = name; }
+
+	@Autowired public void setTreasureMap(TreasureMap treasureMap) {
+		this.treasureMap = treasureMap;
+	}
+}
+
+
+## Spring MVC Annotations - added Spring 2.5
+These annotations were introduced in Spring 2.5 to make it easier to create Spring MVC applications
+with minimal XML configuration and without extending one of the many implementations of the Controller interface.
+
+@Controller: 	Type
+Stereotypes a component as a Spring MVC controller. eg. HomePage class is annotated with @Controller
+so that it will be autoregistered as a bean by <context:component-scan>.
+
+@InitBinder:	Method
+ a method that customizes data binding.
+@ModelAttribute: 	Parameter, Method
+When applied to a method, used to preload the model with the value returned from the method.
+When applied to a parameter, binds a model attribute to the parameter. table
+
+@RequestMapping: 	Method, Type
+Maps a URL pattern and/or HTTP method to a method or controller type.  Indicating that this
+controller will respond to requests for eg. "/home.htm".
+
+@RequestParam: 	Parameter
+Binds a request parameter to a method parameter.
+
+@SessionAttributes: 	Type
+Specifies that a model attribute should be stored in the session.
+
+# example
+@Controller @RequestMapping("/home.htm")
+public class HomePage { @RequestMapping(method = RequestMethod.GET)
+	@Autowired PirateService pirateService;
+
+	public String showHomePage(Map model) {
+		List<Pirate> pirates = pirateService. getPirateList();
+		model.add("pirateList", pirates);
+		return "home";
+}
+}

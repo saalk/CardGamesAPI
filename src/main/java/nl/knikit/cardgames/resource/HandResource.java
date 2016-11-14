@@ -2,8 +2,13 @@ package nl.knikit.cardgames.resource;
 
 
 import nl.knikit.cardgames.exception.HandNotFoundForIdException;
-import nl.knikit.cardgames.model.Hand;
+import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.Casino;
+import nl.knikit.cardgames.model.hand;
+import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IHandService;
+import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -34,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @RestController
 @Component
-@ExposesResourceFor(Hand.class)
+@ExposesResourceFor(hand.class)
 @Slf4j
 @Scope("prototype")
 public class HandResource {
@@ -42,83 +47,111 @@ public class HandResource {
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
     @Autowired
     private IHandService handService;
-
+    
+    @Autowired
+    private IPlayerService playerService;
+    
+    @Autowired
+    private ICasinoService casinoService;
+    
+   
+    //@Autowired
+    //private ICardService cardService;
+    
     @GetMapping("/hands")
-    public ResponseEntity<ArrayList<Hand>> getHands() {
+    public ResponseEntity<ArrayList<hand>> getHands() {
 
-        ArrayList<Hand> Hands;
-        Hands = (ArrayList) handService.findAll("isHuman", "DESC");
-        return new ResponseEntity(Hands, HttpStatus.OK);
+        ArrayList<hand> hands;
+        hands = (ArrayList) handService.findAll("isHuman", "DESC");
+        return new ResponseEntity(hands, HttpStatus.OK);
     }
 
     @GetMapping("/hands/{id}")
     public ResponseEntity getHand(
             @PathVariable("id") int id) throws HandNotFoundForIdException {
 
-        Hand Hand = handService.findOne(id);
-        if (Hand == null) {
+        hand hand = handService.findOne(id);
+        if (hand == null) {
 
             throw new HandNotFoundForIdException(id);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(Hand);
+                .body(hand);
     }
 
     // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/hands", params = { "casino" } )
-    public ResponseEntity<ArrayList<Hand>> findAllWhere(
+    public ResponseEntity<ArrayList<hand>> findAllWhere(
             @RequestParam(value = "casino", required = true) String param) {
 
         try {
-            ArrayList<Hand> Hands = (ArrayList) handService.findAllWhere("playerId", param);
-            if (Hands == null || Hands.isEmpty()) {
+            ArrayList<hand> hands = (ArrayList<hand>) handService.findAllWhere("playerId", param);
+            if (hands == null || hands.isEmpty()) {
                 throw new HandNotFoundForIdException(999);
             }
 
-            return new ResponseEntity(Hands, HttpStatus.OK);
+            return new ResponseEntity(hands, HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new ArrayList<Hand>() );
+                    .body(new ArrayList<hand>() );
         }
     }
 
     @PostMapping("/hands")
     public ResponseEntity createHand(
-            @RequestBody Hand Hand) {
-
-        if (Hand == null) {
+            @RequestBody hand hand) {
+    
+        // check for casinoObj and playerObj
+        if ( !(hand.getPlayerObj().getPlayerId()>0) ||
+             !(hand.getCasinoObj().getCasinoId()>0) ||
+             !(hand.getCardObj().getCardId().isEmpty()) ) {
+            
+            return ResponseEntity
+                           .status(HttpStatus.NOT_ACCEPTABLE)
+                           .body("No Casino or Player or Card supplied for hand to create " + hand);
+        }
+        
+        Casino currentCasino = casinoService.findOne(hand.getCasinoObj().getCasinoId());
+        Player currentPlayer = playerService.findOne(hand.getPlayerObj().getPlayerId());
+        if (currentCasino == null || currentPlayer == null ) {
+            return ResponseEntity
+                           .status(HttpStatus.NOT_ACCEPTABLE)
+                           .body("No Casino or Player supplied to relate hand to: " + hand);
+        }
+            
+        if (!Card.isValidCard(hand.getCardObj().getCardId())) {
             return ResponseEntity
                     .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Hand supplied to create: " + Hand);
+                    .body("Not a valid card supplied to create for hand: " + hand);
         }
-        handService.create(Hand);
+        handService.create(hand);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(Hand);
+                .body(hand);
     }
 
     @PutMapping("/hands/{id}")
     public ResponseEntity updateHand(
-            @PathVariable int id, @RequestBody Hand Hand) {
+            @PathVariable int id, @RequestBody hand hand) {
 
-        Hand newHand = handService.update(Hand);
+        hand newHand = handService.update(hand);
         if (null == newHand) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("No Hand found to change for path /{id): " + id);
+                    .body("No hand found to change for path /{id): " + id);
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -130,7 +163,7 @@ public class HandResource {
             @PathVariable("id") int id) {
 
         try {
-            Hand classHand = new Hand();
+            hand classHand = new hand();
             classHand.setHandId(id);
             handService.deleteOne(classHand);
         } catch (Exception e) {
@@ -141,7 +174,7 @@ public class HandResource {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Hand with /{id}: " + id + " deleted");
+                .body("hand with /{id}: " + id + " deleted");
     }
 
 
@@ -149,18 +182,18 @@ public class HandResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     // /Hands?id=1,2,3,4
     @DeleteMapping(value = "/hands", params = { "id" } )
     public ResponseEntity deleteHandsById(
             @RequestParam(value = "id", required = false) List<String> ids) {
 
-        Hand classHand = new Hand();
+        hand classHand = new hand();
 
         try {
             handService.deleteAllByIds(classHand, ids);
@@ -172,7 +205,7 @@ public class HandResource {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Hand with ?id= : " + ids + " deleted");
+                .body("hand with ?id= : " + ids + " deleted");
     }
 
 

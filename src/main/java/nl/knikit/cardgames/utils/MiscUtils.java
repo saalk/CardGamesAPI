@@ -32,7 +32,7 @@ public final class MiscUtils {
             }
 
         } else {
-            String errorMessage = "could not fromRankName class loader : " + filename;
+            String errorMessage = "could not fromLabel class loader : " + filename;
             throw new DataSourceLookupFailureException(errorMessage);
         }
         return result;

@@ -62,7 +62,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
  */
 
 @Slf4j
-public class CardGamesDefinition {
+public class PlayerDefinition {
 
     @Autowired
     @Getter
@@ -74,7 +74,7 @@ public class CardGamesDefinition {
 
     protected final String CONTEXT_ROOT;
 
-    protected CardGamesDefinition(){
+    protected PlayerDefinition(){
         Properties properties = new Properties();
         try {
             properties.load(
@@ -83,20 +83,6 @@ public class CardGamesDefinition {
             throw new RuntimeException("Please provide the file: cukestest.properties in your resources context and set test env correctly" ,e);
         }
         this.CONTEXT_ROOT = properties.getProperty("api-url-endpoint");
-    }
-
-    @Given("^non authorized session")
-    public void no_active_session() throws Throwable {
-
-    }
-
-    @Given("^an active session for ([^\"\\s]*)$")
-    public void an_active_session_for_player(String typeOfVisitor) throws Throwable {
-        logOn(typeOfVisitor, null);
-    }
-
-    public void an_active_session_for_player(String typeOfVisitor, Map<String, String> headers) throws Throwable {
-        logOn(typeOfVisitor, headers);
     }
 
     public void clearState() throws Throwable {
@@ -117,11 +103,6 @@ public class CardGamesDefinition {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             //apiVisitor.addPersistentHeader(entry.getKey(), entry.getValue());
         }
-    }
-
-    @And("^a player")
-    public void functionalStep() throws Throwable {
-        //nothing to do here
     }
 
     public HttpResponse iPostToWithBodyWithReturn(String url, String body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {

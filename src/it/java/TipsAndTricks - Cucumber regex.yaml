@@ -1,0 +1,54 @@
+# Regex quick reference
+
+# Some people are uncomfortable with Regular Expressions.
+Given /^I have (\d+) cucumbers in my belly$/
+# It’s also possible to define Step Definitions using strings and $variables like this:
+Given "I have $count cucumbers in my belly"
+
+[abc]		A single character of: a, b, or c
+[^abc]		Any single character except: a, b, or c
+[a-z]		Any single character in the range a-z
+[a-zA-Z]	Any single character in the range a-z or A-Z
+^			Start of line
+$			End of line
+\A			Start of string
+\z			End of string
+.			Any single character
+\s			Any whitespace character
+\S			Any non-whitespace character
+\d			Any digit
+\D			Any non-digit
+\w			Any word character (letter, number, underscore)
+\W			Any non-word character
+\b			Any word boundary
+(...)		Capture everything enclosed
+(a|b)		a or b
+a?			Zero or one of a
+a*			Zero or more of a
+a+			One or more of a
+a{3}		Exactly 3 of a
+a{3,}		3 or more of a
+a{3,6}		Between 3 and 6 of a
+
+# Handy
+
+"[^\"]*" 	matches something (or nothing) in double Quotes "foo", "foo bar" or "12345"
+? 			makes the previous character or group optional 	/an?/ matches a and an but not n
+| 			like a logical OR; can be used with parentheses to include an OR in a larger pattern
+			/I’m|I am/ matches I’m and I am
+			/I (eat|ate)/ matches I eat and I ate
+(pattern) 	a group; typically used in Cucumber to capture a Substring argument
+			/(\d+) users/ matches 3 users and captures the 3 for use later
+(?:pattern) a non-capturing group
+			/I (?:eat|ate)/ matches I eat and I ate but does not capture eat or ate for use later
+
+# Ambiguous steps
+Consider these step definitions:
+Given /Three (.*) mice/
+Given /Three blind (.*)/
+And a plain text step:
+Given Three blind mice
+Cucumber can’t make a decision about what Step Definition to execute, and will raise a
+Cucumber::Ambiguous error telling you to fix the ambiguity.
+In Cucumber you’re not allowed to use a regexp more than once in a Step Definition:
+even across files

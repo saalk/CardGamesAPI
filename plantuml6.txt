@@ -3,7 +3,7 @@ class GalacticCasino
 class Card
 class Deck
 class Game
-class Hand
+class hand
 class Player
 class Player.Predict
 class Console

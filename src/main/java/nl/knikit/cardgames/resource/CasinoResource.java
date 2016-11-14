@@ -1,9 +1,7 @@
 package nl.knikit.cardgames.resource;
 
-import nl.knikit.cardgames.exception.CardNotFoundForIdException;
 import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
 import nl.knikit.cardgames.exception.GameNotFoundForIdException;
-import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.service.ICasinoService;
@@ -30,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +52,7 @@ public class CasinoResource {
     public ResponseEntity<ArrayList<Casino>> getCasinos() {
 
         ArrayList<Casino> casinos;
-        casinos = (ArrayList) casinoService.findAll("playingOrder", "ASC");
+        casinos = (ArrayList<Casino>) casinoService.findAll("playingOrder", "ASC");
 
         return new ResponseEntity(casinos, HttpStatus.OK);
     }
@@ -75,21 +74,21 @@ public class CasinoResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/casinos", params = { "game" } )
-    public ResponseEntity<ArrayList<Card>> findAllWhere(
+    public ResponseEntity<ArrayList<Casino>> findAllWhere(
             @RequestParam(value = "game", required = true) String param) {
 
         try {
 
             ArrayList<Casino> casinos = (ArrayList) casinoService.findAllWhere("game", param);
             if (casinos == null || casinos.isEmpty()) {
-                throw new CardNotFoundForIdException(param);
+                throw new CasinoNotFoundForIdException(999);
             }
 
             return new ResponseEntity(casinos, HttpStatus.OK);
@@ -97,7 +96,7 @@ public class CasinoResource {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new ArrayList<Card>() );
+                    .body(new ArrayList<Casino>() );
         }
     }
 

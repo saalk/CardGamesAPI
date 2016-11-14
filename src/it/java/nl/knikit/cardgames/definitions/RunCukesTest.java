@@ -1,8 +1,9 @@
 package nl.knikit.cardgames.definitions;
 
+import org.junit.runner.RunWith;
+
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
-import org.junit.runner.RunWith;
 
 /*
 In order for JUnit to be aware of Cucumber and read feature files when running,
@@ -11,7 +12,8 @@ search for feature files and step definitions.
 */
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "classpath:Feature")
-
+@CucumberOptions(
+		plugin = {"pretty", "html:target/cucumber"},
+		features = {"src/it/test/resources/features"})
 public class RunCukesTest {
 }

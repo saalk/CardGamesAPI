@@ -17,11 +17,16 @@ import lombok.ToString;
 /**
  * <H1>Suit</H1>
  *
+ * Suit.ENUM("String")
+ * - Suit.CLUBS.name() or
+ * - Suit.CLUBS.label or
+ * - Suit.CLUBS.getLabel()
+ * -> gets the "C"
+ *
  * @author Klaas van der Meulen
  * @version 1.0
  * @since v1 - console game
  */
-
 @ToString
 @Getter
 public enum Suit implements LabeledEnum {
@@ -31,7 +36,7 @@ public enum Suit implements LabeledEnum {
      * Behind the enum is the code (int) or the name (String) of the enum.
      * Make a static lookup and use a private name int or String
      */
-    @Column(name = "SUIT", length = 10, nullable = false)
+    //@Column(name = "SUIT", length = 10, nullable = false)
     CLUBS("C"),
     DIAMONDS("D"),
     HEARTS("H"),
@@ -42,15 +47,15 @@ public enum Suit implements LabeledEnum {
      * Make a :
      * - a static HashMap lookup with key value pairs -> key= code/name, value= the ENUM
      * - a private field code/name and a method getCode/Name()
-     * - a static fromRankName(code/name) that returns the ENUM based on the lookup key
-     * -> the static fromRankName could better be called byLetter, byValue to distinguish from @Getter
+     * - a static fromLabel(code/name) that returns the ENUM based on the lookup key
+     * -> the static fromLabel could better be called byLetter, byValue to distinguish from @Getter
      *
-     * Now you can us a method fromRankName() that return with the ENUM based on a int/name
+     * Now you can us a method fromLabel() that return with the ENUM based on a int/name
      * eg. "A" -> RANK.ACE
      *
      * HashMap:
      * - static hashMap.put(key, value)
-     * - value = hashMap.fromRankName(key)
+     * - value = hashMap.fromLabel(key)
      */
     private static final Map<String,Suit> lookup
             = new HashMap<>();
@@ -59,7 +64,7 @@ public enum Suit implements LabeledEnum {
             lookup.put(suit.getLabel(), suit);
     }
 
-    @Transient
+    //@Transient
     private String label;
 
     Suit() {
@@ -70,7 +75,7 @@ public enum Suit implements LabeledEnum {
         this.label = label;
     }
 
-    public static Suit fromSuitName(String label) {
+    public static Suit fromLabel(String label) {
         return lookup.get(label);
     }
 

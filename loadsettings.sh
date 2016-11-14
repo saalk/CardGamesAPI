@@ -3,7 +3,7 @@
 SETTINGS_FILE=$HOME/.pcreditcardsapi/settings.properties
 
 #default settings
-SERVER_PORT=8011
+SERVER_PORT=8383
 
 if [ -f "$SETTINGS_FILE" ]
 then
@@ -11,5 +11,5 @@ then
   . "$SETTINGS_FILE"
 fi
 
-echo Using SERVER_PORT $SERVER_PORT
+echo Using SERVER_PORT ${SERVER_PORT}
 

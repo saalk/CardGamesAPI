@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -19,7 +18,6 @@ import java.time.format.DateTimeFormatter;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -73,7 +71,7 @@ public class Casino implements Serializable {
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HAND_ID", referencedColumnName = "HAND_ID", foreignKey = @ForeignKey(name = "HAND_ID"))
-    @JsonProperty("handObj") private Hand handObj;
+    @JsonProperty("handObj") private hand handObj;
 
     @Column(name = "PLAYING_ORDER")
     @JsonProperty("playingOrder") private int playingOrder;
@@ -85,7 +83,7 @@ public class Casino implements Serializable {
         this.created = result.substring(2, 20);
     }
 
-    public Casino(Game gameObj, Player playerObj, Hand handObj, int playingOrder) {
+    public Casino(Game gameObj, Player playerObj, hand handObj, int playingOrder) {
         this();
         this.gameObj = gameObj;
         this.playerObj = playerObj;

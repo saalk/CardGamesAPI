@@ -25,7 +25,7 @@
 //	public void testShowInitialHandShouldBeEmpty() {
 //
 //		// verify
-//		assertTrue("Hand should be initialized", testHandOld1.showCards(true).isEmpty());
+//		assertTrue("hand should be initialized", testHandOld1.showCards(true).isEmpty());
 //
 //	}
 //
@@ -38,7 +38,7 @@
 //		testHandOld1.setShortName(testAceOfSpades);
 //
 //		// verify
-//		assertTrue("Hand should show 3 cards", testHandOld1.showCards(false).size()==3);
+//		assertTrue("hand should show 3 cards", testHandOld1.showCards(false).size()==3);
 //
 //	}
 //
@@ -49,7 +49,7 @@
 //		testHandOld1.playCard(testAceOfSpades);
 //
 //		//verify
-//		assertTrue("Hand should show no cards", testHandOld1.showCards(true).size()==0);
+//		assertTrue("hand should show no cards", testHandOld1.showCards(true).size()==0);
 //
 //	}
 //

@@ -1,10 +1,7 @@
 package nl.knikit.cardgames.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
 
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.Transient;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * <H1>Rank</H1> Progressive value for a card. <p> There are thirteen ranks of each of the four
@@ -32,7 +28,7 @@ public enum Rank implements LabeledEnum {
      * Because enum are constants, the names of an enum type's fields are in uppercase letters.
      */
 
-    @Column(name = "RANK", length = 10, nullable = false)
+    //@Column(name = "RANK", length = 10, nullable = false)
     ACE("A"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"),
     NINE("9"), TEN("10"), JACK("J"), QUEEN("Q"), KING("K"), JOKER("R");
 
@@ -40,15 +36,15 @@ public enum Rank implements LabeledEnum {
      * Make a :
      * - a static HashMap lookup with key value pairs -> key= code/name, value= the ENUM
      * - a private field code/name and a method getCode/Name()
-     * - a static fromRankName(code/name) that returns the ENUM based on the lookup key
-     * -> the static fromRankName could better be called byLetter, byValue to distinguish from @Getter
+     * - a static fromLabel(code/name) that returns the ENUM based on the lookup key
+     * -> the static fromLabel could better be called byLetter, byValue to distinguish from @Getter
      *
-     * Now you can us a method fromRankName() that return with the ENUM based on a int/name
+     * Now you can us a method fromLabel() that return with the ENUM based on a int/name
      * eg. "A" -> RANK.ACE
      *
      * HashMap:
      * - static hashMap.put(key, value)
-     * - value = hashMap.fromRankName(key)
+     * - value = hashMap.fromLabel(key)
      */
 
     private static final Map<String,Rank> lookup
@@ -58,7 +54,7 @@ public enum Rank implements LabeledEnum {
             lookup.put(rank.getLabel(), rank);
     }
 
-    @Transient
+    //@Transient
     private String label;
 
     Rank(){}
@@ -69,13 +65,13 @@ public enum Rank implements LabeledEnum {
     }
 
 
-    public static Rank fromRankName(String label) {
+    public static Rank fromLabel(String label) {
         return lookup.get(label);
     }
 
     /**
      * Usually the Face cards (K,Q,J) are worth 13,12,11 points, each Aces are worth 1. But the
-     * selected card game determines the playing value.
+     * selected card game type determines the playing value.
      * <p>
      * Values for {@link CardGameType}:
      * 1. Vote if equal cards are a loss or correct guess (usually loss since only high low counts).
@@ -87,7 +83,7 @@ public enum Rank implements LabeledEnum {
         switch (inputCardGameType) {
             case HIGHLOW:
                 // name() return the enum name like ACE or KING
-                switch (fromRankName(this.name())) {
+                switch (fromLabel(this.label)) {
                     case JOKER:
                         value = 0;
                         break;
@@ -105,7 +101,7 @@ public enum Rank implements LabeledEnum {
                         break;
                     default:
                         // toString() returns the enum  A ,2 ,3 etc
-                        value = Integer.parseInt(this.toString());
+                        value = Integer.parseInt(label.toString());
                         break;
                 }
             default:

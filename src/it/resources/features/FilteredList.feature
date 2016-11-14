@@ -2,7 +2,7 @@ Feature: CreditcardsList.feature. To execute the listing filtered cards
   In order to execute the listing of filtered cards
   I should call the api of /api/consumer-credit-cards/
 
-  @stub
+  @live
   Scenario: list filtered cards for a customer
     Given an active session for multiple_repayments
     When GET /?repayment=charge
@@ -30,7 +30,7 @@ Feature: CreditcardsList.feature. To execute the listing filtered cards
       J A M Charge
     """
 
-  @stub
+  @live
   Scenario: list filtered cards for a customer
     Given an active session for multiple_repayments
     When GET /?repayment=revolving

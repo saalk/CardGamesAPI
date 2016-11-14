@@ -1,3 +1,4 @@
+/*
 package nl.knikit.cardgames.resource;
 
 
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +44,7 @@ public class CardResource {
     public ResponseEntity<ArrayList<Card>> getCards() {
 
         ArrayList<Card> cards;
-        cards = (ArrayList) cardService.findAll("cardId", "ASC");
+        cards = (ArrayList<Card>) cardService.findAll("cardId", "ASC");
         return new ResponseEntity(cards, HttpStatus.OK);
     }
 
@@ -64,11 +66,11 @@ public class CardResource {
     //
     // SPRING
     // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromRankName the Date dataOrNull for ?date=12-05-2013
+    // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
     // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromRankName the boolean isHuman with value 'true' for ?isHuman=true
+    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 
     @GetMapping(value = "/cards", params = { "suit" } )
     public ResponseEntity<ArrayList<Card>> findAllWhere(
@@ -81,12 +83,12 @@ public class CardResource {
 
         try {
 
-            ArrayList<Card> Cards = (ArrayList) cardService.findAllWhere("suit", param);
-            if (Cards == null || Cards.isEmpty()) {
+            ArrayList<Card> cards = (ArrayList) cardService.findAllWhere("suit", param);
+            if (cards == null || cards.isEmpty()) {
                 throw new CardNotFoundForIdException(param);
             }
 
-            return new ResponseEntity(Cards, HttpStatus.OK);
+            return new ResponseEntity(cards, HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity
@@ -112,3 +114,4 @@ public class CardResource {
     }
 
 }
+*/

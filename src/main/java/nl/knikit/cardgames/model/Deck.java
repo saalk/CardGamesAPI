@@ -115,8 +115,8 @@ public class Deck implements Serializable {
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
     @JsonProperty("gameObj") private  Game gameObj;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
+    //@OneToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
     @JsonProperty("cardObj") private Card cardObj;
 
     @Column(name = "CARD_ORDER")
@@ -151,8 +151,8 @@ public class Deck implements Serializable {
      *  for (int i = 0; i < deck.size(); i++)
      *   { for (int j = 0; j < deck.size() - 1; j++)
      *     { if (rnd.nextBoolean())
-     *       { Card tmp = deck.fromRankName(j);
-     *       deck.set(j, deck.fromRankName(j + 1));
+     *       { Card tmp = deck.fromLabel(j);
+     *       deck.set(j, deck.fromLabel(j + 1));
      *       deck.set(j + 1, tmp);
      *      }
      *      }
@@ -201,7 +201,7 @@ public class Deck implements Serializable {
 
 *//*    public Card deal(int hand) throws IllegalArgumentException {
         if (hand == 0) {
-            throw new IllegalArgumentException("Hand for dealing cards is zero!");
+            throw new IllegalArgumentException("hand for dealing cards is zero!");
         }
         int topCard = this.searchNextCardNotInHand();
         // register hand before returning topCard
@@ -210,14 +210,14 @@ public class Deck implements Serializable {
         } else {
             dealedTo[topCard] = hand;
         }
-        return cards.fromRankName(topCard);
+        return cards.fromLabel(topCard);
     }*//*
 
     public int searchCard(Card searchCard) {
         // TODO why does this not work ?
         // int position = cards.indexOf(searchCard);
         // return position;
-        // this is a useless method since fromRankName index does the job
+        // this is a useless method since fromLabel index does the job
         int position = 1;
         for (Card card : cards) {
             if (card.getRank().equals(searchCard.getRank()) && card.getSuit().equals(searchCard.getSuit())) {
