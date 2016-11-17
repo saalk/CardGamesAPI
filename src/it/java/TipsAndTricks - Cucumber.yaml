@@ -104,3 +104,12 @@ assertThat(responseString, containsString( some tring));
 Cucumber uses Formatter Plugins to provide output. Several common formats are provided by default,
 including JSON, HTML, JUnit
 
+# 5 - Start running the cucumber test
+The typical way to run Cucumber JVM tests from Maven is to bridge them through JUnit by providing
+the CucumberTest class to triggers Cucumber from JUnit.
+In Intellij use the vm option: -ea -Dcucumber.options="--tags @api" to trigger only the api test
+
+# general jvm options
+
+-D<name>=<value> 						set a system property
+-ea[:<packagename>...|:<classname>] 	enable assertions

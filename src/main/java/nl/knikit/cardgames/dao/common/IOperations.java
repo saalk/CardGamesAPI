@@ -13,7 +13,7 @@ public interface IOperations<T extends Serializable> {
 
     List<T> findAllWhere(final String column, final String inputValue);
 
-    void create(final T entity);
+    T create(final T entity);
 
     T update(final T entity);
 

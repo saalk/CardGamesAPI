@@ -31,8 +31,8 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     { return getDao().findAllWhere(column, inputValue);}
 
     @Override
-    public void create(final T entity) {
-        getDao().create(entity);
+    public T create(final T entity) {
+        return getDao().create(entity);
     }
 
     @Override

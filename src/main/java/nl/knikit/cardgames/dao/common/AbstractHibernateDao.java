@@ -37,7 +37,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final T findOne(final int id) {return (T) getCurrentSession().get(clazz, id);
+    public final T findOne(final int id) {return getCurrentSession().get(clazz, id);
     }
 
     @Override
@@ -112,7 +112,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final void create(final T entity) {
+    public final T create(final T entity) {
         String message = String.format("Entity to create in DAO: %s", entity.toString());
         log.info(message);
 
@@ -125,6 +125,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
             log.error(errorMessage);
             throw e;
         }
+        return entity;
     }
 
     @Override
@@ -136,7 +137,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         try {
             return (T) getCurrentSession().merge(entity);
         } catch (Exception e) {
-            String errorMessage = String.format("Entity to delete error: %s in DAO by entity: %s", e, entity);
+            String errorMessage = String.format("Entity to update error: %s in DAO by entity: %s", e, entity);
             log.error(errorMessage);
             throw e;
         }
@@ -161,13 +162,13 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     @Override
     @Modifying
     public final void deleteAll(final T entity) {
-        String message = String.format("Entity to delete in DAO: %s", entity.toString());
+        String message = String.format("Entity to delete all in DAO: %s", entity.toString());
         log.info(message);
         Preconditions.checkNotNull(entity);
         try {
             getCurrentSession().createQuery("DELETE FROM "+ entity.toString()).executeUpdate();
         } catch (Exception e) {
-            String errorMessage = String.format("Entity to delete error: %s in DAO by entity: %s", e, entity);
+            String errorMessage = String.format("Entity to delete all error: %s in DAO by entity: %s", e, entity);
             log.error(errorMessage);
             throw e;
         }

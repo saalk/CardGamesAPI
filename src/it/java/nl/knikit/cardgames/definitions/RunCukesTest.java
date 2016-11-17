@@ -14,6 +14,8 @@ search for feature files and step definitions.
 @RunWith(Cucumber.class)
 @CucumberOptions(
 		plugin = {"pretty", "html:target/cucumber"},
-		features = {"src/it/test/resources/features"})
+		features = {"src/it/resources/features"})
+
 public class RunCukesTest {
+	
 }

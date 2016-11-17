@@ -53,7 +53,8 @@ package nl.knikit.cardgames.resource;
 */
 
 
-import nl.knikit.cardgames.exception.PlayerNotFoundForIdException;
+import nl.knikit.cardgames.model.AiLevel;
+import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IPlayerService;
 
@@ -65,7 +66,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,14 +73,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -94,164 +91,213 @@ import lombok.extern.slf4j.Slf4j;
 @Scope("prototype")
 @RequestScoped
 public class PlayerResource {
-
-    // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-    @Autowired
-    private IPlayerService playerService;
-
-    @GetMapping("/players")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity<ArrayList<Player>> getPlayers() {
-
-        ArrayList<Player> players;
-        players = (ArrayList<Player>) playerService.findAll("isHuman", "DESC");
-        return new ResponseEntity(players, HttpStatus.OK);
-    }
-
-    @GetMapping("/players/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity getPlayer(
-            @PathVariable("id") int id) throws PlayerNotFoundForIdException {
-
-        Player player = playerService.findOne(id);
-        if (player == null) {
-
-            throw new PlayerNotFoundForIdException(id);
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(player);
-    }
-
-    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromLabel the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
-
-    @GetMapping(value = "/players", params = { "isHuman" } )
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity<ArrayList<Player>> findAllWhere(
-            @RequestParam(value = "isHuman", required = true) String param) {
-
-        try {
-            ArrayList<Player> players = (ArrayList) playerService.findAllWhere("isHuman", param);
-            if (players == null || players.isEmpty()) {
-                throw new PlayerNotFoundForIdException(999);
-            }
-
-            return new ResponseEntity(players, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new ArrayList<Player>() );
-        }
-    }
-
-    @PostMapping("/players")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity createPlayer(
-            @RequestBody Player player) {
-
-        if (player == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Player supplied to create: " + player);
-        }
-        playerService.create(player);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(player);
-    }
-
-    @PutMapping("/players/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity updatePlayer(
-            @PathVariable int id, @RequestBody Player player) {
-
-        Player newPlayer = playerService.update(player);
-        if (null == newPlayer) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Player found to change for path /{id): " + id);
-        }
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(newPlayer);
-    }
-
-    @DeleteMapping("/players/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity deletePlayers(
-            @PathVariable("id") int id) {
-
-        try {
-            Player classPlayer = new Player();
-            classPlayer.setPlayerId(id);
-            playerService.deleteOne(classPlayer);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Players with /{id}: " + id + " found to delete");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Player with /{id}: " + id + " deleted");
-    }
-
-
-    // @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromLabel the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
-
-    // /players?id=1,2,3,4
-    @DeleteMapping(value = "/players", params = { "id" } )
-    @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity deletePlayersById(
-            @RequestParam(value = "id", required = false) List<String> ids) {
-
-        Player classPlayer = new Player();
-
-        try {
-            playerService.deleteAllByIds(classPlayer, ids);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Players with /{id} found to delete, ids: " + ids);
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Player with ?id= : " + ids + " deleted");
-    }
-
-
-    // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
-    // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(PlayerNotFoundForIdException.class)
-    public ModelAndView handlePlayerNotFoundForIdException(HttpServletRequest request, Exception ex) {
-        log.error("Requested URL=" + request.getRequestURL());
-        log.error("Exception Raised=" + ex);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
-    }
-
+	
+	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
+	@Autowired
+	private IPlayerService playerService;
+	
+	@GetMapping("/players")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity<ArrayList<Player>> getPlayers() {
+		
+		ArrayList<Player> players;
+		try {
+			players = (ArrayList<Player>) playerService.findAll("isHuman", "DESC");
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(players);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Player>());
+		}
+		
+	}
+	
+	@GetMapping("/players/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity getPlayer(@PathVariable("id") int id) {
+		
+		try {
+			Player player = playerService.findOne(id);
+			if (player == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body("{}");
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(player);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Player>());
+		}
+		
+	}
+	
+	// @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
+	//
+	// SPRING
+	// use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+	// you fromLabel the Date dataOrNull for ?date=12-05-2013
+	//
+	// JAX_RS
+	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	
+	@GetMapping(value = "/players", params = {"isHuman"})
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity<ArrayList<Player>> findAllWhere(@RequestParam(value = "isHuman", required = true) String param) {
+		
+		try {
+			ArrayList<Player> players = (ArrayList) playerService.findAllWhere("isHuman", param);
+			if (players == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Player>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(players);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Player>());
+		}
+	}
+	
+	@PostMapping("/players")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity createPlayer(@RequestBody Player player) {
+		
+		if (player == null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("{}");
+		}
+		
+		Player consistentPlayer = makeConsistentPlayer(player);
+		try {
+			Player createdPlayer = playerService.create(consistentPlayer);
+			if (createdPlayer == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Player>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(createdPlayer);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentPlayer);
+		}
+	}
+	
+	@PutMapping("/players/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player player) {
+		
+		if (player == null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("{}");
+		}
+		Player consistentPlayer = makeConsistentPlayer(player);
+		
+		try {
+			Player updatedPlayer = playerService.update(consistentPlayer);
+			if (updatedPlayer == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Player>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(updatedPlayer);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentPlayer);
+		}
+		
+	}
+	
+	@DeleteMapping("/players/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity deletePlayers(@PathVariable("id") int id) {
+		try {
+			Player deletePlayer = playerService.findOne(id);
+			if (deletePlayer == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body("[]");
+			}
+			playerService.deleteOne(deletePlayer);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("[]");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Player>());
+		}
+		
+	}
+	
+	// @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
+		
+	// /players?id=1,2,3,4
+	@DeleteMapping(value = "/players", params = {"id"})
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity deletePlayersById(@RequestParam(value = "id", required = false) List<String> ids) {
+		
+		try {
+			for (int i = 0; i < ids.size(); i++) {
+				Player deletePlayer = playerService.findOne(Integer.parseInt(ids.get(i)));
+				if (deletePlayer == null) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body(ids.get(i));
+				}
+			}
+			playerService.deleteAllByIds(new Player(), ids);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("[]");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Player>());
+		}
+	}
+	
+	private Player makeConsistentPlayer(Player player) {
+		
+		Player consistentPlayer = new Player();
+		consistentPlayer.setAlias(player.getAlias());
+		consistentPlayer.setCubits(player.getCubits());
+		consistentPlayer.setSecuredLoan(player.getSecuredLoan());
+		consistentPlayer.setPlayerId(player.getPlayerId()>0?player.getPlayerId():0);
+		
+		if (player.isHuman() || player.getAiLevel() == AiLevel.HUMAN) {
+			consistentPlayer.setHuman(true);
+			consistentPlayer.setAiLevel(AiLevel.HUMAN);
+		} else {
+			consistentPlayer.setHuman(false);
+			if (player.getAiLevel()!= null || player.getAiLevel() != AiLevel.NONE) {
+				consistentPlayer.setAiLevel(player.getAiLevel());
+			} else {
+				consistentPlayer.setAiLevel(AiLevel.NONE);
+			}
+		}
+				
+		if (player.getAiLevel()==null | player.getAvatar().toString().isEmpty()) {
+			player.setAvatar(Avatar.ELF);
+		} else {
+			consistentPlayer.setAvatar(player.getAvatar());
+		}
+		return consistentPlayer;
+	}
 }

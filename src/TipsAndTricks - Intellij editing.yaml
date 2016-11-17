@@ -52,8 +52,22 @@ Ctrl + I: enables you to create default methods for methods you have to Implemen
 Ctrl + O: enables you to create default methods for methods you have to Override.
 Alt + Insert: Generate code... (Getters, Setters, Constructors, hashCode/equals, toString)
 
+Ctrl+Alt+M: Extract a method out of some code #!
+Ctrl + Alt + N Inline
+Ctrl + Alt + M Extract Method
+Ctrl + Alt + V Extract Variable
+Ctrl + Alt + F Extract Field
+Ctrl + Alt + C Extract Constant
+Ctrl + Alt + P Extract Parameter
 
-
+# abbreviations
+iter: Iteration according to Java SDK 1.5 style
+inst: Check object type with instanceof and downcast it
+itco: Iterate elements of java.util.Collection
+itit: Iterate elements of java.util.Iterator
+itli: Iterate elements of java.util.List
+psf: public static fnal
+thr: throw new
 
 
 
@@ -102,12 +116,7 @@ Alt + Delete Safe Delete
 Shift + F6 Rename
 Ctrl + F6 Change Signature
 
-Ctrl + Alt + N Inline
-Ctrl + Alt + M Extract Method
-Ctrl + Alt + V Extract Variable
-Ctrl + Alt + F Extract Field
-Ctrl + Alt + C Extract Constant
-Ctrl + Alt + P Extract Parameter
+
 VCS/Local History
 Ctrl + K Commit project to VCS
 Ctrl + T Update project from VCS
@@ -116,11 +125,5 @@ Alt + BackQuote (`) ‘VCS’ quick popup
 Live Templates
 Ctrl + Alt + J Surround with Live Template
 Ctrl + J Insert Live Template
-iter Iteration according to Java SDK 1.5 style
-inst Check object type with instanceof and downcast it
-itco Iterate elements of java.util.Collection
-itit Iterate elements of java.util.Iterator
-itli Iterate elements of java.util.List
-psf public static fnal
-thr throw new
+
 

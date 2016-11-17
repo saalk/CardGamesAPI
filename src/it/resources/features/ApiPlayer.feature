@@ -2,16 +2,27 @@ Feature: Execute a lifecycle of a player in the card game
   In order to execute the lifecycle of a player
   I should call the api of /api/players/ to post, put, get and delete a player
 
-  @stub
+  @api
   Scenario Outline: A player makes call to GET /api/players/{id}
     Given I try to get a player with "<id>"
     Then I should see that the response has "<HTTP status code>"
-    And The json response body should be like """[]"""
+    And The json response body should be like {}
 
     Examples: This is the default Human Player
 
-      | id   | avatar | alias     | isHuman | aiLevel | cubits | securedLoan  | HTTP status code |
-      | 1234 | ELF    | stranger  | true    | HUMAN   | 0      | 0            | 404              |
+      | id   | avatar | alias     | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | 1234 | ELF    | Cukes Doe | true    | HUMAN   | 0      | 0           | 404              |
+
+  @api
+  Scenario Outline: A player makes call to POST /api/players
+    Given I try to post a "<isHuman>" player having "<avatar>" and "<alias>"
+    Then I should see that the response has "<HTTP status code>"
+    And The json response body should be like [{"human": true,"avatar": "ELF","alias": "Cukes Doe","isHuman": true,"aiLevel": "HUMAN","cubits": 0,"securedLoan": 0}]
+    Examples: This is the default Human Player
+
+      | id | avatar | alias     | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | ?  | ELF    | Cukes Doe | true    | HUMAN   | 0      | 0           | 200              |
+
 
   @live
   Scenario: client makes call to POST /api/players/{id} with new id

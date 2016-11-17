@@ -1,3 +1,4 @@
+/*
 package nl.knikit.cardgames.definitions;
 
 import com.google.common.collect.Lists;
@@ -57,12 +58,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 
+*/
 /**
  * Represents a container for general step definitions
- */
+ *//*
+
 
 @Slf4j
-public class PlayerDefinition {
+public class PlayerDefinitionOld {
 
     @Autowired
     @Getter
@@ -74,7 +77,7 @@ public class PlayerDefinition {
 
     protected final String CONTEXT_ROOT;
 
-    protected PlayerDefinition(){
+    protected PlayerDefinitionOld(){
         Properties properties = new Properties();
         try {
             properties.load(
@@ -319,30 +322,37 @@ public class PlayerDefinition {
         //mingplayerData.playerId(selectResponse.getPlayerId());
     }
 
-    /**
+    */
+/**
      * Asserting with json exact is not feasible to use (playerId is always different). Therefore this explicit check is needed.
      *
      * @param errorCode
      * @throws Throwable
-     */
+     *//*
+
     @Then("^the errorCode should be (\\d+)$")
     public void the_errorCode_should_be(int errorCode) throws Throwable {
-    /*    SelectResponse selectResponse = cukesPlayer.mostRecentResponse()
+    */
+/*    SelectResponse selectResponse = cukesPlayer.mostRecentResponse()
                 .getAs(new TypeToken<SelectResponse>() {
                 }.getType());
 
 
         assertThat(selectResponse.getErrorCode(),Is.is(errorCode));
-    */
+    *//*
+
     }
 
     @Then("^the errorId should be (\\d+)$")
     public void the_errorId_should_be(int errorId) throws Throwable {
-        /*ErrorResponse errorResponse = cukesPlayer;
+        */
+/*ErrorResponse errorResponse = cukesPlayer;
                 .getAs(new TypeToken<ErrorResponse>() {
                 }.getType());
 
 
-        assertThat(errorResponse.getErrorId(),Is.is(errorId));*/
+        assertThat(errorResponse.getErrorId(),Is.is(errorId));*//*
+
     }
 }
+*/

@@ -13,7 +13,7 @@ Given "I have $count cucumbers in my belly"
 $			End of line
 \A			Start of string
 \z			End of string
-.			Any single character
+.			Any single character, a.c matches "abc", etc., but [a.c] matches only "a", ".", or "c".
 \s			Any whitespace character
 \S			Any non-whitespace character
 \d			Any digit
@@ -22,7 +22,7 @@ $			End of line
 \W			Any non-word character
 \b			Any word boundary
 (...)		Capture everything enclosed
-(a|b)		a or b
+(a|b)		a or b -> gray|grey and gr(a|e)y are equivalent patterns
 a?			Zero or one of a
 a*			Zero or more of a
 a+			One or more of a
@@ -30,17 +30,34 @@ a{3}		Exactly 3 of a
 a{3,}		3 or more of a
 a{3,6}		Between 3 and 6 of a
 
-# Handy
+# metacharacters () or \(\) is BRE or ERE used?
+In the POSIX standard, Basic Regular Syntax, BRE, requires that the metacharacters ( ) and { }
+be designated \(\) and \{\}, whereas Extended Regular Syntax, ERE, does not.
+With this syntax, a backslash causes the metacharacter to be treated as a literal character.
 
-"[^\"]*" 	matches something (or nothing) in double Quotes "foo", "foo bar" or "12345"
-? 			makes the previous character or group optional 	/an?/ matches a and an but not n
+\"abc\" 		is "abc" when copied to another file format or picked up by regex
+\"(a)\" 		means that a cucumber pattern is supplied and results in a
+\"[^\"]*\" 		matches something (or nothing) in double Quotes "foo", "foo bar" or "12345"
+
+nb posix -> [:alpha:] means [A-za-z]
+
+# Boolan "or" with |
 | 			like a logical OR; can be used with parentheses to include an OR in a larger pattern
 			/I’m|I am/ matches I’m and I am
 			/I (eat|ate)/ matches I eat and I ate
+
+# Grouping with ()
+gray|grey and gr(a|e)y are equivalent patterns
 (pattern) 	a group; typically used in Cucumber to capture a Substring argument
 			/(\d+) users/ matches 3 users and captures the 3 for use later
 (?:pattern) a non-capturing group
 			/I (?:eat|ate)/ matches I eat and I ate but does not capture eat or ate for use later
+
+# Quantification after a token (none, one, zero or one, zero or more) or meta chars
+?			zero or one: 	colou?r matches both "color" and "colour".
+*			zero or more: 	ab*c matches "ac", "abc", "abbc", "abbbc", and so on
++			one or more: 	ab+c matches "abc", "abbc", "abbbc", and so on, but not "ac".
+{n}			exactly n times:
 
 # Ambiguous steps
 Consider these step definitions:
