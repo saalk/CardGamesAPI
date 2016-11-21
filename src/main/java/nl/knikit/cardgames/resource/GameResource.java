@@ -1,6 +1,6 @@
 package nl.knikit.cardgames.resource;
 
-import nl.knikit.cardgames.exception.GameNotFoundForIdException;
+import nl.knikit.cardgames.model.CardGameType;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IGameService;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +21,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,218 +38,294 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Scope("prototype")
 public class GameResource {
+	
+	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
+	@Autowired
+	private IGameService gameService;
+	
+	@Autowired
+	private IPlayerService playerService;
+	
+	@GetMapping("/games")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity<ArrayList<Game>> getGames() {
+		
+		ArrayList<Game> games;
+		try {
+			games = (ArrayList<Game>) gameService.findAll("cardGameType", "ASC");
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(games);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Game>());
+		}
+	}
+	
+	@GetMapping("/games/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity getGame(@PathVariable("id") int id) {
+		
+		try {
+			Game game = gameService.findOne(id);
+			if (game == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body("[{}]");
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(game);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Game>());
+		}
+	}
+	
+	// @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
+	//
+	// SPRING
+	// use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+	// you fromLabel the Date dataOrNull for ?date=12-05-2013
+	//
+	// JAX_RS
+	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	
+	@GetMapping(value = "/games/", params = {"cardGameType"})
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity<ArrayList<Game>> findAllWhere(@RequestParam(value = "cardGameType", required = true) String param) {
 
-    // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-    @Autowired
-    private IGameService gameService;
-
-    @Autowired
-    private IPlayerService playerService;
-
-    @GetMapping("/games")
-    public ResponseEntity<ArrayList<Game>> getGames() {
-
-        ArrayList<Game> games;
-        games = (ArrayList<Game>) gameService.findAll("cardGameType", "ASC");
-        return new ResponseEntity(games, HttpStatus.OK);
-    }
-
-    @GetMapping("/games/{id}")
-    public ResponseEntity getGame(
-            @PathVariable("id") int id) throws GameNotFoundForIdException {
-
-        Game game = gameService.findOne(id);
-        if (game == null) {
-
-            throw new GameNotFoundForIdException(id);
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(game);
-    }
-
-    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromLabel the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
-
-    @GetMapping(value = "/games/", params = { "cardGameType" } )
-    public ResponseEntity<ArrayList<Game>> findAllWhere(
-            @RequestParam(value = "cardGameType", required = true) String param) {
-
-        try {
-
-            ArrayList<Game> games = (ArrayList) gameService.findAllWhere("cardGameType", param);
-            if (games == null || games.isEmpty()) {
-                throw new GameNotFoundForIdException(999);
-            }
-
-            return new ResponseEntity(games, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new ArrayList<Game>() );
-        }
-    }
-
-    @PostMapping(name = "/games")
-    public ResponseEntity createGame(
-            @RequestBody Game game) {
-
-        if (game == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied to create: " + game);
-        }
-        gameService.create(game);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(game);
-    }
-
-    @PostMapping(name = "/games", params = { "jokers" } )
-    public ResponseEntity createGameWithJokers(
-            @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
-            @RequestBody Game game) {
-
-        // TODO jokers param
-        if (game == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied to create: " + game);
-        }
-        gameService.create(game);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(game);
-    }
-
-    @PutMapping("/games/{id}")
-    public ResponseEntity updateGame(
-            @PathVariable int id, @RequestBody Game game) {
-
-        Game newGame = gameService.update(game);
-        if (null == newGame) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Game found to change for path /{id): " + id);
-        }
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(newGame);
-    }
-
-    @PutMapping(value = "/games/{id}", params = { "winner" } )
-    public ResponseEntity updateGameWithWinner(@PathVariable int id, @RequestBody Game game, @RequestParam(value = "winner", required = true) String winner) {
-
-        Player player = playerService.findOne(Integer.parseInt(winner));
-        if (player == null) {
-
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No winner supplied for Game to update for path /{id): " + id);
-        }
-
-        if (game == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied to update winner for: " + game);
-        }
-
-        Game updateGame = gameService.findOne(id);
-        if (updateGame == null) {
-
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game found for path /{id): " + id);
-        }
-        updateGame.setWinner(player);
-
-        try {
-            gameService.update(updateGame);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("Update Games with /{id}: " + id + " and winner: "+ winner + " failed");
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(updateGame);
-
-    }
-
-    @DeleteMapping("/games/{id}")
-    public ResponseEntity deleteGames(
-            @PathVariable("id") int id) {
-
-        try {
-            Game classGame = new Game();
-            classGame.setGameId(id);
-            gameService.deleteOne(classGame);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Games with /{id}: " + id + " found to delete");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Game with /{id}: " + id + " deleted");
-    }
-
-
-    // @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromLabel the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
-
-    // /games?id=1,2,3,4
-    @DeleteMapping(value = "/games/", params = { "id" } )
-    public ResponseEntity deleteGamesById(
-            @RequestParam(value = "id", required = false) List<String> ids) {
-
-        Game classGame = new Game();
-
-        try {
-            gameService.deleteAllByIds(classGame, ids);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Games with /{id} found to delete, ids: " + ids);
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Game with ?id= : " + ids + " deleted");
-    }
-
-
-    // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
-    // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(GameNotFoundForIdException.class)
-    public ModelAndView handleGameNotFoundForIdException(HttpServletRequest request, Exception ex) {
-        log.error("Requested URL=" + request.getRequestURL());
-        log.error("Exception Raised=" + ex);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
-    }
-
+		try {
+			ArrayList<Game> games = (ArrayList) gameService.findAllWhere("cardGameType", param);
+			if (games == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Game>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(games);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Game>());
+		}
+	}
+	
+	@PostMapping(name = "/games")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity createGame(@RequestBody Game game) {
+		
+		if (game== null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("[{}]");
+		}
+		
+		Game consistentGame = makeConsistentGame(game);
+		try {
+			Game createdGame = gameService.create(consistentGame);
+			if (createdGame == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Game>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(createdGame);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentGame);
+		}
+	}
+	
+	@PostMapping(name = "/games", params = {"jokers"})
+	public ResponseEntity createGameWithJokers(
+			                                          @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer
+					                                          jokers,
+			                                          @RequestBody Game game) {
+		
+		// TODO jokers param
+		if (game== null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("[{}]");
+		}
+		
+		Game consistentGame = makeConsistentGame(game);
+		try {
+			Game createdGame = gameService.create(consistentGame);
+			if (createdGame == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Game>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(createdGame);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentGame);
+		}
+	}
+	
+	@PutMapping("/games/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity updateGame(@PathVariable int id, @RequestBody Game game) {
+		
+		if (game == null || id==0) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("[{}]");
+		}
+		Game consistentGame = makeConsistentGame(game);
+		try {
+			Game updatedGame = gameService.update(consistentGame);
+			if (updatedGame == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Player>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(updatedGame);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentGame);
+		}
+	}
+	
+	@PutMapping(value = "/games/{id}", params = {"winner"})
+	public ResponseEntity updateGameWithWinner(@PathVariable int id, @RequestBody Game game,
+	                                           @RequestParam(value = "winner", required = true) String winner) {
+		Player player = playerService.findOne(Integer.parseInt(winner));
+		if (player == null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("[{}]");
+		}
+		if (game == null || id==0) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("[{}]");
+		}
+		Game consistentGame = makeConsistentGame(game);
+		//TODO check if redundant
+		consistentGame.setWinner(player);
+		try {
+			Game updatedGame = gameService.update(consistentGame);
+			if (updatedGame == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<Player>());
+			}
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(updatedGame);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentGame);
+		}
+	}
+	
+	@DeleteMapping("/games/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity deleteGames(@PathVariable("id") int id) {
+		
+		try {
+			Game deleteGame = gameService.findOne(id);
+			if (deleteGame == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body("[{}]");
+			}
+			gameService.deleteOne(deleteGame);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("[{}]");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Game>());
+		}
+	}
+	
+	
+	// @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
+	//
+	// SPRING
+	// use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+	// you fromLabel the Date dataOrNull for ?date=12-05-2013
+	//
+	// JAX_RS
+	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
+	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	
+	// /games?id=1,2,3,4
+	@DeleteMapping(value = "/games/", params = {"id"})
+	public ResponseEntity deleteGamesById( @RequestParam(value = "id", required = false) List<String> ids) {
+		
+		try {
+			for (int i = 0; i < ids.size(); i++) {
+				Game deleteGame = gameService.findOne(Integer.parseInt(ids.get(i)));
+				if (deleteGame == null) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body(ids.get(i));
+				}
+			}
+			gameService.deleteAllByIds(new Game(), ids);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(new ArrayList<Game>());
+		}
+	}
+	
+	private Game makeConsistentGame(Game game) {
+		
+		Game consistentGame = new Game();
+		Player consistentPlayer = new Player();
+		if (game.getWinner().getPlayerId() > 0) {
+			consistentPlayer.setPlayerId(game.getWinner().getPlayerId());
+		} else {
+			consistentPlayer.setPlayerId(0);
+		}
+		
+		consistentGame.setAnte(game.getAnte());
+		consistentGame.setCurrentRound(game.getCurrentRound());
+		consistentGame.setCurrentTurn(game.getCurrentTurn());
+		consistentGame.setMaxRounds(game.getMaxRounds());
+		consistentGame.setMaxTurns(game.getMaxTurns());
+		consistentGame.setMinRounds(game.getMinRounds());
+		consistentGame.setMinTurns(game.getMinTurns());
+		consistentGame.setTurnsToWin(game.getTurnsToWin());
+		consistentGame.setGameId(game.getGameId() > 0 ? game.getGameId() : 0);
+		consistentGame.setWinner(consistentPlayer);
+		
+		// make state consistent
+		if (game.getState() == null || game.getState().isEmpty()) {
+			consistentGame.setState("SELECT_GAME");
+		} else {
+			consistentGame.setState(game.getState());
+		}
+		
+		// make cardGameType consistent
+		if (game.getCardGameType() == null || game.getCardGameType().name().isEmpty()) {
+			consistentGame.setCardGameType(CardGameType.HIGHLOW);
+		} else {
+			consistentGame.setCardGameType(game.getCardGameType());
+		}
+		return consistentGame;
+	}
 }

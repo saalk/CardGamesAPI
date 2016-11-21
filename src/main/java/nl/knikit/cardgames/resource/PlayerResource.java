@@ -83,6 +83,7 @@ import javax.ws.rs.core.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
 
+// @RestController = @Controller + @ResponseBody
 @CrossOrigin
 @RestController
 @Component
@@ -123,7 +124,7 @@ public class PlayerResource {
 			if (player == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("{}");
+						       .body("[{}]");
 			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
@@ -171,10 +172,10 @@ public class PlayerResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createPlayer(@RequestBody Player player) {
 		
-		if (player == null) {
+		if (player== null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("{}");
+					       .body("[{}]");
 		}
 		
 		Player consistentPlayer = makeConsistentPlayer(player);
@@ -199,13 +200,12 @@ public class PlayerResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player player) {
 		
-		if (player == null) {
+		if (player == null || id==0) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("{}");
+					       .body("[{}]");
 		}
 		Player consistentPlayer = makeConsistentPlayer(player);
-		
 		try {
 			Player updatedPlayer = playerService.update(consistentPlayer);
 			if (updatedPlayer == null) {
@@ -221,7 +221,6 @@ public class PlayerResource {
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
 					       .body(consistentPlayer);
 		}
-		
 	}
 	
 	@DeleteMapping("/players/{id}")
@@ -232,12 +231,12 @@ public class PlayerResource {
 			if (deletePlayer == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[]");
+						       .body("[{}]");
 			}
 			playerService.deleteOne(deletePlayer);
 			return ResponseEntity
 					       .status(HttpStatus.NO_CONTENT)
-					       .body("[]");
+					       .body("[{}]");
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -265,7 +264,7 @@ public class PlayerResource {
 			playerService.deleteAllByIds(new Player(), ids);
 			return ResponseEntity
 					       .status(HttpStatus.NO_CONTENT)
-					       .body("[]");
+					       .body("");
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -281,23 +280,26 @@ public class PlayerResource {
 		consistentPlayer.setSecuredLoan(player.getSecuredLoan());
 		consistentPlayer.setPlayerId(player.getPlayerId()>0?player.getPlayerId():0);
 		
-		if (player.isHuman() || player.getAiLevel() == AiLevel.HUMAN) {
+		// make boolean human and aiLevel consistent
+		if (player.isHuman()) {
 			consistentPlayer.setHuman(true);
 			consistentPlayer.setAiLevel(AiLevel.HUMAN);
 		} else {
 			consistentPlayer.setHuman(false);
-			if (player.getAiLevel()!= null || player.getAiLevel() != AiLevel.NONE) {
-				consistentPlayer.setAiLevel(player.getAiLevel());
-			} else {
+			if (player.getAiLevel()==null || player.getAiLevel().name().isEmpty()) {
 				consistentPlayer.setAiLevel(AiLevel.NONE);
+			} else {
+				consistentPlayer.setAiLevel(player.getAiLevel());
 			}
 		}
 				
-		if (player.getAiLevel()==null | player.getAvatar().toString().isEmpty()) {
-			player.setAvatar(Avatar.ELF);
+		// make avatar consistent
+		if (player.getAvatar()== null || player.getAvatar().name().isEmpty()) {
+			consistentPlayer.setAvatar(Avatar.ELF);
 		} else {
 			consistentPlayer.setAvatar(player.getAvatar());
 		}
+		
 		return consistentPlayer;
 	}
 }

@@ -41,11 +41,7 @@ public enum Avatar {
     }
     private String label;
 
-    Avatar(){
-    }
-
     Avatar(String label) {
-        this();
         this.label = label;
     }
 

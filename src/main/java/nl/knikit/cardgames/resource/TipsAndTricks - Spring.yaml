@@ -81,7 +81,8 @@ Binds a request parameter to a method parameter.
 Specifies that a model attribute should be stored in the session.
 
 # example
-@Controller @RequestMapping("/home.htm")
+@Controller
+@RequestMapping("/home.htm")
 public class HomePage { @RequestMapping(method = RequestMethod.GET)
 	@Autowired PirateService pirateService;
 

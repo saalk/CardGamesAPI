@@ -128,5 +128,6 @@ public class Player implements Serializable {
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 20);
     }
+    
 }
 

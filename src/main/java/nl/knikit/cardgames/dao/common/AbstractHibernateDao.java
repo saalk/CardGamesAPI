@@ -33,7 +33,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final T findOneWithString(final String id) {return (T) getCurrentSession().get(clazz, id);
+    public final T findOneWithString(final String id) {return getCurrentSession().get(clazz, id);
     }
 
     @Override
@@ -119,7 +119,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         Preconditions.checkNotNull(entity);
         try {
             // getCurrentSession().persist(entity);
-            getCurrentSession().saveOrUpdate(entity);
+            getCurrentSession().saveOrUpdate(clazz.getName(), entity);
         } catch (Exception e) {
             String errorMessage = String.format("Entity create error: %s in DAO by entity: %s", e, entity);
             log.error(errorMessage);
@@ -135,13 +135,14 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 
         Preconditions.checkNotNull(entity);
         try {
-            return (T) getCurrentSession().merge(entity);
+            // getCurrentSession().merge(entity);
+            getCurrentSession().saveOrUpdate(clazz.getName(), entity);
         } catch (Exception e) {
             String errorMessage = String.format("Entity to update error: %s in DAO by entity: %s", e, entity);
             log.error(errorMessage);
             throw e;
         }
-
+        return entity;
     }
 
     // the deletes
