@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.model.CardGameType;
+import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IGameService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -37,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @ExposesResourceFor(Game.class)
 @Slf4j
 @Scope("prototype")
+@RequestScoped
 public class GameResource {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
@@ -97,7 +100,7 @@ public class GameResource {
 	@GetMapping(value = "/games/", params = {"cardGameType"})
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity<ArrayList<Game>> findAllWhere(@RequestParam(value = "cardGameType", required = true) String param) {
-
+		
 		try {
 			ArrayList<Game> games = (ArrayList) gameService.findAllWhere("cardGameType", param);
 			if (games == null) {
@@ -119,7 +122,7 @@ public class GameResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGame(@RequestBody Game game) {
 		
-		if (game== null) {
+		if (game == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
@@ -150,7 +153,7 @@ public class GameResource {
 			                                          @RequestBody Game game) {
 		
 		// TODO jokers param
-		if (game== null) {
+		if (game == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
@@ -176,14 +179,21 @@ public class GameResource {
 	
 	@PutMapping("/games/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity updateGame(@PathVariable int id, @RequestBody Game game) {
-		
-		if (game == null || id==0) {
+	public ResponseEntity updateGame(@PathVariable int id, @RequestBody Game newGame) {
+		// always use the id in the path instead of id in the body
+		if (newGame == null || id == 0) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
 		}
-		Game consistentGame = makeConsistentGame(game);
+		Game game = gameService.findOne(id);
+		if (game == null) {
+			return ResponseEntity
+					       .status(HttpStatus.NOT_FOUND)
+					       .body("[{Game not found}]");
+		}
+		Game consistentGame = makeConsistentGame(newGame);
+		consistentGame.setGameId(id);
 		try {
 			Game updatedGame = gameService.update(consistentGame);
 			if (updatedGame == null) {
@@ -202,24 +212,28 @@ public class GameResource {
 	}
 	
 	@PutMapping(value = "/games/{id}", params = {"winner"})
-	public ResponseEntity updateGameWithWinner(@PathVariable int id, @RequestBody Game game,
+	public ResponseEntity updateGameWithWinner(@PathVariable String id,
 	                                           @RequestParam(value = "winner", required = true) String winner) {
 		Player player = playerService.findOne(Integer.parseInt(winner));
 		if (player == null) {
 			return ResponseEntity
-					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
+					       .status(HttpStatus.NOT_FOUND)
+					       .body("[{Winner not found}]");
 		}
-		if (game == null || id==0) {
+		if (id.isEmpty()) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
 		}
-		Game consistentGame = makeConsistentGame(game);
-		//TODO check if redundant
-		consistentGame.setWinner(player);
+		Game game = gameService.findOne(Integer.parseInt(id));
+		if (game == null) {
+			return ResponseEntity
+					       .status(HttpStatus.NOT_FOUND)
+					       .body("[{Game not found}]");
+		}
+		game.setWinner(player);
 		try {
-			Game updatedGame = gameService.update(consistentGame);
+			Game updatedGame = gameService.update(game);
 			if (updatedGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
@@ -231,7 +245,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(consistentGame);
+					       .body(game);
 		}
 	}
 	
@@ -253,7 +267,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
+					       .body(e);
 		}
 	}
 	
@@ -270,7 +284,7 @@ public class GameResource {
 	
 	// /games?id=1,2,3,4
 	@DeleteMapping(value = "/games/", params = {"id"})
-	public ResponseEntity deleteGamesById( @RequestParam(value = "id", required = false) List<String> ids) {
+	public ResponseEntity deleteGamesById(@RequestParam(value = "id", required = false) List<String> ids) {
 		
 		try {
 			for (int i = 0; i < ids.size(); i++) {
@@ -292,14 +306,18 @@ public class GameResource {
 		}
 	}
 	
-	private Game makeConsistentGame(Game game) {
+	private static Game makeConsistentGame(Game game) {
 		
 		Game consistentGame = new Game();
-		Player consistentPlayer = new Player();
-		if (game.getWinner().getPlayerId() > 0) {
+		if (game.getWinner() != null && game.getWinner().getPlayerId() > 0) {
+			Player consistentPlayer = new Player();
 			consistentPlayer.setPlayerId(game.getWinner().getPlayerId());
+			consistentGame.setWinner(consistentPlayer);
+		}
+		if (game.getDecks() != null) {
+			consistentGame.setDecks(game.getDecks());
 		} else {
-			consistentPlayer.setPlayerId(0);
+			consistentGame.setDecks(null);
 		}
 		
 		consistentGame.setAnte(game.getAnte());
@@ -311,20 +329,19 @@ public class GameResource {
 		consistentGame.setMinTurns(game.getMinTurns());
 		consistentGame.setTurnsToWin(game.getTurnsToWin());
 		consistentGame.setGameId(game.getGameId() > 0 ? game.getGameId() : 0);
-		consistentGame.setWinner(consistentPlayer);
 		
 		// make state consistent
-		if (game.getState() == null || game.getState().isEmpty()) {
-			consistentGame.setState("SELECT_GAME");
-		} else {
+		if (game.getState() != null) {
 			consistentGame.setState(game.getState());
+		} else {
+			consistentGame.setState("SELECT_GAME");
 		}
 		
 		// make cardGameType consistent
-		if (game.getCardGameType() == null || game.getCardGameType().name().isEmpty()) {
-			consistentGame.setCardGameType(CardGameType.HIGHLOW);
-		} else {
+		if (game.getCardGameType() != null) {
 			consistentGame.setCardGameType(game.getCardGameType());
+		} else {
+			consistentGame.setCardGameType(CardGameType.HIGHLOW);
 		}
 		return consistentGame;
 	}

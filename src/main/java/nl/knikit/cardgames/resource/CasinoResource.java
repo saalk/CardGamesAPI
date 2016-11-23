@@ -1,7 +1,5 @@
 package nl.knikit.cardgames.resource;
 
-import nl.knikit.cardgames.exception.CasinoNotFoundForIdException;
-import nl.knikit.cardgames.exception.GameNotFoundForIdException;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.service.ICasinoService;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,12 +20,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,12 +51,14 @@ public class CasinoResource {
     }
 
     @GetMapping("/casinos/{id}")
-    public ResponseEntity getCasino(@PathVariable("id") int id) throws CasinoNotFoundForIdException {
+    public ResponseEntity getCasino(@PathVariable("id") int id) {
 
         Casino casino = casinoService.findOne(id);
         if (casino == null) {
-
-            throw new CasinoNotFoundForIdException(id);
+    
+            return ResponseEntity
+                           .status(HttpStatus.BAD_REQUEST)
+                           .body("[{}]");
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -88,7 +83,9 @@ public class CasinoResource {
 
             ArrayList<Casino> casinos = (ArrayList) casinoService.findAllWhere("game", param);
             if (casinos == null || casinos.isEmpty()) {
-                throw new CasinoNotFoundForIdException(999);
+                return ResponseEntity
+                               .status(HttpStatus.BAD_REQUEST)
+                               .body(new ArrayList<>());
             }
 
             return new ResponseEntity(casinos, HttpStatus.OK);
@@ -198,34 +195,6 @@ public class CasinoResource {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Casino with /{id}: " + id + " deleted");
-    }
-
-    // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
-    // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(CasinoNotFoundForIdException.class)
-    public ModelAndView handleCasinoNotFoundForIdException(HttpServletRequest request, Exception ex) {
-        log.error("Requested URL=" + request.getRequestURL());
-        log.error("Exception Raised=" + ex);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
-    }
-
-    @ExceptionHandler(GameNotFoundForIdException.class)
-    public ModelAndView handleGameNotFoundForIdException(HttpServletRequest request, Exception ex) {
-        log.error("Requested URL=" + request.getRequestURL());
-        log.error("Exception Raised=" + ex);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
     }
 
 }

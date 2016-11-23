@@ -20,7 +20,6 @@ import lombok.Getter;
  * @since v1 - console game
  */
 
-//@ToString
 @Getter
 public enum Rank implements LabeledEnum {
 

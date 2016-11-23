@@ -172,7 +172,7 @@ public class PlayerResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createPlayer(@RequestBody Player player) {
 		
-		if (player== null) {
+		if (player == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
@@ -198,14 +198,23 @@ public class PlayerResource {
 	
 	@PutMapping("/players/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player player) {
-		
-		if (player == null || id==0) {
+	public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody Player newPlayer) {
+		// always use the id in the path instead of id in the body
+		if (newPlayer == null || id == 0) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
 		}
-		Player consistentPlayer = makeConsistentPlayer(player);
+		
+		Player player = playerService.findOne(id);
+		if (player == null) {
+			return ResponseEntity
+					       .status(HttpStatus.NOT_FOUND)
+					       .body("[{}]");
+		}
+		
+		Player consistentPlayer = makeConsistentPlayer(newPlayer);
+		consistentPlayer.setPlayerId(id);
 		try {
 			Player updatedPlayer = playerService.update(consistentPlayer);
 			if (updatedPlayer == null) {
@@ -240,13 +249,13 @@ public class PlayerResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Player>());
+					       .body(e);
 		}
 		
 	}
 	
 	// @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
-		
+	
 	// /players?id=1,2,3,4
 	@DeleteMapping(value = "/players", params = {"id"})
 	@Produces(MediaType.APPLICATION_JSON)
@@ -272,13 +281,14 @@ public class PlayerResource {
 		}
 	}
 	
-	private Player makeConsistentPlayer(Player player) {
+	private static Player makeConsistentPlayer(Player player) {
 		
 		Player consistentPlayer = new Player();
 		consistentPlayer.setAlias(player.getAlias());
 		consistentPlayer.setCubits(player.getCubits());
 		consistentPlayer.setSecuredLoan(player.getSecuredLoan());
-		consistentPlayer.setPlayerId(player.getPlayerId()>0?player.getPlayerId():0);
+		
+		consistentPlayer.setPlayerId(player.getPlayerId() > 0 ? player.getPlayerId() : 0);
 		
 		// make boolean human and aiLevel consistent
 		if (player.isHuman()) {
@@ -286,18 +296,18 @@ public class PlayerResource {
 			consistentPlayer.setAiLevel(AiLevel.HUMAN);
 		} else {
 			consistentPlayer.setHuman(false);
-			if (player.getAiLevel()==null || player.getAiLevel().name().isEmpty()) {
-				consistentPlayer.setAiLevel(AiLevel.NONE);
-			} else {
+			if (player.getAiLevel() != null) {
 				consistentPlayer.setAiLevel(player.getAiLevel());
+			} else {
+				consistentPlayer.setAiLevel(AiLevel.NONE);
 			}
 		}
-				
+		
 		// make avatar consistent
-		if (player.getAvatar()== null || player.getAvatar().name().isEmpty()) {
-			consistentPlayer.setAvatar(Avatar.ELF);
-		} else {
+		if (player.getAvatar() != null) {
 			consistentPlayer.setAvatar(player.getAvatar());
+		} else {
+			consistentPlayer.setAvatar(Avatar.ELF);
 		}
 		
 		return consistentPlayer;

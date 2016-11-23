@@ -43,7 +43,6 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 
 @Getter
 @Setter
-@ToString
 @Entity
 @DynamicUpdate
 /*@Table(name = "GAME", indexes = {
@@ -102,9 +101,12 @@ public class Game implements Serializable {
 	@JsonProperty("decks")
 	private List<Deck> decks = new ArrayList<>();
 	
+	// Cascade = any change happened on this entity must cascade to the parent/child as well
+	// since this is the child Game: do nothing when Game is delete on the winner Player
+	// meaning do not set cascade options
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID")
+	@ManyToOne(optional=true)
+	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", nullable=true)
 	@JsonProperty("winner")
 	private Player winner;
 	
@@ -120,7 +122,8 @@ public class Game implements Serializable {
 		for (State state : EnumSet.allOf(State.class))
 			lookup.put(state.toString(), state);
 	}
-		
+	
+	@JsonIgnore
 	public State getStateFromString() {
 		return lookup.get(state); // lookup is a Map<String, State>
 	}
@@ -141,15 +144,6 @@ public class Game implements Serializable {
 		String result = localDateAndTime.format(formatter);
 		this.created = result.substring(2, 20);
 		
-	}
-	
-	public Game(String state, CardGameType cardGameType, List<Deck> decks, Player winner, int ante) {
-		this();
-		this.state = state.isEmpty() ? "SELECT_GAME" : state;
-		this.cardGameType = cardGameType;
-		this.decks = decks;
-		this.winner = winner;
-		this.ante = ante == 0 ? 50 : ante;
 	}
 	
 	public void addShuffledDeckToGame(int jokers) {

@@ -32,7 +32,6 @@ import lombok.ToString;
  */
 
 @Getter
-@ToString
 public enum AiLevel implements LabeledEnum {
 
     @Column(name = "AI_LEVEL", length = 10, nullable = false)

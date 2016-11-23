@@ -1,6 +1,3 @@
-/**
- *
- */
 package nl.knikit.cardgames.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -34,14 +31,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * <H1>hand</H1> A players hand that can hold one or more cards. <p>For hand to reuses the Card
+ * <H1>Hand</H1> A players Hand that can hold one or more cards. <p>For Hand to reuses the Card
  * java-code we could implement this in 2 ways: class / interface inheritance or object composition
- * <p><h2> hand IS-A list of Cards</h2>
- * Codify this via hand extends Card. This is <u>Class Inheritance</u> via static (compile-time) binding.
- * When hand implements Card this is called <u>Interface Inheritance</u>.
- * So hand could extend or implement Card meaning a player-child relationship having subclasses.
- * Since hand is NOT a specific type of Cards we could better use a 'HAS-A' relationship.
- * <h2> hand HAS-A list of Cards</h2>
+ * <p><h2> Hand IS-A list of Cards</h2>
+ * Codify this via Hand extends Card. This is <u>Class Inheritance</u> via static (compile-time) binding.
+ * When Hand implements Card this is called <u>Interface Inheritance</u>.
+ * So Hand could extend or implement Card meaning a player-child relationship having subclasses.
+ * Since Hand is NOT a specific type of Cards we could better use a 'HAS-A' relationship.
+ * <h2> Hand HAS-A list of Cards</h2>
  * Codify this via Card handCards = new Card(). This is <u>Object Composition</u> via dynamic (run-time)
  * binding. So if only you want to reuse code and there is no IS-A relationship in sight, use
  * composition. When the association is loose composition is better known as aggregation.
@@ -58,12 +55,11 @@ import lombok.ToString;
             @Index(columnList = "CASINO_ID", name = "CASINO_ID_INDEX")},
         uniqueConstraints =
             @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"PLAYER_ID","CASINO_ID"}))
-@ToString
-@Relation(value = "hand", collectionRelation = "hands")
+@Relation(value = "Hand", collectionRelation = "hands")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 @Getter
 @Setter
-public class hand implements Serializable {
+public class Hand implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -94,10 +90,10 @@ public class hand implements Serializable {
     @JsonProperty("cards") private  List<Card> cards;
     */
 
-    public hand(){
+    public Hand(){
     }
 
-    public hand(Player playerObj, Casino casinoObj, Card cardObj, int cardOrder){
+    public Hand(Player playerObj, Casino casinoObj, Card cardObj, int cardOrder){
         this();
         this.playerObj = playerObj;
         this.casinoObj = casinoObj;

@@ -1,7 +1,6 @@
 package nl.knikit.cardgames.resource;
 
 
-import nl.knikit.cardgames.exception.DeckNotFoundForIdException;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +23,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,12 +59,13 @@ public class DeckResource {
 
     @GetMapping("/decks/{id}")
     public ResponseEntity getDeck(
-            @PathVariable("id") int id) throws DeckNotFoundForIdException {
+            @PathVariable("id") int id) {
 
         Deck deck = deckService.findOne(id);
         if (deck == null) {
-
-            throw new DeckNotFoundForIdException(id);
+                return ResponseEntity
+                           .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                           .body(new ArrayList<>());
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -94,7 +89,10 @@ public class DeckResource {
          try {
             ArrayList<Deck> decks = (ArrayList) deckService.findAllWhere("game", param);
             if (decks == null || decks.isEmpty()) {
-                throw new DeckNotFoundForIdException(999);
+                
+                return ResponseEntity
+                               .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body(new ArrayList<>());
             }
 
             return new ResponseEntity(decks, HttpStatus.OK);
@@ -213,23 +211,7 @@ public class DeckResource {
                 .status(HttpStatus.OK)
                 .body("Deck with ?id= : " + ids + " deleted");
     }
-
-
-    // To handle an exception, we need to create an exception method annotated with @ExceptionHandler.
-    // This method will return java bean as JSON with error info. Returning ModelAndView with HTTP 200
-    @ExceptionHandler(DeckNotFoundForIdException.class)
-    public ModelAndView handleDeckNotFoundForIdException(HttpServletRequest request, Exception ex) {
-        log.error("Requested URL=" + request.getRequestURL());
-        log.error("Exception Raised=" + ex);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
-    }
-	
+    
     // Helper for params
 	public static boolean isInteger(String s) {
 		try

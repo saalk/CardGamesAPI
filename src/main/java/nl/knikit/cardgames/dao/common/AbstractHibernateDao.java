@@ -136,7 +136,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         Preconditions.checkNotNull(entity);
         try {
             // getCurrentSession().merge(entity);
-            getCurrentSession().saveOrUpdate(clazz.getName(), entity);
+            getCurrentSession().update(clazz.getName(), entity);
         } catch (Exception e) {
             String errorMessage = String.format("Entity to update error: %s in DAO by entity: %s", e, entity);
             log.error(errorMessage);

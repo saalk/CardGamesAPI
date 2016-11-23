@@ -4,7 +4,7 @@ import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.hand;
+import nl.knikit.cardgames.model.Hand;
 import nl.knikit.cardgames.model.Player;
 
 import org.junit.Test;
@@ -40,7 +40,7 @@ public class GetterSetterTest {
 		classList.add(new Game()); //has enum state
 		classList.add(new Deck());
 		classList.add(new Card());
-		classList.add(new hand());
+		classList.add(new Hand());
 		classList.add(new Casino());
 
 

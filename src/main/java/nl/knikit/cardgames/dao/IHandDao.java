@@ -1,9 +1,9 @@
 package nl.knikit.cardgames.dao;
 
 import nl.knikit.cardgames.dao.common.IOperations;
-import nl.knikit.cardgames.model.hand;
+import nl.knikit.cardgames.model.Hand;
 
-public interface IHandDao extends IOperations<hand> {
+public interface IHandDao extends IOperations<Hand> {
     //
 
 }

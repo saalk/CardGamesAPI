@@ -138,7 +138,7 @@ Object o = new MyClass();
 // typecast object o, back into an instance of MyClass.
 MyClass myObject = (MyClass) o;
 
-# Use/Read – the use of a variable in the right hand side of an assignment statement.
+# Use/Read – the use of a variable in the right Hand side of an assignment statement.
 
 Example: an integer var is declared and used in the initialization of integer ans.
      int var = 2;

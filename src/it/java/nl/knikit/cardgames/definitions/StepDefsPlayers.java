@@ -14,14 +14,23 @@ import cucumber.api.java.en.Then;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class PlayersStepDefs extends SpringIntegrationTest {
+public class StepDefsPlayers extends SpringIntegrationTest {
 	
 	private static String latestPlayerID = "";
+	
+	// API          HTTP
+	//
+	// UPDATE,PUT   OK(200, "OK"),
+	// POST         CREATED(201, "Created"),
+	// DELETE       NO_CONTENT(204, "No Content"),
+	
+	// no body      BAD_REQUEST(400, "Bad Request"),
+	// wrong id     NOT_FOUND(404, "Not Found"),
 	
 	@Given("^I try to get a player with valid \"([^\"]*)\"$")
 	public void iTryToGetAPlayerValidWith(String playerId) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = PlayersStepDefs.latestPlayerID;
+			playerId = StepDefsPlayers.latestPlayerID;
 		}
 		executeGet("http://localhost:8383/api/players/" + playerId);
 	}
@@ -29,7 +38,7 @@ public class PlayersStepDefs extends SpringIntegrationTest {
 	@Given("^I try to get a player with invalid \"([^\"]*)\"$")
 	public void iTryToGetAPlayerInvalidWith(String playerId) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = PlayersStepDefs.latestPlayerID;
+			playerId = StepDefsPlayers.latestPlayerID;
 		}
 		executeGet("http://localhost:8383/api/players/" + playerId);
 	}
@@ -54,7 +63,7 @@ public class PlayersStepDefs extends SpringIntegrationTest {
 	@Given("^I try to put a player with \"([^\"]*)\" having isHuman \"([^\"]*)\" avatar \"([^\"]*)\" and alias \"([^\"]*)\"$")
 	public void iTryToPutANewHumanPlayerWithAvatarAlias(String playerId, String isHuman, String avatar, String alias) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = PlayersStepDefs.latestPlayerID;
+			playerId = StepDefsPlayers.latestPlayerID;
 		}
 		Player postPlayer = new Player();
 		postPlayer.setPlayerId(Integer.parseInt(playerId));
@@ -74,7 +83,7 @@ public class PlayersStepDefs extends SpringIntegrationTest {
 	@Given("^I try to delete a player with \"([^\"]*)\"$")
 	public void iTryToDeleteAPlayerWith(String playerId) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = PlayersStepDefs.latestPlayerID;
+			playerId = StepDefsPlayers.latestPlayerID;
 		}
 		executeDelete("http://localhost:8383/api/players/" + playerId, null);
 	}
@@ -82,14 +91,6 @@ public class PlayersStepDefs extends SpringIntegrationTest {
 	@Then("^I should see that the response has HTTP status \"([^\"]*)\"$")
 	public void iShouldSeeThatTheResponseHas(int HTTPstatusCode) throws Throwable {
 		final HttpStatus currentStatusCode = latestResponse.getTheResponse().getStatusCode();
-		// API          HTTP
-		//
-		// UPDATE,PUT   OK(200, "OK"),
-		// POST         CREATED(201, "Created"),
-		// DELETE       NO_CONTENT(204, "No Content"),
-		
-		// no body      BAD_REQUEST(400, "Bad Request"),
-		// wrong id     NOT_FOUND(404, "Not Found"),
 		
 		assertThat("status code is incorrect : " + latestResponse.getBody(), currentStatusCode.value(), is(HTTPstatusCode));
 	}
@@ -112,7 +113,7 @@ public class PlayersStepDefs extends SpringIntegrationTest {
 		
 		//JSON string to Object
 		Player jsonPlayer = mapper.readValue(latestResponse.getBody(), Player.class);
-		PlayersStepDefs.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
+		StepDefsPlayers.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
 		
 		assertThat(jsonPlayer.isHuman(), is(Boolean.parseBoolean(isHuman)));
 		assertThat(jsonPlayer.getAvatar(), is(Avatar.valueOf(avatar)));

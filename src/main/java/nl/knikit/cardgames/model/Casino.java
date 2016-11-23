@@ -1,6 +1,3 @@
-/**
- *
- */
 package nl.knikit.cardgames.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -31,7 +28,6 @@ import javax.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @DynamicUpdate
@@ -46,7 +42,6 @@ import lombok.ToString;
 @Relation(value = "casino", collectionRelation = "casinos")
 @Getter
 @Setter
-@ToString
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Casino implements Serializable {
 
@@ -71,7 +66,7 @@ public class Casino implements Serializable {
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HAND_ID", referencedColumnName = "HAND_ID", foreignKey = @ForeignKey(name = "HAND_ID"))
-    @JsonProperty("handObj") private hand handObj;
+    @JsonProperty("handObj") private Hand handObj;
 
     @Column(name = "PLAYING_ORDER")
     @JsonProperty("playingOrder") private int playingOrder;
@@ -83,7 +78,7 @@ public class Casino implements Serializable {
         this.created = result.substring(2, 20);
     }
 
-    public Casino(Game gameObj, Player playerObj, hand handObj, int playingOrder) {
+    public Casino(Game gameObj, Player playerObj, Hand handObj, int playingOrder) {
         this();
         this.gameObj = gameObj;
         this.playerObj = playerObj;

@@ -27,7 +27,6 @@ import lombok.ToString;
  * @version 1.0
  * @since v1 - console game
  */
-@ToString
 @Getter
 public enum Suit implements LabeledEnum {
 

@@ -40,13 +40,12 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * <H2>Description</H2> A playing card used for playing card games. A complete set of cards is
  * called a pack (UK English), deck (US English), or set (Universal), and the subset of cards held
  * at one time by a {@link Player player} during a {@link Game game} is commonly called a {@link
- * hand hand}. <H2>Relations</H2> Card is associated to {@link Rank enum Rank} and {@link Suit enum
+ * Hand Hand}. <H2>Relations</H2> Card is associated to {@link Rank enum Rank} and {@link Suit enum
  * Suit}. Because you must have both a Suit and a Rank for a valid Card, they are parameters for the
  * constructor. <p><img src="../../../../../../src/main/resources/plantuml/Card.png" alt="UML">
  *
@@ -60,7 +59,6 @@ import lombok.ToString;
 //@DynamicUpdate
 @Getter
 @Setter
-@ToString
 @Relation(value = "card", collectionRelation = "cards")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Card implements Serializable {

@@ -23,12 +23,11 @@ import lombok.ToString;
  * @since v1 - console game
  */
 @Getter
-@ToString
 public enum CardGameType implements LabeledEnum {
 
     /**
      * HIGHLOW cardgame is a simple higher or lower guessing game. The dealer places one card
-     * face-down in front of the player, then another card face-up for the players hand. The player
+     * face-down in front of the player, then another card face-up for the players Hand. The player
      * guesses whether the value of the face-down card is higher or lower. <p> The player places his
      * initial bet. The house matches that bet into the pot. When the player guesses, he wins or
      * loses the pot depending on the outcome of his guess. After that round, the player can pass

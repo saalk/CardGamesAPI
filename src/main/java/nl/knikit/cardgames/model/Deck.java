@@ -100,7 +100,6 @@ import lombok.ToString;
 @Relation(value = "deck", collectionRelation = "decks")
 @Getter
 @Setter
-@ToString
 @DynamicUpdate
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Deck implements Serializable {
@@ -111,8 +110,8 @@ public class Deck implements Serializable {
     @JsonProperty("deckId") private int deckId;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
+    @ManyToOne(cascade = CascadeType.ALL, optional=true)
+    @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"), nullable=true)
     @JsonProperty("gameObj") private  Game gameObj;
 
     //@OneToOne(cascade = CascadeType.ALL)
@@ -123,8 +122,8 @@ public class Deck implements Serializable {
     @JsonProperty("cardOrder") private int cardOrder;
 
     @JsonIgnore
-    @OneToOne
-    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
+    @OneToOne(optional=true)
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"), nullable=true)
     @JsonProperty("dealtTo") private Player dealtTo;
 
     /**
@@ -199,16 +198,16 @@ public class Deck implements Serializable {
         return -1;
     }*//*
 
-*//*    public Card deal(int hand) throws IllegalArgumentException {
-        if (hand == 0) {
-            throw new IllegalArgumentException("hand for dealing cards is zero!");
+*//*    public Card deal(int Hand) throws IllegalArgumentException {
+        if (Hand == 0) {
+            throw new IllegalArgumentException("Hand for dealing cards is zero!");
         }
         int topCard = this.searchNextCardNotInHand();
-        // register hand before returning topCard
+        // register Hand before returning topCard
         if (topCard == -1) {
             return null;
         } else {
-            dealedTo[topCard] = hand;
+            dealedTo[topCard] = Hand;
         }
         return cards.fromLabel(topCard);
     }*//*

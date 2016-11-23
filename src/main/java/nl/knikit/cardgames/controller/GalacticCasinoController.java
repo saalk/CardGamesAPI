@@ -468,7 +468,7 @@ public class GalacticCasinoController {
 ////                    } else {
 ////                        if (real == PlayerOld.Predict.EQUAL) {
 ////                            answer = console.getAnswerFromConsole("> Equal cards " + currentPlayerOld.getAlias()
-////                                    + ", so hand over the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
+////                                    + ", so Hand over the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);
 ////                        } else {
 ////                            answer = console.getAnswerFromConsole("> Bad guess " + currentPlayerOld.getAlias()
 ////                                    + ", i'll take the " + (currentGameOld.getAnte() * (int) Math.pow(2, turn - 1)), dummy);

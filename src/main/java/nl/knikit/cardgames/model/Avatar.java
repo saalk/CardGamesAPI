@@ -22,7 +22,6 @@ import lombok.ToString;
 
 // Getters, no setters needed
 @Getter
-@ToString
 public enum Avatar {
 
     @Column(name = "AVATAR", length = 25)
@@ -49,4 +48,4 @@ public enum Avatar {
         return lookup.get(label);
     }
 
-};
+}

@@ -1,6 +1,3 @@
-/**
- * @author KvdM
- */
 package nl.knikit.cardgames.model;
 
 import java.util.EnumSet;
@@ -20,7 +17,6 @@ import lombok.ToString;
  */
 
 @Getter
-@ToString
 public enum CardGameVariant {
 
     /**
@@ -67,6 +63,4 @@ public enum CardGameVariant {
         this.cardName = cardName.getLabel();
         this.ruleName = ruleName;
     }
-
-
-};
+}

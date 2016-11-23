@@ -45,7 +45,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @Entity
 @DynamicUpdate
 // @Table(name = "PLAYER", indexes = {@Index(name = "PLAYER_INDEX", columnList = "PLAYER_ID")})
@@ -84,9 +83,11 @@ public class Player implements Serializable {
     @JsonProperty("cubits") private int cubits;
     @Column(name = "SECURED_LOAN")
     @JsonProperty("securedLoan") private int securedLoan;
-
+    
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the parent Player: delete Game when Player is deleted (no other actions!)
     @JsonIgnore
-    @OneToMany
+    @OneToMany(cascade=CascadeType.REMOVE )
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
     @JsonProperty("gameObjs") private List<Game> gameObjs = new ArrayList<>();
 
