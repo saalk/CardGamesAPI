@@ -35,7 +35,7 @@ public enum Suit implements LabeledEnum {
      * Behind the enum is the code (int) or the name (String) of the enum.
      * Make a static lookup and use a private name int or String
      */
-    //@Column(name = "SUIT", length = 10, nullable = false)
+    @Column(name = "SUIT", length = 10, nullable = false)
     CLUBS("C"),
     DIAMONDS("D"),
     HEARTS("H"),

@@ -96,8 +96,11 @@ public class Game implements Serializable {
 	@JsonProperty("ante")
 	private int ante;
 	
+	// Cascade = any change happened on this entity must cascade to the parent/child as well
+	// since this is the parent Game: do all when Game is delete on the deck childs
+	// meaning do set cascade type to all
 	@JsonIgnore
-	@OneToMany(mappedBy = "gameObj", targetEntity = Deck.class)
+	@OneToMany(cascade = CascadeType.ALL ,mappedBy = "gameObj", targetEntity = Deck.class)
 	@JsonProperty("decks")
 	private List<Deck> decks = new ArrayList<>();
 	

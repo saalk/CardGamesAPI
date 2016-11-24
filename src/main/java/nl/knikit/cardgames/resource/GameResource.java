@@ -1,7 +1,6 @@
 package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.model.CardGameType;
-import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IGameService;
@@ -62,7 +61,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
+					       .body(new ArrayList<>());
 		}
 	}
 	
@@ -83,7 +82,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
+					       .body(new ArrayList<>());
 		}
 	}
 	
@@ -106,7 +105,7 @@ public class GameResource {
 			if (games == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Game>());
+						       .body(new ArrayList<>());
 			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
@@ -114,7 +113,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
+					       .body(new ArrayList<>());
 		}
 	}
 	
@@ -142,17 +141,17 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(consistentGame);
+					       .body(e);
 		}
 	}
 	
 	@PostMapping(name = "/games", params = {"jokers"})
+	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGameWithJokers(
-			                                          @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer
-					                                          jokers,
-			                                          @RequestBody Game game) {
+			@RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
+			@RequestBody Game game) {
 		
-		// TODO jokers param
+		// TODO jokers IT testing
 		if (game == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
@@ -160,12 +159,13 @@ public class GameResource {
 		}
 		
 		Game consistentGame = makeConsistentGame(game);
+		consistentGame.addShuffledDeckToGame(jokers);
 		try {
 			Game createdGame = gameService.create(consistentGame);
 			if (createdGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Game>());
+						       .body(new ArrayList<>());
 			}
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
@@ -173,7 +173,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(consistentGame);
+					       .body(e);
 		}
 	}
 	
@@ -207,7 +207,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(consistentGame);
+					       .body(e);
 		}
 	}
 	
@@ -245,7 +245,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(game);
+					       .body(e);
 		}
 	}
 	

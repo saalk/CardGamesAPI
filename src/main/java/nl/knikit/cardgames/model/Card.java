@@ -38,8 +38,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 import lombok.Getter;
 import lombok.Setter;
+
+import static org.apache.commons.lang3.StringUtils.left;
+import static org.apache.commons.lang3.StringUtils.right;
 
 /**
  * <H2>Description</H2> A playing card used for playing card games. A complete set of cards is
@@ -64,9 +70,9 @@ import lombok.Setter;
 public class Card implements Serializable {
 	
 	// 13 progressing ranks 2 to 10, jack, queen, king, ace.
-	@JsonIgnore
-	//@Id
-	//@Column(name = "CARD_ID", length = 3)
+	//@JsonIgnore
+	@Id
+	@Column(name = "CARD_ID", length = 3)
 	@JsonProperty("cardId")
 	private String cardId;
 	
@@ -122,6 +128,38 @@ public class Card implements Serializable {
 		this.value = value != 0 ? rank.getValue(CardGameType.HIGHLOW) : 0;
 	}
 	
+	public Card(String cardId) {
+		this();
+		if (cardId.isEmpty() || !(cardId.length()==2))
+			throw new NullPointerException(cardId + " empty cardId");
+		this.rank = Rank.fromLabel(left(cardId,1));
+		this.suit = Suit.fromLabel(right(cardId,1));
+		
+		this.cardId = cardId;
+		
+		switch (rank) {
+			case JOKER:
+				value = 0;
+				break;
+			case ACE:
+				value = 1;
+				break;
+			case KING:
+				value = 13;
+				break;
+			case QUEEN:
+				value = 12;
+				break;
+			case JACK:
+				value = 11;
+				break;
+			default:
+				value = Integer.parseInt(rank.getLabel());
+		}
+		this.value = value != 0 ? rank.getValue(CardGameType.HIGHLOW) : 0;
+	}
+	
+	
 	// static fields and methods to easily make decks and add jokers
 	private static final Card joker = new Card(Rank.JOKER, Suit.JOKERS);
 	
@@ -141,6 +179,12 @@ public class Card implements Serializable {
 	 *
 	 * @return a Deck with 52 cards plus the jokers
 	 */
+	
+	public void setCardId() {
+		final StringBuilder builder = new StringBuilder();
+		this.cardId = builder.append(rank).append(suit).toString();
+	}
+	
 	public static List<Card> newDeck(int jokers) {
 		List<Card> newDeck = prototypeDeck;
 		for (int i = 0; i < jokers; i++) {

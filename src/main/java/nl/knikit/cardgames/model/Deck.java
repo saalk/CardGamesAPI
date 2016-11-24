@@ -108,9 +108,12 @@ public class Deck implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "DECK_ID")
     @JsonProperty("deckId") private int deckId;
-
+    
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the child Deck: do nothing when Deck is delete on the parent Game
+    // meaning do not set cascade options
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL, optional=true)
+    @ManyToOne(optional=true)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"), nullable=true)
     @JsonProperty("gameObj") private  Game gameObj;
 
