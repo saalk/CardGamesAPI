@@ -115,7 +115,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		Player jsonPlayer = mapper.readValue(latestResponse.getBody(), Player.class);
 		StepDefsPlayers.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
 		
-		assertThat(jsonPlayer.isHuman(), is(Boolean.parseBoolean(isHuman)));
+		assertThat(jsonPlayer.getHuman(), is(Boolean.parseBoolean(isHuman)));
 		assertThat(jsonPlayer.getAvatar(), is(Avatar.valueOf(avatar)));
 		assertThat(jsonPlayer.getAlias(), is(alias));
 	}

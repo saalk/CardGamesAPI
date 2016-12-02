@@ -69,17 +69,17 @@ public class Hand implements Serializable {
     //@JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
-    @JsonProperty("playerObj") private  Player playerObj;
+    @JsonProperty("player") private  Player player;
 
     //@JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
-    @JsonProperty("casinoObj") private  Casino casinoObj;
+    @JsonProperty("casino") private  Casino casino;
 
     //@JsonIgnore
     //@OneToOne(cascade = CascadeType.ALL)
     //@JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
-    @JsonProperty("cardObj") private Card cardObj;
+    @JsonProperty("card") private Card card;
 
     @Column(name = "CARD_ORDER")
     @JsonProperty("cardOrder") private int cardOrder;
@@ -93,11 +93,11 @@ public class Hand implements Serializable {
     public Hand(){
     }
 
-    public Hand(Player playerObj, Casino casinoObj, Card cardObj, int cardOrder){
+    public Hand(Player player, Casino casino, Card card, int cardOrder){
         this();
-        this.playerObj = playerObj;
-        this.casinoObj = casinoObj;
-        this.cardObj = cardObj;
+        this.player = player;
+        this.casino = casino;
+        this.card = card;
         this.cardOrder = cardOrder;
     }
     

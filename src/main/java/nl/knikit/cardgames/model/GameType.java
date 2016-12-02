@@ -8,11 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * <H1>CardGame</H1> A selection of card games that can be selected to play. <p> More games will be
@@ -23,7 +21,7 @@ import lombok.ToString;
  * @since v1 - console game
  */
 @Getter
-public enum CardGameType implements LabeledEnum {
+public enum GameType implements LabeledEnum {
 
     /**
      * HIGHLOW cardgame is a simple higher or lower guessing game. The dealer places one card
@@ -34,36 +32,36 @@ public enum CardGameType implements LabeledEnum {
      * the bet to another player, or go double or nothing on the next bet depending on the specific
      * variant of HIGHLOW.
      */
-    @Column(name = "CARD_GAME_TYPE", length = 25, nullable = false)
+    @Column(name = "TYPE", length = 25, nullable = false)
     HIGHLOW("Hi-Lo"), BLACKJACK("Blackjack");
 
     /**
      * A static HashMap lookup with key + value is created to use in a getter
      * to fromLabel the Enum based on the name eg. key "Low" -> value AiLevel.LOW
      */
-    private static final Map<String,CardGameType> lookup
+    private static final Map<String,GameType> lookup
             = new HashMap<>();
     static {
-        for(CardGameType cardGameType : EnumSet.allOf(CardGameType.class))
-            lookup.put(cardGameType.getLabel(), cardGameType);
+        for(GameType gameType : EnumSet.allOf(GameType.class))
+            lookup.put(gameType.getLabel(), gameType);
     }
     @Transient
     private String label;
 
-    CardGameType(){
+    GameType(){
     }
 
-    CardGameType(String label) {
+    GameType(String label) {
         this();
         this.label = label;
     }
 
-    public static CardGameType fromCardGameTypeName(String label) {
+    public static GameType fromGameTypeLabel(String label) {
         return lookup.get(label);
     }
 
 
     @Transient
-    public static Set<CardGameType> cardGamesListType = EnumSet.of(HIGHLOW);
+    public static Set<GameType> cardGamesListGameType = EnumSet.of(HIGHLOW);
 
 }

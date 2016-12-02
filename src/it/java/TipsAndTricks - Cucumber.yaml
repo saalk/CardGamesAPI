@@ -36,7 +36,7 @@ Then 	= NEW STATE describes the resulting state of the system, invoking an actio
 And 	= Logical and
 But 	= Logically the same as And, but used in the negative form
 
-GIVEN/WHEN/THEN is nothing more than a description of a state transition,
+GIVEN/WHEN/THEN is nothing more than a description of a state fireTrigger,
 and the sum of all the GIVEN/WHEN/THEN statement is nothing more than a Finite State Machine.
 
 If we are in the LOCKED state, and we get a COIN event, then we go to the UNLOCKED state,

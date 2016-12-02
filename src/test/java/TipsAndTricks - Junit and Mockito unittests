@@ -1,0 +1,158 @@
+## Assertions
+- Assertions (via assert keyword): are added in Java 1.4.
+- They should never be triggered in production code.
+- They can be activated at run-time by way of the -ea option on the java command, but are not turned on by default.
+An JAVA 1.4 example:
+boolean nullsRemoved = names.remove(null);
+assert nullsRemoved;  // assert runs when asserts are enabled
+
+# JUnit - provides a set of assert methods to control the results. Errors are detected by these assertions are collected by JUnit.
+Alt+Shift+X, ,T:	 to shortcut to run the tests in the class
+
+-> assertEquals(expected, actual):	requires that the value ‘expected’ is equal to ‘actual’.
+-> assertTrue(cond):				required that ‘cond’ has value ‘true’
+-> assertFalse(cond):				required that ‘cond’ has value ‘false’
+-> assertNull(obj):					required that ‘obj’ is a null reference
+-> assertNotNull(obj):				required that ‘obj’ isn't null reference
+
+Assert.assertEquals(...), however, they read better if they are referenced through static import
+ import static org.junit.Assert.*;
+    ...
+    assertEquals(...);
+
+# JUnit best practices
+- Its not practically possible to get 100% code coverage
+- Integrate Junit tests with your build script
+- Develop test cases based on usage and boundary conditions (empty/zero, grenzen, out of the box situatie)
+- Write test for non functional requirement as well
+- If a function or method is depends upon order of events than make sure your JUnit test covers ordering requirement
+- Writing trivial JUnit tests like for getter and setter method is mostly waste of time
+- Keep your Unit test independent of Environmental data like Database, File Systemz
+- Use available tools like DBunit, XMLUnit and Spring test framework based
+
+# Junit way of working and naming TESTS
+Naming:
+methodname_StateUnderTest_ExpectedBehavior
+when_given_then
+Example:
+Public void Sum_NegativeNumberAs1stParam_ExceptionThrown()
+Public void Sum_NegativeNumberAs2ndParam_ExceptionThrown()
+Public void Sum_simpleValues_Calculated()
+Bad:
+Sum_NumberIsIgnored
+Sum_NumberBiggerThan1000
+Good:
+Sum_NumberIgnoredIfBiggerThan1000
+
+# Test setup:
+If the ASSERT line is expressing what your requirement is, or comes close, you re probably there.
+Example:
+bad:
+Assert.AreEqual(-1, val)
+good:
+Assert.AreEqual(BAD_INITIALIZATION_CODE, ReturnCode, Method shold have returned a bad initialization code )
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGTny0j0
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGThVCTR
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGTcpZFE
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGTVYZdt
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGTPwF00
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGSF4dWD
+Read more: http://javarevisited.blogspot.com/2012/08/best-practices-to-write-junit-test.html#ixzz3rGS5UD63
+
+
+
+
+
+# Junit - extensions TODO
+Mock objects are intended to imitate the behavior.
+Before using a mock object one must train the mock object how it has to behave when it is called during test.
+When the actual test needs to be runned, the mock object is instructed to replay his learned behavior.
+To be able to use mock objects one must practice interface-based programming.
+
+It will provide not only the number of unit tests and the result of their execution, but contains a very interesting metric which measure the Code Coverage of all your tests. This is for instance done with Clover. It gives an overview of which parts of the code are used during evaluation of the tests and which parts are never addressed.
+
+point 7 - making comments in junit
+http://javarevisited.blogspot.nl/2012/08/best-practices-to-write-junit-test.html
+http://stackoverflow.com/questions/2968010/javadoc-in-junit-test-classes
+http://technologyconversations.com/2013/12/24/test-driven-development-tdd-best-practices-using-java-examples-2/
+http://programmers.stackexchange.com/questions/109680/writing-java-doc-comments-for-unit-test-cases
+
+http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
+[UnitOfWork_StateUnderTest_ExpectedBehavior]
+public method/class -> statechange -> returnvalue/exception/call to 3rd pty
+
+
+
+External resources
+
+Junit WIKI
+https://github.com/junit-team/junit/wiki
+for instance the list of Assertions: https://github.com/junit-team/junit/wiki/Assertions
+SonarCube
+http://www.sonarqube.org/
+EasyMock tutorial http://easymock.org/EasyMock3_2_Documentation.html
+
+
+
+JUNIT Annotations:
+# @RunWith(Parameterized.class) - indicate use of parameters for test classes
+
+// public parameter fields
+@Parameter  - public int m1;
+@Parameter (value = 1) - public int m2;
+
+// create test data
+@Parameters
+public static Collection<Object[]> data() {
+Object[][] data = new Object[][] { { 1 , 2 }, { 5, 3 }, { 121, 4 } };
+return Arrays.asList(data);} @Test ...
+-> @Test - public void testxyz() - marks methods that make tests so junit will notice the methods that contain assertions
+-> @Test(expected = Exception.class) - Fails if the method does not throw the named exception
+-> @Test(timeout=500) - test fails after 500 ms
+-> @Before and @After annotations - feature to execute instructions before of after each test
+
+@Before | public void setUp(){ a = new methodtotest(); }
+
+@Test | public void testAdd(){ assertEquals(4, a.add(3, 1)); }
+-> @BeforeClass public static void method() - used to connect to db, performed only once for all the tests
+-> @Ignore - allows marking the test methods that you want not to slow down other methods
+-> @Rule / @Override - to create objects which can be used and configured in your test methods -> allows to read information about the test via reflection.
+
+Statement represent the tests
+Statement#evaluate() run these
+Description describes the individual test.
+
+# EXAMPLE JUNIT TEST
+Client client = new Client();
+client.connect(“host”,5566);
+assertEquals(client.isConnected(), true);
+
+# TESTING Exceptions with @Test(expected = Exception.class)
+try { mustThrowException();
+   fail();
+} catch (Exception e) {
+   // expected, could also check for message of exception here, etc.
+}
+
+
+# EXAMPLE JUNIT TEST
+assertEquals:	 uses the Equals uses the equals method for comparison.
+assertSame:		 uses the == operator
+
+dif:
+-> a == b checks to see if a and b refer (not 'are') to the same object
+-> a.equals(b) checks to see if the objects they refer to are both strings that contain exactly the same characters.
+
+so:
+assertEquals(obj1, obj2) does call obj1.equals(obj2) and
+assertSame(obj1, obj2) which does obj1 == obj2.
+
+# Because String is an object, comparing with == might return true often more than expected.
+- String a = "abcde";
+- String b = new String(a);
+- assertTrue(a.equals(b));  -> true
+- assertFalse(a == b);   -> false
+- assertEquals(a, b);  -> true
+=> never use "==" to do any string compare unless all strings are predefined instead of create with new!
+# what is String b = “b”;
+- if(b == “b”); ->returns true

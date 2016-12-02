@@ -6,7 +6,7 @@
 //import nl.knikit.cardgames.model.Deck;
 //import nl.knikit.cardgames.model.HandOld;
 //
-//public class HighLowCardGameTypeOldTest {
+//public class HighLowTypeOldTest {
 //
 //	private Deck deck;
 //	private HandOld handOld1;

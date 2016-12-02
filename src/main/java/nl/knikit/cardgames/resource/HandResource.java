@@ -96,7 +96,7 @@ public class HandResource {
             if (Hands == null || Hands.isEmpty()) {
                 return ResponseEntity
                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                               .body(new ArrayList<>());
+                               .body(new ArrayList<Hand>());
             }
 
             return new ResponseEntity(Hands, HttpStatus.OK);
@@ -112,29 +112,24 @@ public class HandResource {
     public ResponseEntity createHand(
             @RequestBody Hand Hand) {
     
-        // check for casinoObj and playerObj
-        if ( !(Hand.getPlayerObj().getPlayerId()>0) ||
-             !(Hand.getCasinoObj().getCasinoId()>0) ||
-             !(Hand.getCardObj().getCardId().isEmpty()) ) {
+        // check for casino and player
+        if ( !(Hand.getPlayer().getPlayerId()>0) ||
+             !(Hand.getCasino().getCasinoId()>0) ||
+             !(Hand.getCard().getCardId().isEmpty()) ) {
             
             return ResponseEntity
                            .status(HttpStatus.NOT_ACCEPTABLE)
                            .body("No Casino or Player or Card supplied for Hand to create " + Hand);
         }
         
-        Casino currentCasino = casinoService.findOne(Hand.getCasinoObj().getCasinoId());
-        Player currentPlayer = playerService.findOne(Hand.getPlayerObj().getPlayerId());
+        Casino currentCasino = casinoService.findOne(Hand.getCasino().getCasinoId());
+        Player currentPlayer = playerService.findOne(Hand.getPlayer().getPlayerId());
         if (currentCasino == null || currentPlayer == null ) {
             return ResponseEntity
                            .status(HttpStatus.NOT_ACCEPTABLE)
                            .body("No Casino or Player supplied to relate Hand to: " + Hand);
         }
-            
-        if (!Card.isValidCard(Hand.getCardObj().getCardId())) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("Not a valid card supplied to create for Hand: " + Hand);
-        }
+
         handService.create(Hand);
 
         return ResponseEntity

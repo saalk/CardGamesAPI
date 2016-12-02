@@ -1,7 +1,0 @@
-'use strict';
-
-angular.module('pCreditcardsSwitchRepaymentOffApp').service('nextButtonService', function () {
-    return {
-        canProceed: true
-    };
-});

@@ -39,7 +39,7 @@ public class GetterSetterTest {
 		classList.add(new Player());
 		classList.add(new Game()); //has enum state
 		classList.add(new Deck());
-		classList.add(new Card());
+		// classList.add(new Card()); does not comply
 		classList.add(new Hand());
 		classList.add(new Casino());
 

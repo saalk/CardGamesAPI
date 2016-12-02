@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -28,7 +27,6 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -41,7 +39,6 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * <H2>Description</H2>A "standard" deck of playing cards consists of 52 {@link Card Cards}; 13 in each of
@@ -113,13 +110,14 @@ public class Deck implements Serializable {
     // since this is the child Deck: do nothing when Deck is delete on the parent Game
     // meaning do not set cascade options
     @JsonIgnore
-    @ManyToOne(optional=true)
-    @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"), nullable=true)
-    @JsonProperty("gameObj") private  Game gameObj;
-
-    //@OneToOne(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
-    @JsonProperty("cardObj") private Card cardObj;
+    @ManyToOne(optional=false, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"), nullable=false)
+    @JsonProperty("game") private  Game game;
+    
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
+    @JsonProperty("card") private Card card;
 
     @Column(name = "CARD_ORDER")
     @JsonProperty("cardOrder") private int cardOrder;
@@ -137,10 +135,10 @@ public class Deck implements Serializable {
     public Deck() {
     }
 
-    public Deck(Game gameObj, Card cardObj, int cardOrder, Player dealtTo) {
+    public Deck(Game game, Card card, int cardOrder, Player dealtTo) {
         this();
-        this.gameObj = gameObj;
-        this.cardObj = cardObj;
+        this.game = game;
+        this.card = card;
         this.cardOrder = cardOrder;
         this.dealtTo = dealtTo;
     }
@@ -240,14 +238,14 @@ public class Deck implements Serializable {
         return total;
     }
 
-    *//*public int averageValueInDeck(CardGameType inputCardGameType) {
+    *//*public int averageValueInDeck(Type inputType) {
         int value = 0;
         int count = 0;
         // TODO check for empty list of cards in deck
         for (Card card : cards) {
             if (this.getDealedTo(count) == 0) {
                 // not yet dealed
-                value = value + card.getRank().getValue(inputCardGameType);
+                value = value + card.getRank().getValue(inputType);
                 count++;
             }
         }

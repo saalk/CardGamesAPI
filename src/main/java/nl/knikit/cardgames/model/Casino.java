@@ -56,12 +56,12 @@ public class Casino implements Serializable {
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
-    @JsonProperty("gameObj") private Game gameObj;
+    @JsonProperty("game") private Game game;
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
-    @JsonProperty("playerObj") private Player playerObj;
+    @JsonProperty("player") private Player player;
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
@@ -78,10 +78,10 @@ public class Casino implements Serializable {
         this.created = result.substring(2, 20);
     }
 
-    public Casino(Game gameObj, Player playerObj, Hand handObj, int playingOrder) {
+    public Casino(Game game, Player player, Hand handObj, int playingOrder) {
         this();
-        this.gameObj = gameObj;
-        this.playerObj = playerObj;
+        this.game = game;
+        this.player = player;
         this.handObj = handObj;
         this.playingOrder = playingOrder;
     }

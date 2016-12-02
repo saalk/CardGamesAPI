@@ -53,7 +53,7 @@ public enum Rank implements LabeledEnum {
             lookup.put(rank.getLabel(), rank);
     }
 
-    //@Transient
+    @Transient
     private String label;
 
     Rank(){}
@@ -72,14 +72,14 @@ public enum Rank implements LabeledEnum {
      * Usually the Face cards (K,Q,J) are worth 13,12,11 points, each Aces are worth 1. But the
      * selected card game type determines the playing value.
      * <p>
-     * Values for {@link CardGameType}:
+     * Values for {@link GameType}:
      * 1. Vote if equal cards are a loss or correct guess (usually loss since only high low counts).
      * 2. No jokers.
      * 3. Ace is worth 1
      */
-    public int getValue(CardGameType inputCardGameType) {
+    public int getValue(GameType inputGameType) {
         int value = 0;
-        switch (inputCardGameType) {
+        switch (inputGameType) {
             case HIGHLOW:
                 // name() return the enum name like ACE or KING
                 switch (fromLabel(this.label)) {

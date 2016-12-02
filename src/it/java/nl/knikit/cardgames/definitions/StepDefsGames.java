@@ -3,7 +3,8 @@ package nl.knikit.cardgames.definitions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.model.Avatar;
-import nl.knikit.cardgames.model.CardGameType;
+import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 
@@ -44,8 +45,8 @@ public class StepDefsGames extends SpringIntegrationTest {
 		executeGet("http://localhost:8383/api/games/" + gameId);
 	}
 	
-	@Given("^I try to post a cardGameType \"([^\"]*)\" game having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewTypeGameWithWinnerAndAnte(String cardGameType, String winner, String ante) throws Throwable {
+	@Given("^I try to post a type \"([^\"]*)\" game having \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPostANewTypeGameWithWinnerAndAnte(String type, String winner, String ante) throws Throwable {
 		
 		
 		Game postGame = new Game();
@@ -55,7 +56,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 			postPlayer.setPlayerId(Integer.parseInt(winner));
 			postGame.setWinner(postPlayer);
 		}
-		postGame.setCardGameType(CardGameType.valueOf(cardGameType));
+		postGame.setGameType(GameType.valueOf(type));
 		postGame.setAnte(Integer.parseInt(ante));
 		
 		// jackson has ObjectMapper that converts String to JSON
@@ -84,15 +85,15 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 	}
 	
-	@Given("^I try to put a game with \"([^\"]*)\" having cardGameType \"([^\"]*)\" winner \"([^\"]*)\" and ante \"([^\"]*)\"$")
-	public void iTryToPutANewTypeGameWithWinnerAndAnte(String gameId, String cardGameType, String winner, String ante) throws Throwable {
+	@Given("^I try to put a game with \"([^\"]*)\" having type \"([^\"]*)\" winner \"([^\"]*)\" and ante \"([^\"]*)\"$")
+	public void iTryToPutANewTypeGameWithWinnerAndAnte(String gameId, String type, String winner, String ante) throws Throwable {
 		
 		Game postGame = new Game();
 		if (gameId.equals("latest")) {
 			gameId = StepDefsGames.latestGameID;
 		}
 		//TODO set the playerId also in the body or not ?
-		postGame.setCardGameType(CardGameType.valueOf(cardGameType));
+		postGame.setGameType(GameType.valueOf(type));
 		postGame.setAnte(Integer.parseInt(ante));
 		
 		if (!winner.isEmpty()) {
@@ -141,8 +142,8 @@ public class StepDefsGames extends SpringIntegrationTest {
 		executeDelete("http://localhost:8383/api/players/" + winner, null);
 	}
 		
-	@And("^The json response should contain cardGameType \"([^\"]*)\" game having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeANewTypeGameWithWinnerAndAnte(String cardGameType, String winner, String ante) throws Throwable {
+	@And("^The json response should contain type \"([^\"]*)\" game having \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void theJsonResponseBodyShouldBeANewTypeGameWithWinnerAndAnte(String type, String winner, String ante) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -160,7 +161,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 			assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(winner));
 		}
 		
-		assertThat(jsonGame.getCardGameType(), is(CardGameType.valueOf(cardGameType)));
+		assertThat(jsonGame.getGameType(), is(GameType.valueOf(type)));
 		assertThat(jsonGame.getAnte(), is(Integer.parseInt(ante)));
 	}
 

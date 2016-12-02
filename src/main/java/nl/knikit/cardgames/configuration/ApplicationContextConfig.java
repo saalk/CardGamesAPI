@@ -2,6 +2,7 @@ package nl.knikit.cardgames.configuration;
 
 import java.util.Properties;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import org.hibernate.SessionFactory;
@@ -145,8 +146,11 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
-
-
+    
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
     // uses sessionBuilder.addProperties(getHibernateProperties()) in the session factory bean
     // or seat each property with sessionBuilder.setProperty("hibernate.show_sql", "true");
     final Properties hibernateProperties() {
@@ -158,7 +162,7 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         //properties.put("hibernate.connection.driver_class", "com.mariadb.jdbc.Driver");
         hibernateProperties.put("hibernate.hbm2ddl.auto", "create");
-        //hibernateProperties.put("hibernate.hbm2ddl.import_files", "initial_data.sql");
+        hibernateProperties.put("hibernate.hbm2ddl.import_files", "initial_data.sql");
         hibernateProperties.setProperty("hibernate.connection.autocommit", "false");
         hibernateProperties.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
         hibernateProperties.setProperty("hibernate.id.new_generator_mappings", "true");

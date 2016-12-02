@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Proxy;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -24,8 +23,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,21 +30,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
-
-@Getter
-@Setter
 @Entity
 @DynamicUpdate
-/*@Table(name = "GAME", indexes = {
-        @Index(columnList = "WINNER", name = "WINNER_INDEX")})*/
 @Table(name = "GAME")
+@Getter
+@Setter
 @Relation(value = "game", collectionRelation = "games")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Game implements Serializable {
@@ -62,15 +54,16 @@ public class Game implements Serializable {
 	@JsonProperty("created")
 	private String created;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "STATE", length = 25, nullable = false)
 	@JsonProperty("state")
-	private String state;
+	private State state;
 	
 	@Enumerated(EnumType.STRING)
 	//@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	@Column(name = "CARD_GAME_TYPE", nullable = false)
-	@JsonProperty("cardGameType")
-	private CardGameType cardGameType;
+	@Column(name = "TYPE", length = 50, nullable = false)
+	@JsonProperty("type")
+	private GameType gameType;
 	
 	@Column(name = "MAX_ROUNDS")
 	@JsonProperty("maxRounds")
@@ -98,9 +91,9 @@ public class Game implements Serializable {
 	
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
 	// since this is the parent Game: do all when Game is delete on the deck childs
-	// meaning do set cascade type to all
+	// meaning do set cascade type to all -> changed to delete not create
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL ,mappedBy = "gameObj", targetEntity = Deck.class)
+	@OneToMany(cascade = CascadeType.REMOVE ,mappedBy = "game", targetEntity = Deck.class)
 	@JsonProperty("decks")
 	private List<Deck> decks = new ArrayList<>();
 	
@@ -157,12 +150,13 @@ public class Game implements Serializable {
 		int i = 1;
 		for (Card card : cards) {
 			Deck deck = new Deck();
-			deck.setCardObj(card);
+			deck.setCard(card);
 			deck.setCardOrder(i++);
 			deck.setDealtTo(null);
 			this.decks.add(deck);
 		}
 		
 	}
+	
 }
 

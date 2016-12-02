@@ -4,11 +4,10 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import lombok.Getter;
-import lombok.ToString;
 
 
 /**
- * <H1>CardGameVariant</H1> A selection of variants to a specific card games that can be selected to
+ * <H1>GameVariant</H1> A selection of variants to a specific card games that can be selected to
  * play. <p> More variants will be added in future.
  *
  * @author Klaas van der Meulen
@@ -17,15 +16,15 @@ import lombok.ToString;
  */
 
 @Getter
-public enum CardGameVariant {
+public enum GameVariant {
 
     /**
      * verwijs in deze enum van Regels naar de enum van CardGame voor 'nested enums', anders zullen
      * 2 enums naar eenzelfde interface moeten verwijzen en die is nu niet nodig
      */
-    HILOW_1ROUND(CardGameType.HIGHLOW, "One round double or nothing "),
-    HILOW_3_IN_A_ROW_1SUIT(CardGameType.HIGHLOW, "'3-in-a-row' one suit"),
-    HILOW_5_IN_A_ROW(CardGameType.HIGHLOW, "'5-in-a-row'");
+    HIGHLOW_1ROUND(GameType.HIGHLOW, "One round double or nothing "),
+    HIGHLOW_3_IN_A_ROW_1SUIT(GameType.HIGHLOW, "make '3-in-a-row' one suit"),
+    HIGHLOW_5_IN_A_ROW(GameType.HIGHLOW, "'5-in-a-row'");
 
 
     //HILOW_DRINKING_WITH_OPPONENTS(CardGame.HIGHLOW, "Drinking with opponent(s)"),
@@ -51,16 +50,16 @@ public enum CardGameVariant {
      * implementations are grouped into general-purpose and special-purpose
      * implementations.
      */
-    public static Set<CardGameVariant> highlowCardGameVariants = EnumSet.of(HILOW_1ROUND, HILOW_3_IN_A_ROW_1SUIT,
-            HILOW_5_IN_A_ROW);
+    public static Set<GameVariant> highlowGameVariants = EnumSet.of(HIGHLOW_1ROUND, HIGHLOW_3_IN_A_ROW_1SUIT,
+            HIGHLOW_5_IN_A_ROW);
 
-    String cardName;
-    String ruleName;
+    String gameType;
+    String rules;
 
     // Constructor, each argument to the constructor shadows one of the object's
     // fields
-    CardGameVariant(CardGameType cardName, String ruleName) {
-        this.cardName = cardName.getLabel();
-        this.ruleName = ruleName;
+    GameVariant(GameType gameType, String rules) {
+        this.gameType = gameType.getLabel();
+        this.rules = rules;
     }
 }

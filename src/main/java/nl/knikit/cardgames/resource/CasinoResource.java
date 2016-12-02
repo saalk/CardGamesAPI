@@ -85,7 +85,7 @@ public class CasinoResource {
             if (casinos == null || casinos.isEmpty()) {
                 return ResponseEntity
                                .status(HttpStatus.BAD_REQUEST)
-                               .body(new ArrayList<>());
+                               .body(new ArrayList<Casino>());
             }
 
             return new ResponseEntity(casinos, HttpStatus.OK);
@@ -157,7 +157,7 @@ public class CasinoResource {
                     .body("No Casino supplied to create: " + casino);
         }
         Casino newCasino = new Casino();
-        newCasino.setGameObj(game);
+        newCasino.setGame(game);
         casinoService.create(newCasino);
 
         return ResponseEntity

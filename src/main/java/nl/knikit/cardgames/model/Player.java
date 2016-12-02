@@ -24,14 +24,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * <H1>Player</H1>
@@ -68,11 +67,13 @@ public class Player implements Serializable {
     //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
     @Column(name = "AVATAR", nullable = false)
     @JsonProperty("avatar") private Avatar avatar;
-
-    @Column(name = "ALIAS")
-    @JsonProperty("alias") private String alias;
+	
+	@Column(name = "ALIAS")
+	@JsonProperty("alias") private String alias;
+	
     @Column(name = "HUMAN")
-    @JsonProperty("isHuman") private boolean isHuman;
+    @Setter(AccessLevel.NONE)
+    @JsonProperty("human") private boolean human;
 
     @Enumerated(EnumType.STRING)
     //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
@@ -89,7 +90,7 @@ public class Player implements Serializable {
     @JsonIgnore
     @OneToMany(cascade=CascadeType.REMOVE )
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
-    @JsonProperty("gameObjs") private List<Game> gameObjs = new ArrayList<>();
+    @JsonProperty("games") private List<Game> games = new ArrayList<>();
 
 
     /* if you want to get all games for a specific winner...
@@ -129,6 +130,14 @@ public class Player implements Serializable {
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 20);
     }
-    
+	
+	public void setHuman(boolean human) {
+		this.human = human;
+	}
+	
+	public boolean getHuman() {
+		return this.human;
+	}
+	
 }
 

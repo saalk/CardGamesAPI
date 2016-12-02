@@ -2,6 +2,7 @@ package nl.knikit.cardgames.model;
 
 import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,15 @@ public enum AiLevel implements LabeledEnum {
 
     @Column(name = "AI_LEVEL", length = 10, nullable = false)
     LOW("Low"), MEDIUM("Medium"), HIGH("High"), HUMAN("Human"), NONE("None");
-
+    
+    /**
+     * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
+     * <p>EnumSet is an abstract class so new() operator does not work. EnumSet has several static
+     * factory methods for creating an instance like creating groups from enums.
+     * Here it is used to group all enums.
+     */
+    public static Set<AiLevel> aiLevels = EnumSet.of(LOW, MEDIUM, HIGH, HUMAN, NONE);
+    
     /**
      * A static HashMap lookup with key + value is created to use in a getter
      * to fromLabel the Enum based on the name eg. key "Low" -> value AiLevel.LOW
@@ -48,7 +57,7 @@ public enum AiLevel implements LabeledEnum {
             lookup.put(aiLevel.getLabel(), aiLevel);
     }
     private String label;
-
+    
     AiLevel(){
 
     }
@@ -56,25 +65,8 @@ public enum AiLevel implements LabeledEnum {
         this();
         this.label = label;
     }
-
-    public static AiLevel fromAiLevelName(String label) {
+    
+    public static AiLevel fromLabel(String label) {
         return lookup.get(label);
-    }
-
-    /**
-     * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
-     * <p>EnumSet is an abstract class so new() operator does not work. EnumSet has several static
-     * factory methods for creating an instance like creating groups from enums.
-     * Here it is used to group all enums.
-     */
-    public static Set<AiLevel> aiLevels = EnumSet.of(LOW, MEDIUM, HIGH, HUMAN, NONE);
-
-    /*
-     * Using @Override annotation while overriding method in Java is one of the
-	 * best practice in Java.
-     */
-    @Override
-    public String toString() {
-        return "" + label;
     }
 }

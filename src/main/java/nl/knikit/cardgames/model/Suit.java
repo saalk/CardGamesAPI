@@ -63,7 +63,7 @@ public enum Suit implements LabeledEnum {
             lookup.put(suit.getLabel(), suit);
     }
 
-    //@Transient
+    @Transient
     private String label;
 
     Suit() {

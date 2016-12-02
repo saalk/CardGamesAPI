@@ -1,8 +1,9 @@
 package nl.knikit.cardgames.resource;
 
-import nl.knikit.cardgames.model.CardGameType;
+import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.model.state.GalacticCasinoStateMachine;
 import nl.knikit.cardgames.service.IGameService;
 import nl.knikit.cardgames.service.IPlayerService;
 
@@ -54,14 +55,14 @@ public class GameResource {
 		
 		ArrayList<Game> games;
 		try {
-			games = (ArrayList<Game>) gameService.findAll("cardGameType", "ASC");
+			games = (ArrayList<Game>) gameService.findAll("type", "ASC");
 			return ResponseEntity
 					       .status(HttpStatus.OK)
 					       .body(games);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<>());
+					       .body(new ArrayList<Game>());
 		}
 	}
 	
@@ -96,16 +97,16 @@ public class GameResource {
 	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
 	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
 	
-	@GetMapping(value = "/games/", params = {"cardGameType"})
+	@GetMapping(value = "/games/", params = {"type"})
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity<ArrayList<Game>> findAllWhere(@RequestParam(value = "cardGameType", required = true) String param) {
+	public ResponseEntity<ArrayList<Game>> findAllWhere(@RequestParam(value = "type", required = true) String param) {
 		
 		try {
-			ArrayList<Game> games = (ArrayList) gameService.findAllWhere("cardGameType", param);
+			ArrayList<Game> games = (ArrayList) gameService.findAllWhere("type", param);
 			if (games == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<>());
+						       .body(new ArrayList<Game>());
 			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
@@ -113,7 +114,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<>());
+					       .body(new ArrayList<Game>());
 		}
 	}
 	
@@ -334,14 +335,14 @@ public class GameResource {
 		if (game.getState() != null) {
 			consistentGame.setState(game.getState());
 		} else {
-			consistentGame.setState("SELECT_GAME");
+			consistentGame.setState(GalacticCasinoStateMachine.State.SELECT_GAME);
 		}
 		
-		// make cardGameType consistent
-		if (game.getCardGameType() != null) {
-			consistentGame.setCardGameType(game.getCardGameType());
+		// make type consistent
+		if (game.getGameType() != null) {
+			consistentGame.setGameType(game.getGameType());
 		} else {
-			consistentGame.setCardGameType(CardGameType.HIGHLOW);
+			consistentGame.setGameType(GameType.HIGHLOW);
 		}
 		return consistentGame;
 	}

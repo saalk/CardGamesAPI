@@ -18,8 +18,8 @@ function ($scope, playerService, toastr){
     
     // flags + checks for ng-if
     vm.showListForDebug = false;
-    vm.showalien1 = false;
-    vm.showalien2 = false;
+    vm.showalien1 = true;
+    vm.showalien2 = true;
     vm.ante = 0; 
     vm.loopplayer = 0;
     vm.tothecasino = false;

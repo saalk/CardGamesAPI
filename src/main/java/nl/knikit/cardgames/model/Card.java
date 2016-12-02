@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -39,7 +40,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -60,9 +65,9 @@ import static org.apache.commons.lang3.StringUtils.right;
  * @since v1 - console game
  */
 
-//@Entity
-//@Table(name = "CARD")
-//@DynamicUpdate
+@Entity
+@Table(name = "CARD")
+@DynamicUpdate
 @Getter
 @Setter
 @Relation(value = "card", collectionRelation = "cards")
@@ -70,26 +75,26 @@ import static org.apache.commons.lang3.StringUtils.right;
 public class Card implements Serializable {
 	
 	// 13 progressing ranks 2 to 10, jack, queen, king, ace.
-	//@JsonIgnore
+	@JsonIgnore
 	@Id
 	@Column(name = "CARD_ID", length = 3)
 	@JsonProperty("cardId")
 	private String cardId;
 	
 	
-	//@Enumerated(EnumType.STRING)
-	//@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	//@Column(name = "RANK")
+	@Enumerated(EnumType.STRING)
+	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+	@Column(name = "RANK")
 	@JsonProperty("rank")
 	private Rank rank;
 	
-	//@Enumerated(EnumType.STRING)
-	//@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	//@Column(name = "SUIT")
+	@Enumerated(EnumType.STRING)
+	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
+	@Column(name = "SUIT")
 	@JsonProperty("suit")
 	private Suit suit;
 	
-	//@Column(name = "VALUE")
+	@Column(name = "VALUE")
 	@JsonProperty("value")
 	private int value;
 	
@@ -104,7 +109,7 @@ public class Card implements Serializable {
 		this.suit = suit;
 		
 		final StringBuilder builder = new StringBuilder();
-		this.cardId = builder.append(rank).append(suit).toString();
+		this.cardId = builder.append(rank.getLabel()).append(suit.getLabel()).toString();
 		
 		switch (rank) {
 			case JOKER:
@@ -125,15 +130,17 @@ public class Card implements Serializable {
 			default:
 				value = Integer.parseInt(rank.getLabel());
 		}
-		this.value = value != 0 ? rank.getValue(CardGameType.HIGHLOW) : 0;
+		this.value = value != 0 ? rank.getValue(GameType.HIGHLOW) : 0;
 	}
 	
 	public Card(String cardId) {
 		this();
-		if (cardId.isEmpty() || !(cardId.length()==2))
+		if (cardId.isEmpty() || !(cardId.length() > 1)) {
 			throw new NullPointerException(cardId + " empty cardId");
-		this.rank = Rank.fromLabel(left(cardId,1));
-		this.suit = Suit.fromLabel(right(cardId,1));
+		}
+		String rankPart = cardId.length()==2?left(cardId,1):left(cardId,2);
+		this.rank = Rank.fromLabel(rankPart);
+		this.suit = Suit.fromLabel(right(cardId, 1));
 		
 		this.cardId = cardId;
 		
@@ -156,68 +163,76 @@ public class Card implements Serializable {
 			default:
 				value = Integer.parseInt(rank.getLabel());
 		}
-		this.value = value != 0 ? rank.getValue(CardGameType.HIGHLOW) : 0;
+		this.value = value != 0 ? rank.getValue(GameType.HIGHLOW) : 0;
 	}
 	
 	
 	// static fields and methods to easily make decks and add jokers
-	private static final Card joker = new Card(Rank.JOKER, Suit.JOKERS);
+	protected static final Card joker = new Card(Rank.JOKER, Suit.JOKERS);
 	
-	private static final List<Card> prototypeDeck = new ArrayList<>(52);
+	protected static final ArrayList<Card> prototypeDeck = new ArrayList<>();
 	
 	static {
-		for (Suit suit : Suit.values())
-			for (Rank rank : Rank.values())
-				if (rank != Rank.JOKER) {
-					prototypeDeck.add(new Card(rank, suit));
+		for (Suit suit : Suit.values()) {
+			if (suit != Suit.JOKERS) {
+				for (Rank rank : Rank.values()) {
+					if (rank != Rank.JOKER) {
+						prototypeDeck.add(new Card(rank, suit));
+					}
 				}
+			}
+		}
 	}
 	
-	/**
-	 * @param jokers
-	 * 		number of jokers added to the deck
-	 *
-	 * @return a Deck with 52 cards plus the jokers
-	 */
-	
-	public void setCardId() {
+	/*public void setCardId() {
 		final StringBuilder builder = new StringBuilder();
-		this.cardId = builder.append(rank).append(suit).toString();
-	}
+		this.cardId = builder.append(rank.getLabel()).append(suit.getLabel()).toString();
 	
-	public static List<Card> newDeck(int jokers) {
-		List<Card> newDeck = prototypeDeck;
-		for (int i = 0; i < jokers; i++) {
+	}*/
+	
+	public static ArrayList<Card> newDeck(int addJokers) {
+		ArrayList<Card> newDeck = prototypeDeck;
+		for (int i = 0; i < addJokers; i++) {
 			newDeck.add(joker);
 		}
 		return newDeck;
 	}
 	
-	public static boolean isValidCard(String card) {
-		return (Arrays.asList(Card.newDeck(1)).contains(card));
+	@JsonIgnore
+	public static boolean isValidCard(String input) {
+		
+		try {
+			Card check = new Card (input);
+		} catch (NullPointerException e) {
+			return false;
+		}
+		return true;
 	}
 	
-	public static boolean isJoker(String card) {
-		return card.contains(Card.joker.getCardId())?true:false;
+	@JsonIgnore
+	public boolean isJoker() {
+		String jokerCard = cardId;
+		return jokerCard=="RJ";
 	}
-		
+	
 	/**
 	 * @param cardToCompareWith
 	 * 		Card to compare with
-	 * @param cardGameType
+	 * @param gameType
 	 * 		Supply the card game Type; default is HIGHLOW
 	 *
 	 * @return -1(LOWER), 0(EQUAL), +1(HIGHER)
 	 */
-	public int compareTo(Card cardToCompareWith, CardGameType cardGameType) {
-		if (cardGameType == null) {
-			cardGameType = CardGameType.HIGHLOW;
+	@JsonIgnore
+	public int compareTo(Card cardToCompareWith, GameType gameType) {
+		if (gameType == null) {
+			gameType = GameType.HIGHLOW;
 		}
 		
-		if (rank.getValue(cardGameType) < cardToCompareWith.getRank().getValue(cardGameType)) {
+		if (rank.getValue(gameType) < cardToCompareWith.getRank().getValue(gameType)) {
 			return 1; // HIGHER
 		} else {
-			if (rank.getValue(cardGameType) > cardToCompareWith.getRank().getValue(cardGameType)) {
+			if (rank.getValue(gameType) > cardToCompareWith.getRank().getValue(gameType)) {
 				return -1; // LOWER
 			} else {
 				return 0; // EQUAL
@@ -225,9 +240,9 @@ public class Card implements Serializable {
 		}
 	}
 	
-	@Override
+/*	@Override
 	public String toString() {
 		return rank + " of " + suit;
 	}
-	
+	*/
 }

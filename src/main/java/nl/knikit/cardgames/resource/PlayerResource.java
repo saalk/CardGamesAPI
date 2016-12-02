@@ -13,7 +13,7 @@ package nl.knikit.cardgames.resource;
     @RestController = @Controller + @ResponseBody
     You can only use @RequestMapping on @Controller annotated classes.
 
-    new Spring MVC 4.3 REST annotations @GetMapping, @PostMapping, @PutMapping and @DeleteMapping
+    new Spring MVC 4.3 REST annotations @GetMapping, @PlayerMapping, @PutMapping and @DeleteMapping
     instead of standard @RequestMapping. They act as wrapper to @RequestMapping.
 
 
@@ -53,11 +53,13 @@ package nl.knikit.cardgames.resource;
 */
 
 
+import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IPlayerService;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -74,6 +76,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +99,9 @@ public class PlayerResource {
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
 	private IPlayerService playerService;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	@GetMapping("/players")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -186,6 +192,36 @@ public class PlayerResource {
 						       .status(HttpStatus.NOT_FOUND)
 						       .body(new ArrayList<Player>());
 			}
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(createdPlayer);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(consistentPlayer);
+		}
+	}
+	
+	//TODO use PlayerDto here
+	@PostMapping(value = "/players", params = {"isHuman"})
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity initPlayer(@RequestParam(value = "isHuman", required = true) String param) {
+		
+		if (param == null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("");
+		}
+		
+		Player consistentPlayer = makeConsistentPlayer(new Player());
+		try {
+			Player createdPlayer = playerService.create(consistentPlayer);
+			if (createdPlayer == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body(new ArrayList<PlayerDto>());
+			}
+			PlayerDto playerDto = convertToDto(createdPlayer);
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
 					       .body(createdPlayer);
@@ -291,15 +327,21 @@ public class PlayerResource {
 		consistentPlayer.setPlayerId(player.getPlayerId() > 0 ? player.getPlayerId() : 0);
 		
 		// make boolean human and aiLevel consistent
-		if (player.isHuman()) {
+		if (player.getHuman()) {
 			consistentPlayer.setHuman(true);
 			consistentPlayer.setAiLevel(AiLevel.HUMAN);
+			if (player.getAlias().isEmpty()){
+				consistentPlayer.setAlias("Stranger");
+			}
 		} else {
 			consistentPlayer.setHuman(false);
 			if (player.getAiLevel() != null) {
 				consistentPlayer.setAiLevel(player.getAiLevel());
 			} else {
 				consistentPlayer.setAiLevel(AiLevel.NONE);
+			}
+			if (player.getAlias().isEmpty()){
+				consistentPlayer.setAlias("Alien");
 			}
 		}
 		
@@ -311,5 +353,26 @@ public class PlayerResource {
 		}
 		
 		return consistentPlayer;
+	}
+	
+	
+	private PlayerDto convertToDto(Player player) {
+		PlayerDto playerDto = modelMapper.map(player, PlayerDto.class);
+		
+		playerDto.setName();
+		playerDto.setWinCount();
+		
+		return playerDto;
+	}
+	
+	private Player convertToEntity(PlayerDto playerDto) throws ParseException {
+		Player player = modelMapper.map(playerDto, Player.class);
+		playerDto.setName();
+		
+		if (playerDto.getPlayerId() != 0) {
+			Player oldPlayer = playerService.findOne(playerDto.getPlayerId());
+			// setters needed?
+		}
+		return player;
 	}
 }

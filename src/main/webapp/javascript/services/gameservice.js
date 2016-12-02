@@ -9,7 +9,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     //$http.defaults.headers.common.Authorization = 'Basic YmVlcDpib29w';
     // Return public API
     return({
-            initGameForCardGameType: initGameForCardGameType,
+            initGameForType: initGameForType,
             addGame: addGame,
             getGames: getGames,
             getGamesWhere: getGamesWhere,
@@ -24,23 +24,24 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // ---
 
     // init a human game using the server' api
-    function initGameForCardGameType( cardGameType ) {
+    function initGameForType( type ) {
  
         // TODO new game options:
         // 
-        //    HILOW_1ROUND(CardGameType.HIGHLOW, "One round double or nothing "),
-        //    HILOW_3_IN_A_ROW_1SUIT(CardGameType.HIGHLOW, "'3-in-a-row' one suit"),
-        //    HILOW_5_IN_A_ROW(CardGameType.HIGHLOW, "'5-in-a-row'");
+        //    HILOW_1ROUND(Type.HIGHLOW, "One round double or nothing "),
+        //    HILOW_3_IN_A_ROW_1SUIT(Type.HIGHLOW, "'3-in-a-row' one suit"),
+        //    HILOW_5_IN_A_ROW(Type.HIGHLOW, "'5-in-a-row'");
     
-        if (cardGameType === "HILOW_3_IN_A_ROW_1SUIT") {
-           newGame = { "cardGameType": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 9, "minRounds": 1,
+        if (type === "HIGHLOW") {
+           newGame = { "type": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 9, "minRounds": 1,
             "currentRound": 0, "maxTurns": 3, "minTurns": 1, "currentTurn": 0,
-            "turnsToWin": 3, "deck": null, "ante": 50, "playerId": null };
+            "turnsToWin": 3, "ante": 50, "playerId": null };
         } else {
             // default HILOW_1ROUND rules
-           newGame = { "cardGameType": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 1, "minRounds": 1,
+            //TODO deck: null needed?
+           newGame = { "type": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 1, "minRounds": 1,
             "currentRound": 0, "maxTurns": 9, "minTurns": 1, "currentTurn": 0,
-            "turnsToWin": 0, "deck": null, "ante": 50, "playerId": null };
+            "turnsToWin": 0, "ante": 50, "playerId": null };
         }
         
         var request = $http({
@@ -75,12 +76,12 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     }
      
     // get all games for a condition using the server' api
-    function getGamesWhere( cardGameType ) {
+    function getGamesWhere( type ) {
 
         var request = $http({
             method: "get",
             crossDomain: true,
-            url: baseUrl + "/api/games?cardGameType=" + cardGameType,
+            url: baseUrl + "/api/games?type=" + type,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "get"

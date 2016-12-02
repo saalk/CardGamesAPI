@@ -24,9 +24,9 @@ function ($scope, playerService, toastr){
     vm.generateguess = 0; 
     vm.loopplayer = 0;
     vm.ante = 0; 
-    vm.round = 1; 
-    vm.showalien1 = false;
-    vm.showalien2 = false;
+    vm.round = 1;
+    vm.showalien1 = true;
+    vm.showalien2 = true;
     initCasino();
  
     // ---
@@ -114,7 +114,7 @@ function ($scope, playerService, toastr){
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         playerService.removePlayer( player.id )
-            .then(loadRemoteData, function( errorMessage ) {
+            .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )

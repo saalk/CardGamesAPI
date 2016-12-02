@@ -5,6 +5,7 @@ import nl.knikit.cardgames.service.IPlayerService;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,21 +51,21 @@ public class PlayerResourceTest {
     @Mock
     private List<Player> players = new ArrayList<>();
 
-    private TestFlowDTO flowDTO;
+    private TestFlowDto flowDto;
     final int playerId = 1;
 
     @Before
     public void setUp() {
-        flowDTO = new TestFlowDTO();
+        flowDto = new TestFlowDto();
         player.setPlayerId(playerId);
         
         players = new ArrayList<>();
         players.add(player);
 
-        // when(AbcEventMock.fireEvent(flowDTO)).thenReturn(EventOutput.success());
+        // when(AbcEventMock.fireEvent(flowDto)).thenReturn(EventOutput.success());
 
         when(playerService.findOne(playerId)).thenReturn(player);
-        when(playerService.findAll(any(),any())).thenReturn(players);
+        when(playerService.findAll(anyString(), anyString())).thenReturn(players);
     }
 
     @Test
@@ -122,7 +124,7 @@ public class PlayerResourceTest {
                                                                                     .isAnnotationPresent(
                                                                                             RequestScoped.class));
     }
-    public class TestFlowDTO { // implements XyzEvent.XyzEventDTO
+    public class TestFlowDto { // implements XyzEvent.XyzEventDto
 
         private String number = "123456";
 

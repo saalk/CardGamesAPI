@@ -1,5 +1,5 @@
 angular.module('myApp')
-        .directive('mycDirective', function() {
+        .directive('myGameDirective', function() {
             return {
                 restrict: 'AE',
                 templateUrl: function(elem, attrs) {
@@ -23,8 +23,8 @@ function ($scope, playerService, gameService, toastr){
     
     // flags + checks for ng-if
     vm.showListForDebug = false;
-    vm.showalien1 = false;
-    vm.showalien2 = false;
+    vm.showalien1 = true;
+    vm.showalien2 = true;
     vm.tothecasino = false;
     
     // fixed text
@@ -248,7 +248,7 @@ function ($scope, playerService, gameService, toastr){
                 };
                 for (i = 0 ; i < needed; i++) {
                     // add one or more aliens until needed
-                    gameService.initGameForCardGameType( "HILOW_1ROUND" )
+                    gameService.initGameForType( "HIGHLOW" )
                            .then( loadRemoteGameData, function( errorMessage ) {
                                toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
                            }
@@ -259,7 +259,7 @@ function ($scope, playerService, gameService, toastr){
                 extra = needed - count;
                 for (i = 0 ; i < extra; i++) {
                     // add one or more aliens 
-                    gameService.initGameForCardGameType( "HILOW_1ROUND" )
+                    gameService.initGameForType( "HIGHLOW" )
                            .then( loadRemoteGameData, function( errorMessage ) {
                                toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
                            }

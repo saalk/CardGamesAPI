@@ -47,7 +47,7 @@ GalacticCasinoController .. PlayerOld
 GalacticCasinoController .. PlayerOld.Predict
 GalacticCasinoController .. AiLevel
 GalacticCasinoController .. CardGame
-GalacticCasinoController .. CardGameVariant
+GalacticCasinoController .. GameVariant
 GalacticCasinoController .. Avatar
 }
 package "nl.deknik.cardgames" {
@@ -192,8 +192,8 @@ public class GalacticCasinoController {
 //
 //        // SETUP CASINO
 //        StateMachine<State, Trigger> galacticCasino = new StateMachine<>(State.SELECT_GAME, cardGameConfig);
-//        CardGameType cardGameTypeSelected;
-//        CardGameVariant cardGameVariantSelected;
+//        Type typeSelected;
+//        GameVariant cardGameVariantSelected;
 //        // why not null; instead of new GameOld(null); or just GameOld currentGameOld; ?
 //        GameOld currentGameOld = new GameOld(null);
 //        PlayerOld currentPlayerOld = new PlayerOld(visitor.getAvatar(), null, false);
@@ -208,9 +208,9 @@ public class GalacticCasinoController {
 //                case SELECT_GAME:
 //
 //                    // CHOOSE GAME
-//                    String[] displayCardGames = new String[CardGameType.cardGamesListType.size() + 1];
+//                    String[] displayCardGames = new String[Type.cardGamesListType.size() + 1];
 //                    index = 0;
-//                    for (CardGameType cg : CardGameType.cardGamesListType) {
+//                    for (Type cg : Type.cardGamesListType) {
 //                        displayCardGames[index] = cg.toString();
 //                        index++;
 //                    }
@@ -222,17 +222,17 @@ public class GalacticCasinoController {
 //
 //                        // make a list of Strings available from CardGames enum's
 //                        // toString
-//                        cardGameTypeSelected = CardGameType.HIGHLOW;
+//                        typeSelected = Type.HIGHLOW;
 //
-//                        String[] displayCardGameVariants = new String[CardGameVariant.highlowCardGameVariants.size()];
+//                        String[] displayCardGameVariants = new String[GameVariant.highlowGameVariants.size()];
 //                        index = 0;
-//                        for (CardGameVariant cgv : CardGameVariant.highlowCardGameVariants) {
+//                        for (GameVariant cgv : GameVariant.highlowGameVariants) {
 //                            displayCardGameVariants[index] = cgv.toString();
 //                            index++;
 //                        }
 //
 //                        answer = console.autoAnswerOnConsole("> Select playing rules ", displayCardGameVariants, 1);
-//                        cardGameVariantSelected = CardGameVariant.HILOW_1ROUND;
+//                        cardGameVariantSelected = GameVariant.HILOW_1ROUND;
 //
 //                        // SETUP GAME VARIANT
 //                        currentGameOld = new GameOld(cardGameVariantSelected);

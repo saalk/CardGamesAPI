@@ -2,7 +2,8 @@ package nl.knikit.cardgames.dao.common;
 
 import com.google.common.base.Preconditions;
 
-import nl.knikit.cardgames.model.CardGameType;
+import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.GameType;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -71,11 +72,11 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 
         switch (inputValue) {
             case "HIGHLOW":
-                cq.where(cb.equal(rt.get(column), CardGameType.HIGHLOW));
+                cq.where(cb.equal(rt.get(column), GameType.HIGHLOW));
                 idMessage = String.format("findAllWhere dao inputValue is ENUM: %s", inputValue);
                 break;
             case "BLACKJACK":
-                cq.where(cb.equal(rt.get(column), CardGameType.BLACKJACK));
+                cq.where(cb.equal(rt.get(column), GameType.BLACKJACK));
                 idMessage = String.format("findAllWhere dao inputValue is ENUM: %s", inputValue);
                 break;
             case "true":
@@ -119,7 +120,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         Preconditions.checkNotNull(entity);
         try {
             // getCurrentSession().persist(entity);
-            getCurrentSession().saveOrUpdate(clazz.getName(), entity);
+            getCurrentSession().save(clazz.getName(), entity);
         } catch (Exception e) {
             String errorMessage = String.format("Entity create error: %s in DAO by entity: %s", e, entity);
             log.error(errorMessage);

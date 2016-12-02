@@ -14,7 +14,7 @@ import lombok.Setter;
 @Component
 @Scope("prototype")
 public class GalacticCasinoStateMachine {
-
+    
     public enum State {
         SELECT_GAME, SETUP_GAME, ITERATE_PLAYERS, ITERATE_TURNS, STOP_GAME, OFFER_FICHES
     }
@@ -40,7 +40,7 @@ public class GalacticCasinoStateMachine {
         }
     }
 
-    public String transition(final Trigger trigger) {
+    public String fireTrigger(final Trigger trigger) {
         if (!sm.canFire(trigger)) {
             return null;
         }
@@ -50,11 +50,11 @@ public class GalacticCasinoStateMachine {
                 .toString();
     }
 
-    public String getCurrentState() {
-        return getCurrentStateEnum().toString();
+    public String getState() {
+        return getStateEnum().toString();
     }
 
-    public State getCurrentStateEnum() {
+    public State getStateEnum() {
         return sm.getState();
     }
 

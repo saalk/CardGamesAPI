@@ -6,6 +6,7 @@ import nl.knikit.cardgames.service.IGameService;
 import nl.knikit.cardgames.service.IPlayerService;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,21 +50,21 @@ public class GameResourceTest {
     @Mock
     private List<Game> games = new ArrayList<>();
 
-    private TestFlowDTO flowDTO;
+    private TestFlowDto flowDto;
     final int gameId = 1;
 
     @Before
     public void setUp() {
-        flowDTO = new TestFlowDTO();
+        flowDto = new TestFlowDto();
         game.setGameId(gameId);
         
         games = new ArrayList<>();
         games.add(game);
 
-        // when(AbcEventMock.fireEvent(flowDTO)).thenReturn(EventOutput.success());
+        // when(AbcEventMock.fireEvent(flowDto)).thenReturn(EventOutput.success());
 
         when(gameService.findOne(gameId)).thenReturn(game);
-        when(gameService.findAll(any(),any())).thenReturn(games);
+        when(gameService.findAll(anyString(),anyString())).thenReturn(games);
     }
 
     @Test
@@ -91,8 +93,8 @@ public class GameResourceTest {
     
     @Test
     public void call_postGame_OK() throws Exception {
+        when(gameService.create((Game) any())).thenReturn(game);
     
-	    game.setWinner(null);
         final ResponseEntity result = this.resourceTest.createGame(game);
         
         String body = result.getBody().toString();
@@ -101,8 +103,8 @@ public class GameResourceTest {
         int statusCodeValue = result.getStatusCodeValue();
     
         // message, expected, actual
-        assertEquals("POST /api/games should result in HTTP status CREATED", HttpStatus.NOT_FOUND, statusCode);
-        assertEquals("POST /api/games should result in HTTP status value 201", 404, statusCodeValue);
+        assertEquals("POST /api/games should result in HTTP status CREATED", HttpStatus.CREATED, statusCode);
+        assertEquals("POST /api/games should result in HTTP status value 201", 201, statusCodeValue);
         
         //assertEquals("GET /api/games/{gameId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
         //assertEquals("GET /api/games/{gameId} should result in a game with gameId {gameId}", "game", body);
@@ -140,7 +142,7 @@ public class GameResourceTest {
                                                                                     .isAnnotationPresent(
                                                                                             RequestScoped.class));
     }
-    public class TestFlowDTO { // implements XyzEvent.XyzEventDTO
+    public class TestFlowDto { // implements XyzEvent.XyzEventDto
 
         private String number = "123456";
 

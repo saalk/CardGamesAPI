@@ -3,6 +3,7 @@ package nl.knikit.cardgames.model;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -26,7 +27,14 @@ public enum Avatar {
 
     @Column(name = "AVATAR", length = 25)
     ELF("Elf"), MAGICIAN("Magician"), GOBLIN("Goblin"), ROMAN("Warrior");
-
+    
+    /**
+     * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
+     * <p>EnumSet is an abstract class so new() operator does not work. EnumSet has several static
+     * factory methods for creating an instance like creating groups from enums.
+     * Here it is used to group all enums.
+     */
+    public static Set<Avatar> avatars = EnumSet.of(ELF, MAGICIAN, GOBLIN, ROMAN);
 
     /**
      * A static HashMap lookup with key + value is created to use in a getter
@@ -44,7 +52,7 @@ public enum Avatar {
         this.label = label;
     }
 
-    public static Avatar fromAvatarName(String label) {
+    public static Avatar fromLabel(String label) {
         return lookup.get(label);
     }
 
