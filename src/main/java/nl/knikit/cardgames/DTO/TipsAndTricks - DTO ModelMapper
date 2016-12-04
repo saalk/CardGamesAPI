@@ -10,7 +10,6 @@ DTO - An object that carries data between processes in order to reduce the numbe
 
 
 # old
-
     GET /entity?filterparams for retrieving a list of entities
     GET /entity/id for retrieving a specific entity identified by its id
     POST /entity for creating a new one
