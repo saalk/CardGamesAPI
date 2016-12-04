@@ -17,25 +17,23 @@ import lombok.Setter;
 @Setter
 public class PlayerDto {
 	
-	private int playerId;
+	// Player has 9 fields, PlayerDto has 2 more
 	
-	@Setter(AccessLevel.NONE)
 	// discard lombok setter for this field -> make your own
-	private String name;
-	
-	private String alias;
-	
 	@Setter(AccessLevel.NONE)
-	private String human;
+	private String name; // extra field "Script Joe(Human|Smart) [Elf]"
+	private int playerId;
+	private String created;
+	private String alias;
+	@Setter(AccessLevel.NONE)
+	private String human; // changed field for boolean
 	private String aiLevel;
 	private String avatar;
-	
-	private List<GameDto> games;
-	@Setter(AccessLevel.NONE)
-	private int winCount;
-	
 	private int cubits;
 	private int securedLoan;
+	private List<GameDto> games;
+	@Setter(AccessLevel.NONE)
+	private int winCount; // extra field
 	
 	public Avatar getAvatarConvertedFromLabel(String avatarLabel) throws Exception {
 		Avatar converted = Avatar.fromLabel(avatar);
@@ -52,7 +50,6 @@ public class PlayerDto {
 		// instance Enum method:
 		// - name()    - returns name of enum constant
 		// -> better use toString() to get the user-friendly name
-		
 		this.avatar = (String.valueOf(avatar));
 	}
 	
@@ -71,7 +68,6 @@ public class PlayerDto {
 		// instance Enum method:
 		// - name()    - returns name of enum constant
 		// -> better use toString() to get the user-friendly name
-		
 		this.aiLevel = (String.valueOf(aiLevel));
 	}
 	

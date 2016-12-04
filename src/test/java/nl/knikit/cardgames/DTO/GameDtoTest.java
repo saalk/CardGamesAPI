@@ -2,14 +2,18 @@ package nl.knikit.cardgames.DTO;
 
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.model.state.GalacticCasinoStateMachine;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class GameDtoTest {
 	
@@ -19,88 +23,106 @@ public class GameDtoTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// Given
 		
-		//private String name;
-		// "Highlow:0005 (Ante:100) [GameSelected]"
-		//private int gameId;
-		//private String state;
-		//private String gameType;
-		//private int ante;
-		//private String round;
-		//private int minRounds;
-		//private int currentRound;
-		//private int maxRounds;
-		//private String turn;
-		//private int minTurns;
-		//private int currentTurn;
-		//private int turnsToWin;
-		//private int maxTurns;
-		//private Set<DeckDao> deckDtos;
-		// "10C  Ten of Clubs"
-		// " RJ  Script Joe [ELF]"
-		//private PlayerDto winner;
-		
-		gameFixture.setGameId((1));
-		
+		// Given a game having 14 fields
+		gameFixture.setGameId(1);
+		gameFixture.setCreated("1");
+		gameFixture.setState(GalacticCasinoStateMachine.State.SELECT_GAME);
+		gameFixture.setGameType(GameType.HIGHLOW);
+		gameFixture.setAnte(50);
+		gameFixture.setMinRounds(1);
+		gameFixture.setCurrentRound(1);
+		gameFixture.setMaxRounds(1);
+		gameFixture.setMinTurns(2);
+		gameFixture.setCurrentTurn(2);
+		gameFixture.setTurnsToWin(2);
+		gameFixture.setMaxTurns(2);
+		Player winner = new Player();
+		gameFixture.setWinner(winner);
 		List<Deck> decks = new ArrayList<>();
+		decks.add(new Deck());
 		decks.add(new Deck());
 		gameFixture.setDecks(decks);
 		
-		
-		gameDtoFixture.setGameId(2);
-		
+		// Given a gameDto having 14 + 3 fields
+		gameDtoFixture.setGameId(3);
+		gameDtoFixture.setCreated("3");
+		gameDtoFixture.setState(GalacticCasinoStateMachine.State.ITERATE_PLAYERS);
+		gameDtoFixture.setGameType(GameType.BLACKJACK);
+		gameDtoFixture.setAnte(100);
+		gameDtoFixture.setName(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
+		gameDtoFixture.setMinRounds(3);
+		gameDtoFixture.setCurrentRound(3);
+		gameDtoFixture.setMaxRounds(3);
+		gameDtoFixture.setRound(); // extra field
+		gameDtoFixture.setMinTurns(4);
+		gameDtoFixture.setCurrentTurn(4);
+		gameDtoFixture.setTurnsToWin(4);
+		gameDtoFixture.setMaxTurns(4);
+		gameDtoFixture.setTurn(); // extra field
 		List<DeckDto> decksDto = new ArrayList<>();
 		decksDto.add(new DeckDto());
 		decksDto.add(new DeckDto());
-		//gameDtoFixture.setDecks(decksDto);
+		decksDto.add(new DeckDto());
+		gameDtoFixture.setDecks(decksDto); // "10C  Ten of Clubs"
+		PlayerDto winnerDto = new PlayerDto();
+		gameDtoFixture.setWinner(winnerDto);
+		
 	}
 	
-	@Test @Ignore
+	@Test
 	public void whenConvertGameEntityToGameDto_thenCorrect() throws Exception {
 		// When
 		GameDto actual = modelMapper.map(gameFixture, GameDto.class);
 		// extra also in the converter
 		actual.setName();
+		actual.setRound();
+		actual.setTurn();
 		
 		// Then
-		
-		// expected, actual
-		
-		// "Script Joe(Human|Smart) [Elf]"
-		String gameFixtureName = "John 'Test' Doe(Human) [Elf]";
-//		assertEquals(gameFixtureName, actual.getName());
-//		assertEquals(gameFixture.getGames(),actual.getGames());
-//		assertEquals(1,actual.getWinCount());
-//
-//		assertEquals(gameFixture.getGameId(), actual.getGameId());
-//		assertEquals(gameFixture.getAlias(), actual.getAlias());
-//		assertEquals(String.valueOf(gameFixture.getHuman()), actual.getHuman());
-//		assertEquals(gameFixture.getAiLevel().toString(), actual.getAiLevel());
-//		assertEquals(gameFixture.getAvatar().toString(), actual.getAvatar());
-//		assertEquals(gameFixture.getCubits(), actual.getCubits());
-//		assertEquals(gameFixture.getSecuredLoan(), actual.getSecuredLoan());
-		
+		// expected 14, actual 17
+		String gameFixtureName = "Highlow#0001 (Ante:50) [Select_game]";
+		assertEquals(gameFixtureName, actual.getName());
+		assertEquals(gameFixture.getGameId(), actual.getGameId());
+		assertEquals(gameFixture.getCreated(), actual.getCreated());
+		assertEquals(gameFixture.getState().toString(), actual.getState());
+		assertEquals(gameFixture.getGameType().toString(), actual.getGameType());
+		assertEquals(gameFixture.getAnte(), actual.getAnte());
+		assertEquals(gameFixture.getMinRounds(), actual.getMinRounds());
+		assertEquals(gameFixture.getCurrentRound(), actual.getCurrentRound());
+		assertEquals(gameFixture.getMaxRounds(), actual.getMaxRounds());
+		String gameFixtureRound = "Round 1 [1-1]";
+		assertEquals(gameFixtureRound, actual.getRound());
+		assertEquals(gameFixture.getMinTurns(), actual.getMinTurns());
+		assertEquals(gameFixture.getCurrentTurn(), actual.getCurrentTurn());
+		assertEquals(gameFixture.getTurnsToWin(), actual.getTurnsToWin());
+		assertEquals(gameFixture.getMaxTurns(), actual.getMaxTurns());
+		String gameFixtureTurn = "Turn 2 (2 to win) [2-2]";
+		assertEquals(gameFixtureTurn, actual.getTurn());
+		assertEquals(gameFixture.getWinner().getPlayerId(), actual.getWinner().getPlayerId());
+		assertEquals(gameFixture.getDecks().size(), actual.getDecks().size());
 	}
 	
-	@Test @Ignore
+	@Test
 	public void whenConvertGameDtoToGameEntity_thenCorrect() throws Exception {
 		// When
 		Game actual = modelMapper.map(gameDtoFixture, Game.class);
 		
 		// Then
-		
-		// expected, actual
-//		assertEquals(gameDtoFixture.getGames().size(),actual.getGames().size());
-//		assertEquals(2, actual.getGames().size());
-//
-//		assertEquals(gameDtoFixture.getGameId(), actual.getGameId());
-//		assertEquals(gameDtoFixture.getAlias(), actual.getAlias());
-//		assertEquals(gameDtoFixture.getHuman(), String.valueOf(actual.getHuman()));
-//		assertEquals(gameDtoFixture.getAiLevel(), actual.getAiLevel().toString());
-//		assertEquals(gameDtoFixture.getAvatar(), actual.getAvatar().toString());
-//		assertEquals(gameDtoFixture.getCubits(), actual.getCubits());
-//		assertEquals(gameDtoFixture.getSecuredLoan(), actual.getSecuredLoan());
-//
+		// expected 17, actual 14
+		assertEquals(gameDtoFixture.getGameId(), actual.getGameId());
+		assertEquals(gameDtoFixture.getCreated(), actual.getCreated());
+		assertEquals(gameDtoFixture.getState(), actual.getState().toString());
+		assertEquals(gameDtoFixture.getGameType(), actual.getGameType().toString());
+		assertEquals(gameDtoFixture.getAnte(), actual.getAnte());
+		assertEquals(gameDtoFixture.getMinRounds(), actual.getMinRounds());
+		assertEquals(gameDtoFixture.getCurrentRound(), actual.getCurrentRound());
+		assertEquals(gameDtoFixture.getMaxRounds(), actual.getMaxRounds());
+		assertEquals(gameDtoFixture.getMinTurns(), actual.getMinTurns());
+		assertEquals(gameDtoFixture.getCurrentTurn(), actual.getCurrentTurn());
+		assertEquals(gameDtoFixture.getTurnsToWin(), actual.getTurnsToWin());
+		assertEquals(gameDtoFixture.getMaxTurns(), actual.getMaxTurns());
+		assertEquals(gameDtoFixture.getWinner().getPlayerId(), actual.getWinner().getPlayerId());
+		assertEquals(gameDtoFixture.getDecks().size(), actual.getDecks().size());
 	}
 }

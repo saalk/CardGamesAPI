@@ -51,7 +51,8 @@ import lombok.Setter;
 @Relation(value = "player", collectionRelation = "players")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class Player implements Serializable {
-
+    
+    // 9 fields
     @Id
     @Column(name = "PLAYER_ID")
     @GeneratedValue(strategy = GenerationType.TABLE)

@@ -1,13 +1,13 @@
 package nl.knikit.cardgames.DTO;
 
-import nl.knikit.cardgames.dao.impl.DeckDao;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.ParseException;
-import java.util.Set;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,39 +19,36 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @Setter
 public class GameDto {
 	
-	@Setter(AccessLevel.NONE)
-	// discard lombok setter for this field -> make your own
-	private String name;
+	// Game has 14 fields, GameDto has 3 more
 	
-	// "Highlow:0005 (Ante:100) [GameSelected]"
+	// discard lombok setter for this field -> make your own
+	@Setter(AccessLevel.NONE)
+	private String name; // extra field "Highlow:0005 (Ante:100) [GameSelected]"
 	private int gameId;
+	private String created;
 	private String state;
 	private String gameType;
 	private int ante;
-	
 	@Setter(AccessLevel.NONE)
-	private String round;
+	private String round; // extra field "Round 3 [1-9]"
 	private int minRounds;
 	private int currentRound;
 	private int maxRounds;
-	
 	@Setter(AccessLevel.NONE)
-	private String turn;
+	private String turn; // extra field "Turn 2 (3 to win) [1-9]"
 	private int minTurns;
 	private int currentTurn;
 	private int turnsToWin;
 	private int maxTurns;
-	
-	private Set<DeckDao> decks;
+	private List<DeckDto> decks;
 	// "10C  Ten of Clubs"
 	// "  *  40 cards left
 	// "---  -------------
 	// " AS+ Script Joe [ELF]-"
 	// " RJ  Script Joe [ELF]"
-	
 	private PlayerDto winner;
 	
-	public GameType getGameTypeConverted(String gameType) throws ParseException {
+	public GameType getGameTy1peConverted(String gameType) throws ParseException {
 		return GameType.fromGameTypeLabel(gameType);
 	}
 	
@@ -62,9 +59,6 @@ public class GameDto {
 		// instance Enum method:
 		// - name()    - returns name of enum constant
 		// -> better use toString() to get the user-friendly name
-		
-		//
-		
 		this.gameType = (String.valueOf(gameType));
 	}
 	
@@ -110,22 +104,20 @@ public class GameDto {
 	public void setName() {
 		
 		// "Highlow#0005 (Ante:100) [Select_Game]"
-		String stateCapitalize = StringUtils.capitalize(this.state);
-		this.name = StringUtils.capitalize(this.gameType) + "#" +
+		this.name = WordUtils.capitalizeFully(this.gameType) + "#" +
 				            StringUtils.leftPad(String.valueOf(this.gameId), 4, "0") +
-				            " (ante:" + this.ante + ") [" + stateCapitalize + "]";
+				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state) + "]";
 	}
 	
-	public String getRoundConverted() {
+	public String setRound() {
 		// "Round 3 [1-9]"
 		return this.round = "Round " + this.currentRound + " [" + this.minRounds + "-" + this.maxRounds + "]";
 	}
 	
-	public void setRound(String round) {
-		// "Round 3 [1-9]"
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(round, "Round "), " "),"[-]");
+	public void getRoundConverted(String round) {
+		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(round, "Round "), " "), "[-]");
 		if (splitName.length != 3 ||
-				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty() ) {
+				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty()) {
 			this.currentRound = 1;
 			this.minRounds = 1;
 			this.maxRounds = 9;
@@ -136,14 +128,14 @@ public class GameDto {
 		
 	}
 	
-	public String getTurnConverted() {
+	public String setTurn() {
 		// "Turn 2 (3 to win) [1-9]"
-		return this.turn = "Turn " + this.currentTurn + "(" + this.turnsToWin +" to win) [" + this.minTurns + "-" + this.maxTurns + "]";
+		return this.turn = "Turn " + this.currentTurn + " (" + this.turnsToWin + " to win) [" + this.minTurns + "-" + this.maxTurns + "]";
 	}
 	
-	public void setTurn(String turn) {
+	public void setTurnConverted(String turn) {
 		// "Turn 2 (3 to win) [1-9]"
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(StringUtils.remove(round, "to win"), "Turn "), " ["),"]"),"()-");
+		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(StringUtils.remove(round, "to win"), "Turn "), " ["), "]"), "()-");
 		if (splitName.length != 4 ||
 				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty() || splitName[3].isEmpty()) {
 			this.currentTurn = 1;
@@ -155,7 +147,7 @@ public class GameDto {
 		this.turnsToWin = Integer.parseInt(splitName[1]);
 		this.minTurns = Integer.parseInt(splitName[2]);
 		this.maxTurns = Integer.parseInt(splitName[3]);
-
 		
 	}
+	
 }

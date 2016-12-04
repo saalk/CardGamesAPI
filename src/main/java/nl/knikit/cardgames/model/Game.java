@@ -44,6 +44,7 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Game implements Serializable {
 	
+	// 14 fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	@Column(name = "GAME_ID")
@@ -68,14 +69,16 @@ public class Game implements Serializable {
 	@Column(name = "MAX_ROUNDS")
 	@JsonProperty("maxRounds")
 	private int maxRounds;
-	
+	@Column(name = "MIN_ROUNDS")
+	@JsonProperty("minRounds")
+	private int minRounds;
 	@Column(name = "CURRENT_ROUND")
 	@JsonProperty("currentRound")
 	private int currentRound;
+	
 	@Column(name = "MAX_TURNS")
 	@JsonProperty("maxTurns")
 	private int maxTurns;
-	
 	@Column(name = "MIN_TURNS")
 	@JsonProperty("minTurns")
 	private int minTurns;
@@ -85,6 +88,7 @@ public class Game implements Serializable {
 	@Column(name = "TURNS_TO_WIN")
 	@JsonProperty("turnsToWin")
 	private int turnsToWin;
+	
 	@Column(name = "ANTE")
 	@JsonProperty("ante")
 	private int ante;
@@ -105,10 +109,6 @@ public class Game implements Serializable {
 	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", nullable=true)
 	@JsonProperty("winner")
 	private Player winner;
-	
-	@Column(name = "MIN_ROUNDS")
-	@JsonProperty("minRounds")
-	private int minRounds;
 	
 	// make a lookup from all the STATES
 	private static final Map<String, State> lookup

@@ -39,14 +39,11 @@ public class CardDtoTest {
 		String actualRankLabel = "4";
 		
 		// Then
-		
 		// expected, actual
 		assertEquals(cardFixture.getCardId(), actual.getCardId());
 		assertEquals(cardFixture.getRank().toString(), actual.getRank());
 		assertEquals(cardFixture.getSuit().toString(), actual.getSuit());
 		assertEquals(cardFixture.getValue(), actual.getValue());
-		
-		// expected, actual
 		assertEquals(Suit.HEARTS, actual.getSuitConvertedFromLabel(actualSuitLabel));
 		assertEquals(Rank.FOUR, actual.getRankConvertedFromLabel(actualRankLabel));
 	}
@@ -57,7 +54,6 @@ public class CardDtoTest {
 		Card actual = modelMapper.map(cardDtoFixture, Card.class);
 		
 		// Then
-		
 		// expected, actual
 		assertEquals(cardDtoFixture.getCardId(), actual.getCardId());
 		assertEquals(cardDtoFixture.getRank(), actual.getRank().toString());
