@@ -73,19 +73,19 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         switch (inputValue) {
             case "HIGHLOW":
                 cq.where(cb.equal(rt.get(column), GameType.HIGHLOW));
-                idMessage = String.format("findAllWhere dao inputValue is ENUM: %s", inputValue);
+                idMessage = String.format("getPlayersWhere dao inputValue is ENUM: %s", inputValue);
                 break;
             case "BLACKJACK":
                 cq.where(cb.equal(rt.get(column), GameType.BLACKJACK));
-                idMessage = String.format("findAllWhere dao inputValue is ENUM: %s", inputValue);
+                idMessage = String.format("getPlayersWhere dao inputValue is ENUM: %s", inputValue);
                 break;
             case "true":
                 cq.where(cb.equal(rt.get(column), Boolean.TRUE));
-                idMessage = String.format("findAllWhere dao inputValue is true boolean: %s", inputValue);
+                idMessage = String.format("getPlayersWhere dao inputValue is true boolean: %s", inputValue);
                 break;
             case "false":
                 cq.where(cb.equal(rt.get(column), Boolean.FALSE));
-                idMessage = String.format("findAllWhere dao inputValue is false boolean: %s", inputValue);
+                idMessage = String.format("getPlayersWhere dao inputValue is false boolean: %s", inputValue);
                 break;
             default:
                 try{
@@ -93,12 +93,12 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 
                     // is an integer!
                     cq.where(cb.equal(rt.get(column), num));
-                    idMessage = String.format("findAllWhere dao inputValue is integer: %d", num);
+                    idMessage = String.format("getPlayersWhere dao inputValue is integer: %d", num);
                 } catch (NumberFormatException e) {
 
                     // not an integer!
                     cq.where(cb.equal(rt.get(column), inputValue));
-                    idMessage = String.format("findAllWhere dao inputValue is string: %s", inputValue);
+                    idMessage = String.format("getPlayersWhere dao inputValue is string: %s", inputValue);
                 }
         }
         log.info(idMessage);
@@ -106,7 +106,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         try {
             return getCurrentSession().createQuery(cq).list();
         } catch (Exception e) {
-            String errorMessage = String.format("Error findAllWhere, column: %s inputValue: %s query: %s error: %s", column, inputValue, cq ,e);
+            String errorMessage = String.format("Error getPlayersWhere, column: %s inputValue: %s query: %s error: %s", column, inputValue, cq ,e);
             log.error(errorMessage);
             throw e;
         }

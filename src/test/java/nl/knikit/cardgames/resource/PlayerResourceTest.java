@@ -1,29 +1,30 @@
 package nl.knikit.cardgames.resource;
 
+import nl.knikit.cardgames.DTO.GameDto;
+import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
+import nl.knikit.cardgames.model.AiLevel;
+import nl.knikit.cardgames.model.Avatar;
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IPlayerService;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -31,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -46,35 +47,70 @@ public class PlayerResourceTest {
 
     @Mock
     private IPlayerService playerService;
-    @Mock
-    private Player player = new Player();
-    @Mock
-    private List<Player> players = new ArrayList<>();
-
-    private TestFlowDto flowDto;
-    final int playerId = 1;
+	
+	@Mock
+	private ModelMapperUtil mapUtil;
+	
+    private Player playerFixture = new Player();
+    private PlayerDto playerDtoFixture = new PlayerDto();
+    private List<Player> playersFixture = new ArrayList<>();
+	
+	private TestFlowDto flowDto;
 
     @Before
     public void setUp() {
+    	
+    	// Given for GET
         flowDto = new TestFlowDto();
-        player.setPlayerId(playerId);
-        
-        players = new ArrayList<>();
-        players.add(player);
-
-        // when(AbcEventMock.fireEvent(flowDto)).thenReturn(EventOutput.success());
-
-        when(playerService.findOne(playerId)).thenReturn(player);
-        when(playerService.findAll(anyString(), anyString())).thenReturn(players);
+	    playerFixture.setPlayerId(1);
+	    playerFixture.setCreated("1");
+	    playerFixture.setAlias("John 'Test' Doe");
+	    playerFixture.setHuman(true);
+	    playerFixture.setAiLevel(AiLevel.HUMAN);
+	    playerFixture.setAvatar(Avatar.ELF);
+	    playerFixture.setCubits(1);
+	    playerFixture.setSecuredLoan(1);
+	    List<Game> games = new ArrayList<>();
+	    games.add(new Game());
+	    games.add(new Game());
+	    games.add(new Game());
+	    playerFixture.setGames(games);
+	    when(playerService.findOne(anyInt())).thenReturn(playerFixture);
+	    
+	    // Given for GET, DELETE
+		playersFixture = new ArrayList<>();
+        playersFixture.add(playerFixture);
+	    when(playerService.findAll(anyString(), anyString())).thenReturn(playersFixture);
+	    when(playerService.findAllWhere(anyString(), anyString())).thenReturn(playersFixture);
+	    
+	    // Given for POST, PUT
+	    playerDtoFixture.setPlayerId(2);
+	    playerDtoFixture.setCreated("2");
+	    playerDtoFixture.setAlias("John 'DtoTest' Doe");
+	    playerDtoFixture.setHuman(false);
+	    playerDtoFixture.setAiLevel(AiLevel.LOW);
+	    playerDtoFixture.setAvatar(Avatar.GOBLIN);
+	    playerDtoFixture.setName(); // extra field "Script Joe(Human|Smart) [Elf]"
+	    playerDtoFixture.setCubits(2);
+	    playerDtoFixture.setSecuredLoan(2);
+	    List<GameDto> gamesDto = new ArrayList<>();
+	    gamesDto.add(new GameDto());
+	    gamesDto.add(new GameDto());
+	    gamesDto.add(new GameDto());
+	    gamesDto.add(new GameDto());
+	    playerDtoFixture.setGames(gamesDto);
+	    playerDtoFixture.setWinCount();  // extra field
+		// TODO add when then for create, update in PlayerResourceTest
+	
     }
 
     @Test
     public void call_getPlayer_OK() throws Exception {
-        final ResponseEntity result = this.resourceTest.getPlayer(playerId);
-    
+        final ResponseEntity result = this.resourceTest.getPlayer(1);
         
-        String body = result.getBody().toString();
-	    org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
+        //String body = result.getBody().toString();
+	    //org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
+
         HttpStatus statusCode = result.getStatusCode();
         int statusCodeValue = result.getStatusCodeValue();
         

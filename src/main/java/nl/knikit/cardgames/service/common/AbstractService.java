@@ -2,7 +2,6 @@ package nl.knikit.cardgames.service.common;
 
 import nl.knikit.cardgames.dao.common.IOperations;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;

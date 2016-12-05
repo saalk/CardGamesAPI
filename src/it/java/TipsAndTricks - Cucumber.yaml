@@ -110,6 +110,7 @@ the CucumberTest class to triggers Cucumber from JUnit.
 In Intellij use the vm option: -ea -Dcucumber.options="--tags @api" to trigger only the api test
 
 # general jvm options
-
 -D<name>=<value> 						set a system property
 -ea[:<packagename>...|:<classname>] 	enable assertions
+eg:
+-Dcucumber.options="--tag @api @player"
