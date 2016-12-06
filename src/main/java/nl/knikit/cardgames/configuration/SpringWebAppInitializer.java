@@ -51,6 +51,8 @@ public class SpringWebAppInitializer implements WebApplicationInitializer {
 
         // 3: Add the servlet mapping manually and make it initialize automatically
         DispatcherServlet dispatcherServlet = new DispatcherServlet(applicationContext);
+        // addition to throw an exception
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
         ServletRegistration.Dynamic servlet = servletContext.addServlet("SpringDispatcher", dispatcherServlet);
 
         servlet.addMapping("/api/*");

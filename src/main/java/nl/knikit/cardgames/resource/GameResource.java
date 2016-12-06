@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.resource;
 
+import nl.knikit.cardgames.DTO.GameDto;
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
@@ -23,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Produces;
@@ -49,22 +53,8 @@ public class GameResource {
 	@Autowired
 	private IPlayerService playerService;
 	
-	@GetMapping("/games")
-	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity<ArrayList<Game>> getGames() {
-		
-		ArrayList<Game> games;
-		try {
-			games = (ArrayList<Game>) gameService.findAll("type", "ASC");
-			return ResponseEntity
-					       .status(HttpStatus.OK)
-					       .body(games);
-		} catch (Exception e) {
-			return ResponseEntity
-					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
-		}
-	}
+	@Autowired
+	private ModelMapperUtil mapUtil;
 	
 	@GetMapping("/games/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -77,13 +67,34 @@ public class GameResource {
 						       .status(HttpStatus.NOT_FOUND)
 						       .body("[{}]");
 			}
+			GameDto gameDto = mapUtil.convertToDto(game);
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(game);
+					       .body(gameDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<>());
+					       .body(e);
+		}
+	}
+	
+	@GetMapping("/games")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity getGames() {
+		
+		ArrayList<Game> games;
+		try {
+			games = (ArrayList<Game>) gameService.findAll("gameType", "ASC");
+			List<GameDto> gamesDto = games.stream()
+					                             .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
+			
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(gamesDto);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
 		}
 	}
 	
@@ -94,40 +105,43 @@ public class GameResource {
 	// you fromLabel the Date dataOrNull for ?date=12-05-2013
 	//
 	// JAX_RS
-	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	// also use: @DefaultValue("false") @QueryParam("from") boolean human
+	// you fromLabel the boolean human with value 'true' for ?human=true
 	
-	@GetMapping(value = "/games/", params = {"type"})
+	@GetMapping(value = "/games/", params = {"gameType"})
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity<ArrayList<Game>> findAllWhere(@RequestParam(value = "type", required = true) String param) {
+	public ResponseEntity findAllWhere(@RequestParam(value = "gameType", required = true) String param) {
 		
 		try {
 			ArrayList<Game> games = (ArrayList) gameService.findAllWhere("type", param);
 			if (games == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Game>());
+						       .body("[{}]");
 			}
+			List<GameDto> gamesDto = games.stream()
+					                         .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
+			
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(games);
+					       .body(gamesDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
+					       .body(e);
 		}
 	}
 	
 	@PostMapping(name = "/games")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity createGame(@RequestBody Game game) {
+	public ResponseEntity createGame(@RequestBody GameDto gameDto) throws ParseException {
 		
-		if (game == null) {
+		if (gameDto == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
 		}
-		
+		Game game = mapUtil.convertToEntity(gameDto);
 		Game consistentGame = makeConsistentGame(game);
 		try {
 			Game createdGame = gameService.create(consistentGame);
@@ -150,27 +164,29 @@ public class GameResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGameWithJokers(
 			@RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
-			@RequestBody Game game) {
+			@RequestBody GameDto gameDto) throws ParseException {
 		
 		// TODO jokers IT testing
-		if (game == null) {
+		if (gameDto == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
 		}
-		
+		Game game = mapUtil.convertToEntity(gameDto);
 		Game consistentGame = makeConsistentGame(game);
 		consistentGame.addShuffledDeckToGame(jokers);
 		try {
 			Game createdGame = gameService.create(consistentGame);
-			if (createdGame == null) {
+			GameDto newGameDto = mapUtil.convertToDto(createdGame);
+			
+			if (newGameDto == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<>());
+						       .body("[{}]");
 			}
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
-					       .body(createdGame);
+					       .body(newGameDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -180,9 +196,9 @@ public class GameResource {
 	
 	@PutMapping("/games/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity updateGame(@PathVariable int id, @RequestBody Game newGame) {
+	public ResponseEntity updateGame(@PathVariable int id, @RequestBody GameDto updateGameDto) throws ParseException {
 		// always use the id in the path instead of id in the body
-		if (newGame == null || id == 0) {
+		if (updateGameDto == null || id == 0) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("[{}]");
@@ -193,6 +209,7 @@ public class GameResource {
 					       .status(HttpStatus.NOT_FOUND)
 					       .body("[{Game not found}]");
 		}
+		Game newGame = mapUtil.convertToEntity(updateGameDto);
 		Game consistentGame = makeConsistentGame(newGame);
 		consistentGame.setGameId(id);
 		try {
@@ -202,9 +219,11 @@ public class GameResource {
 						       .status(HttpStatus.NOT_FOUND)
 						       .body(new ArrayList<Player>());
 			}
+			GameDto updatedGameDto = mapUtil.convertToDto(updatedGame);
+			
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(updatedGame);
+					       .body(updatedGameDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -240,9 +259,10 @@ public class GameResource {
 						       .status(HttpStatus.NOT_FOUND)
 						       .body(new ArrayList<Player>());
 			}
+			GameDto updatedGameDto = mapUtil.convertToDto(updatedGame);
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(updatedGame);
+					       .body(updatedGameDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -280,8 +300,8 @@ public class GameResource {
 	// you fromLabel the Date dataOrNull for ?date=12-05-2013
 	//
 	// JAX_RS
-	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	// also use: @DefaultValue("false") @QueryParam("from") boolean human
+	// you fromLabel the boolean human with value 'true' for ?human=true
 	
 	// /games?id=1,2,3,4
 	@DeleteMapping(value = "/games/", params = {"id"})
@@ -303,7 +323,7 @@ public class GameResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Game>());
+					       .body(e);
 		}
 	}
 	

@@ -151,6 +151,7 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+    
     // uses sessionBuilder.addProperties(getHibernateProperties()) in the session factory bean
     // or seat each property with sessionBuilder.setProperty("hibernate.show_sql", "true");
     final Properties hibernateProperties() {

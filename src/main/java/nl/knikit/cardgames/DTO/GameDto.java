@@ -1,5 +1,8 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
@@ -48,7 +51,8 @@ public class GameDto {
 	// " RJ  Script Joe [ELF]"
 	private PlayerDto winner;
 	
-	public GameType getGameTy1peConverted(String gameType) throws ParseException {
+	@JsonIgnore
+	public GameType getGameTypeConverted(String gameType) throws ParseException {
 		return GameType.fromGameTypeLabel(gameType);
 	}
 	
@@ -62,6 +66,7 @@ public class GameDto {
 		this.gameType = (String.valueOf(gameType));
 	}
 	
+	@JsonIgnore
 	public State getStateConverted(String state) throws ParseException {
 		return State.valueOf(state);
 	}
@@ -78,8 +83,8 @@ public class GameDto {
 		
 		this.state = (String.valueOf(state));
 	}
-	
-	public Game getNameConverted(String name) {
+	@JsonIgnore
+	public Game setNameConverted(String name) {
 		// "Highlow#0005 (Ante:100) [Select_Game]"
 		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(name, "Ante:"), "]"), " ["), "#()");
 		
@@ -114,7 +119,8 @@ public class GameDto {
 		return this.round = "Round " + this.currentRound + " [" + this.minRounds + "-" + this.maxRounds + "]";
 	}
 	
-	public void getRoundConverted(String round) {
+	@JsonIgnore
+	public void setRoundConverted(String round) {
 		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(round, "Round "), " "), "[-]");
 		if (splitName.length != 3 ||
 				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty()) {
@@ -133,6 +139,7 @@ public class GameDto {
 		return this.turn = "Turn " + this.currentTurn + " (" + this.turnsToWin + " to win) [" + this.minTurns + "-" + this.maxTurns + "]";
 	}
 	
+	@JsonIgnore
 	public void setTurnConverted(String turn) {
 		// "Turn 2 (3 to win) [1-9]"
 		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(StringUtils.remove(round, "to win"), "Turn "), " ["), "]"), "()-");

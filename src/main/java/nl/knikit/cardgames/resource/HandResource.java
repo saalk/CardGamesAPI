@@ -57,7 +57,7 @@ public class HandResource {
     public ResponseEntity<ArrayList<Hand>> getHands() {
 
         ArrayList<Hand> Hands;
-        Hands = (ArrayList) handService.findAll("isHuman", "DESC");
+        Hands = (ArrayList) handService.findAll("human", "DESC");
         return new ResponseEntity(Hands, HttpStatus.OK);
     }
 
@@ -84,8 +84,8 @@ public class HandResource {
     // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+    // also use: @DefaultValue("false") @QueryParam("from") boolean human
+    // you fromLabel the boolean human with value 'true' for ?human=true
 
     @GetMapping(value = "/hands", params = { "casino" } )
     public ResponseEntity<ArrayList<Hand>> findAllWhere(
@@ -179,8 +179,8 @@ public class HandResource {
     // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+    // also use: @DefaultValue("false") @QueryParam("from") boolean human
+    // you fromLabel the boolean human with value 'true' for ?human=true
 
     // /Hands?id=1,2,3,4
     @DeleteMapping(value = "/hands", params = { "id" } )

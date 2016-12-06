@@ -2,6 +2,8 @@ package nl.knikit.cardgames.definitions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.knikit.cardgames.DTO.GameDto;
+import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.GameType;
@@ -49,10 +51,10 @@ public class StepDefsGames extends SpringIntegrationTest {
 	public void iTryToPostANewTypeGameWithWinnerAndAnte(String type, String winner, String ante) throws Throwable {
 		
 		
-		Game postGame = new Game();
+		GameDto postGame = new GameDto();
 		
 		if (!winner.isEmpty()) {
-			Player postPlayer = new Player();
+			PlayerDto postPlayer = new PlayerDto();
 			postPlayer.setPlayerId(Integer.parseInt(winner));
 			postGame.setWinner(postPlayer);
 		}
@@ -68,11 +70,11 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 	}
 	
-	@Given("^I try to post a isHuman \"([^\"]*)\" winner having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewHumanPlayerWithAvatarAlias(String isHuman, String avatar, String alias) throws Throwable {
+	@Given("^I try to post a human \"([^\"]*)\" winner having \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPostANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
 		
-		Player postPlayer = new Player();
-		postPlayer.setHuman(Boolean.parseBoolean(isHuman));
+		PlayerDto postPlayer = new PlayerDto();
+		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
 		postPlayer.setAlias(alias);
 		
@@ -88,7 +90,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 	@Given("^I try to put a game with \"([^\"]*)\" having type \"([^\"]*)\" winner \"([^\"]*)\" and ante \"([^\"]*)\"$")
 	public void iTryToPutANewTypeGameWithWinnerAndAnte(String gameId, String type, String winner, String ante) throws Throwable {
 		
-		Game postGame = new Game();
+		GameDto postGame = new GameDto();
 		if (gameId.equals("latest")) {
 			gameId = StepDefsGames.latestGameID;
 		}
@@ -100,7 +102,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 			if (winner.equals("latest")) {
 				winner = StepDefsGames.latestGameID;
 			}
-			Player postPlayer = new Player();
+			PlayerDto postPlayer = new PlayerDto();
 			postPlayer.setPlayerId(Integer.parseInt(winner));
 			postGame.setWinner(postPlayer);
 		}
@@ -149,7 +151,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//JSON string to Object
-		Game jsonGame = mapper.readValue(latestResponse.getBody(), Game.class);
+		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
 		StepDefsGames.latestGameID = String.valueOf(jsonGame.getGameId());
 		// do not set the player here, the player has been set before when making the player
 		
@@ -172,7 +174,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//JSON string to Object
-		Player jsonPlayer = mapper.readValue(latestResponse.getBody(), Player.class);
+		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
 		StepDefsGames.latestPlayerID  = String.valueOf(jsonPlayer.getPlayerId());
 
 	}

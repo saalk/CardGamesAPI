@@ -1,6 +1,8 @@
 package nl.knikit.cardgames.mapper;
 
+import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 
 import org.modelmapper.ModelMapper;
@@ -30,5 +32,19 @@ public class ModelMapperUtil{
 		Player player = modelMapper.map(playerDto, Player.class);
 		
 		return player;
+	}
+	
+	public GameDto convertToDto(Game game) {
+		GameDto gameDto = modelMapper.map(game, GameDto.class);
+		
+		gameDto.setName();
+		
+		return gameDto;
+	}
+	
+	public Game convertToEntity(GameDto gameDto) throws ParseException {
+		Game game = modelMapper.map(gameDto, Game.class);
+		
+		return game;
 	}
 }

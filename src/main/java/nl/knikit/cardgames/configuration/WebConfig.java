@@ -1,15 +1,10 @@
 package nl.knikit.cardgames.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import java.util.List;
 
 @Configuration
 @EnableWebMvc
@@ -19,5 +14,17 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
 
+    }
+    
+    /**
+     * Swagger UI adds a set of resources which you must configure as part of a class
+     * nthat extends WebMvcConfigurerAdapter, and is annotated with @EnableWebMvc.
+     */
+     
+    @Override
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        
+        registry.addResourceHandler("/webjars*").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }

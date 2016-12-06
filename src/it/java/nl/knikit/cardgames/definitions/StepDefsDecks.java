@@ -83,11 +83,11 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		
 	}
 	
-	@Given("^I try to post a isHuman \"([^\"]*)\" dealtTo having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewHumanDealtToWithAvatarAlias(String isHuman, String avatar, String alias) throws Throwable {
+	@Given("^I try to post a human \"([^\"]*)\" dealtTo having \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPostANewHumanDealtToWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
 		
 		Player postPlayer = new Player();
-		postPlayer.setHuman(Boolean.parseBoolean(isHuman));
+		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
 		postPlayer.setAlias(alias);
 		

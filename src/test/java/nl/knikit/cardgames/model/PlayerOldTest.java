@@ -57,7 +57,7 @@
 //
 //		// verify
 //		assertTrue("Number of Humans players not correct",
-//				testHumanPlayerOld1.isHuman() && !testAiPlayerOld2.isHuman() && !testAiPlayerOld3.isHuman());
+//				testHumanPlayerOld1.human() && !testAiPlayerOld2.human() && !testAiPlayerOld3.human());
 //	}
 //
 //}

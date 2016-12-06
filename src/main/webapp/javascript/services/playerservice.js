@@ -24,15 +24,15 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // ---
 
     // init a human player using the server' api
-    function initPlayerForIsHuman( isHuman ) {
+    function initPlayerForIsHuman( human ) {
         
-        if (isHuman) {
+        if (human==="true") {
            newPlayer = {"avatar": "ELF",
-                "alias":"stranger", "isHuman" : true, "aiLevel": 'HUMAN',
+                "alias":"stranger", "human" : "true", "aiLevel": 'HUMAN',
                 "cubits": 0, "securedLoan": 0};
         } else {
             newPlayer = {"avatar": "ELF",
-                "alias":"alien", "isHuman" : false, "aiLevel": 'NONE',
+                "alias":"alien", "human" : "false", "aiLevel": 'NONE',
                 "cubits": 0, "securedLoan": 0};
         }
         
@@ -68,12 +68,12 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     }
      
     // get all players for a condition using the server' api
-    function getPlayersWhere( isHuman ) {
+    function getPlayersWhere( human ) {
 
         var request = $http({
             method: "get",
             crossDomain: true,
-            url: baseUrl + "/api/players?isHuman=" + isHuman,
+            url: baseUrl + "/api/players?human=" + human,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "get"

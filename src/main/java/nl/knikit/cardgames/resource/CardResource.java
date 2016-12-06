@@ -69,8 +69,8 @@ public class CardResource {
     // you fromLabel the Date dataOrNull for ?date=12-05-2013
     //
     // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-    // you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+    // also use: @DefaultValue("false") @QueryParam("from") boolean human
+    // you fromLabel the boolean human with value 'true' for ?human=true
 
     @GetMapping(value = "/cards", params = { "suit" } )
     public ResponseEntity<ArrayList<Card>> findAllWhere(
@@ -78,8 +78,8 @@ public class CardResource {
 
         Card classCard ;
         // ternary operator = if for conditional assignment -> The ? : operator in Java
-        // boolean isHumanBoolean = ( param=="true")?true:false;
-        // classCard.setHuman( isHumanBoolean );
+        // boolean humanBoolean = ( param=="true")?true:false;
+        // classCard.setHuman( humanBoolean );
 
         try {
 

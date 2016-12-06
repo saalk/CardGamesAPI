@@ -2,7 +2,7 @@ Feature: Execute a lifecycle of a player in the card game
   In order to execute the lifecycle of a player
   I should call the api of /api/players/ to post, put, get and delete a player
 
-  @api @Players
+  @Api @Players
   Scenario Outline: A frontend makes call to GET /api/players/{id}
     Given I try to get a player with invalid "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -10,44 +10,44 @@ Feature: Execute a lifecycle of a player in the card game
 
     Examples: This is the default Human Player
 
-      | id   | avatar | alias     | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | id   | avatar | alias     | human | aiLevel | cubits | securedLoan | HTTP status code |
       | 1234 | ELF    | Cukes Doe | true    | HUMAN   | 0      | 0           | 404              |
 
-  @api @Players
+  @Api @Players
   Scenario Outline: A frontend makes call to POST /api/players
-    Given I try to post a isHuman "<isHuman>" player having "<avatar>" and "<alias>"
+    Given I try to post a human "<human>" player having "<avatar>" and "<alias>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain isHuman "<isHuman>" player having "<avatar>" and "<alias>"
+    And The json response should contain human "<human>" player having "<avatar>" and "<alias>"
 
     Examples: This is the default Human Player
 
-      | id     | avatar | alias     | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | id     | avatar | alias     | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest | ELF    | Cukes Doe | true    | HUMAN   | 0      | 0           | 201              |
 
-  @api @Players
+  @Api @Players
   Scenario Outline: A frontend makes call to GET /api/players
     Given I try to get a player with valid "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain isHuman "<isHuman>" player having "<avatar>" and "<alias>"
+    And The json response should contain human "<human>" player having "<avatar>" and "<alias>"
 
     Examples: This is the default Human Player
 
-      | id      | avatar | alias     | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | id      | avatar | alias     | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest  | ELF    | Cukes Doe | true    | HUMAN   | 0      | 0           | 200              |
 
 
-  @api @Players
+  @Api @Players
   Scenario Outline: A frontend makes call to PUT /api/players/{id}
-    Given I try to put a player with "<id>" having isHuman "<isHuman>" avatar "<avatar>" and alias "<alias>"
+    Given I try to put a player with "<id>" having human "<human>" avatar "<avatar>" and alias "<alias>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain isHuman "<isHuman>" player having "<avatar>" and "<alias>"
+    And The json response should contain human "<human>" player having "<avatar>" and "<alias>"
 
     Examples: This is the default Human Player
 
-      | id     | avatar   | alias      | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | id     | avatar   | alias      | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest | MAGICIAN | Cukes Doe2 | false   | HUMAN   | 0      | 0           | 200              |
 
-  @api @Players
+  @Api @Players
   Scenario Outline: A frontend makes call to DELETE /api/players/{id}
     Given I try to delete a player with "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -55,5 +55,5 @@ Feature: Execute a lifecycle of a player in the card game
 
     Examples: This is the default Human Player
 
-      | id     | avatar   | alias      | isHuman | aiLevel | cubits | securedLoan | HTTP status code |
+      | id     | avatar   | alias      | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest | MAGICIAN | Cukes Doe2 | false   | HUMAN   | 0      | 0           | 204              |

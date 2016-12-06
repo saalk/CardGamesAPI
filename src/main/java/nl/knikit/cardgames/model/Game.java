@@ -48,49 +48,31 @@ public class Game implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	@Column(name = "GAME_ID")
-	@JsonProperty("gameId")
 	private int gameId;
-	
 	@Column(name = "CREATED", length = 25)
-	@JsonProperty("created")
 	private String created;
-	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STATE", length = 25, nullable = false)
-	@JsonProperty("state")
 	private State state;
-	
 	@Enumerated(EnumType.STRING)
 	//@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
 	@Column(name = "TYPE", length = 50, nullable = false)
-	@JsonProperty("type")
 	private GameType gameType;
-	
 	@Column(name = "MAX_ROUNDS")
-	@JsonProperty("maxRounds")
 	private int maxRounds;
 	@Column(name = "MIN_ROUNDS")
-	@JsonProperty("minRounds")
 	private int minRounds;
 	@Column(name = "CURRENT_ROUND")
-	@JsonProperty("currentRound")
 	private int currentRound;
-	
 	@Column(name = "MAX_TURNS")
-	@JsonProperty("maxTurns")
 	private int maxTurns;
 	@Column(name = "MIN_TURNS")
-	@JsonProperty("minTurns")
 	private int minTurns;
 	@Column(name = "CURRENT_TURN")
-	@JsonProperty("currentTurn")
 	private int currentTurn;
 	@Column(name = "TURNS_TO_WIN")
-	@JsonProperty("turnsToWin")
 	private int turnsToWin;
-	
 	@Column(name = "ANTE")
-	@JsonProperty("ante")
 	private int ante;
 	
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
@@ -98,7 +80,6 @@ public class Game implements Serializable {
 	// meaning do set cascade type to all -> changed to delete not create
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.REMOVE ,mappedBy = "game", targetEntity = Deck.class)
-	@JsonProperty("decks")
 	private List<Deck> decks = new ArrayList<>();
 	
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
@@ -107,7 +88,6 @@ public class Game implements Serializable {
 	@JsonIgnore
 	@ManyToOne(optional=true)
 	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", nullable=true)
-	@JsonProperty("winner")
 	private Player winner;
 	
 	// make a lookup from all the STATES

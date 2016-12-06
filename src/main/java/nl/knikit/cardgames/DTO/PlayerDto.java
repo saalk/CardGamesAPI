@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Player;
@@ -35,6 +37,7 @@ public class PlayerDto {
 	@Setter(AccessLevel.NONE)
 	private int winCount; // extra field
 	
+	@JsonIgnore
 	public Avatar getAvatarConvertedFromLabel(String avatarLabel) throws Exception {
 		Avatar converted = Avatar.fromLabel(avatar);
 		if (converted == null) {
@@ -52,7 +55,7 @@ public class PlayerDto {
 		// -> better use toString() to get the user-friendly name
 		this.avatar = (String.valueOf(avatar));
 	}
-	
+	@JsonIgnore
 	public AiLevel getAiLevelConvertedFromLabel(String aiLevelLabel) throws Exception {
 		AiLevel converted = AiLevel.fromLabel(aiLevelLabel);
 		if (converted == null) {
@@ -70,7 +73,7 @@ public class PlayerDto {
 		// -> better use toString() to get the user-friendly name
 		this.aiLevel = (String.valueOf(aiLevel));
 	}
-	
+	@JsonIgnore
 	public Player getNameConverted(String name) {
 		// "Script Joe(Human|Smart) [Elf]"
 		

@@ -141,7 +141,7 @@ function ($scope, playerService, toastr){
             // count the humans  
             count = 0;
             for (i=0; i < $scope.players.length; i++) {
-                 if ($scope.players[i].isHuman) {
+                 if ($scope.players[i].human) {
                      count++; 
                 }
             };
@@ -151,7 +151,7 @@ function ($scope, playerService, toastr){
                 // more humans than needed -> delete all Humans
                 // TODO delete only the extra/specific humans when less/one is/are needed
                  for (i=0; i < $scope.players.length; i++) {
-                    if ($scope.players[i].isHuman) {
+                    if ($scope.players[i].human) {
                         playerService.removePlayer( $scope.players[i] )
                         .then( loadRemoteData, function( errorMessage ) {
                             toastr.error('Removing one player failed: ' + errorMessage, 'Error');

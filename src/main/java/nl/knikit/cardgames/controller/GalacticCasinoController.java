@@ -298,7 +298,7 @@ public class GalacticCasinoController {
 //                    }
 //                    currentPlayerOld = null;
 //                    for (PlayerOld cp : currentGameOld.getPlayerOlds()) {
-//                        if (!cp.isHuman()) {
+//                        if (!cp.human()) {
 //                            System.out.println("  " + cp.getAlias() + " joined the game");
 //                        }
 //                    }
@@ -389,7 +389,7 @@ public class GalacticCasinoController {
 //                                + ", what will your next card be " + currentPlayerOld.getAlias() + "?";
 //                    }
 //
-//                    if (currentPlayerOld.isHuman()) {
+//                    if (currentPlayerOld.human()) {
 //                        answer = console.getAnswerFromConsole(question, action);
 //                        switch (answer) {
 //                            case 1:

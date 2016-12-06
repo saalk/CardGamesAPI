@@ -104,8 +104,8 @@ public class DeckResource {
 	// you fromLabel the Date dataOrNull for ?date=12-05-2013
 	//
 	// JAX_RS
-	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	// also use: @DefaultValue("false") @QueryParam("from") boolean human
+	// you fromLabel the boolean human with value 'true' for ?human=true
 	
 	@GetMapping(value = "/decks", params = {"game"})
 	@Produces(MediaType.APPLICATION_JSON)
@@ -316,8 +316,8 @@ public class DeckResource {
 	// you fromLabel the Date dataOrNull for ?date=12-05-2013
 	//
 	// JAX_RS
-	// also use: @DefaultValue("false") @QueryParam("from") boolean isHuman
-	// you fromLabel the boolean isHuman with value 'true' for ?isHuman=true
+	// also use: @DefaultValue("false") @QueryParam("from") boolean human
+	// you fromLabel the boolean human with value 'true' for ?human=true
 	
 	// /Decks?id=1,2,3,4
 	@DeleteMapping(value = "/decks", params = {"id"})

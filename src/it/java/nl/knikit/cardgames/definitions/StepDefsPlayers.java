@@ -2,6 +2,7 @@ package nl.knikit.cardgames.definitions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Player;
 
@@ -43,11 +44,11 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		executeGet("http://localhost:8383/api/players/" + playerId);
 	}
 	
-	@Given("^I try to post a isHuman \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewHumanPlayerWithAvatarAlias(String isHuman, String avatar, String alias) throws Throwable {
+	@Given("^I try to post a human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPostANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
 		
-		Player postPlayer = new Player();
-		postPlayer.setHuman(Boolean.parseBoolean(isHuman));
+		PlayerDto postPlayer = new PlayerDto();
+		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
 		postPlayer.setAlias(alias);
 		
@@ -60,14 +61,14 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		
 	}
 	
-	@Given("^I try to put a player with \"([^\"]*)\" having isHuman \"([^\"]*)\" avatar \"([^\"]*)\" and alias \"([^\"]*)\"$")
-	public void iTryToPutANewHumanPlayerWithAvatarAlias(String playerId, String isHuman, String avatar, String alias) throws Throwable {
+	@Given("^I try to put a player with \"([^\"]*)\" having human \"([^\"]*)\" avatar \"([^\"]*)\" and alias \"([^\"]*)\"$")
+	public void iTryToPutANewHumanPlayerWithAvatarAlias(String playerId, String human, String avatar, String alias) throws Throwable {
 		if (playerId.equals("latest")) {
 			playerId = StepDefsPlayers.latestPlayerID;
 		}
-		Player postPlayer = new Player();
+		PlayerDto postPlayer = new PlayerDto();
 		postPlayer.setPlayerId(Integer.parseInt(playerId));
-		postPlayer.setHuman(Boolean.parseBoolean(isHuman));
+		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
 		postPlayer.setAlias(alias);
 		
@@ -105,18 +106,18 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		assertThat(latestResponse.getBody(), is(""));
 	}
 	
-	@And("^The json response should contain isHuman \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAlias(String isHuman, String avatar, String alias) throws Throwable {
+	@And("^The json response should contain human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//JSON string to Object
-		Player jsonPlayer = mapper.readValue(latestResponse.getBody(), Player.class);
+		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
 		StepDefsPlayers.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
 		
-		assertThat(jsonPlayer.getHuman(), is(Boolean.parseBoolean(isHuman)));
-		assertThat(jsonPlayer.getAvatar(), is(Avatar.valueOf(avatar)));
+		assertThat(jsonPlayer.getHuman(), is(human));
+		assertThat(jsonPlayer.getAvatar(), is(avatar));
 		assertThat(jsonPlayer.getAlias(), is(alias));
 	}
 }
