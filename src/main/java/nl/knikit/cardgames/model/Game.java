@@ -40,8 +40,10 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @Table(name = "GAME")
 @Getter
 @Setter
-@Relation(value = "game", collectionRelation = "games")
-@JsonIdentityInfo(generator = JSOGGenerator.class)
+//@Relation(value = "game", collectionRelation = "games")
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
 public class Game implements Serializable {
 	
 	// 14 fields
@@ -55,8 +57,7 @@ public class Game implements Serializable {
 	@Column(name = "STATE", length = 25, nullable = false)
 	private State state;
 	@Enumerated(EnumType.STRING)
-	//@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	@Column(name = "TYPE", length = 50, nullable = false)
+	@Column(name = "GAMETYPE", length = 50, nullable = false)
 	private GameType gameType;
 	@Column(name = "MAX_ROUNDS")
 	private int maxRounds;
@@ -124,7 +125,7 @@ public class Game implements Serializable {
 	
 	public void addShuffledDeckToGame(int jokers) {
 		
-		List<Card> cards = Card.newDeck(jokers);
+		ArrayList<Card> cards = Card.newDeck(jokers);
 		Collections.shuffle(cards);
 		
 		int i = 1;

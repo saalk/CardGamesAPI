@@ -1,7 +1,8 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -43,17 +45,19 @@ public class GameDto {
 	private int currentTurn;
 	private int turnsToWin;
 	private int maxTurns;
-	private List<DeckDto> decks;
+	@JsonBackReference(value="game-decks")
+	private ArrayList<DeckDto> decks;
 	// "10C  Ten of Clubs"
 	// "  *  40 cards left
 	// "---  -------------
 	// " AS+ Script Joe [ELF]-"
 	// " RJ  Script Joe [ELF]"
+	@JsonBackReference(value="game-winner")
 	private PlayerDto winner;
 	
 	@JsonIgnore
 	public GameType getGameTypeConverted(String gameType) throws ParseException {
-		return GameType.fromGameTypeLabel(gameType);
+		return GameType.fromLabel(gameType);
 	}
 	
 	public void setGameType(GameType gameType) {
@@ -91,7 +95,7 @@ public class GameDto {
 		if (splitName.length != 4 ||
 				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty() || splitName[3].isEmpty()) {
 			Game newGame = new Game();
-			newGame.setGameType(GameType.fromGameTypeLabel(splitName[0]));
+			newGame.setGameType(GameType.fromLabel(splitName[0]));
 			newGame.setGameId(Integer.parseInt(splitName[1]));
 			newGame.setAnte(Integer.parseInt(splitName[2]));
 			newGame.setState(State.valueOf(splitName[3]));
@@ -99,7 +103,7 @@ public class GameDto {
 		}
 		
 		Game newGame = new Game();
-		newGame.setGameType(GameType.fromGameTypeLabel(this.gameType));
+		newGame.setGameType(GameType.fromLabel(this.gameType));
 		newGame.setGameId(this.gameId);
 		newGame.setAnte(this.ante);
 		newGame.setState(State.valueOf(this.state));

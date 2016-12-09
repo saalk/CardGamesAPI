@@ -3,7 +3,6 @@ package nl.knikit.cardgames.dao.common;
 import com.google.common.base.Preconditions;
 
 import nl.knikit.cardgames.model.GameType;
-import nl.knikit.cardgames.model.GameType;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

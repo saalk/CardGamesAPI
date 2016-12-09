@@ -55,8 +55,10 @@ import lombok.ToString;
             @Index(columnList = "CASINO_ID", name = "CASINO_ID_INDEX")},
         uniqueConstraints =
             @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"PLAYER_ID","CASINO_ID"}))
-@Relation(value = "Hand", collectionRelation = "hands")
-@JsonIdentityInfo(generator=JSOGGenerator.class)
+//@Relation(value = "Hand", collectionRelation = "hands")
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
 @Getter
 @Setter
 public class Hand implements Serializable {

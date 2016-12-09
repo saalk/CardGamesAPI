@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
 
@@ -26,6 +28,7 @@ public class DeckDto {
 	// "(01)  AS+ Script Joe [ELF]-"
 	// "(02)  RJ  Script Joe [ELF]"
 	private int deckId;
+	@JsonManagedReference(value="game-decks")
 	private GameDto game;
 	private CardDto card;
 	private int cardOrder;

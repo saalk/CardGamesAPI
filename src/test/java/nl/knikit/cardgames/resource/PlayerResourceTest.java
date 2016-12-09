@@ -27,11 +27,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -99,7 +101,8 @@ public class PlayerResourceTest {
 	    gamesDto.add(new GameDto());
 	    playerDtoFixture.setGames(gamesDto);
 	    playerDtoFixture.setWinCount();  // extra field
-		// TODO add when then for create, update in PlayerResourceTest
+	
+	    // TODO add when then for create, update in PlayerResourceTest
 	
     }
 
@@ -133,10 +136,10 @@ public class PlayerResourceTest {
         final Method method = this.resourceTest.getClass()
                                             .getMethod("getPlayers");
         assertThat("The method has the GET MAPPING annotation", method.isAnnotationPresent(GetMapping.class));
-        assertThat("The method produces JSon", method.isAnnotationPresent(Produces.class));
+        //assertThat("The method produces JSon", method.isAnnotationPresent(Produces.class));
 
         final Produces produces = method.getDeclaredAnnotation(Produces.class);
-        assertThat("The produced mediatype is application/json", produces.value()[0], is(MediaType.APPLICATION_JSON));
+        //assertThat("The produced mediatype is application/json", produces.value()[0], is(MediaType.APPLICATION_JSON));
     }
 
     @Test

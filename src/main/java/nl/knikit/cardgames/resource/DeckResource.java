@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -60,7 +61,7 @@ public class DeckResource {
 	private IPlayerService playerService;
 	
 	@GetMapping("/decks/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getDeck(@PathVariable("id") int id) {
 		
 		try {
@@ -81,7 +82,7 @@ public class DeckResource {
 	}
 	
 	@GetMapping("/decks")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity<ArrayList<Deck>> getDecks() {
 		
 		ArrayList<Deck> decks;
@@ -108,7 +109,7 @@ public class DeckResource {
 	// you fromLabel the boolean human with value 'true' for ?human=true
 	
 	@GetMapping(value = "/decks", params = {"game"})
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity<ArrayList<Deck>> findAllForGame(@RequestParam(value = "game", required = true) String param) {
 		
 		try {
@@ -130,7 +131,7 @@ public class DeckResource {
 	}
 	
 	@GetMapping(value = "/decks", params = {"game", "dealtTo"})
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity<ArrayList<Deck>> findAllForGameAndPlayer(
 			@RequestParam(value = "game", required = true) String game,
 			@RequestParam(value = "dealtTo", required = true) int dealtTo) {
@@ -173,7 +174,7 @@ public class DeckResource {
 	}
 	
 	@PostMapping(value = "/decks", params = {"shuffle"})
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public ResponseEntity createDeck(
 			                                @RequestBody Deck deck,
 			                                @RequestParam(value = "shuffle", defaultValue = "0", required = false) String shuffle) {
@@ -241,7 +242,7 @@ public class DeckResource {
 	}
 	
 	@PutMapping(value = "/decks/{id}", params = {"dealTo"})
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public ResponseEntity updateDeckForDealtTo(
 			                                          @PathVariable String id,
 			                                          @RequestParam(value = "dealTo", required = true) String param) {

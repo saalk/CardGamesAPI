@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+
 import lombok.extern.slf4j.Slf4j;
 
 // @RestController = @Controller + @ResponseBody

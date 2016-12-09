@@ -70,8 +70,10 @@ import static org.apache.commons.lang3.StringUtils.right;
 @DynamicUpdate
 @Getter
 @Setter
-@Relation(value = "card", collectionRelation = "cards")
-@JsonIdentityInfo(generator = JSOGGenerator.class)
+//@Relation(value = "card", collectionRelation = "cards")
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
 public class Card implements Serializable {
 	
 	// 13 progressing ranks 2 to 10, jack, queen, king, ace.

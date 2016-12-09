@@ -3,6 +3,7 @@ package nl.knikit.cardgames.definitions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Player;
 
@@ -19,6 +20,9 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	
 	private static String latestPlayerID = "";
 	
+	private static String playersUrl = "http://localhost:8383/api/players/";
+	private static String playersUrlWithId = "http://localhost:8383/api/players/{id}";
+	
 	// API          HTTP
 	//
 	// UPDATE,PUT   OK(200, "OK"),
@@ -33,7 +37,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		if (playerId.equals("latest")) {
 			playerId = StepDefsPlayers.latestPlayerID;
 		}
-		executeGet("http://localhost:8383/api/players/" + playerId);
+		executeGet(playersUrl + playerId);
 	}
 	
 	@Given("^I try to get a player with invalid \"([^\"]*)\"$")
@@ -41,28 +45,30 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		if (playerId.equals("latest")) {
 			playerId = StepDefsPlayers.latestPlayerID;
 		}
-		executeGet("http://localhost:8383/api/players/" + playerId);
+		executeGet(playersUrl + playerId);
 	}
 	
-	@Given("^I try to post a human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
+	@Given("^I try to post a human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPostANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias, String aiLevel) throws Throwable {
 		
 		PlayerDto postPlayer = new PlayerDto();
 		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
 		postPlayer.setAlias(alias);
+		postPlayer.setAiLevel(AiLevel.valueOf(aiLevel));
+		
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//Object to JSON in String
 		String jsonInString = mapper.writeValueAsString(postPlayer);
-		executePost("http://localhost:8383/api/players", jsonInString);
+		executePost(playersUrl, jsonInString);
 		
 	}
 	
-	@Given("^I try to put a player with \"([^\"]*)\" having human \"([^\"]*)\" avatar \"([^\"]*)\" and alias \"([^\"]*)\"$")
-	public void iTryToPutANewHumanPlayerWithAvatarAlias(String playerId, String human, String avatar, String alias) throws Throwable {
+	@Given("^I try to put a player with \"([^\"]*)\" having human \"([^\"]*)\" avatar \"([^\"]*)\" and alias \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPutANewHumanPlayerWithAvatarAlias(String playerId, String human, String avatar, String alias, String aiLevel) throws Throwable {
 		if (playerId.equals("latest")) {
 			playerId = StepDefsPlayers.latestPlayerID;
 		}
@@ -70,6 +76,8 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		postPlayer.setPlayerId(Integer.parseInt(playerId));
 		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
+		postPlayer.setAiLevel(AiLevel.valueOf(aiLevel));
+		
 		postPlayer.setAlias(alias);
 		
 		// jackson has ObjectMapper that converts String to JSON
@@ -77,7 +85,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		
 		//Object to JSON in String
 		String jsonInString = mapper.writeValueAsString(postPlayer);
-		executePut("http://localhost:8383/api/players/" + playerId, jsonInString);
+		executePut(playersUrl + playerId, jsonInString);
 		
 	}
 	
@@ -86,7 +94,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		if (playerId.equals("latest")) {
 			playerId = StepDefsPlayers.latestPlayerID;
 		}
-		executeDelete("http://localhost:8383/api/players/" + playerId, null);
+		executeDelete(playersUrl + playerId, null);
 	}
 	
 	@Then("^I should see that the response has HTTP status \"([^\"]*)\"$")
@@ -106,8 +114,8 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		assertThat(latestResponse.getBody(), is(""));
 	}
 	
-	@And("^The json response should contain human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
+	@And("^The json response should contain human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias, String aiLevel) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -119,5 +127,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		assertThat(jsonPlayer.getHuman(), is(human));
 		assertThat(jsonPlayer.getAvatar(), is(avatar));
 		assertThat(jsonPlayer.getAlias(), is(alias));
+		assertThat(jsonPlayer.getAiLevel(), is(aiLevel));
+		
 	}
 }

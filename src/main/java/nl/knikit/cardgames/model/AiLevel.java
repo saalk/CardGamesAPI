@@ -56,6 +56,7 @@ public enum AiLevel implements LabeledEnum {
         for(AiLevel aiLevel : EnumSet.allOf(AiLevel.class))
             lookup.put(aiLevel.getLabel(), aiLevel);
     }
+    @Transient
     private String label;
     
     AiLevel(){

@@ -4,15 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.GameType;
-import nl.knikit.cardgames.model.GameType;
-import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Player;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 
+import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -21,6 +23,9 @@ public class StepDefsGames extends SpringIntegrationTest {
 	
 	private static String latestGameID = "";
 	private static String latestPlayerID = "";
+	private static String gamesUrl = "http://localhost:8383/api/games/";
+	private static String playersUrl = "http://localhost:8383/api/players/";
+	private static String gamesUrlWithId = "http://localhost:8383/api/games/{id}";
 	
 	// API          HTTP
 	//
@@ -36,7 +41,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		if (gameId.equals("latest")) {
 			gameId = StepDefsGames.latestGameID;
 		}
-		executeGet("http://localhost:8383/api/games/" + gameId);
+		executeGet(gamesUrl + gameId);
 	}
 	
 	@Given("^I try to get a game with invalid \"([^\"]*)\"$")
@@ -44,11 +49,11 @@ public class StepDefsGames extends SpringIntegrationTest {
 		if (gameId.equals("latest")) {
 			gameId = StepDefsGames.latestGameID;
 		}
-		executeGet("http://localhost:8383/api/games/" + gameId);
+		executeGet(gamesUrl + gameId);
 	}
 	
-	@Given("^I try to post a type \"([^\"]*)\" game having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewTypeGameWithWinnerAndAnte(String type, String winner, String ante) throws Throwable {
+	@Given("^I try to post a gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
+	public void iTryToPostANewTypeGameWithWinnerAndAnte(String gameType, String winner, String ante,  String state) throws Throwable {
 		
 		
 		GameDto postGame = new GameDto();
@@ -58,7 +63,8 @@ public class StepDefsGames extends SpringIntegrationTest {
 			postPlayer.setPlayerId(Integer.parseInt(winner));
 			postGame.setWinner(postPlayer);
 		}
-		postGame.setGameType(GameType.valueOf(type));
+		postGame.setGameType(GameType.valueOf(gameType));
+		postGame.setState(State.valueOf(state));
 		postGame.setAnte(Integer.parseInt(ante));
 		
 		// jackson has ObjectMapper that converts String to JSON
@@ -66,16 +72,17 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		//Object to JSON in String
 		String jsonInString = mapper.writeValueAsString(postGame);
-		executePost("http://localhost:8383/api/games", jsonInString);
+		executePost(gamesUrl, jsonInString);
 		
 	}
 	
-	@Given("^I try to post a human \"([^\"]*)\" winner having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void iTryToPostANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias) throws Throwable {
+	@Given("^I try to post a human \"([^\"]*)\" winner having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")
+	public void iTryToPostANewHumanPlayerWithAvatarAlias(String human, String avatar, String alias, String aiLevel) throws Throwable {
 		
 		PlayerDto postPlayer = new PlayerDto();
 		postPlayer.setHuman(Boolean.parseBoolean(human));
 		postPlayer.setAvatar(Avatar.valueOf(avatar));
+		postPlayer.setAiLevel(AiLevel.valueOf(aiLevel));
 		postPlayer.setAlias(alias);
 		
 		// jackson has ObjectMapper that converts String to JSON
@@ -83,19 +90,20 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		//Object to JSON in String
 		String jsonInString = mapper.writeValueAsString(postPlayer);
-		executePost("http://localhost:8383/api/players", jsonInString);
+		executePost(playersUrl, jsonInString);
 		
 	}
 	
-	@Given("^I try to put a game with \"([^\"]*)\" having type \"([^\"]*)\" winner \"([^\"]*)\" and ante \"([^\"]*)\"$")
-	public void iTryToPutANewTypeGameWithWinnerAndAnte(String gameId, String type, String winner, String ante) throws Throwable {
+	@Given("^I try to put a game with \"([^\"]*)\" having gameType \"([^\"]*)\" winner \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
+	public void iTryToPutANewTypeGameWithWinnerAndAnte(String gameId, String gameType, String winner, String ante, String state) throws Throwable {
 		
 		GameDto postGame = new GameDto();
 		if (gameId.equals("latest")) {
 			gameId = StepDefsGames.latestGameID;
 		}
 		//TODO set the playerId also in the body or not ?
-		postGame.setGameType(GameType.valueOf(type));
+		postGame.setGameType(GameType.valueOf(gameType));
+		postGame.setState(State.valueOf(state));
 		postGame.setAnte(Integer.parseInt(ante));
 		
 		if (!winner.isEmpty()) {
@@ -124,8 +132,17 @@ public class StepDefsGames extends SpringIntegrationTest {
 		if (winner.equals("latest")) {
 			winner = StepDefsGames.latestPlayerID;
 		}
-
-		executePut("http://localhost:8383/api/games/" + gameId + "?winner=" + winner, null);
+		
+		// Uri (URL) parameters
+		Map<String, String> uriParams = new HashMap<>();
+		uriParams.put("id", gameId);
+		
+		// Query parameters
+		Map<String, String>  queryParams = new HashMap<>();
+		queryParams.put("winner", winner);
+		
+		// body cannot be null since there is a put that wants a request body
+		executePutWithUriAndQueryParam(gamesUrlWithId, uriParams, "{}", queryParams);
 	}
 	
 	@Given("^I try to delete a game with \"([^\"]*)\"$")
@@ -144,8 +161,8 @@ public class StepDefsGames extends SpringIntegrationTest {
 		executeDelete("http://localhost:8383/api/players/" + winner, null);
 	}
 		
-	@And("^The json response should contain type \"([^\"]*)\" game having \"([^\"]*)\" and \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeANewTypeGameWithWinnerAndAnte(String type, String winner, String ante) throws Throwable {
+	@And("^The json response should contain gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
+	public void theJsonResponseBodyShouldBeANewTypeGameWithWinnerAndAnte(String gameType, String winner, String ante, String state) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -155,6 +172,11 @@ public class StepDefsGames extends SpringIntegrationTest {
 		StepDefsGames.latestGameID = String.valueOf(jsonGame.getGameId());
 		// do not set the player here, the player has been set before when making the player
 		
+		assertThat(jsonGame.getGameType(), is(gameType));
+		assertThat(jsonGame.getAnte(), is(Integer.parseInt(ante)));
+		assertThat(jsonGame.getState(), is(state));
+		
+		
 		if (winner.equals("latest")) {
 			winner = StepDefsGames.latestPlayerID;
 		}
@@ -162,9 +184,6 @@ public class StepDefsGames extends SpringIntegrationTest {
 		if (!winner.isEmpty()) {
 			assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(winner));
 		}
-		
-		assertThat(jsonGame.getGameType(), is(GameType.valueOf(type)));
-		assertThat(jsonGame.getAnte(), is(Integer.parseInt(ante)));
 	}
 
 	@And("^The json response should contain a winner$")

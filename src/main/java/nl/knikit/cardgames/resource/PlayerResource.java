@@ -82,16 +82,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static sun.audio.AudioPlayer.player;
+
 // @RestController = @Controller + @ResponseBody
 @CrossOrigin
 @RestController
 @Component
-@ExposesResourceFor(Player.class)
+//@ExposesResourceFor(Player.class) // hateoas
 @Slf4j
 @Scope("prototype")
 @RequestScoped
@@ -105,7 +108,7 @@ public class PlayerResource {
 	private ModelMapperUtil mapUtil;
 	
 	@GetMapping("/players/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getPlayer(@PathVariable("id") int id) {
 		
 		try {
@@ -113,7 +116,7 @@ public class PlayerResource {
 			if (player == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Player not found");
 			}
 			PlayerDto playerDto = mapUtil.convertToDto(player);
 			return ResponseEntity
@@ -128,14 +131,17 @@ public class PlayerResource {
 	}
 	
 	@GetMapping("/players")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getPlayers() {
 		
-		List<Player> players;
+		ArrayList<Player> players;
 		try {
-			players = playerService.findAll("human", "DESC");
-			List<PlayerDto> playersDto = players.stream()
-					                             .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
+			//players = playerService.findAll("human", "DESC");
+			players = (ArrayList<Player>) playerService.findAll(null,null);
+			ArrayList<PlayerDto> playersDto = new ArrayList<>();
+			for (Player player : players) {
+				playersDto.add(mapUtil.convertToDto(player));
+			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
 					       .body(playersDto);
@@ -158,18 +164,21 @@ public class PlayerResource {
 	// you fromLabel the boolean human with value 'true' for ?human=true
 	
 	@GetMapping(value = "/players", params = {"human"})
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getPlayersWhere(@RequestParam(value = "human", required = true) String param) {
 		
 		try {
 			List<Player> players = playerService.findAllWhere("human", param);
 			if (players == null) {
 				return ResponseEntity
-						       .status(HttpStatus.NOT_FOUND)
+						       .status(HttpStatus.OK)
 						       .body("[{}]");
 			}
-			List<PlayerDto> playersDto = players.stream()
-					                             .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
+			
+			ArrayList<PlayerDto> playersDto = new ArrayList<>();
+			for (Player player : players) {
+				playersDto.add(mapUtil.convertToDto(player));
+			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
 					       .body(playersDto);
@@ -181,13 +190,13 @@ public class PlayerResource {
 	}
 	
 	@PostMapping("/players")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public ResponseEntity createPlayer(@RequestBody PlayerDto playerDto) throws ParseException {
 		
 		if (playerDto == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
+					       .body("Body not present");
 		}
 		Player player = mapUtil.convertToEntity(playerDto);
 		Player consistentPlayer = makeConsistentPlayer(player);
@@ -196,7 +205,7 @@ public class PlayerResource {
 			if (createdPlayer == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Player not created");
 			}
 			
 			PlayerDto newPlayerDto = mapUtil.convertToDto(createdPlayer);
@@ -211,8 +220,8 @@ public class PlayerResource {
 	}
 	
 	@PostMapping(value = "/players", params = {"human"})
-	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity initPlayer(@RequestParam(value = "human", required = true) String param) {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public ResponseEntity initPlayer(@RequestParam(value = "human", required = true) Boolean param) {
 		
 		if (param == null) {
 			return ResponseEntity
@@ -221,13 +230,15 @@ public class PlayerResource {
 		}
 		
 		// TODO integrate consistency / init human with modelmap
-		Player consistentPlayer = makeConsistentPlayer(new Player());
+		Player initPlayer = new Player();
+		initPlayer.setHuman(param);
+		Player consistentPlayer = makeConsistentPlayer(initPlayer);
 		try {
 			Player createdPlayer = playerService.create(consistentPlayer);
 			if (createdPlayer == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Player not updated");
 			}
 			PlayerDto playerDto = mapUtil.convertToDto(createdPlayer);
 			return ResponseEntity
@@ -241,36 +252,34 @@ public class PlayerResource {
 	}
 	
 	@PutMapping("/players/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody PlayerDto newPlayerDto) throws ParseException {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public ResponseEntity updatePlayer(@PathVariable int id, @RequestBody PlayerDto updatePlayerDto) throws ParseException {
 		// always use the id in the path instead of id in the body
-		if (newPlayerDto == null || id == 0) {
+		if (updatePlayerDto == null || id == 0) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
+					       .body("Body null or id zero");
 		}
-		Player newPlayer = mapUtil.convertToEntity(newPlayerDto);
-		
 		Player player = playerService.findOne(id);
 		if (player == null) {
 			return ResponseEntity
 					       .status(HttpStatus.NOT_FOUND)
-					       .body(new PlayerDto());
+					       .body("Player not found");
 		}
-		
-		Player consistentPlayer = makeConsistentPlayer(newPlayer);
-		consistentPlayer.setPlayerId(id);
+		Player convertedPlayer = mapUtil.convertToEntity(updatePlayerDto);
+		convertedPlayer.setPlayerId(id);
+		//Player consistentPlayer = makeConsistentPlayer(convertedPlayer);
 		try {
-			Player updatedPlayer = playerService.update(consistentPlayer);
+			Player updatedPlayer = playerService.update(convertedPlayer);
 			if (updatedPlayer == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Player not updated");
 			}
-			PlayerDto playerDto = mapUtil.convertToDto(updatedPlayer);
+			PlayerDto updatedPlayerDto = mapUtil.convertToDto(updatedPlayer);
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(playerDto);
+					       .body(updatedPlayerDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -279,19 +288,19 @@ public class PlayerResource {
 	}
 	
 	@DeleteMapping("/players/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity deletePlayer(@PathVariable("id") int id) {
 		try {
 			Player deletePlayer = playerService.findOne(id);
 			if (deletePlayer == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Player not found");
 			}
 			playerService.deleteOne(deletePlayer);
 			return ResponseEntity
 					       .status(HttpStatus.NO_CONTENT)
-					       .body("[{}]");
+					       .body("");
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -304,7 +313,7 @@ public class PlayerResource {
 	
 	// /players?id=1,2,3,4
 	@DeleteMapping(value = "/players", params = {"id"})
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity deletePlayersById(@RequestParam(value = "id", required = false) List<String> ids) {
 		
 		try {
@@ -313,13 +322,13 @@ public class PlayerResource {
 				if (deletePlayer == null) {
 					return ResponseEntity
 							       .status(HttpStatus.NOT_FOUND)
-							       .body("[{}]");
+							       .body("Player not found: " + ids.get(i));
 				}
 			}
 			playerService.deleteAllByIds(new Player(), ids);
 			return ResponseEntity
 					       .status(HttpStatus.NO_CONTENT)
-					       .body("[{}]");
+					       .body("");
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -327,7 +336,7 @@ public class PlayerResource {
 		}
 	}
 	
-	private static Player makeConsistentPlayer(Player player) {
+	private Player makeConsistentPlayer(Player player) {
 		
 		Player consistentPlayer = new Player();
 		consistentPlayer.setAlias(player.getAlias());

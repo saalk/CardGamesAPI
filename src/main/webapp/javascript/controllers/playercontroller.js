@@ -161,7 +161,7 @@ function ($scope, playerService, toastr){
                 };
                 for (i = 0 ; i < needed; i++) {
                     // add one or more humans until needed
-                    playerService.initPlayerForIsHuman( true )
+                    playerService.initPlayerForIsHuman( "true" )
                            .then( loadRemoteData, function( errorMessage ) {
                                toastr.error('Initializing new player failed: ' + errorMessage, 'Error');
                            }
@@ -172,7 +172,7 @@ function ($scope, playerService, toastr){
                 extra = needed - count;
                 for (i = 0 ; i < extra; i++) {
                     // add one or more humans 
-                    playerService.initPlayerForIsHuman( true )
+                    playerService.initPlayerForIsHuman( "true" )
                            .then( loadRemoteData, function( errorMessage ) {
                                toastr.error('Initializing new player failed: ' + errorMessage, 'Error');
                            }

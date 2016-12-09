@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
@@ -9,6 +10,7 @@ import nl.knikit.cardgames.model.Player;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -33,7 +35,8 @@ public class PlayerDto {
 	private String avatar;
 	private int cubits;
 	private int securedLoan;
-	private List<GameDto> games;
+	@JsonManagedReference(value="game-winner")
+	private ArrayList<GameDto> games;
 	@Setter(AccessLevel.NONE)
 	private int winCount; // extra field
 	

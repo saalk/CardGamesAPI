@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import nl.knikit.cardgames.model.Rank;
 import nl.knikit.cardgames.model.Suit;
 

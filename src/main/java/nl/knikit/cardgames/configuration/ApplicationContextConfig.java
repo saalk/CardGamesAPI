@@ -142,12 +142,12 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
 
     // D: Translate all errors generated during the persistence process (HibernateExceptions, PersistenceExceptions...)
     // into DataAccessException objects
-    @Bean
+    @Bean(name = "exceptionTranslation")
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
     
-    @Bean
+    @Bean(name = "modelmapper")
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }

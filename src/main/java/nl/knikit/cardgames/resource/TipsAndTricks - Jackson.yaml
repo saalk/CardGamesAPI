@@ -1,0 +1,94 @@
+## Jackson is the standard JSON parser for Java
+# modules
+
+Streaming:
+
+Annotations:
+@JsonProperty("firstName") // renaming
+@JsonIgnore // will not write
+@JsonIgnoreProperties({ "uselessValue" }) // will ignore from html
+@JsonCreator + @JsonProperty // switch another constructor
+@JsonTypeInfo // for possilbe subtypes
+
+Databinding:
+ObjectMapper mapper = new ObjectMapper(); // create once, reuse
+MyValue value = mapper.readValue(new File("data.json"), MyValue.class);
+mapper.writeValue(new File("result.json"), myResultObject);
+
+
+## Configuration
+// to allow coercion of JSON empty String ("") to null Object value:
+mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+// to allow serialization of "empty" POJOs (no properties to serialize):
+// (without this setting, an exception is thrown in those cases):
+mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+
+## Third-party datatype modules
+Guava
+Hibernate
+Joda
+
+
+## Since Jackson 1.6 you can use two annotations to solve the infinite recursion problem without ignoring the getters/setters during serialization:
+@JsonManagedReference
+child
+
+@JsonBackReference
+parent
+
+## Another useful annotation
+ @JsonIdentityInfo: using it, everytime Jackson serializes your object,
+ it will add an ID (or another attribute of your choose) to it,
+ so that it won't entirely "scan" it again everytime.
+
+example:
+If you've got a Role (parent) and you want to retrieve its Users (child) you can simply do that
+because of the bidirectional relationship between Role and User objects.
+Using json, those annotations ensure that when you'll get the Users they won't try to give you
+back the Roles again (so that you won't enter a loop
+
+@OneToOne
+@JsonBackReference
+private Category parent;
+
+@OneToMany
+@JsonManagedReference
+private List children;
+
+example:
+## Add the @JsonManagedReference In the forward part of the relationship (i.e. User.java class):
+
+@Entity
+public class User implements java.io.Serializable{
+
+@Id
+@GeneratedValue(strategy=GenerationType.IDENTITY)
+private long id;
+
+@Column(name="name")
+private String name;
+
+@ManyToMany
+@JoinTable(name="users_roles",joinColumns=@JoinColumn(name = "user_fk"),
+inverseJoinColumns=@JoinColumn(name = "role_fk"))
+@JsonManagedReference
+private Set<Role> roles = new HashSet<Role>();
+
+...
+
+## Add the @JsonBackReference In the back part of the relationship (i.e. Role.java class):
+
+@Entity
+public class Role implements java.io.Serializable {
+
+@Id
+@GeneratedValue(strategy=GenerationType.IDENTITY)
+private int id;
+
+@ManyToMany(mappedBy="roles")
+@JsonBackReference
+private Set<User> users = new HashSet<User>();
+
+...
+

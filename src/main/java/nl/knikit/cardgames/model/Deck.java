@@ -94,11 +94,13 @@ import lombok.Setter;
 @Entity
 @Table(name = "DECK", indexes = {
         @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")})
-@Relation(value = "deck", collectionRelation = "decks")
+//@Relation(value = "deck", collectionRelation = "decks")
 @Getter
 @Setter
 @DynamicUpdate
-@JsonIdentityInfo(generator=JSOGGenerator.class)
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
 public class Deck implements Serializable {
 
     @Id

@@ -23,6 +23,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -46,10 +47,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @DynamicUpdate
-// @Table(name = "PLAYER", indexes = {@Index(name = "PLAYER_INDEX", columnList = "PLAYER_ID")})
-@Table(name = "PLAYER")
-@Relation(value = "player", collectionRelation = "players")
-@JsonIdentityInfo(generator=JSOGGenerator.class)
+@Table(name = "PLAYER", indexes = {@Index(name = "PLAYER_INDEX", columnList = "PLAYER_ID")})
+//@Table(name = "PLAYER")
+//@Relation(value = "player", collectionRelation = "players")
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
 public class Player implements Serializable {
     
     // 9 fields
@@ -65,7 +68,6 @@ public class Player implements Serializable {
     @JsonProperty("created") private String created;
 
     @Enumerated(EnumType.STRING)
-    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
     @Column(name = "AVATAR", nullable = false)
     @JsonProperty("avatar") private Avatar avatar;
 	
@@ -77,7 +79,6 @@ public class Player implements Serializable {
     @JsonProperty("human") private boolean human;
 
     @Enumerated(EnumType.STRING)
-    //@Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
     @Column(name = "AI_LEVEL", nullable = false)
     @JsonProperty("aiLevel") private AiLevel aiLevel;
 

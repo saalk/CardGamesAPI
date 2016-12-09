@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -40,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @RestController
 @Component
-@ExposesResourceFor(Game.class)
+// @ExposesResourceFor(Game.class) //hateoas
 @Slf4j
 @Scope("prototype")
 @RequestScoped
@@ -57,7 +58,7 @@ public class GameResource {
 	private ModelMapperUtil mapUtil;
 	
 	@GetMapping("/games/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGame(@PathVariable("id") int id) {
 		
 		try {
@@ -65,7 +66,7 @@ public class GameResource {
 			if (game == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Game not found");
 			}
 			GameDto gameDto = mapUtil.convertToDto(game);
 			return ResponseEntity
@@ -79,15 +80,15 @@ public class GameResource {
 	}
 	
 	@GetMapping("/games")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGames() {
 		
 		ArrayList<Game> games;
 		try {
 			games = (ArrayList<Game>) gameService.findAll("gameType", "ASC");
 			List<GameDto> gamesDto = games.stream()
-					                             .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
-			
+					                         .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
+			// TODO make
 			return ResponseEntity
 					       .status(HttpStatus.OK)
 					       .body(gamesDto);
@@ -109,15 +110,15 @@ public class GameResource {
 	// you fromLabel the boolean human with value 'true' for ?human=true
 	
 	@GetMapping(value = "/games/", params = {"gameType"})
-	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity findAllWhere(@RequestParam(value = "gameType", required = true) String param) {
+	@Produces({MediaType.APPLICATION_JSON})
+	public ResponseEntity getGamesWhere(@RequestParam(value = "gameType", required = true) String param) {
 		
 		try {
-			ArrayList<Game> games = (ArrayList) gameService.findAllWhere("type", param);
+			List<Game> games = gameService.findAllWhere("gameType", param);
 			if (games == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Game not found");
 			}
 			List<GameDto> gamesDto = games.stream()
 					                         .map(player -> mapUtil.convertToDto(player)).collect(Collectors.toList());
@@ -139,7 +140,7 @@ public class GameResource {
 		if (gameDto == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
+					       .body("Body null");
 		}
 		Game game = mapUtil.convertToEntity(gameDto);
 		Game consistentGame = makeConsistentGame(game);
@@ -148,7 +149,7 @@ public class GameResource {
 			if (createdGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Game>());
+						       .body("Game not created");
 			}
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
@@ -160,30 +161,29 @@ public class GameResource {
 		}
 	}
 	
-	@PostMapping(name = "/games", params = {"jokers"})
+	@PostMapping(name = "/games/", params = {"jokers"})
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity createGameWithJokers(
-			@RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
-			@RequestBody GameDto gameDto) throws ParseException {
+	public ResponseEntity createGameWithDeck(
+			                                          @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
+			                                          @RequestBody GameDto gameDto) throws ParseException {
 		
 		// TODO jokers IT testing
 		if (gameDto == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
+					       .body("Body null or jokers missing");
 		}
 		Game game = mapUtil.convertToEntity(gameDto);
 		Game consistentGame = makeConsistentGame(game);
 		consistentGame.addShuffledDeckToGame(jokers);
 		try {
 			Game createdGame = gameService.create(consistentGame);
-			GameDto newGameDto = mapUtil.convertToDto(createdGame);
-			
-			if (newGameDto == null) {
+			if (createdGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Game not created");
 			}
+			GameDto newGameDto = mapUtil.convertToDto(createdGame);
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
 					       .body(newGameDto);
@@ -201,26 +201,25 @@ public class GameResource {
 		if (updateGameDto == null || id == 0) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
+					       .body("Body null or id zero");
 		}
 		Game game = gameService.findOne(id);
 		if (game == null) {
 			return ResponseEntity
 					       .status(HttpStatus.NOT_FOUND)
-					       .body("[{Game not found}]");
+					       .body("Game for not found");
 		}
-		Game newGame = mapUtil.convertToEntity(updateGameDto);
-		Game consistentGame = makeConsistentGame(newGame);
-		consistentGame.setGameId(id);
+		Game convertedGame = mapUtil.convertToEntity(updateGameDto);
+		convertedGame.setGameId(id);
+		//Game consistentGame = makeConsistentGame(convertedGame);
 		try {
-			Game updatedGame = gameService.update(consistentGame);
+			Game updatedGame = gameService.update(convertedGame);
 			if (updatedGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Player>());
+						       .body("Game not updated");
 			}
 			GameDto updatedGameDto = mapUtil.convertToDto(updatedGame);
-			
 			return ResponseEntity
 					       .status(HttpStatus.OK)
 					       .body(updatedGameDto);
@@ -231,33 +230,35 @@ public class GameResource {
 		}
 	}
 	
-	@PutMapping(value = "/games/{id}", params = {"winner"})
-	public ResponseEntity updateGameWithWinner(@PathVariable String id,
-	                                           @RequestParam(value = "winner", required = true) String winner) {
-		Player player = playerService.findOne(Integer.parseInt(winner));
+	@PutMapping(value = "/games/{id}/", params = {"winner"})
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity updateGameWithWinner(@PathVariable int id,
+	                                           @RequestParam(value = "winner", required = true) int winner) {
+		if (id == 0 || winner == 0) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("Id or winner zero");
+		}
+		Player player = playerService.findOne(winner);
 		if (player == null) {
 			return ResponseEntity
 					       .status(HttpStatus.NOT_FOUND)
-					       .body("[{Winner not found}]");
+					       .body("Winner not found");
 		}
-		if (id.isEmpty()) {
-			return ResponseEntity
-					       .status(HttpStatus.BAD_REQUEST)
-					       .body("[{}]");
-		}
-		Game game = gameService.findOne(Integer.parseInt(id));
+		Game game = gameService.findOne(id);
 		if (game == null) {
 			return ResponseEntity
 					       .status(HttpStatus.NOT_FOUND)
-					       .body("[{Game not found}]");
+					       .body("Game not found");
 		}
+		// TODO check circular update -> player.setGames(null);
 		game.setWinner(player);
 		try {
 			Game updatedGame = gameService.update(game);
 			if (updatedGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Player>());
+						       .body("Game not updated");
 			}
 			GameDto updatedGameDto = mapUtil.convertToDto(updatedGame);
 			return ResponseEntity
@@ -271,7 +272,6 @@ public class GameResource {
 	}
 	
 	@DeleteMapping("/games/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity deleteGames(@PathVariable("id") int id) {
 		
 		try {
@@ -279,12 +279,12 @@ public class GameResource {
 			if (deleteGame == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("[{}]");
+						       .body("Game not found");
 			}
 			gameService.deleteOne(deleteGame);
 			return ResponseEntity
 					       .status(HttpStatus.NO_CONTENT)
-					       .body("[{}]");
+					       .body("{}");
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -313,7 +313,7 @@ public class GameResource {
 				if (deleteGame == null) {
 					return ResponseEntity
 							       .status(HttpStatus.NOT_FOUND)
-							       .body(ids.get(i));
+							       .body("Game not found: " + ids.get(i));
 				}
 			}
 			gameService.deleteAllByIds(new Game(), ids);
@@ -327,14 +327,15 @@ public class GameResource {
 		}
 	}
 	
-	private static Game makeConsistentGame(Game game) {
+	private Game makeConsistentGame(Game game) {
 		
 		Game consistentGame = new Game();
-		if (game.getWinner() != null && game.getWinner().getPlayerId() > 0) {
-			Player consistentPlayer = new Player();
-			consistentPlayer.setPlayerId(game.getWinner().getPlayerId());
-			consistentGame.setWinner(consistentPlayer);
+		if (game.getWinner() != null) {
+			consistentGame.setWinner(game.getWinner());
+		} else {
+			consistentGame.setWinner(null);
 		}
+		
 		if (game.getDecks() != null) {
 			consistentGame.setDecks(game.getDecks());
 		} else {
