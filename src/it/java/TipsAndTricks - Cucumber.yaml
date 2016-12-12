@@ -48,9 +48,9 @@ and we invoke the Alarm action.
 # A Scenario Outline provides a technique to specify multiple examples to test against
 # a template scenario by using placeholders
 Scenario Outline: A user withdraws money from an ATM
-    Given <Name> has a valid Credit or Debit card
+    Given <Name> has a valid Credit or Debit cardDto
     And their account balance is <OriginalBalance>
-    When they insert their card
+    When they insert their cardDto
     And withdraw <WithdrawalAmount>
     Then the ATM should return <WithdrawalAmount>
     And their account balance is <NewBalance>
@@ -73,7 +73,7 @@ the matching step definitions.
 The ^...$
 
 Example 1:
-@Given("(.*) has a valid Credit or Debit card")
+@Given("(.*) has a valid Credit or Debit cardDto")
 public void has_card(String name) {
     // // method implementation
 }

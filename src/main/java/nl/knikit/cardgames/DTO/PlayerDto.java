@@ -1,7 +1,9 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
@@ -9,8 +11,9 @@ import nl.knikit.cardgames.model.Player;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.hateoas.core.Relation;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -19,7 +22,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PlayerDto {
+@Relation(value = "player", collectionRelation = "players")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
+public class PlayerDto implements Serializable {
 	
 	// Player has 9 fields, PlayerDto has 2 more
 	
@@ -35,10 +40,14 @@ public class PlayerDto {
 	private String avatar;
 	private int cubits;
 	private int securedLoan;
-	@JsonManagedReference(value="game-winner")
-	private ArrayList<GameDto> games;
+	//@JsonBackReference(value="playerDto")
+	@JsonProperty(value = "games")
+	private List<GameDto> gameDtos;
 	@Setter(AccessLevel.NONE)
 	private int winCount; // extra field
+	
+	public PlayerDto() {
+	}
 	
 	@JsonIgnore
 	public Avatar getAvatarConvertedFromLabel(String avatarLabel) throws Exception {
@@ -105,8 +114,8 @@ public class PlayerDto {
 	}
 	
 	public void setWinCount() {
-		if (games!=null) {
-			this.winCount = games.size();
+		if (gameDtos !=null) {
+			this.winCount = gameDtos.size();
 		} else {
 			this.winCount = 0;
 		}

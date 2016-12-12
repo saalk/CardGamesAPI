@@ -7,7 +7,7 @@
         <div class="row">
             <div class="twelve columns">
                 <h2 class="title">{{ players[0].alias }}, start playing</h2>
-                <h5 class="subtitle">choose the options for this High-low card game</h5>
+                <h5 class="subtitle">choose the options for this High-low cardDto gameDto</h5>
             </div>
         </div>
     </header>
@@ -27,11 +27,11 @@
                     next turn will reward you double or nothing (todo: now always 50).
                     Win or lose depends on a series of good guesses and of course the results of
                     your selected opponent ai player(s) strength...<br></p>
-                <a class="button game-button" href="#/player">Leave</a>
-                <a class="button button-primary game-button1" data-ng-click="vm.changeAlien(1)"
+                <a class="button gameDto-button" href="#/player">Leave</a>
+                <a class="button button-primary gameDto-button1" data-ng-click="vm.changeAlien(1)"
                    >Alien 1</a>
-                <a class="button button-primary game-button2 animate-if" data-ng-click="vm.changeAlien(2)" ng-if="vm.showalien1">Alien 2</a>
-                <a class="button game-button animate-if" ng-if="vm.tothecasino" href="#/casino" data-ng-click="vm.start()">start the game</a>
+                <a class="button button-primary gameDto-button2 animate-if" data-ng-click="vm.changeAlien(2)" ng-if="vm.showalien1">Alien 2</a>
+                <a class="button gameDto-button animate-if" ng-if="vm.tothecasino" href="#/casino" data-ng-click="vm.start()">start the gameDto</a>
             </div>
             <div class="three column main-prop">
             </div>
@@ -44,7 +44,7 @@
     </section>
 
     <section class="aliens">
-        <div my-game-directive template-path="javascript/directives/players-game.html">
+        <div my-game-directive template-path="javascript/directives/players-gameDto.html">
         </div>
     </section>
 

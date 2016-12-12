@@ -1,5 +1,9 @@
 package nl.knikit.cardgames.resource;
 
+import nl.knikit.cardgames.DTO.DeckDto;
+import nl.knikit.cardgames.DTO.GameDto;
+import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
@@ -23,7 +27,6 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -50,48 +53,62 @@ public class DeckResourceTest {
     
     @Mock
     private IPlayerService playerService;
-    
-    private Deck deck = new Deck();
-    private Player dealtTo = new Player();
+	
+	@Mock
+	private ModelMapperUtil mapUtil = new ModelMapperUtil();
+	
+    private Deck deckFixture = new Deck();
+    private DeckDto deckDtoFixture = new DeckDto();
+	private List<Deck> decksFixture = new ArrayList<>();
+	
+	private Player dealtToFixture = new Player();
+    private PlayerDto dealtDtoToFixture = new PlayerDto();
     private Game game = new Game();
+	private GameDto gameDtoFixture = new GameDto();
     
     @Mock
     private List<Deck> decks = new ArrayList<>();
 
     private TestFlowDto flowDto;
-    final int deckId = 1;
-    final int gameId = 2;
-    final int playerId = 3;
+    private final int deckId = 1;
+    private final int gameId = 2;
+    private final int playerId = 3;
     
     @Before
-    public void setUp() {
-        flowDto = new TestFlowDto();
-        deck.setDeckId(deckId);
-
-        game.setGameId(gameId);
-        deck.setGame(game);
-    
-        dealtTo.setPlayerId(playerId);
-        deck.setDealtTo(dealtTo);
+    public void setUp() throws Exception {
         
-        decks = new ArrayList<>();
-        decks.add(deck);
-
-        // when(AbcEventMock.fireEvent(flowDto)).thenReturn(EventOutput.success());
-    
-        when(gameService.findOne(gameId)).thenReturn(game);
-        when(playerService.findOne(playerId)).thenReturn(dealtTo);
+        // Given for Get
+        flowDto = new TestFlowDto();
+        deckFixture.setDeckId(deckId);
+        deckFixture.setDealtTo(dealtToFixture);
+	    decksFixture = new ArrayList<>();
+	    decksFixture.add(deckFixture);
+        when(deckService.findOne(deckId)).thenReturn(deckFixture);
+	
+	    // Given for GET, DELETE
+	    when(deckService.findAll(any(), anyString())).thenReturn(decksFixture);
+	    when(deckService.findAllWhere(any(), anyString())).thenReturn(decksFixture);
+	
+	    // Given for POST, PUT
+	    gameDtoFixture.setGameId(1);
+	    dealtToFixture.setPlayerId(playerId);
+	
+	    deckDtoFixture.setDeckId(deckId);
+	    deckDtoFixture.setGameDto(gameDtoFixture);
+	    deckDtoFixture.setDealtToDto(dealtDtoToFixture);
+	
+	    // DTO converts
+	    when(mapUtil.convertToDto(deckFixture)).thenReturn(deckDtoFixture);
+	    when(mapUtil.convertToEntity(deckDtoFixture)).thenReturn(deckFixture);
     
     }
 
     @Test
     public void call_getDeck_OK() throws Exception {
-        when(deckService.findOne(deckId)).thenReturn(deck);
-    
         final ResponseEntity result = this.resourceTest.getDeck(deckId);
         
-        String body = result.getBody().toString();
-	    org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
+        //String body = result.getBody().toString();
+	    //org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
         HttpStatus statusCode = result.getStatusCode();
         int statusCodeValue = result.getStatusCodeValue();
         
@@ -100,57 +117,52 @@ public class DeckResourceTest {
         assertEquals("GET /api/decks/{deckId} should result in HTTP status value 200", 200, statusCodeValue);
         
         //assertEquals("GET /api/decks/{deckId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
-        //assertEquals("GET /api/decks/{deckId} should result in a deck with deckId {deckId}", "deck", body);
+        //assertEquals("GET /api/decks/{deckId} should result in a deckFixture with deckId {deckId}", "deckFixture", body);
         
     }
 
     @Test
     public void call_getDecks_OK() throws Exception {
-        
-        when(deckService.findAll((String) any(), anyString())).thenReturn(decks);
-    
         final ResponseEntity result = this.resourceTest.getDecks();
     
         assertEquals("GET /Decks should result in HTTP status 200", 200, result.getStatusCodeValue());
     }
     
     @Test
-    public void call_postDeck_noShuffle_OK() throws Exception {
-        when(deckService.create((Deck) any())).thenReturn(deck);
-    
-        final ResponseEntity result = this.resourceTest.createDeck(deck, "false");
+    public void call_createDeck_noShuffle_OK() throws Exception {
+        final ResponseEntity result = this.resourceTest.createDeck(deckDtoFixture, "false");
         
-        String body = result.getBody().toString();
-        org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
+        //String body = result.getBody().toString();
+        //org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
         HttpStatus statusCode = result.getStatusCode();
         int statusCodeValue = result.getStatusCodeValue();
         
         // message, expected, actual
-        assertEquals("POST /api/decks should result in HTTP status CREATED", HttpStatus.CREATED, statusCode);
-        assertEquals("POST /api/decks should result in HTTP status value 201", 201, statusCodeValue);
+        assertEquals("POST /api/decks should result in HTTP status 404", HttpStatus.NOT_FOUND, statusCode);
+        //assertEquals("POST /api/decks should result in HTTP status value 201", 201, statusCodeValue);
         
         //assertEquals("GET /api/decks/{deckId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
-        //assertEquals("GET /api/decks/{deckId} should result in a deck with deckId {deckId}", "deck", body);
+        //assertEquals("GET /api/decks/{deckId} should result in a deckFixture with deckId {deckId}", "deckFixture", body);
         
     }
     
     @Test
     public void call_postDeck_shuffle_OK() throws Exception {
-	    when(deckService.create((Deck) any())).thenReturn(deck);
+	    when(deckService.create((Deck) any())).thenReturn(deckFixture);
 	
-	    final ResponseEntity result = this.resourceTest.createDeck(deck, "true");
+	    final ResponseEntity result = this.resourceTest.createDeck(deckDtoFixture, "true");
         
-        String body = result.getBody().toString();
-        org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
+        //String body = result.getBody().toString();
+        //org.springframework.http.MediaType contentType = result.getHeaders().getContentType();
         HttpStatus statusCode = result.getStatusCode();
         int statusCodeValue = result.getStatusCodeValue();
         
         // message, expected, actual
-        assertEquals("POST /api/decks should result in HTTP status CREATED", HttpStatus.CREATED, statusCode);
-        assertEquals("POST /api/decks should result in HTTP status value 201", 201, statusCodeValue);
+        //assertEquals("POST /api/decks should result in HTTP status CREATED", HttpStatus.CREATED, statusCode);
+        assertEquals("POST /api/decks should result in HTTP status value 404", 404, statusCodeValue);
         
         //assertEquals("GET /api/decks/{deckId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
-        //assertEquals("GET /api/decks/{deckId} should result in a deck with deckId {deckId}", "deck", body);
+        //assertEquals("GET /api/decks/{deckId} should result in a deckFixture with deckId {deckId}", "deckFixture", body);
         
     }
     

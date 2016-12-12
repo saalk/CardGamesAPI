@@ -1,12 +1,6 @@
 package nl.knikit.cardgames.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
-
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -40,7 +34,7 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @Table(name = "GAME")
 @Getter
 @Setter
-//@Relation(value = "game", collectionRelation = "games")
+//@Relation(value = "game", collectionRelation = "gameDtos")
 //@JsonIdentityInfo(generator=JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
@@ -79,17 +73,18 @@ public class Game implements Serializable {
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
 	// since this is the parent Game: do all when Game is delete on the deck childs
 	// meaning do set cascade type to all -> changed to delete not create
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.REMOVE ,mappedBy = "game", targetEntity = Deck.class)
-	private List<Deck> decks = new ArrayList<>();
+	//@JsonIgnore
+	@OneToMany(cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", nullable=true)
+	private List<Deck> decks;
 	
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
 	// since this is the child Game: do nothing when Game is delete on the winner Player
 	// meaning do not set cascade options
-	@JsonIgnore
+	//@JsonIgnore
 	@ManyToOne(optional=true)
 	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", nullable=true)
-	private Player winner;
+	private Player player;
 	
 	// make a lookup from all the STATES
 	private static final Map<String, State> lookup
@@ -100,7 +95,7 @@ public class Game implements Serializable {
 			lookup.put(state.toString(), state);
 	}
 	
-	@JsonIgnore
+	//@JsonIgnore
 	public State getStateFromString() {
 		return lookup.get(state); // lookup is a Map<String, State>
 	}

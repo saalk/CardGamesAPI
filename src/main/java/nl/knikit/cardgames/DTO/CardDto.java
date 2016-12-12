@@ -1,10 +1,15 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.model.Rank;
 import nl.knikit.cardgames.model.Suit;
 
+import org.springframework.hateoas.core.Relation;
+
+import java.io.Serializable;
 import java.text.ParseException;
 
 import lombok.Getter;
@@ -12,12 +17,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CardDto {
+@Relation(value = "card", collectionRelation = "cards")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
+public class CardDto implements Serializable{
 	
 	private String cardId;
 	private String rank;
 	private String suit;
 	private int value;
+	
+	public CardDto() {
+	}
 	
 	public Suit getSuitConvertedFromLabel(String suitLabel) throws Exception {
 		Suit converted = Suit.fromLabel(suitLabel);

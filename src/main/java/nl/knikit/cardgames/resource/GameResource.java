@@ -57,7 +57,7 @@ public class GameResource {
 	@Autowired
 	private ModelMapperUtil mapUtil;
 	
-	@GetMapping("/games/{id}")
+	@GetMapping("/gameDtos/{id}")
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGame(@PathVariable("id") int id) {
 		
@@ -79,7 +79,7 @@ public class GameResource {
 		}
 	}
 	
-	@GetMapping("/games")
+	@GetMapping("/gameDtos")
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGames() {
 		
@@ -109,7 +109,7 @@ public class GameResource {
 	// also use: @DefaultValue("false") @QueryParam("from") boolean human
 	// you fromLabel the boolean human with value 'true' for ?human=true
 	
-	@GetMapping(value = "/games/", params = {"gameType"})
+	@GetMapping(value = "/gameDtos/", params = {"gameType"})
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGamesWhere(@RequestParam(value = "gameType", required = true) String param) {
 		
@@ -133,7 +133,7 @@ public class GameResource {
 		}
 	}
 	
-	@PostMapping(name = "/games")
+	@PostMapping(name = "/gameDtos")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGame(@RequestBody GameDto gameDto) throws ParseException {
 		
@@ -161,7 +161,7 @@ public class GameResource {
 		}
 	}
 	
-	@PostMapping(name = "/games/", params = {"jokers"})
+	@PostMapping(name = "/gameDtos/", params = {"jokers"})
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGameWithDeck(
 			                                          @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers,
@@ -194,7 +194,7 @@ public class GameResource {
 		}
 	}
 	
-	@PutMapping("/games/{id}")
+	@PutMapping("/gameDtos/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity updateGame(@PathVariable int id, @RequestBody GameDto updateGameDto) throws ParseException {
 		// always use the id in the path instead of id in the body
@@ -230,7 +230,7 @@ public class GameResource {
 		}
 	}
 	
-	@PutMapping(value = "/games/{id}/", params = {"winner"})
+	@PutMapping(value = "/gameDtos/{id}/", params = {"winner"})
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity updateGameWithWinner(@PathVariable int id,
 	                                           @RequestParam(value = "winner", required = true) int winner) {
@@ -251,8 +251,8 @@ public class GameResource {
 					       .status(HttpStatus.NOT_FOUND)
 					       .body("Game not found");
 		}
-		// TODO check circular update -> player.setGames(null);
-		game.setWinner(player);
+		// TODO check circular update -> player.setGameDtos(null);
+		game.setPlayer(player);
 		try {
 			Game updatedGame = gameService.update(game);
 			if (updatedGame == null) {
@@ -271,7 +271,7 @@ public class GameResource {
 		}
 	}
 	
-	@DeleteMapping("/games/{id}")
+	@DeleteMapping("/gameDtos/{id}")
 	public ResponseEntity deleteGames(@PathVariable("id") int id) {
 		
 		try {
@@ -303,8 +303,8 @@ public class GameResource {
 	// also use: @DefaultValue("false") @QueryParam("from") boolean human
 	// you fromLabel the boolean human with value 'true' for ?human=true
 	
-	// /games?id=1,2,3,4
-	@DeleteMapping(value = "/games/", params = {"id"})
+	// /gameDtos?id=1,2,3,4
+	@DeleteMapping(value = "/gameDtos/", params = {"id"})
 	public ResponseEntity deleteGamesById(@RequestParam(value = "id", required = false) List<String> ids) {
 		
 		try {
@@ -330,10 +330,10 @@ public class GameResource {
 	private Game makeConsistentGame(Game game) {
 		
 		Game consistentGame = new Game();
-		if (game.getWinner() != null) {
-			consistentGame.setWinner(game.getWinner());
+		if (game.getPlayer() != null) {
+			consistentGame.setPlayer(game.getPlayer());
 		} else {
-			consistentGame.setWinner(null);
+			consistentGame.setPlayer(null);
 		}
 		
 		if (game.getDecks() != null) {

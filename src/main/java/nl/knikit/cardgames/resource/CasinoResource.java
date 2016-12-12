@@ -78,13 +78,13 @@ public class CasinoResource {
     // also use: @DefaultValue("false") @QueryParam("from") boolean human
     // you fromLabel the boolean human with value 'true' for ?human=true
 
-    @GetMapping(value = "/casinos", params = { "game" } )
+    @GetMapping(value = "/casinos", params = { "gameDto" } )
     public ResponseEntity<ArrayList<Casino>> findAllWhere(
-            @RequestParam(value = "game", required = true) String param) {
+            @RequestParam(value = "gameDto", required = true) String param) {
 
         try {
 
-            ArrayList<Casino> casinos = (ArrayList) casinoService.findAllWhere("game", param);
+            ArrayList<Casino> casinos = (ArrayList) casinoService.findAllWhere("gameDto", param);
             if (casinos == null || casinos.isEmpty()) {
                 return ResponseEntity
                                .status(HttpStatus.BAD_REQUEST)
@@ -127,25 +127,25 @@ public class CasinoResource {
         - saveOrUpdate  (either save or update depending on unsaved-value check)
         - update        (updates the persistent instance with the id)
 
-        1 - Create parent:      game = new Game("HIGHLOW")
-        2 - Persist it:         persist(game)
+        1 - Create parent:      gameDto = new Game("HIGHLOW")
+        2 - Persist it:         persist(gameDto)
         3 - Create child class  deck = new Deck/Card(jokers)
         4 - Associate child with it's parent
-                                card.setGameId(game.getId())
-        5 - Persist child       persist(deck/card)
+                                cardDto.setGameId(gameDto.getId())
+        5 - Persist child       persist(deck/cardDto)
 
         Retrieval:
-        1 - Get childs          card = game.getDeck/Cards()
+        1 - Get childs          cardDto = gameDto.getDeck/Cards()
 
-        if you do 1, 3, game.getDeck.Cards().add(deck), 5
+        if you do 1, 3, gameDto.getDeck.Cards().add(deck), 5
         the deck is not initialized
 
-        if you do 1,2,3,5 and then game.getDeck/Cards().add(Deck) the
+        if you do 1,2,3,5 and then gameDto.getDeck/Cards().add(Deck) the
         with cascade=CascadeType.Persist takes care of relations
     */
 
-    @PostMapping(value = "/casinos", params = { "game" } )
-    public ResponseEntity createCasino(@RequestBody Casino casino, @RequestParam(value = "game", required = true) String param) {
+    @PostMapping(value = "/casinos", params = { "gameDto" } )
+    public ResponseEntity createCasino(@RequestBody Casino casino, @RequestParam(value = "gameDto", required = true) String param) {
 
         Game game = gameService.findOne(Integer.parseInt(param));
         if (game == null) {

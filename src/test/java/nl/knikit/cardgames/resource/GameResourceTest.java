@@ -57,10 +57,11 @@ public class GameResourceTest {
     private ModelMapperUtil mapUtil = new ModelMapperUtil();
     
     private Game gameFixture = new Game();
-    private Player playerFixture = new Player();
     private GameDto gameDtoFixture = new GameDto();
-    private PlayerDto playerDtoFixture = new PlayerDto();
     private List<Game> gamesFixture = new ArrayList<>();
+    
+    private Player playerFixture = new Player();
+    private PlayerDto playerDtoFixture = new PlayerDto();
 
     private TestFlowDto flowDto;
 
@@ -100,8 +101,8 @@ public class GameResourceTest {
         int statusCodeValue = result.getStatusCodeValue();
         
 	    // message, expected, actual
-        assertEquals("GET /api/games/{gameId} should result in HTTP status OK", HttpStatus.OK, statusCode);
-        assertEquals("GET /api/games/{gameId} should result in HTTP status value 200", 200, statusCodeValue);
+        assertEquals("GET /api/gameDtos/{gameId} should result in HTTP status OK", HttpStatus.OK, statusCode);
+        assertEquals("GET /api/gameDtos/{gameId} should result in HTTP status value 200", 200, statusCodeValue);
         
         //assertEquals("GET /api/gamesFixture/{gameId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
         //assertEquals("GET /api/gamesFixture/{gameId} should result in a gameFixture with gameId {gameId}", "gameFixture", body);

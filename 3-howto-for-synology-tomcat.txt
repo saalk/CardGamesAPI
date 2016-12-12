@@ -29,9 +29,9 @@
 #    - the war file will be in src and auto unpacked after copying
 #    - go to http://192.168.2.100:7070/app
 #    - http://81.205.147.76/ needs a port forward
-# 8. change the server.xml to have the shortName-games-webapp mapped to /
+# 8. change the server.xml to have the shortName-gameDtos-webapp mapped to /
 #    - delete the ROOT and add
-#    - <Context path="/" docBase="shortName-games-webapp">
+#    - <Context path="/" docBase="shortName-gameDtos-webapp">
             <WatchedResource>WEB-INF/web.xml</WatchedResource>
        	</Context>
 #    - stop and start via synology

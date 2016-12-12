@@ -18,7 +18,7 @@ public class ResponseResults {
             this.body = "{}";
         } else {
             final StringWriter stringWriter = new StringWriter();
-            IOUtils.copy(bodyInputStream, stringWriter);
+            IOUtils.copy(bodyInputStream, stringWriter, "UTF-8");
             this.body = stringWriter.toString();
         }
     }

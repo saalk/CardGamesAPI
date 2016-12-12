@@ -44,6 +44,7 @@
         <!-- VERSION 2 -->
         <maven.dependency.plugin>2.10</maven.dependency.plugin>
         <jackson.version>2.7.5</jackson.version>
+        <jersey-media-json-jackson.version>2.25</jersey-media-json-jackson.version>
         <jasmine.maven.plugin>2.2</jasmine.maven.plugin>
         <!--The plugin com.github.searls:jasmine-maven-plugin:2.1 requires Maven version 3.1.0-->
         <stateless4j.version>2.5.0</stateless4j.version>
@@ -709,8 +710,7 @@
             @JsonProperty -->
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.23</version>
-            <scope>test</scope>
+            <version>${jersey-media-json-jackson.version}</version>
         </dependency>
         <!-- add this to use annotations like uriinfo to work on tomcat -->
         <dependency>

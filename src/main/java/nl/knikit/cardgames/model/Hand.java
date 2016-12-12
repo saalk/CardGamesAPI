@@ -66,30 +66,35 @@ public class Hand implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "HAND_ID")
-    @JsonProperty("handId") private int handId;
+    ////@JsonProperty("handId")
+    private int handId;
 
     //@JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
-    @JsonProperty("player") private  Player player;
+    ////@JsonProperty("player")
+    private  Player player;
 
     //@JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
-    @JsonProperty("casino") private  Casino casino;
+    ////@JsonProperty("casino")
+    private  Casino casino;
 
     //@JsonIgnore
     //@OneToOne(cascade = CascadeType.ALL)
     //@JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
-    @JsonProperty("card") private Card card;
+    ////@JsonProperty("card")
+    private Card card;
 
     @Column(name = "CARD_ORDER")
-    @JsonProperty("cardOrder") private int cardOrder;
+    ////@JsonProperty("cardOrder")
+    private int cardOrder;
 
 /*    @OneToMany
     @Column(name = "CARDS")
     @ElementCollection(targetClass=Card.class)
-    @JsonProperty("cards") private  List<Card> cards;
+    //@JsonProperty("cards") private  List<Card> cards;
     */
 
     public Hand(){

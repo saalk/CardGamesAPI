@@ -1,12 +1,6 @@
 package nl.knikit.cardgames.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
-
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -50,41 +44,39 @@ public class Casino implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "CASINO_ID")
-    @JsonProperty("casinoId") private int casinoId;
+    ////@JsonProperty("casinoId")
+    private int casinoId;
 
     @Column(name = "CREATED", length = 25)
-    @JsonProperty("created") private String created;
+    ////@JsonProperty("created")
+    private String created;
 
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
-    @JsonProperty("game") private Game game;
+    ////@JsonProperty("game")
+    private Game game;
 
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
-    @JsonProperty("player") private Player player;
+    ////@JsonProperty("player")
+    private Player player;
 
-    @JsonIgnore
+    //@JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "HAND_ID", referencedColumnName = "HAND_ID", foreignKey = @ForeignKey(name = "HAND_ID"))
-    @JsonProperty("handObj") private Hand handObj;
+    ////@JsonProperty("handObj")
+    private Hand hand;
 
     @Column(name = "PLAYING_ORDER")
-    @JsonProperty("playingOrder") private int playingOrder;
+    ////@JsonProperty("playingOrder")
+    private int playingOrder;
 
     public Casino() {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);
         this.created = result.substring(2, 20);
-    }
-
-    public Casino(Game game, Player player, Hand handObj, int playingOrder) {
-        this();
-        this.game = game;
-        this.player = player;
-        this.handObj = handObj;
-        this.playingOrder = playingOrder;
     }
 }

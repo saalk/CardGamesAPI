@@ -14,13 +14,7 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
-
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 
@@ -106,28 +100,33 @@ public class Deck implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "DECK_ID")
-    @JsonProperty("deckId") private int deckId;
+    ////@JsonProperty("deckId")
+    private int deckId;
     
     // Cascade = any change happened on this entity must cascade to the parent/child as well
     // since this is the child Deck: do nothing when Deck is delete on the parent Game
     // meaning do not set cascade options
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToOne(optional=false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"), nullable=false)
-    @JsonProperty("game") private  Game game;
+    //@JsonProperty("game")
+    private  Game game;
     
-    @JsonIgnore
+    //@JsonIgnore
     @OneToOne
     @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
-    @JsonProperty("card") private Card card;
+    ////@JsonProperty("card")
+    private Card card;
 
     @Column(name = "CARD_ORDER")
-    @JsonProperty("cardOrder") private int cardOrder;
+    ////@JsonProperty("cardOrder")
+    private int cardOrder;
 
-    @JsonIgnore
+    //@JsonIgnore
     @OneToOne(optional=true)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"), nullable=true)
-    @JsonProperty("dealtTo") private Player dealtTo;
+    ////@JsonProperty("dealtTo")
+    private Player dealtTo;
 
     /**
      * Hibernate, and code in general that creates objects via reflection use Class<T>.newInstance()
@@ -183,7 +182,7 @@ public class Deck implements Serializable {
 
         cards = shuffledCards;
         *//*
-         * init the dealedTo with zero's
+         * init the deale with zero's
 		 *//*
 *//*        for (int i = 0; i < dealedTo.length; i++) {
             dealedTo[i] = 0;
@@ -245,7 +244,7 @@ public class Deck implements Serializable {
         int count = 0;
         // TODO check for empty list of cards in deck
         for (Card card : cards) {
-            if (this.getDealedTo(count) == 0) {
+            if (this.getDeale(count) == 0) {
                 // not yet dealed
                 value = value + card.getRank().getValue(inputType);
                 count++;

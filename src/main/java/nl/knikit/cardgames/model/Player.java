@@ -1,12 +1,6 @@
 package nl.knikit.cardgames.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
-
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -59,52 +53,62 @@ public class Player implements Serializable {
     @Id
     @Column(name = "PLAYER_ID")
     @GeneratedValue(strategy = GenerationType.TABLE)
-    @JsonProperty("playerId") private int playerId;
+    ////@JsonProperty("playerId")
+    private int playerId;
 
     @Transient
     private static int startId = 1;
 
     @Column(name = "CREATED", length = 25)
-    @JsonProperty("created") private String created;
+    ////@JsonProperty("created")
+    private String created;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "AVATAR", nullable = false)
-    @JsonProperty("avatar") private Avatar avatar;
+    ////@JsonProperty("avatar")
+    private Avatar avatar;
 	
 	@Column(name = "ALIAS")
-	@JsonProperty("alias") private String alias;
+	////@JsonProperty("alias")
+	private String alias;
 	
     @Column(name = "HUMAN")
     @Setter(AccessLevel.NONE)
-    @JsonProperty("human") private boolean human;
+    ////@JsonProperty("human")
+    private boolean human;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "AI_LEVEL", nullable = false)
-    @JsonProperty("aiLevel") private AiLevel aiLevel;
+    ////@JsonProperty("aiLevel")
+    private AiLevel aiLevel;
 
     @Column(name = "CUBITS")
-    @JsonProperty("cubits") private int cubits;
+    ////@JsonProperty("cubits")
+    private int cubits;
+    
     @Column(name = "SECURED_LOAN")
-    @JsonProperty("securedLoan") private int securedLoan;
+    ////@JsonProperty("securedLoan")
+    private int securedLoan;
     
     // Cascade = any change happened on this entity must cascade to the parent/child as well
     // since this is the parent Player: delete Game when Player is deleted (no other actions!)
-    @JsonIgnore
-    @OneToMany(cascade=CascadeType.REMOVE )
+    //@JsonIgnore
+    @OneToMany(cascade=CascadeType.REMOVE)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
-    @JsonProperty("games") private List<Game> games = new ArrayList<>();
+    ////@JsonProperty("gameDtos")
+    private List<Game> games;
 
 
-    /* if you want to get all games for a specific winner...
+    /* if you want to get all gameDtos for a specific winner...
     @OneToMany(mappedBy="player",targetEntity=Game.class,
             fetch=FetchType.EAGER)
-    private Collection games;
+    private Collection gameDtos;
     */
 
     /*
     Get
-    - The number of games a player (top ten) has attended
-    - The games won by that player
+    - The number of gameDtos a player (top ten) has attended
+    - The gameDtos won by that player
 
     Query query = em.createQuery("SELECT player FROM PLAYER player WHERE playerId = x");
     List list= query.getResultList();
@@ -116,10 +120,10 @@ public class Player implements Serializable {
         if(player.getCasinos()!=null){
             for(Casinos allCasinos: player.getCasinos()){
                 if(allCasinos.getGame().getGameWon() == null){
-                    //Find out how many games each player has
+                    //Find out how many gameDtos each player has
                     gameList.addAll(allCasinos.getGamesList());
                 }else{
-                    //Find out how many games won by the player
+                    //Find out how many gameDtos won by the player
                     gameListWon.addAll(allCasinos.getGamesList());
                 }
             }

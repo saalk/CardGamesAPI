@@ -17,14 +17,16 @@ import org.modelmapper.PropertyMap;
 	- round;        minRounds;currentRound;maxRounds;
 	- turn;         minTurns;currentTurn;turnsToWin;maxTurns;
 	Objects:
-	- List<Decks> Decks;   deckId;game;card;cardOrder;dealtTo;
+	- List<Decks> Decks;   deckId;game;card;cardOrder;dealtToDto;
 	- Player winner;       alias;AVATAR
 	
 	*/
 
-public class GameMapper extends PropertyMap<Game, GameDto> {
+// PropertyMap Has < source, destination >
+public class GameMapFromDto extends PropertyMap<GameDto, Game> {
 	@Override
 	protected void configure() {
+		map(source.getWinner(),destination.getPlayer());
 		//map().setName(source.getFirstName());
 	}
 };

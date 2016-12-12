@@ -13,7 +13,7 @@ import javax.persistence.Transient;
 import lombok.Getter;
 
 /**
- * <H1>CardGame</H1> A selection of card games that can be selected to play. <p> More games will be
+ * <H1>CardGame</H1> A selection of card gameDtos that can be selected to play. <p> More gameDtos will be
  * added in future.
  *
  * @author Klaas van der Meulen

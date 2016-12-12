@@ -136,7 +136,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 			gameId = StepDefsDecks.latestGameID;
 		}
 		SpringIntegrationTest.latestResponse = null;
-		executeDelete("http://localhost:8383/api/games/" + gameId, null);
+		executeDelete("http://localhost:8383/api/gameDtos/" + gameId, null);
 	}
 	
 	@And("^The json response should contain card \"([^\"]*)\" deck with shuffle \"([^\"]*)\" having \"([^\"]*)\" and \"([^\"]*)\" for game \"([^\"]*)\"$")
@@ -169,7 +169,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 			
 			if (!card.isEmpty()) {
 				if (deck.getCard().getCardId() == new Card(card).getCardId()) {
-					// assert if the input card has the input dealtTo and cardOder
+					// assert if the input cardDto has the input dealtToDto and cardOder
 					if (!dealtTo.isEmpty()) {
 						assertEquals(Integer.parseInt(dealtTo),deck.getDealtTo().getPlayerId());
 					}
@@ -180,7 +180,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 				}
 			}
 		}
-		// AC is the first card when not shuffled
+		// AC is the first cardDto when not shuffled
 		assertEquals(shuffle,(jsonDecks.get(0).getCard().getCardId()!="AC"));
 	}
 		 

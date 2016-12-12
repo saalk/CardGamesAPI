@@ -1,15 +1,21 @@
 package nl.knikit.cardgames.DTO;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.hateoas.core.Relation;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +28,15 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 
 @Getter
 @Setter
-public class GameDto {
+@Relation(value = "game", collectionRelation = "games")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
+public class GameDto implements Serializable {
 	
-	// Game has 14 fields, GameDto has 3 more
+	public GameDto() {
+	}
+// Game has 14 fields, GameDto has 3 more
 	
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
@@ -45,14 +57,16 @@ public class GameDto {
 	private int currentTurn;
 	private int turnsToWin;
 	private int maxTurns;
-	@JsonBackReference(value="game-decks")
-	private ArrayList<DeckDto> decks;
+	//@JsonBackReference(value="gameDto")
+	@JsonProperty(value = "decks")
+	private List<DeckDto> deckDtos;
 	// "10C  Ten of Clubs"
 	// "  *  40 cards left
 	// "---  -------------
 	// " AS+ Script Joe [ELF]-"
 	// " RJ  Script Joe [ELF]"
-	@JsonBackReference(value="game-winner")
+	//@JsonManagedReference(value="playerDto")
+	@JsonProperty(value = "winner")
 	private PlayerDto winner;
 	
 	@JsonIgnore

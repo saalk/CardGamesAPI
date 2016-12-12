@@ -7,7 +7,7 @@ import lombok.Getter;
 
 
 /**
- * <H1>GameVariant</H1> A selection of variants to a specific card games that can be selected to
+ * <H1>GameVariant</H1> A selection of variants to a specific card gameDtos that can be selected to
  * play. <p> More variants will be added in future.
  *
  * @author Klaas van der Meulen

@@ -1,6 +1,8 @@
 package nl.knikit.cardgames.resource;
 
 
+import nl.knikit.cardgames.DTO.DeckDto;
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
@@ -60,6 +62,10 @@ public class DeckResource {
 	@Autowired
 	private IPlayerService playerService;
 	
+	@Autowired
+	private ModelMapperUtil mapUtil;
+	
+	
 	@GetMapping("/decks/{id}")
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getDeck(@PathVariable("id") int id) {
@@ -69,32 +75,37 @@ public class DeckResource {
 			if (deck == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("{}");
+						       .body("Deck not found");
 			}
+			DeckDto deckDto = mapUtil.convertToDto(deck);
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(deck);
+					       .body(deckDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<>());
+					       .body(e);
 		}
 	}
 	
 	@GetMapping("/decks")
 	@Produces({MediaType.APPLICATION_JSON})
-	public ResponseEntity<ArrayList<Deck>> getDecks() {
+	public ResponseEntity getDecks() {
 		
 		ArrayList<Deck> decks;
 		try {
-			decks = (ArrayList<Deck>) deckService.findAll("game", "ASC");
+			decks = (ArrayList<Deck>) deckService.findAll("gameDto", "ASC");
+			ArrayList<DeckDto> decksDto = new ArrayList<>();
+			for (Deck deck : decks) {
+				decksDto.add(mapUtil.convertToDto(deck));
+			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(decks);
+					       .body(decksDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Deck>());
+					       .body(e);
 		}
 	}
 	
@@ -108,35 +119,39 @@ public class DeckResource {
 	// also use: @DefaultValue("false") @QueryParam("from") boolean human
 	// you fromLabel the boolean human with value 'true' for ?human=true
 	
-	@GetMapping(value = "/decks", params = {"game"})
+	@GetMapping(value = "/decks", params = {"gameDto"})
 	@Produces({MediaType.APPLICATION_JSON})
-	public ResponseEntity<ArrayList<Deck>> findAllForGame(@RequestParam(value = "game", required = true) String param) {
+	public ResponseEntity findAllForGame(@RequestParam(value = "gameDto", required = true) String param) {
 		
 		try {
-			ArrayList<Deck> decks = (ArrayList) deckService.findAllWhere("game", param);
+			List<Deck> decks = deckService.findAllWhere("gameDto", param);
 			if (decks == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Deck>());
+						       .body("[{}]");
+			}
+			ArrayList<DeckDto> decksDto = new ArrayList<>();
+			for (Deck deck : decks) {
+				decksDto.add(mapUtil.convertToDto(deck));
 			}
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(decks);
+					       .body(decksDto);
 			
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Deck>());
+					       .body(e);
 		}
 	}
 	
-	@GetMapping(value = "/decks", params = {"game", "dealtTo"})
+	@GetMapping(value = "/decks", params = {"gameDto", "dealtToDto"})
 	@Produces({MediaType.APPLICATION_JSON})
-	public ResponseEntity<ArrayList<Deck>> findAllForGameAndPlayer(
-			@RequestParam(value = "game", required = true) String game,
-			@RequestParam(value = "dealtTo", required = true) int dealtTo) {
+	public ResponseEntity findAllForGameAndPlayer(
+			@RequestParam(value = "gameDto", required = true) String game,
+			@RequestParam(value = "dealtToDto", required = true) int dealtTo) throws Exception {
 		
-		//TODO should dealtTo param be int or String?
+		//TODO should dealtToDto param be int or String?
 		if (dealtTo != 0) {
 			Player player = playerService.findOne((dealtTo));
 			if (player == null) {
@@ -148,63 +163,53 @@ public class DeckResource {
 		
 		List<Deck> decks;
 		try {
-			decks = deckService.findAllWhere("game", game);
+			decks = deckService.findAllWhere("gameDto", game);
 			if (decks == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body(new ArrayList<Deck>());
+						       .body("Deck not found");
 			}
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Deck>());
+					       .body(e);
 		}
-		List<Deck> responseDecks = new ArrayList<>();
+		ArrayList<DeckDto> responseDecksDto = new ArrayList<>();
 		for (Deck deck : decks) {
 			if (dealtTo != 0 && deck.getDealtTo().getPlayerId()==dealtTo) {
-				responseDecks.add(deck);
-			}
-			if (dealtTo == 0 && deck.getDealtTo()==null) {
-				responseDecks.add(deck);
+				responseDecksDto.add(mapUtil.convertToDto(deck));
 			}
 		}
 		return ResponseEntity
 				       .status(HttpStatus.OK)
-				       .body((ArrayList<Deck>) responseDecks);
+				       .body(responseDecksDto);
 	}
-	
+	// TODO /gameDto/{id}/decks?shuffle
 	@PostMapping(value = "/decks", params = {"shuffle"})
 	@Consumes(MediaType.APPLICATION_JSON)
 	public ResponseEntity createDeck(
-			                                @RequestBody Deck deck,
-			                                @RequestParam(value = "shuffle", defaultValue = "0", required = false) String shuffle) {
-		
-		if (deck == null || deck.getGame() == null) {
+			                                @RequestBody DeckDto deckDto,
+			                                @RequestParam(value = "shuffle", defaultValue = "0", required = false) String shuffle) throws Exception {
+		// check gameDto
+		if (deckDto == null || deckDto.getGameDto() == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("");
+					       .body("Body or Game not present");
 		}
-		
-		Game game = gameService.findOne((deck.getGame().getGameId()));
+		Game game = gameService.findOne((deckDto.getGameDto().getGameId()));
 		if (game == null) {
 			return ResponseEntity
 					       .status(HttpStatus.NOT_FOUND)
 					       .body("Game not found");
 		}
-		
-		if (deck.getDealtTo() != null) {
-			
-			Player player = playerService.findOne((deck.getDealtTo().getPlayerId()));
-			if (player == null) {
-				return ResponseEntity
-						       .status(HttpStatus.NOT_FOUND)
-						       .body("Player dealtTo not found");
-			}
+		if (deckDto.getDealtToDto() != null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("Player dealtToDto found");
 		}
 		
-		int order = 1;
-		List<Card> newDeck = Card.newDeck(0);
-		List<Deck> newDeckForGame = new ArrayList<>();
+		// Get all cards
+		List<Card> cards = Card.newDeck(0);
 		
 		// check param
 		if (shuffle != null && !isBoolean(shuffle)) {
@@ -213,23 +218,23 @@ public class DeckResource {
 					       .body("Param shuffle not a boolean: " + shuffle);
 		}
 		if (shuffle != null && Boolean.parseBoolean(shuffle)) {
-			Collections.shuffle(newDeck);
+			Collections.shuffle(cards);
 		}
 		
-		for (Card card : newDeck) {
-			
-			deck.setCard(card);
-			deck.setCardOrder(order++);
-			deck.setDealtTo(null);
-			
+		int order = 1;
+		for (Card card : cards) {
+			Deck newDeck= new Deck();
+			newDeck.setCard(card);
+			newDeck.setCardOrder(order++);
+			newDeck.setDealtTo(null);
+			newDeck.setGame(game);
 			try {
-				Deck createdDeck = deckService.create(deck);
+				Deck createdDeck = deckService.create(newDeck);
 				if (createdDeck == null) {
 					return ResponseEntity
 							       .status(HttpStatus.NOT_FOUND)
-							       .body(new ArrayList<>());
+							       .body("Deck not created");
 				}
-				newDeckForGame.add(createdDeck);
 			} catch (Exception e) {
 				return ResponseEntity
 						       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -257,7 +262,7 @@ public class DeckResource {
 		if (param != null && !isInteger(param)) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("");
+					       .body("Player dealtToDto not integer");
 		}
 		if (param != null) {
 			
@@ -279,9 +284,11 @@ public class DeckResource {
 						       .status(HttpStatus.NOT_FOUND)
 						       .body(new ArrayList<>());
 			}
+			
+			DeckDto updatedDeckDto = mapUtil.convertToDto(updatedDeck);
 			return ResponseEntity
 					       .status(HttpStatus.OK)
-					       .body(updatedDeck);
+					       .body(updatedDeckDto);
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -297,7 +304,7 @@ public class DeckResource {
 			if (deleteDeck == null) {
 				return ResponseEntity
 						       .status(HttpStatus.NOT_FOUND)
-						       .body("{}");
+						       .body("Deck not found");
 			}
 			deckService.deleteOne(deleteDeck);
 			return ResponseEntity
@@ -349,7 +356,7 @@ public class DeckResource {
 		} catch (Exception e) {
 			return ResponseEntity
 					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(new ArrayList<Deck>());
+					       .body(e);
 		}
 		
 	}
@@ -367,8 +374,7 @@ public class DeckResource {
 	// Helper for params
 	public static boolean isBoolean(String s) {
 		try {
-			Boolean.parseBoolean(s); // s is a valid boolean
-			return true;
+			return Boolean.parseBoolean(s); // s is a valid boolean
 		} catch (Exception ex) {
 			return false;
 		}

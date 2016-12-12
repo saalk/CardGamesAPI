@@ -1,12 +1,17 @@
 package nl.knikit.cardgames.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.hateoas.core.Relation;
+
+import java.io.Serializable;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +19,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DeckDto {
+@Relation(value = "deck", collectionRelation = "decks")
+@JsonIdentityInfo(generator=JSOGGenerator.class)
+public class DeckDto implements Serializable {
 	
 	// Game has 5 fields, GameDto has 1 more
 	
@@ -28,11 +35,14 @@ public class DeckDto {
 	// "(01)  AS+ Script Joe [ELF]-"
 	// "(02)  RJ  Script Joe [ELF]"
 	private int deckId;
-	@JsonManagedReference(value="game-decks")
-	private GameDto game;
-	private CardDto card;
+	//@JsonManagedReference(value="gameDto")
+	private GameDto gameDto;
+	private CardDto cardDto;
 	private int cardOrder;
-	private PlayerDto dealtTo;
+	private PlayerDto dealtToDto;
+	
+	public DeckDto() {
+	}
 	
 	public Deck getNameConverted(String name) {
 		// "10C  Ten of Clubs"
@@ -56,7 +66,7 @@ public class DeckDto {
 		// " AS+ Script Joe [Human]-"
 		
 		StringBuilder sb = new StringBuilder();
-		if (card==null) {
+		if (cardDto ==null) {
 			new Exception("CardId cannot be null in DeckDto") ;
 		}
 		if (this.cardOrder < 10) {
@@ -64,19 +74,19 @@ public class DeckDto {
 		} else {
 			sb.append("(" + this.cardOrder + ") ");
 		}
-		if (this.card.getCardId().length() == 2) {
+		if (this.cardDto.getCardId().length() == 2) {
 			sb.append(" ");
 		}
-		sb.append(this.card.getCardId());
-		if (this.dealtTo == null || this.dealtTo.getPlayerId() == 0) {
+		sb.append(this.cardDto.getCardId());
+		if (this.dealtToDto == null || this.dealtToDto.getPlayerId() == 0) {
 			sb.append("  " +
-					          WordUtils.capitalizeFully(this.card.getRank()) + " of " +
-					          WordUtils.capitalizeFully(this.card.getSuit()));
+					          WordUtils.capitalizeFully(this.cardDto.getRank()) + " of " +
+					          WordUtils.capitalizeFully(this.cardDto.getSuit()));
 		} else {
 			sb.append(
 					"  " +
-							WordUtils.capitalizeFully(this.dealtTo.getAlias()) + " [" +
-							WordUtils.capitalizeFully(this.dealtTo.getAiLevel()) + "]");
+							WordUtils.capitalizeFully(this.dealtToDto.getAlias()) + " [" +
+							WordUtils.capitalizeFully(this.dealtToDto.getAiLevel()) + "]");
 		}
 		this.name = String.valueOf(sb);
 	}

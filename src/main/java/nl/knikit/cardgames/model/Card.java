@@ -26,18 +26,10 @@ package nl.knikit.cardgames.model;
  * @enduml
  */
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
-
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -53,7 +45,7 @@ import static org.apache.commons.lang3.StringUtils.left;
 import static org.apache.commons.lang3.StringUtils.right;
 
 /**
- * <H2>Description</H2> A playing card used for playing card games. A complete set of cards is
+ * <H2>Description</H2> A playing card used for playing card gameDtos. A complete set of cards is
  * called a pack (UK English), deck (US English), or set (Universal), and the subset of cards held
  * at one time by a {@link Player player} during a {@link Game game} is commonly called a {@link
  * Hand Hand}. <H2>Relations</H2> Card is associated to {@link Rank enum Rank} and {@link Suit enum
@@ -77,27 +69,27 @@ import static org.apache.commons.lang3.StringUtils.right;
 public class Card implements Serializable {
 	
 	// 13 progressing ranks 2 to 10, jack, queen, king, ace.
-	@JsonIgnore
+	//@JsonIgnore
 	@Id
 	@Column(name = "CARD_ID", length = 3)
-	@JsonProperty("cardId")
+	//////@JsonProperty("cardId")
 	private String cardId;
 	
 	
 	@Enumerated(EnumType.STRING)
 	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
 	@Column(name = "RANK")
-	@JsonProperty("rank")
+	////@JsonProperty("rank")
 	private Rank rank;
 	
 	@Enumerated(EnumType.STRING)
 	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
 	@Column(name = "SUIT")
-	@JsonProperty("suit")
+	////@JsonProperty("suit")
 	private Suit suit;
 	
 	@Column(name = "VALUE")
-	@JsonProperty("value")
+	////@JsonProperty("value")
 	private int value;
 	
 	public Card() {
@@ -200,7 +192,7 @@ public class Card implements Serializable {
 		return newDeck;
 	}
 	
-	@JsonIgnore
+	//@JsonIgnore
 	public static boolean isValidCard(String input) {
 		
 		try {
@@ -211,7 +203,7 @@ public class Card implements Serializable {
 		return true;
 	}
 	
-	@JsonIgnore
+	//@JsonIgnore
 	public boolean isJoker() {
 		String jokerCard = cardId;
 		return jokerCard=="RJ";
@@ -225,7 +217,7 @@ public class Card implements Serializable {
 	 *
 	 * @return -1(LOWER), 0(EQUAL), +1(HIGHER)
 	 */
-	@JsonIgnore
+	//@JsonIgnore
 	public int compareTo(Card cardToCompareWith, GameType gameType) {
 		if (gameType == null) {
 			gameType = GameType.HIGHLOW;

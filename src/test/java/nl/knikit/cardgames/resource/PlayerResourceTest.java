@@ -25,15 +25,12 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +68,7 @@ public class PlayerResourceTest {
 	    playerFixture.setAvatar(Avatar.ELF);
 	    playerFixture.setCubits(1);
 	    playerFixture.setSecuredLoan(1);
-	    List<Game> games = new ArrayList<>();
+	    ArrayList<Game> games = new ArrayList<>();
 	    games.add(new Game());
 	    games.add(new Game());
 	    games.add(new Game());
@@ -94,12 +91,12 @@ public class PlayerResourceTest {
 	    playerDtoFixture.setName(); // extra field "Script Joe(Human|Smart) [Elf]"
 	    playerDtoFixture.setCubits(2);
 	    playerDtoFixture.setSecuredLoan(2);
-	    List<GameDto> gamesDto = new ArrayList<>();
+	    ArrayList<GameDto> gamesDto = new ArrayList<>();
 	    gamesDto.add(new GameDto());
 	    gamesDto.add(new GameDto());
 	    gamesDto.add(new GameDto());
 	    gamesDto.add(new GameDto());
-	    playerDtoFixture.setGames(gamesDto);
+	    playerDtoFixture.setGameDtos(gamesDto);
 	    playerDtoFixture.setWinCount();  // extra field
 	
 	    // TODO add when then for create, update in PlayerResourceTest

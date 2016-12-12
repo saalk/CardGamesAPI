@@ -23,7 +23,7 @@ public class SwaggerConfig {
     }
     
     private ApiInfo apiInfo() {
-        ApiInfo apiInfo = new ApiInfo("CardGames REST API", "Api for playing a card game; for now only the highlow game.", "API v1", "Terms of service", "myeaddress@company.com", "License of API", "API license URL");
+        ApiInfo apiInfo = new ApiInfo("CardGames REST API", "Api for playing a cardDto gameDto; for now only the highlow gameDto.", "API v1", "Terms of service", "myeaddress@company.com", "License of API", "API license URL");
         return apiInfo;
     }
 }

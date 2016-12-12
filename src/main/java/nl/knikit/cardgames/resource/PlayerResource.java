@@ -136,8 +136,7 @@ public class PlayerResource {
 		
 		ArrayList<Player> players;
 		try {
-			//players = playerService.findAll("human", "DESC");
-			players = (ArrayList<Player>) playerService.findAll(null,null);
+			players = (ArrayList<Player>) playerService.findAll("human", "DESC");
 			ArrayList<PlayerDto> playersDto = new ArrayList<>();
 			for (Player player : players) {
 				playersDto.add(mapUtil.convertToDto(player));

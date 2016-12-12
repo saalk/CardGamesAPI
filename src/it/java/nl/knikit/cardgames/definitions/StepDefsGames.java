@@ -23,9 +23,9 @@ public class StepDefsGames extends SpringIntegrationTest {
 	
 	private static String latestGameID = "";
 	private static String latestPlayerID = "";
-	private static String gamesUrl = "http://localhost:8383/api/games/";
+	private static String gamesUrl = "http://localhost:8383/api/gameDtos/";
 	private static String playersUrl = "http://localhost:8383/api/players/";
-	private static String gamesUrlWithId = "http://localhost:8383/api/games/{id}";
+	private static String gamesUrlWithId = "http://localhost:8383/api/gameDtos/{id}";
 	
 	// API          HTTP
 	//
@@ -120,7 +120,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		//Object to JSON in String
 		String jsonInString = mapper.writeValueAsString(postGame);
-		executePut("http://localhost:8383/api/games/" + gameId, jsonInString);
+		executePut("http://localhost:8383/api/gameDtos/" + gameId, jsonInString);
 		
 	}
 	
@@ -150,7 +150,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		if (gameId.equals("latest")) {
 			gameId = StepDefsGames.latestGameID;
 		}
-		executeDelete("http://localhost:8383/api/games/" + gameId, null);
+		executeDelete("http://localhost:8383/api/gameDtos/" + gameId, null);
 	}
 	
 	@Given("^I try to delete the winner \"([^\"]*)\"$")
@@ -162,7 +162,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 	}
 		
 	@And("^The json response should contain gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeANewTypeGameWithWinnerAndAnte(String gameType, String winner, String ante, String state) throws Throwable {
+	public void theJsonResponseBodyShouldBeANewTypeGameWithWinnerAndAnte(String gameType, String playerDto, String ante, String state) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -177,12 +177,12 @@ public class StepDefsGames extends SpringIntegrationTest {
 		assertThat(jsonGame.getState(), is(state));
 		
 		
-		if (winner.equals("latest")) {
-			winner = StepDefsGames.latestPlayerID;
+		if (playerDto.equals("latest")) {
+			playerDto = StepDefsGames.latestPlayerID;
 		}
 		
-		if (!winner.isEmpty()) {
-			assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(winner));
+		if (!playerDto.isEmpty()) {
+			assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(playerDto));
 		}
 	}
 
