@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -21,14 +23,20 @@ import lombok.Setter;
 @Setter
 @Relation(value = "deck", collectionRelation = "decks")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
+// - this annotation adds @Id to prevent chain loop
+// - you could also use @JsonManagedReference and @JsonBackReference
 public class DeckDto implements Serializable {
 	
-	// Game has 5 fields, GameDto has 1 more
+//	@Autowired
+//	private ModelMapperUtil mapUtil;
 	
+	public DeckDto() {
+	}
+	
+	// Deck has 5 fields, DeckDto has 1 more
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
-	// discard lombok setter for this field -> make your own
-	private String name; // eztra field
+	private String name; // extra field
 	// "(03) 10C  Ten of Clubs"
 	// "       *  40 cards left
 	// "---- ---  -------------
@@ -39,10 +47,8 @@ public class DeckDto implements Serializable {
 	private GameDto gameDto;
 	private CardDto cardDto;
 	private int cardOrder;
-	private PlayerDto dealtToDto;
 	
-	public DeckDto() {
-	}
+	private PlayerDto dealtToDto;
 	
 	public Deck getNameConverted(String name) {
 		// "10C  Ten of Clubs"

@@ -127,7 +127,7 @@ public class SpringIntegrationTest {
 		headers.put("Content-Type", "application/json");
 		
 		// Make a uri and fill in the queryParams eg.
-		// resource/{uriParams}?queryParams[0]=queryParams[1]@queryParams[0]=queryParams[2]
+		// resource/{uriParams}?queryParams=queryParams[0],queryParams[2], etc
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(urlWithUriParams);
 		// iterate over a hashmap with a for loop passing the key and value into the builder.queryParam
 		for (Map.Entry<String, String> entry : queryParams.entrySet()) {

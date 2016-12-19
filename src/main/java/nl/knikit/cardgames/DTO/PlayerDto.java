@@ -40,8 +40,11 @@ public class PlayerDto implements Serializable {
 	private String avatar;
 	private int cubits;
 	private int securedLoan;
+	
 	//@JsonBackReference(value="playerDto")
-	@JsonProperty(value = "games")
+	//@JsonProperty(value = "games")
+	@Setter(AccessLevel.NONE)
+	@JsonIgnore
 	private List<GameDto> gameDtos;
 	@Setter(AccessLevel.NONE)
 	private int winCount; // extra field
@@ -95,7 +98,7 @@ public class PlayerDto implements Serializable {
 			Player newPlayer = new Player();
 			newPlayer.setAlias("John 'Dto' Doe");
 			newPlayer.setAiLevel(AiLevel.HUMAN);
-			newPlayer.setHuman(Boolean.TRUE);
+			newPlayer.setHuman(true);
 			newPlayer.setAvatar(Avatar.ELF);
 			return newPlayer;
 		}
@@ -103,7 +106,7 @@ public class PlayerDto implements Serializable {
 		Player newPlayer = new Player();
 		newPlayer.setAlias(splitName[0]);
 		newPlayer.setAiLevel(AiLevel.fromLabel(splitName[1]));
-		newPlayer.setHuman(aiLevel.equalsIgnoreCase("human") ? Boolean.TRUE : Boolean.FALSE);
+		newPlayer.setHuman(aiLevel.equalsIgnoreCase("human") ? true : false);
 		newPlayer.setAvatar(Avatar.fromLabel(splitName[2]));
 		return newPlayer;
 	}
@@ -125,4 +128,15 @@ public class PlayerDto implements Serializable {
 		this.human = String.valueOf(human);
 	}
 	
+	public String getHuman() {
+		return this.human;
+	}
+	
+	public void setGameDtos(List<GameDto> gameDtos) {
+		this.gameDtos = gameDtos;
+	}
+	
+	public List<GameDto> getGameDtos() {
+		return this.gameDtos;
+	}
 }

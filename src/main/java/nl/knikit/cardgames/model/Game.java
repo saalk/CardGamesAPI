@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
@@ -17,9 +19,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -31,7 +35,7 @@ import lombok.Setter;
 import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @Entity
 @DynamicUpdate
-@Table(name = "GAME")
+@Table(name = "GAME", indexes = {@Index(name = "GAME_INDEX", columnList = "GAME_ID")})
 @Getter
 @Setter
 //@Relation(value = "game", collectionRelation = "gameDtos")
@@ -75,7 +79,7 @@ public class Game implements Serializable {
 	// meaning do set cascade type to all -> changed to delete not create
 	//@JsonIgnore
 	@OneToMany(cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", nullable=true)
+	@JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
 	private List<Deck> decks;
 	
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
@@ -83,7 +87,7 @@ public class Game implements Serializable {
 	// meaning do not set cascade options
 	//@JsonIgnore
 	@ManyToOne(optional=true)
-	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", nullable=true)
+	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID",foreignKey = @ForeignKey(name = "PLAYER_ID"))
 	private Player player;
 	
 	// make a lookup from all the STATES
@@ -95,18 +99,19 @@ public class Game implements Serializable {
 			lookup.put(state.toString(), state);
 	}
 	
-	//@JsonIgnore
+	@JsonIgnore
 	public State getStateFromString() {
 		return lookup.get(state); // lookup is a Map<String, State>
 	}
-	
+
+	@JsonIgnore
 	public int increaseCurrentRound() {
 		this.currentRound++;
 		return currentRound;
 	}
-	
+	@JsonIgnore
 	public int increaseCurrentTurn() {
-		this.currentTurn--;
+		this.currentTurn++;
 		return currentTurn;
 	}
 	

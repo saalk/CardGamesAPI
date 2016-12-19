@@ -1,23 +1,20 @@
 package nl.knikit.cardgames.DTO;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -29,14 +26,18 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 @Getter
 @Setter
 @Relation(value = "game", collectionRelation = "games")
-@JsonIdentityInfo(generator=JSOGGenerator.class)
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class GameDto implements Serializable {
 	
+//	@Autowired
+//	private ModelMapperUtil mapUtil;
+	
 	public GameDto() {
 	}
-// Game has 14 fields, GameDto has 3 more
+	
+	// Game has 14 fields, GameDto has 3 more
 	
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
@@ -57,8 +58,10 @@ public class GameDto implements Serializable {
 	private int currentTurn;
 	private int turnsToWin;
 	private int maxTurns;
+	
 	//@JsonBackReference(value="gameDto")
-	@JsonProperty(value = "decks")
+	//@JsonProperty(value = "decks")
+	@Setter(AccessLevel.NONE)
 	private List<DeckDto> deckDtos;
 	// "10C  Ten of Clubs"
 	// "  *  40 cards left
@@ -67,11 +70,16 @@ public class GameDto implements Serializable {
 	// " RJ  Script Joe [ELF]"
 	//@JsonManagedReference(value="playerDto")
 	@JsonProperty(value = "winner")
+	@Setter(AccessLevel.NONE)
 	private PlayerDto winner;
 	
 	@JsonIgnore
-	public GameType getGameTypeConverted(String gameType) throws ParseException {
-		return GameType.fromLabel(gameType);
+	public GameType getGameTypeFromLabel(String gameType) throws Exception {
+		GameType converted = GameType.fromLabel(gameType);
+		if (converted == null) {
+			throw new Exception("GameTypeParseLabelException");
+		}
+		return converted;
 	}
 	
 	public void setGameType(GameType gameType) {
@@ -85,8 +93,12 @@ public class GameDto implements Serializable {
 	}
 	
 	@JsonIgnore
-	public State getStateConverted(String state) throws ParseException {
-		return State.valueOf(state);
+	public State getStateConverted(String state) throws Exception {
+		State converted = State.valueOf(state);
+		if (converted == null) {
+			throw new Exception("StateParseException");
+		}
+		return converted;
 	}
 	
 	public void setState(State state) {
@@ -101,8 +113,9 @@ public class GameDto implements Serializable {
 		
 		this.state = (String.valueOf(state));
 	}
+	
 	@JsonIgnore
-	public Game setNameConverted(String name) {
+	public Game getNameConverted(String name) {
 		// "Highlow#0005 (Ante:100) [Select_Game]"
 		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(name, "Ante:"), "]"), " ["), "#()");
 		
@@ -175,4 +188,19 @@ public class GameDto implements Serializable {
 		
 	}
 	
+	public void setWinner(PlayerDto playerDto) {
+		this.winner = playerDto;
+	}
+	
+	public PlayerDto getWinner() {
+		return this.winner;
+	}
+	
+	public void setDeckDtos(List<DeckDto> deckDtos) {
+		this.deckDtos = deckDtos;
+	}
+	
+	public List<DeckDto> getDeckDtos() {
+		return this.deckDtos;
+	}
 }

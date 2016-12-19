@@ -1,73 +1,31 @@
 package nl.knikit.cardgames.DTO;
 
-import nl.knikit.cardgames.model.AiLevel;
-import nl.knikit.cardgames.model.Avatar;
-import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.testdata.TestData;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.modelmapper.ModelMapper;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class PlayerDtoTest {
+public class PlayerDtoTest extends TestData {
 	
-	private ModelMapper modelMapper = new ModelMapper();
-	private Player playerFixture = new Player();
-	private PlayerDto playerDtoFixture = new PlayerDto();
-	
-	@Before
-	public void setUp() throws Exception {
-		// Given
-		
-		// a player having 9 fields
-		playerFixture.setPlayerId(1);
-		playerFixture.setCreated("1");
-		playerFixture.setAlias("John 'Test' Doe");
-		playerFixture.setHuman(true);
-		playerFixture.setAiLevel(AiLevel.HUMAN);
-		playerFixture.setAvatar(Avatar.ELF);
-		playerFixture.setCubits(1);
-		playerFixture.setSecuredLoan(1);
-		ArrayList<Game> games = new ArrayList<>();
-		games.add(new Game());
-		games.add(new Game());
-		games.add(new Game());
-		playerFixture.setGames(games);
-		
-		// a playerDto having 9 + 2 fields
-		playerDtoFixture.setPlayerId(2);
-		playerDtoFixture.setCreated("2");
-		playerDtoFixture.setAlias("John 'DtoTest' Doe");
-		playerDtoFixture.setHuman(false);
-		playerDtoFixture.setAiLevel(AiLevel.LOW);
-		playerDtoFixture.setAvatar(Avatar.GOBLIN);
-		playerDtoFixture.setName(); // extra field "Script Joe(Human|Smart) [Elf]"
-		playerDtoFixture.setCubits(2);
-		playerDtoFixture.setSecuredLoan(2);
-		ArrayList<GameDto> gamesDto = new ArrayList<>();
-		gamesDto.add(new GameDto());
-		gamesDto.add(new GameDto());
-		gamesDto.add(new GameDto());
-		gamesDto.add(new GameDto());
-		playerDtoFixture.setGameDtos(gamesDto);
-		playerDtoFixture.setWinCount();  // extra field
-		
-	}
+	private ModelMapperUtil modelMapperUtil = new ModelMapperUtil();
 	
 	@Test
 	public void whenConvertPlayerEntityToPlayerDto_thenCorrect() throws Exception {
+		
+		// Given
+		Player playerFixture = MakePlayerEntityWithIdAndGamesWon(1, 3);
+		
 		// When
-		PlayerDto actual = modelMapper.map(playerFixture, PlayerDto.class);
+		PlayerDto actual = modelMapperUtil.convertToDto(playerFixture);
 		// extra fields also in the converter
 		actual.setName();
 		actual.setWinCount();
 		
-		// Then
-		// expected 11 fields, actual 9 fields
+		// Then - expected 11 fields, actual 9 fields
 		String playerFixtureName = "John 'Test' Doe(Human) [Elf]";
 		assertEquals(playerFixtureName, actual.getName());
 		assertEquals(playerFixture.getPlayerId(), actual.getPlayerId());
@@ -78,27 +36,21 @@ public class PlayerDtoTest {
 		assertEquals(playerFixture.getAvatar().toString(), actual.getAvatar());
 		assertEquals(playerFixture.getCubits(), actual.getCubits());
 		assertEquals(playerFixture.getSecuredLoan(), actual.getSecuredLoan());
-		GameDto actualGameDto = new GameDto();
-		int i = 0;
-		//TODO fix me
-//
-//		for (Game gameFixture : playerFixture.getGameDtos()) {
-//			actualGameDto = actual.getGameDtos().get(i);
-//			assertEquals(gameFixture.getGameId(), actualGameDto.getGameId());
-//			i++;
-//		}
-//		assertEquals(3,actual.getWinCount());
 		
-		// TODO also test the get converted fields
+		assertEquals(playerFixture.getGames().size(), actual.getGameDtos().size());
+		assertEquals(3, actual.getWinCount());
 	}
 	
 	@Test
 	public void whenConvertPlayerDtoToPlayerEntity_thenCorrect() throws Exception {
-		// When
-		Player actual = modelMapper.map(playerDtoFixture, Player.class);
 		
-		// Then
-		// expected 9 , actual 11
+		// Given
+		PlayerDto playerDtoFixture = MakePlayerDtoWithIdAndGamesWon(2, 4);
+		
+		// When
+		Player actual = modelMapperUtil.convertToEntity(playerDtoFixture);
+		
+		// Then - expected 9 , actual 11
 		assertEquals(playerDtoFixture.getPlayerId(), actual.getPlayerId());
 		assertEquals(playerDtoFixture.getCreated(), actual.getCreated());
 		assertEquals(playerDtoFixture.getAlias(), actual.getAlias());
@@ -107,9 +59,7 @@ public class PlayerDtoTest {
 		assertEquals(playerDtoFixture.getAvatar(), actual.getAvatar().toString());
 		assertEquals(playerDtoFixture.getCubits(), actual.getCubits());
 		assertEquals(playerDtoFixture.getSecuredLoan(), actual.getSecuredLoan());
-		//TODO fix me
-		//assertEquals(playerDtoFixture.getGameDtos().size(),actual.getGameDtos().size());
-		//assertEquals(4, actual.getGameDtos().size());
-		
+		// list of games is set to null when passing to player
+		assertNull(actual.getGames());
 	}
 }

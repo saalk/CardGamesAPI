@@ -22,11 +22,11 @@ import org.modelmapper.PropertyMap;
 	
 	*/
 
-// PropertyMap Has < source, destination >
+// PropertyMap Has < source to get, destination to set>
 public class GameMapFromEntity extends PropertyMap<Game, GameDto> {
 	@Override
 	protected void configure() {
-		map(source.getPlayer(),destination.getWinner());
-		//map().setName(source.getFirstName());
+		// set the gameDto.winner playerId with a source from game.player fields
+		// map().setWinner(source.getPlayer().getPlayerId());
 	}
 };

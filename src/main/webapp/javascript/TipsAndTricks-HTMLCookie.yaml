@@ -1,5 +1,4 @@
-/*
-JavaScript
+# JavaScript
 - Cookies let you store user information in web pages in small text files, on your computer.
 - Cookies are saved in name-value pairs like: username = John Doe
 - JavaScript can create, read, and delete cookies with the document.cookie property

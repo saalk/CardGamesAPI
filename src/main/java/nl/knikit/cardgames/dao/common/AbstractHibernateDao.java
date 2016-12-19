@@ -50,8 +50,8 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
     }
 
     @Override
-    public final List<T> findAllWhere(final String column, final String inputValue) {
-        String idMessage = String.format("findAll where dao entity: %s", clazz.getName().getClass());
+    public List<T> findAllWhere(final String column, final String inputValue) {
+        String idMessage = String.format("findAllWhere dao entity: %s", clazz.getName().getClass());
         log.info(idMessage);
 
         // JPA Criteria API Query builder logic:
@@ -127,7 +127,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         }
         return entity;
     }
-
+    
     @Override
     public final T update(final T entity) {
         String message = String.format("Entity to update in DAO: %s", entity.toString());
@@ -144,7 +144,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
         }
         return entity;
     }
-
+    
     // the deletes
     @Override
     public final void deleteOne(final T entity) {
@@ -159,7 +159,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
             throw e;
         }
     }
-
+    
     @Override
     @Modifying
     public final void deleteAll(final T entity) {
@@ -174,7 +174,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
             throw e;
         }
     }
-
+    
     @Override
     public final void deleteAllByIds(final T entity, final List<String> ids) {
 
@@ -199,10 +199,17 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
             throw e;
         }
     }
-
+    
     // private method
     protected final Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
+    }
+    
+    @Override
+    public String toString() {
+        return "AbstractHibernateDao{" +
+                       "clazz=" + clazz +
+                       '}';
     }
 
 }

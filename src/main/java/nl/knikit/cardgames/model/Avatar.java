@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.model;
 
+import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +25,7 @@ import lombok.ToString;
 
 // Getters, no setters needed
 @Getter
-public enum Avatar {
+public enum Avatar implements LabeledEnum {
 
     @Column(name = "AVATAR", length = 25)
     ELF("Elf"), MAGICIAN("Magician"), GOBLIN("Goblin"), ROMAN("Warrior");

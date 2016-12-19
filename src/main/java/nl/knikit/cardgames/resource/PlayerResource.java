@@ -53,16 +53,17 @@ package nl.knikit.cardgames.resource;
 */
 
 
+import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -79,7 +80,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
@@ -87,8 +87,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static sun.audio.AudioPlayer.player;
 
 // @RestController = @Controller + @ResponseBody
 @CrossOrigin
@@ -197,8 +195,8 @@ public class PlayerResource {
 					       .status(HttpStatus.BAD_REQUEST)
 					       .body("Body not present");
 		}
-		Player player = mapUtil.convertToEntity(playerDto);
-		Player consistentPlayer = makeConsistentPlayer(player);
+		PlayerDto consistentPlayerDto = makeConsistentPlayerDto(playerDto);
+		Player consistentPlayer = mapUtil.convertToEntity(consistentPlayerDto);
 		try {
 			Player createdPlayer = playerService.create(consistentPlayer);
 			if (createdPlayer == null) {
@@ -206,7 +204,6 @@ public class PlayerResource {
 						       .status(HttpStatus.NOT_FOUND)
 						       .body("Player not created");
 			}
-			
 			PlayerDto newPlayerDto = mapUtil.convertToDto(createdPlayer);
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
@@ -218,20 +215,20 @@ public class PlayerResource {
 		}
 	}
 	
-	@PostMapping(value = "/players", params = {"human"})
+	@PostMapping(value = "/players", params = "human")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public ResponseEntity initPlayer(@RequestParam(value = "human", required = true) Boolean param) {
+	public ResponseEntity initPlayer(@RequestParam(value = "human", required = true) String human) throws ParseException {
 		
-		if (param == null) {
+		if (human == null || human.isEmpty()) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body(new PlayerDto());
+					       .body("Param human null or empty");
 		}
 		
-		// TODO integrate consistency / init human with modelmap
-		Player initPlayer = new Player();
-		initPlayer.setHuman(param);
-		Player consistentPlayer = makeConsistentPlayer(initPlayer);
+		PlayerDto initPlayerDto = new PlayerDto();
+		initPlayerDto.setHuman(Boolean.parseBoolean(human));
+		initPlayerDto = makeConsistentPlayerDto(initPlayerDto);
+		Player consistentPlayer = mapUtil.convertToEntity(initPlayerDto);
 		try {
 			Player createdPlayer = playerService.create(consistentPlayer);
 			if (createdPlayer == null) {
@@ -335,42 +332,30 @@ public class PlayerResource {
 		}
 	}
 	
-	private Player makeConsistentPlayer(Player player) {
+	private PlayerDto makeConsistentPlayerDto(PlayerDto playerDto) {
 		
-		Player consistentPlayer = new Player();
-		consistentPlayer.setAlias(player.getAlias());
-		consistentPlayer.setCubits(player.getCubits());
-		consistentPlayer.setSecuredLoan(player.getSecuredLoan());
+		// set defaults for human or aline
 		
-		consistentPlayer.setPlayerId(player.getPlayerId() > 0 ? player.getPlayerId() : 0);
-		
-		// make boolean human and aiLevel consistent
-		if (player.getHuman()) {
-			consistentPlayer.setHuman(true);
-			consistentPlayer.setAiLevel(AiLevel.HUMAN);
-			if (player.getAlias().isEmpty()){
-				consistentPlayer.setAlias("Stranger");
+		if (playerDto.getHuman() == "true") {
+			playerDto.setAiLevel(AiLevel.HUMAN);
+			if (playerDto.getAlias().isEmpty()){
+				playerDto.setAlias("Stranger");
 			}
 		} else {
-			consistentPlayer.setHuman(false);
-			if (player.getAiLevel() != null) {
-				consistentPlayer.setAiLevel(player.getAiLevel());
-			} else {
-				consistentPlayer.setAiLevel(AiLevel.NONE);
+			if (playerDto.getAiLevel() == null) {
+				playerDto.setAiLevel(AiLevel.NONE);
 			}
-			if (player.getAlias().isEmpty()){
-				consistentPlayer.setAlias("Alien");
+			if (playerDto.getAlias().isEmpty()){
+				playerDto.setAlias("Alien");
 			}
 		}
 		
 		// make avatar consistent
-		if (player.getAvatar() != null) {
-			consistentPlayer.setAvatar(player.getAvatar());
-		} else {
-			consistentPlayer.setAvatar(Avatar.ELF);
+		if (playerDto.getAvatar() == null) {
+			playerDto.setAvatar(Avatar.ELF);
 		}
 		
-		return consistentPlayer;
+		return playerDto;
 	}
 	
 }

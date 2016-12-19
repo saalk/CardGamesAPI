@@ -96,7 +96,8 @@ import lombok.Setter;
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class Deck implements Serializable {
-
+    
+    // 5 fields
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "DECK_ID")
@@ -113,7 +114,7 @@ public class Deck implements Serializable {
     private  Game game;
     
     //@JsonIgnore
-    @OneToOne
+    @OneToOne(optional=false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
     ////@JsonProperty("card")
     private Card card;
@@ -136,139 +137,12 @@ public class Deck implements Serializable {
     public Deck() {
     }
 
-    public Deck(Game game, Card card, int cardOrder, Player dealtTo) {
-        this();
-        this.game = game;
-        this.card = card;
-        this.cardOrder = cardOrder;
-        this.dealtTo = dealtTo;
-    }
+//    public Deck(Game game, Card card, int cardOrder, Player dealtTo) {
+//        this();
+//        this.game = game;
+//        this.card = card;
+//        this.cardOrder = cardOrder;
+//        this.dealtTo = dealtTo;
+//    }
 
-    /**
-     * alternative with bubble sort routine:
-     * <pre>
-     * {@code
-     * Random rnd = new Random();
-     *  for (int i = 0; i < deck.size(); i++)
-     *   { for (int j = 0; j < deck.size() - 1; j++)
-     *     { if (rnd.nextBoolean())
-     *       { Card tmp = deck.fromLabel(j);
-     *       deck.set(j, deck.fromLabel(j + 1));
-     *       deck.set(j + 1, tmp);
-     *      }
-     *      }
-     *    }
-     * }
-     * </pre>
-     */
- /*   public void shuffle() {
-
-        Random randomNumber = new Random();
-        List<Card> shuffledCards = new ArrayList<Card>();
-
-        for (Card card : cards) {
-            if (shuffledCards.size() == 0) {
-                // add first
-                // reset top card flag
-                shuffledCards.add(0, card);
-            } else {
-                // add this card at random position between 0 and the current
-                // shuffled cards size
-                int randomPosition = randomNumber.nextInt(shuffledCards.size());
-
-                shuffledCards.add(randomPosition, card);
-            }
-        }
-
-        cards = shuffledCards;
-        *//*
-         * init the deale with zero's
-		 *//*
-*//*        for (int i = 0; i < dealedTo.length; i++) {
-            dealedTo[i] = 0;
-        }*//*
-    }
-
-*//*    public int searchNextCardNotInHand() {
-        int topCard;
-        for (int i = 0; i < dealedTo.length; i++) {
-            if (dealedTo[i] == 0) {
-                topCard = i;
-                return topCard;
-            }
-        }
-        return -1;
-    }*//*
-
-*//*    public Card deal(int Hand) throws IllegalArgumentException {
-        if (Hand == 0) {
-            throw new IllegalArgumentException("Hand for dealing cards is zero!");
-        }
-        int topCard = this.searchNextCardNotInHand();
-        // register Hand before returning topCard
-        if (topCard == -1) {
-            return null;
-        } else {
-            dealedTo[topCard] = Hand;
-        }
-        return cards.fromLabel(topCard);
-    }*//*
-
-    public int searchCard(Card searchCard) {
-        // TODO why does this not work ?
-        // int position = cards.indexOf(searchCard);
-        // return position;
-        // this is a useless method since fromLabel index does the job
-        int position = 1;
-        for (Card card : cards) {
-            if (card.getRank().equals(searchCard.getRank()) && card.getSuit().equals(searchCard.getSuit())) {
-                return position;
-            }
-            ++position;
-        }
-        return 0;
-    }
-
-    public int countCard(Card countCard) {
-        int total = 0;
-        for (Card card : cards) {
-            if (card.getRank().equals(countCard.getRank()) && card.getSuit().equals(countCard.getSuit())) {
-                total++;
-            }
-        }
-        return total;
-    }
-
-    *//*public int averageValueInDeck(Type inputType) {
-        int value = 0;
-        int count = 0;
-        // TODO check for empty list of cards in deck
-        for (Card card : cards) {
-            if (this.getDeale(count) == 0) {
-                // not yet dealed
-                value = value + card.getRank().getValue(inputType);
-                count++;
-            }
-        }
-        return value / count;
-    }*//*
-
-    public void removeSuit(Set<Suit> removeSuits) {
-
-        List<Card> newDeck = this.cards;
-        int index = cards.lastIndexOf(cards);
-
-        for (Suit removeSuit : removeSuits) {
-            for (Card card : cards) {
-                if (card.getSuit() == removeSuit) {
-                    newDeck.remove(card);
-                }
-            }
-*//*            index = index - 13;
-            dealedTo = new int[index];*//*
-        }
-        this.cards = newDeck;
-
-    }
-*/
 }

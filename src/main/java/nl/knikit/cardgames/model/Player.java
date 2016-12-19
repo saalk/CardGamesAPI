@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
@@ -35,7 +37,6 @@ import lombok.Setter;
  */
 
 //@Entity is deprecated in Hibernate 4 so use JPA annotations directly in the model class
-//TODO @DynamicUpdate from Hibernate
 
 @Getter
 @Setter
@@ -96,40 +97,9 @@ public class Player implements Serializable {
     @OneToMany(cascade=CascadeType.REMOVE)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
     ////@JsonProperty("gameDtos")
+    @JsonIgnore
     private List<Game> games;
 
-
-    /* if you want to get all gameDtos for a specific winner...
-    @OneToMany(mappedBy="player",targetEntity=Game.class,
-            fetch=FetchType.EAGER)
-    private Collection gameDtos;
-    */
-
-    /*
-    Get
-    - The number of gameDtos a player (top ten) has attended
-    - The gameDtos won by that player
-
-    Query query = em.createQuery("SELECT player FROM PLAYER player WHERE playerId = x");
-    List list= query.getResultList();
-
-    for(Player player:list){
-        List gameList = new ArrayList();
-        List gameListWon = new ArrayList();
-        // get the casinos attended, filters players not in a casino (todo)
-        if(player.getCasinos()!=null){
-            for(Casinos allCasinos: player.getCasinos()){
-                if(allCasinos.getGame().getGameWon() == null){
-                    //Find out how many gameDtos each player has
-                    gameList.addAll(allCasinos.getGamesList());
-                }else{
-                    //Find out how many gameDtos won by the player
-                    gameListWon.addAll(allCasinos.getGamesList());
-                }
-            }
-        }
-    }
-    */
     public Player() {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");

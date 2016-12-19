@@ -1,0 +1,70 @@
+## API logic
+# When would you use @PathParam vs @QueryParam
+# Question is whether they are hierarchical in nature
+# REST doesn't care which you use
+
+Spring @PathVariable (can only use 'value = "id"'):
+@RequestMapping(value="/resources/{id}")
+public String getResource(@PathVariable("id") int id){ // }
+
+Spring @RequestParam (Can use name, value, defaultValue, required):
+@RequestMapping(value="/resources")
+public String getResource(@RequestParam("id") int id){ // }
+
+# Most rest APIs tend to only have resource names and resource IDs in the path.
+Such as:
+/depatments/{dept}/employees/{id}
+
+The recommendation is:
+- required parameters in the path
+- optional parameters should certainly be query string parameters
+- to retrieve a record based on id use @PathParam
+- @QueryParam for filter or if you have any fixed list of options that user can pass
+- If the resource makes no sense outside the context of its parent resource, use hierarchy
+- If the resource can live (1) alone or (2) in a context of parent resources of different types or
+(3) have multiple parents, the hierarchy should not be used.
+- Path parameters for grouping data, query parameters for filtering
+
+tree-oriented vision with depth more than 2 is open for dicussing:
+- GET /artist/1/album/10/song/3/comment/23
+can lead to a few issues when extending:
+- What if an album has several artists
+- What if a song doesn't have an album
+Solution is to make multiple resources not in a heirarchie:
+- GET /tracks/:trackId
+- GET /albums/:albumId
+
+/Invoices             // all invoices
+/Invoices?after=2011  // a filter on all invoices
+
+/Invoices/52          // by 52
+/Invoices/52/Items    // all items on invoice 52
+/Invoices/52/Items/1  // Item 1 from invoice 52
+
+/Companies/{company}/Invoices?sort=Date
+/Companies/{company}/Invoices/{invoiceNo} // assuming that the invoice only unq by company?
+
+
+# http://example.com/context/servlet?x=foo
+# then it will return null:
+String x = request.getParameter("x"); // "foo"
+String y = request.getParameter("y"); // null
+
+
+# If a parameter is specified, but does not have a value like so:
+http://example.com/context/servlet?x=foo&y
+then it will return an empty string:
+String x = request.getParameter("x"); // "foo"
+String y = request.getParameter("y"); // ""
+
+So check if a parameter is there and is not empty:
+if ( httpServletRequest.getParameter( "Y" ) != null ) {
+    	String value = httpServletRequest.getParameter( "Y" );
+	if ( value.isEmpty() ) {
+		// parm present but empty
+	} else {
+		// parm present and filled
+	}
+} else {
+	// parm not present
+}

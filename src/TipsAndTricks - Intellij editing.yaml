@@ -70,19 +70,16 @@ psf: public static fnal
 thr: throw new
 
 
-
-
-
 ## Search/Replace
-Double Shift Search everywhere
-Ctrl + F Find
-F3 Find next
-Shift + F3 Find previous
-Ctrl + R Replace
-Ctrl + Shift + F Find in path
-Ctrl + Shift + R Replace in path
-Ctrl + Shift + S Search structurally (Ultimate Edition only)
-Ctrl + Shift + M Replace structurally (Ultimate Edition only) of available refactorings (Refactor This).	Ctrl+Shift+Alt+T
+Double Shift: 	Search everywhere
+Ctrl + F:  		Find
+F3: 			Find next
+Shift + F3: 	Find previous
+Ctrl + R: 		Replace
+Ctrl + Shift + F: Find in path
+Ctrl + Shift + R: Replace in path
+Ctrl + Shift + S: Search structurally (Ultimate Edition only)
+Ctrl + Shift + M: Replace structurally (Ultimate Edition only) of available refactorings (Refactor This).	Ctrl+Shift+Alt+T
 
 ## Usage Search
 Alt + F7 / Ctrl + F7 Find usages / Find usages in fle

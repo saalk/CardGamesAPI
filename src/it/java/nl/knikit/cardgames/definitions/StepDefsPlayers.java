@@ -1,13 +1,17 @@
 package nl.knikit.cardgames.definitions;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
-import nl.knikit.cardgames.model.Player;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -15,12 +19,15 @@ import cucumber.api.java.en.Then;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 public class StepDefsPlayers extends SpringIntegrationTest {
 	
 	private static String latestPlayerID = "";
+	private static List<String> latestPlayerIDs = new ArrayList<>();
 	
 	private static String playersUrl = "http://localhost:8383/api/players/";
+	private static String allPlayersUrl = "http://localhost:8383/api/players";
 	private static String playersUrlWithId = "http://localhost:8383/api/players/{id}";
 	
 	// API          HTTP
@@ -46,6 +53,18 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 			playerId = StepDefsPlayers.latestPlayerID;
 		}
 		executeGet(playersUrl + playerId);
+	}
+	
+	@Given("^I try to get all human \"([^\"]*)\" players$")
+	public void iTryToGetAllHumanOrAlienPlayers(String human) throws Throwable {
+
+		executeGet(allPlayersUrl + "?human=" + human);
+	}
+	
+	@Given("^I try to get all players")
+	public void iTryToGetAllPlayers() throws Throwable {
+
+		executeGet(allPlayersUrl);
 	}
 	
 	@Given("^I try to post a human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")
@@ -93,8 +112,17 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	public void iTryToDeleteAPlayerWith(String playerId) throws Throwable {
 		if (playerId.equals("latest")) {
 			playerId = StepDefsPlayers.latestPlayerID;
+			StepDefsPlayers.latestPlayerIDs.remove(latestPlayerIDs.size()-1);
 		}
 		executeDelete(playersUrl + playerId, null);
+	}
+	
+	@Given("^I try to delete all players with \"([^\"]*)\"$")
+	public void iTryToDeleteAllPlayersWith(String ids) throws Throwable {
+		if (ids.equals("all")) {
+			// all
+		}
+		executeDelete(allPlayersUrl + "?id=" + StringUtils.join(latestPlayerIDs,','), null);
 	}
 	
 	@Then("^I should see that the response has HTTP status \"([^\"]*)\"$")
@@ -112,6 +140,23 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	@And("^The json response body should have no content$")
 	public void theJsonResponseBodyShouldBeLike() throws Throwable {
 		assertThat(latestResponse.getBody(), is(""));
+	}
+	
+	@And("^The json response should contain at least \"([^\"]*)\" players$")
+	public void theJsonPlayerResponseBodyShouldContainAtLeast(int count) throws Throwable {
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+		List<PlayerDto> jsonPlayers = mapper.readValue(latestResponse.getBody(),new TypeReference<List<PlayerDto>>(){});
+		
+		latestPlayerIDs.clear();
+		for (PlayerDto playerDto : jsonPlayers ) {
+			latestPlayerIDs.add(String.valueOf(playerDto.getPlayerId()));
+			StepDefsPlayers.latestPlayerID = String.valueOf(playerDto.getPlayerId());
+		}
+		// at least equal but more can exist
+		assertTrue(latestPlayerIDs.size()>=count);
 	}
 	
 	@And("^The json response should contain human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")

@@ -1,4 +1,4 @@
-## Core Spring Annotations
+## Core Spring Annotations for BEANS guidance
 These annotations are used by Spring to guide creation and injection of beans.
 
 @Autowired: 	Constructor, Field, Method
@@ -17,10 +17,8 @@ Specifies that a particular property must be injected or else the configuration 
 @Scope: 	Type
 Specifies the scope of a bean, either singleton, prototype, request, session, or some custom scope.
 
-# J2EE alternatives
-
-
-## Stereotyping Annotations
+## J2EE alternatives
+## Stereotyping Annotations for BEANS creation
 These annotations are used to stereotype classes with regard to the application tier that they belong to.
 Classes that are annotated with one of these annotations will automatically be registered in the Spring application context.
 
@@ -92,3 +90,20 @@ public class HomePage { @RequestMapping(method = RequestMethod.GET)
 		return "home";
 }
 }
+
+# JAX-RS vs Spring
+# @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
+
+SPRING:
+use
+@RequestParam(value = "date", required = false, defaultValue = "01-01-1999")
+Date dateOrNull)
+for ?date=12-05-2013
+
+JAX_RS:
+also use:
+@DefaultValue("false") @QueryParam("from") boolean human
+for ?human=true
+
+
+

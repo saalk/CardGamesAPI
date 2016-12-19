@@ -32,7 +32,7 @@ public enum GameType implements LabeledEnum {
      * the bet to another player, or go double or nothing on the next bet depending on the specific
      * variant of HIGHLOW.
      */
-    @Column(name = "GAMETYPE", length = 25, nullable = false)
+    @Column(name = "GAMETYPE", length = 25)
     HIGHLOW("Hi-Lo"), BLACKJACK("Blackjack");
 
     /**
@@ -45,7 +45,7 @@ public enum GameType implements LabeledEnum {
         for(GameType gameType : EnumSet.allOf(GameType.class))
             lookup.put(gameType.getLabel(), gameType);
     }
-    @Transient
+
     private String label;
 
     GameType(String label) {
