@@ -169,7 +169,7 @@ public class PlayerResource {
 			if (players == null) {
 				return ResponseEntity
 						       .status(HttpStatus.OK)
-						       .body("[{}]");
+						       .body("{}");
 			}
 			
 			ArrayList<PlayerDto> playersDto = new ArrayList<>();

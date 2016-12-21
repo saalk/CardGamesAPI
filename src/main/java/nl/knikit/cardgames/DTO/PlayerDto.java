@@ -48,6 +48,9 @@ public class PlayerDto implements Serializable {
 	private List<GameDto> gameDtos;
 	@Setter(AccessLevel.NONE)
 	private int winCount; // extra field
+	@Setter(AccessLevel.NONE)
+	@JsonIgnore
+	private List<CasinoDto> casinoDtos;
 	
 	public PlayerDto() {
 	}
@@ -139,4 +142,13 @@ public class PlayerDto implements Serializable {
 	public List<GameDto> getGameDtos() {
 		return this.gameDtos;
 	}
+	
+	public void setCasinoDtos(List<CasinoDto> casinoDtos) {
+		this.casinoDtos = casinoDtos;
+	}
+	
+	public List<CasinoDto> getCasinoDtos() {
+		return this.casinoDtos;
+	}
+	
 }

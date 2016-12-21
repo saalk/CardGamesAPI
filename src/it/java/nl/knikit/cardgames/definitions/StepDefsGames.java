@@ -21,6 +21,7 @@ import cucumber.api.java.en.Given;
 
 import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -63,11 +64,20 @@ public class StepDefsGames extends SpringIntegrationTest {
 		executeGet(gamesUrl + gameId);
 	}
 	
+	
+	
+	@Given("^I try to get all gameType \"([^\"]*)\" games$")
+	public void iTryToGetAllGames(String gameType) throws Throwable {
+		
+		executeGet(allGamesUrl + "?gameType=" + gameType);
+	}
+	
 	@Given("^I try to get all games")
 	public void iTryToGetAllGames() throws Throwable {
 		
 		executeGet(allGamesUrl);
 	}
+	
 	
 	@Given("^I try to post a gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
 	public void iTryToPostANewTypeGameWithWinnerAndAnte(String gameType, String winner, String ante,  String state) throws Throwable {
@@ -205,7 +215,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		}
 		
 		// at least equal but more can exist
-		assertTrue(latestGameIDs.size()>=count);
+		assertThat(latestGameIDs.size(), greaterThanOrEqualTo(count));
 	}
 	
 	@And("^The json response should contain gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
@@ -229,7 +239,8 @@ public class StepDefsGames extends SpringIntegrationTest {
 		}
 		
 		if (!playerDto.isEmpty()) {
-			assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(playerDto));
+			assertThat(jsonGame.getWinner().getPlayerId(), is(Integer.parseInt(playerDto)));
+			// assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(playerDto));
 		}
 	}
 

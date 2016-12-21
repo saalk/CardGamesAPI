@@ -51,7 +51,7 @@ public class CardDto implements Serializable{
 	public Rank getRankConvertedFromLabel(String rankLabel) throws Exception {
 		Rank converted = Rank.fromLabel(rankLabel);
 		if (converted==null) {
-			throw new Exception("SuitParseLabelException");
+			throw new Exception("RankParseLabelException");
 		}
 		return converted;
 	}

@@ -52,6 +52,7 @@ import lombok.ToString;
 @Table(name = "HAND",
         indexes = {
             @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX"),
+            @Index(columnList = "CARD_ID", name = "CARD_ID_INDEX"),
             @Index(columnList = "CASINO_ID", name = "CASINO_ID_INDEX")},
         uniqueConstraints =
             @UniqueConstraint(name="UC_PLAYER_CASINO", columnNames={"PLAYER_ID","CASINO_ID"}))
@@ -62,71 +63,40 @@ import lombok.ToString;
 @Getter
 @Setter
 public class Hand implements Serializable {
-
+    
+    // 5 fields
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "HAND_ID")
     ////@JsonProperty("handId")
     private int handId;
-
+    
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the child Hand: do nothing when Hand is delete on the parent Player
+    // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
+    @ManyToOne(optional= false)
+    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"), nullable=false)
     ////@JsonProperty("player")
-    private  Player player;
+    private Player player;
 
     //@JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
     ////@JsonProperty("casino")
-    private  Casino casino;
-
+    private Casino casino;
+    
     //@JsonIgnore
-    //@OneToOne(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
+    @OneToOne(optional=false, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
     ////@JsonProperty("card")
     private Card card;
-
+    
     @Column(name = "CARD_ORDER")
     ////@JsonProperty("cardOrder")
     private int cardOrder;
 
-/*    @OneToMany
-    @Column(name = "CARDS")
-    @ElementCollection(targetClass=Card.class)
-    //@JsonProperty("cards") private  List<Card> cards;
-    */
-
     public Hand(){
-    }
-
-    public Hand(Player player, Casino casino, Card card, int cardOrder){
-        this();
-        this.player = player;
-        this.casino = casino;
-        this.card = card;
-        this.cardOrder = cardOrder;
-    }
-    
-    /**
-     * Returns a new ArrayList consisting of the last n
-     * elements of deck, which are removed from deck.
-     * The returned list is sorted using the elements'
-     * natural ordering.
-     */
-    
-    public void deal(List<Card> cards, int numHands, int cardsPerHand){
-        for (int i=0; i < numHands; i++) {}
-            //System.out.println(dealHand(cards, cardsPerHand));
-    }
-    
-    public static <E extends Comparable<E>> ArrayList<E> dealHand(List<E> deck, int n) {
-        int deckSize = deck.size();
-        List<E> handView = deck.subList(deckSize - n, deckSize);
-        ArrayList<E> hand = new ArrayList<E>(handView);
-        handView.clear();
-        Collections.sort(hand);
-        return hand;
     }
 
 }

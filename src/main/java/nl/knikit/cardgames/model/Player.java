@@ -57,9 +57,6 @@ public class Player implements Serializable {
     ////@JsonProperty("playerId")
     private int playerId;
 
-    @Transient
-    private static int startId = 1;
-
     @Column(name = "CREATED", length = 25)
     ////@JsonProperty("created")
     private String created;
@@ -99,7 +96,13 @@ public class Player implements Serializable {
     ////@JsonProperty("gameDtos")
     @JsonIgnore
     private List<Game> games;
-
+	
+	@OneToMany(cascade=CascadeType.REMOVE)
+	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
+	////@JsonProperty("gameDtos")
+	@JsonIgnore
+	private List<Casino> casinos;
+	
     public Player() {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");

@@ -3,6 +3,8 @@ package nl.knikit.cardgames.dao.common;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.metamodel.SingularAttribute;
+
 public interface IOperations<T extends Serializable> {
 
     T findOneWithString(final String id);
@@ -12,7 +14,9 @@ public interface IOperations<T extends Serializable> {
     List<T> findAll(String column, String direction);
 
     List<T> findAllWhere(final String column, final String inputValue);
-
+    
+    <SK> List<T> findAllByAttributes(AttributesHashMap<T> attributes, SingularAttribute<T, SK> order);
+    
     T create(final T entity);
 
     T update(final T entity);

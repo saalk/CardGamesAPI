@@ -1,11 +1,14 @@
 package nl.knikit.cardgames.service.common;
 
+import nl.knikit.cardgames.dao.common.AttributesHashMap;
 import nl.knikit.cardgames.dao.common.IOperations;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
+
+import javax.persistence.metamodel.SingularAttribute;
 
 @Transactional
 public abstract class AbstractService<T extends Serializable> implements IOperations<T> {
@@ -28,7 +31,12 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     @Override
     public List<T> findAllWhere(final String column, final String inputValue)
     { return getDao().findAllWhere(column, inputValue);}
-
+    
+    @Override
+    public <SK> List<T> findAllByAttributes(AttributesHashMap<T> attributes, SingularAttribute<T, SK> order) {
+        return getDao().findAllByAttributes(attributes, order);
+    }
+    
     @Override
     public T create(final T entity) {
         return getDao().create(entity);

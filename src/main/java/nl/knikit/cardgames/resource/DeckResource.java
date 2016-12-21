@@ -117,8 +117,8 @@ public class DeckResource {
 			if (decks == null) {
 				// TODO getDeckDtos empty is not an error
 				return ResponseEntity
-						       .status(HttpStatus.NOT_FOUND)
-						       .body("Decks not found");
+						       .status(HttpStatus.OK)
+						       .body("{}");
 			}
 			ArrayList<DeckDto> decksDto = new ArrayList<>();
 			for (Deck deck : decks) {

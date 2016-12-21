@@ -1,12 +1,16 @@
 package nl.knikit.cardgames.mapper;
 
 import nl.knikit.cardgames.DTO.CardDto;
+import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
+import nl.knikit.cardgames.DTO.HandDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.Hand;
 import nl.knikit.cardgames.model.Player;
 
 import org.modelmapper.ModelMapper;
@@ -38,6 +42,20 @@ public class ModelMapperUtil {
 			playerDto.setGameDtos(null);
 		}
 		
+		List<CasinoDto> casinoDtos = new ArrayList<>();
+		if (player.getCasinos() != null) {
+			for (Casino casino: player.getCasinos()) {
+				// casinoDtos.add(convertToDto(casino)); this created a loop
+				modelMapper = new ModelMapper();
+				CasinoDto casinoDto = modelMapper.map(casino, CasinoDto.class);
+				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
+				casinoDtos.add(casinoDto);
+			}
+			playerDto.setCasinoDtos(casinoDtos);
+		} else {
+			playerDto.setCasinoDtos(null);
+		}
+		
 		playerDto.setName();
 		playerDto.setWinCount();
 		
@@ -49,6 +67,7 @@ public class ModelMapperUtil {
 		Player player = modelMapper.map(playerDto, Player.class);
 		
 		player.setGames(null);
+		player.setCasinos(null);
 		
 		return player;
 	}
@@ -140,16 +159,122 @@ public class ModelMapperUtil {
 		return deck;
 	}
 	
+	public CasinoDto convertToDto(Casino casino) throws Exception {
+		ModelMapper modelMapper = new ModelMapper();
+		CasinoDto casinoDto = modelMapper.map(casino, CasinoDto.class);
+		
+		if (casino.getPlayer() != null) {
+			if (casino.getPlayer() != null) {
+				// casinoDto.setWinner(convertToDto(casino.getPlayer())); // this created a loop...
+				modelMapper = new ModelMapper();
+				PlayerDto playerDto = modelMapper.map(casino.getPlayer(), PlayerDto.class);
+				playerDto.setCasinoDtos(null);
+				playerDto.setName();
+				playerDto.setWinCount();
+				casinoDto.setPlayerDto(playerDto);
+			} else {
+				casinoDto.setPlayerDto(null);
+			}
+			
+		} else {
+			casinoDto.setPlayerDto(null);
+		}
+		if (casino.getGame() != null) {
+			casinoDto.setGameDto(convertToDto(casino.getGame()));
+		} else {
+			casinoDto.setGameDto(null);
+		}
+		
+		casinoDto.setName();
+		return casinoDto;
+	}
+	
+	public Casino convertToEntity(CasinoDto casinoDto) throws ParseException {
+		ModelMapper modelMapper = new ModelMapper();
+		Casino casino = modelMapper.map(casinoDto, Casino.class);
+		
+		if (casinoDto.getPlayerDto() != null) {
+			casino.setPlayer(convertToEntity(casinoDto.getPlayerDto())); // this creates a loop ..
+		} else {
+			casino.setPlayer(null);
+		}
+		if (casinoDto.getGameDto() != null) {
+			casino.setGame(convertToEntity(casinoDto.getGameDto())); // this creates a loop ..
+		} else {
+			casino.setGame(null);
+		}
+		
+		casino.setPlayer(convertToEntity(casinoDto.getPlayerDto())); // this creates a loop ..
+		casino.setGame(convertToEntity(casinoDto.getGameDto())); // this creates a loop ..
+		
+		return casino;
+	}
+	
+	public HandDto convertToDto(Hand hand) throws Exception {
+		ModelMapper modelMapper = new ModelMapper();
+		HandDto handDto = modelMapper.map(hand, HandDto.class);
+		
+		if (hand.getPlayer() != null) {
+			handDto.setPlayerDto(convertToDto(hand.getPlayer())); // does this create a loop ?
+			//handDto.setPlayerDto(modelMapper.map(hand.getPlayer(), PlayerDto.class));
+		} else {
+			handDto.setPlayerDto(null);
+		}
+		if (hand.getCasino() != null) {
+			handDto.setCasinoDto(convertToDto(hand.getCasino()));
+		} else {
+			handDto.setCasinoDto(null);
+		}
+		if (hand.getCard() != null) {
+			handDto.setCardDto(convertToDto(hand.getCard()));
+		} else {
+			handDto.setCardDto(null);
+		}
+		
+		handDto.setName();
+		return handDto;
+	}
+	
+	public Hand convertToEntity(HandDto handDto) throws ParseException {
+		ModelMapper modelMapper = new ModelMapper();
+		Hand hand = modelMapper.map(handDto, Hand.class);
+		
+		if (handDto.getPlayerDto() != null) {
+			hand.setPlayer(convertToEntity(handDto.getPlayerDto())); // this creates a loop ..
+		} else {
+			hand.setPlayer(null);
+		}
+		if (handDto.getCasinoDto() != null) {
+			hand.setCasino(convertToEntity(handDto.getCasinoDto())); // this creates a loop ..
+		} else {
+			hand.setCasino(null);
+		}
+		if (handDto.getCardDto() != null) {
+			hand.setCard(convertToEntity(handDto.getCardDto())); // this creates a loop ..
+		} else {
+			hand.setCard(null);
+		}
+		
+		hand.setPlayer(convertToEntity(handDto.getPlayerDto())); // this creates a loop ..
+		hand.setCasino(convertToEntity(handDto.getCasinoDto())); // this creates a loop ..
+		hand.setCard(convertToEntity(handDto.getCardDto())); // this creates a loop ..
+		
+		return hand;
+	}
+	
 	public CardDto convertToDto(Card card) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
-		
-		return modelMapper.map(card, CardDto.class);
+		CardDto cardDto = modelMapper.map(card, CardDto.class);
+		cardDto.setSuit(card.getSuit());
+		cardDto.setRank(card.getRank());
+		cardDto.setValue(card.getValue());
+		return cardDto;
 	}
 	
 	public Card convertToEntity(CardDto cardDto) throws ParseException {
 		ModelMapper modelMapper = new ModelMapper();
-		
-		return modelMapper.map(cardDto, Card.class);
+		Card card = modelMapper.map(cardDto, Card.class);
+		return card;
 	}
 	
 }

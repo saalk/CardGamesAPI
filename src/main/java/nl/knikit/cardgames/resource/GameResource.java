@@ -105,10 +105,10 @@ public class GameResource {
 		try {
 			List<Game> games = gameService.findAllWhere("gameType", param);
 			if (games == null) {
-				// TODO getGames empty is not an error
+				// getGames empty is not an error
 				return ResponseEntity
-						       .status(HttpStatus.NOT_FOUND)
-						       .body("Games not found");
+						       .status(HttpStatus.OK)
+						       .body("{}");
 			}
 			List<GameDto> gamesDto = games.stream()
 					                         .map(game -> mapUtil.convertToDto(game)).collect(Collectors.toList());

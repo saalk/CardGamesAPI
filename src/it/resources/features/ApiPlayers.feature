@@ -38,7 +38,7 @@ Feature: Execute a lifecycle of a player in the card game
       | id      | avatar | alias      | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest  | ELF    | Cukes2 Doe | true  | HUMAN   | 0      | 0           | 200              |
 
-  @Ignore
+  @Api @Players
   Scenario Outline: A frontend makes call to GET /api/players?human={boolean}
     Given I try to get all human "<human>" players
     Then I should see that the response has HTTP status "<HTTP status code>"

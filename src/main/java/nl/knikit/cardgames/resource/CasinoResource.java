@@ -1,13 +1,16 @@
 package nl.knikit.cardgames.resource;
 
+import nl.knikit.cardgames.DTO.CasinoDto;
+import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IGameService;
+import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,14 +19,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +37,10 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 @RestController
 @Component
-@ExposesResourceFor(Casino.class)
+//@ExposesResourceFor(Casino.class)
 @Slf4j
 @Scope("prototype")
+@RequestScoped
 public class CasinoResource {
 
     // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
@@ -43,161 +49,214 @@ public class CasinoResource {
 
     @Autowired
     private IGameService gameService;
-
-    @GetMapping("/casinos")
-    public ResponseEntity<ArrayList<Casino>> getCasinos() {
-
-        ArrayList<Casino> casinos;
-        casinos = (ArrayList<Casino>) casinoService.findAll("playingOrder", "ASC");
-
-        return new ResponseEntity(casinos, HttpStatus.OK);
-    }
-
-    @GetMapping("/casinos/{id}")
-    public ResponseEntity getCasino(@PathVariable("id") int id) {
-
-        Casino casino = casinoService.findOne(id);
-        if (casino == null) {
     
-            return ResponseEntity
-                           .status(HttpStatus.BAD_REQUEST)
-                           .body("[{}]");
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(casino);
-    }
-
-    // @QueryParam is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromLabel the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean human
-    // you fromLabel the boolean human with value 'true' for ?human=true
-
-    @GetMapping(value = "/casinos", params = { "gameDto" } )
-    public ResponseEntity<ArrayList<Casino>> findAllWhere(
-            @RequestParam(value = "gameDto", required = true) String param) {
-
+    @Autowired
+    private IPlayerService playerService;
+    
+    @Autowired
+    private ModelMapperUtil mapUtil;
+    
+    @GetMapping("/casinos/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public ResponseEntity getCasino(@PathVariable("id") int id) {
+        
         try {
-
-            ArrayList<Casino> casinos = (ArrayList) casinoService.findAllWhere("gameDto", param);
-            if (casinos == null || casinos.isEmpty()) {
+            Casino casino = casinoService.findOne(id);
+            if (casino == null) {
                 return ResponseEntity
-                               .status(HttpStatus.BAD_REQUEST)
-                               .body(new ArrayList<Casino>());
+                               .status(HttpStatus.NOT_FOUND)
+                               .body("Casino not found");
             }
-
-            return new ResponseEntity(casinos, HttpStatus.OK);
-
+            CasinoDto casinoDto = mapUtil.convertToDto(casino);
+            return ResponseEntity
+                           .status(HttpStatus.OK)
+                           .body(casinoDto);
         } catch (Exception e) {
             return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new ArrayList<Casino>() );
+                           .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                           .body(e);
         }
     }
-
-    @PostMapping("/casinos")
-    public ResponseEntity createCasino(@RequestBody Casino casino) {
-
-        if (casino == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Casino supplied to create: " + casino);
-        }
-        casinoService.create(casino);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(casino);
-    }
-    /*
-        Transient entity vs detached entity for save and persist:
-        - Transient = make a new() object, set and save the object a get the generated id
-        - Detached = get a saved object and in a new session set and save the object with a new id
-        - Detached = get a saved object and in a new session set and persist the object with the same id
-
-        Hibernate methods:
-        - merge         (copy using same id)
-        - persist       (saves the transient instance at flush, returns void: use in extended session context)
-        - save          (saves the transient instance directly, returns direct with new generated id)
-        - saveOrUpdate  (either save or update depending on unsaved-value check)
-        - update        (updates the persistent instance with the id)
-
-        1 - Create parent:      gameDto = new Game("HIGHLOW")
-        2 - Persist it:         persist(gameDto)
-        3 - Create child class  deck = new Deck/Card(jokers)
-        4 - Associate child with it's parent
-                                cardDto.setGameId(gameDto.getId())
-        5 - Persist child       persist(deck/cardDto)
-
-        Retrieval:
-        1 - Get childs          cardDto = gameDto.getDeck/Cards()
-
-        if you do 1, 3, gameDto.getDeck.Cards().add(deck), 5
-        the deck is not initialized
-
-        if you do 1,2,3,5 and then gameDto.getDeck/Cards().add(Deck) the
-        with cascade=CascadeType.Persist takes care of relations
-    */
-
-    @PostMapping(value = "/casinos", params = { "gameDto" } )
-    public ResponseEntity createCasino(@RequestBody Casino casino, @RequestParam(value = "gameDto", required = true) String param) {
-
-        Game game = gameService.findOne(Integer.parseInt(param));
-        if (game == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Game supplied for Casino to create: " + casino);
-        }
-
-        if (casino == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("No Casino supplied to create: " + casino);
-        }
-        Casino newCasino = new Casino();
-        newCasino.setGame(game);
-        casinoService.create(newCasino);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(newCasino);
-    }
-
-    @PutMapping("/casinos/{id}")
-    public ResponseEntity updateCasino(@PathVariable int id, @RequestBody Casino
-            casino) {
-        Casino newCasino = casinoService.update(casino);
-        if (null == newCasino) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Casino found to change for path /{id): " + id);
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(newCasino);
-    }
-
-    @DeleteMapping("/casinos/{id}")
-    public ResponseEntity deleteCasinos(@PathVariable("id") int id) {
-
+    
+    @GetMapping("/casinos")
+    @Produces({MediaType.APPLICATION_JSON})
+    public ResponseEntity getCasinos() {
+        
+        ArrayList<Casino> casinos;
         try {
-            Casino classCasino = new Casino();
-            classCasino.setCasinoId(id);
-            casinoService.deleteOne(classCasino);
+            casinos = (ArrayList<Casino>) casinoService.findAll("game", "ASC");
+            ArrayList<CasinoDto> casinoDtos = new ArrayList<>();
+            for (Casino casino : casinos) {
+                casinoDtos.add(mapUtil.convertToDto(casino));
+            }
+            return ResponseEntity
+                           .status(HttpStatus.OK)
+                           .body(casinoDtos);
         } catch (Exception e) {
             return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No Casino with /{id}: " + id + " found to delete");
+                           .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                           .body(e);
         }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Casino with /{id}: " + id + " deleted");
     }
+    
+    @GetMapping(value = "/casinos", params = {"game", "player"})
+    @Produces({MediaType.APPLICATION_JSON})
+    public ResponseEntity getCasinosWhere(
+    		@RequestParam(value = "game", required = false) String gameId,
+    		@RequestParam(value = "player", required = false) String playerId) {
+        
+        try {
+	        if ((gameId == null && playerId == null) || (gameId != null && playerId != null) ) {
+		        return ResponseEntity
+				               .status(HttpStatus.BAD_REQUEST)
+				               .body("Game or Player not present or both present");
+	        }
+	        List<Casino> casinos;
+	        if (gameId != null) {
+		        casinos = casinoService.findAllWhere("game", gameId);
+	        } else {
+		        casinos = casinoService.findAllWhere("player", playerId);
+	        }
+            if (casinos == null) {
+                // TODO getCasinoDtos empty is not an error
+                return ResponseEntity
+                               .status(HttpStatus.NOT_FOUND)
+                               .body("Casinos not found");
+            }
+            ArrayList<CasinoDto> casinosDto = new ArrayList<>();
+            for (Casino casino : casinos) {
+                casinosDto.add(mapUtil.convertToDto(casino));
+            }
+            return ResponseEntity
+                           .status(HttpStatus.OK)
+                           .body(casinosDto);
+            
+        } catch (Exception e) {
+            return ResponseEntity
+                           .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                           .body(e);
+        }
+    }
+	
+	@PostMapping(value = "/casinos", params = {"player"})
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity createCasino(
+			                                @RequestBody CasinoDto casinoDto,
+			                                @RequestParam(value = "player", required = true) List<String> players) throws Exception {
+		// check the gameDto in the CasinoDto
+		if (casinoDto == null || casinoDto.getGameDto() == null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("Body or CasinoId not present");
+		}
+		Game game = gameService.findOne((casinoDto.getGameDto().getGameId()));
+		if (game == null) {
+			return ResponseEntity
+					       .status(HttpStatus.NOT_FOUND)
+					       .body("Game not found");
+		}
+		
+		// check the playerDto in the CasinoDto
+		if (casinoDto.getPlayerDto() != null) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("Player playerDto for new casino not null");
+		}
+		
+		// check param player
+		List<Player> addPlayers = new ArrayList<>();
+		if (players != null ) {
+			return ResponseEntity
+					       .status(HttpStatus.BAD_REQUEST)
+					       .body("Param player not a boolean: " + players);
+		}
+		try {
+			for (int i = 0; i < players.size(); i++) {
+				Player addPlayer = playerService.findOne(Integer.parseInt(players.get(i)));
+				if (addPlayer == null) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body("Player not found: " + players.get(i));
+				}
+				addPlayers.add(addPlayer);
+			}
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
+		
 
+		int order = 1;
+		List<CasinoDto> newCasinoDtos = new ArrayList<>();
+		for (Player player : addPlayers) {
+			Casino newCasino= new Casino();
+			newCasino.setPlayer(player);
+			newCasino.setPlayingOrder(order++);
+			newCasino.setGame(game);
+			try {
+				Casino createdCasino = casinoService.create(newCasino);
+				if (createdCasino == null) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body("Casino not created");
+				}
+				newCasinoDtos.add(mapUtil.convertToDto(createdCasino));
+				
+			} catch (Exception e) {
+				return ResponseEntity
+						       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+						       .body(e);
+			}
+		}
+		return ResponseEntity
+				       .status(HttpStatus.CREATED)
+				       .body(newCasinoDtos);
+	}
+	
+	@DeleteMapping("/casinos/{id}")
+	public ResponseEntity deleteCasino(@PathVariable("id") int id) {
+		
+		try {
+			Casino deleteCasino = casinoService.findOne(id);
+			if (deleteCasino == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body("Casino not found");
+			}
+			casinoService.deleteOne(deleteCasino);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
+	}
+	
+	@DeleteMapping(value = "/casinos", params = {"id"})
+	public ResponseEntity deleteCasinosById(
+			                                     @RequestParam(value = "id", required = false) List<String> ids) {
+		
+		try {
+			for (int i = 0; i < ids.size(); i++) {
+				Casino deleteCasino = casinoService.findOne(Integer.parseInt(ids.get(i)));
+				if (deleteCasino == null) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body("Casino not found: " + ids.get(i));
+				}
+			}
+			casinoService.deleteAllByIds(new Casino(), ids);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
+	}
 }

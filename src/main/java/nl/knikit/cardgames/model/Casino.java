@@ -1,10 +1,13 @@
 package nl.knikit.cardgames.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -28,10 +32,9 @@ import lombok.Setter;
 @Table(name = "CASINO",
         indexes = {
                 @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX"),
-                @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX"),
-                @Index(columnList = "HAND_ID", name = "HAND_ID_INDEX")},
+                @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX")},
         uniqueConstraints = {
-                @UniqueConstraint(name="UC_GAME_PLAYER_HAND", columnNames = {"GAME_ID", "PLAYER_ID", "HAND_ID"})
+                @UniqueConstraint(name="UC_GAME_PLAYER", columnNames = {"GAME_ID", "PLAYER_ID"})
         })
 //@Relation(value = "casino", collectionRelation = "casinos")
 @Getter
@@ -45,7 +48,7 @@ public class Casino implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "CASINO_ID")
     ////@JsonProperty("casinoId")
-    private int casinoId;
+    public int casinoId;
 
     @Column(name = "CREATED", length = 25)
     ////@JsonProperty("created")
@@ -56,18 +59,20 @@ public class Casino implements Serializable {
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
     ////@JsonProperty("game")
     private Game game;
-
+    
     //@JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
     ////@JsonProperty("player")
     private Player player;
-
+    
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the parent Player: delete Game when Player is deleted (no other actions!)
     //@JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "HAND_ID", referencedColumnName = "HAND_ID", foreignKey = @ForeignKey(name = "HAND_ID"))
-    ////@JsonProperty("handObj")
-    private Hand hand;
+    @OneToMany(cascade=CascadeType.REMOVE)
+    @JsonIgnore
+    @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
+    private List<Hand> hands;
 
     @Column(name = "PLAYING_ORDER")
     ////@JsonProperty("playingOrder")

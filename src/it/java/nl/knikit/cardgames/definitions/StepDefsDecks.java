@@ -24,6 +24,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -68,10 +69,19 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		executeGet(decksUrl + deckId);
 	}
 	
-	@Given("^I try to get all decks")
+	@Given("^I try to get all decks$")
 	public void iTryToGetAllDecks() throws Throwable {
 		
 		executeGet(allDecksUrl);
+	}
+	
+	@Given("^I try to get all decks for game \"([^\"]*)\"$")
+	public void iTryToGetAllDecksForAGame(String gameId) throws Throwable {
+		
+		if (gameId.equals("latest")) {
+			gameId = StepDefsDecks.latestGameID;
+		}
+		executeGet(allDecksUrl + "?game=" + gameId);
 	}
 	
 	@Given("^I try to post a new deck with shuffle \"([^\"]*)\" for game \"([^\"]*)\"$")
@@ -143,8 +153,9 @@ public class StepDefsDecks extends SpringIntegrationTest {
 	public void iTryToDeleteADeckWith(String deckId) throws Throwable {
 		if (deckId.equals("latest")) {
 			deckId = StepDefsDecks.latestDeckID;
-			StepDefsDecks.latestDeckIDs.remove(latestDeckIDs.size()-1);
-			
+			if (!StepDefsDecks.latestDeckIDs.isEmpty()) {
+				StepDefsDecks.latestDeckIDs.remove(latestDeckIDs.size() - 1);
+			}
 		}
 		executeDelete(decksUrl + deckId, null);
 	}
@@ -191,7 +202,26 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		}
 		
 		// at least equal but more can exist
-		assertTrue(latestDeckIDs.size() >= count);
+		assertThat(latestDeckIDs.size(), greaterThanOrEqualTo(count));
+		
+	}
+	
+	@And("^The json response should contain exactly \"([^\"]*)\" decks")
+	public void theJsonDeckResponseBodyShouldContainExact(int count) throws Throwable {
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+		List<DeckDto> jsonDecks = mapper.readValue(latestResponse.getBody(), new TypeReference<List<DeckDto>>() {
+		});
+		
+		latestDeckIDs.clear();
+		for (DeckDto deckDto : jsonDecks) {
+			latestDeckIDs.add(String.valueOf(deckDto.getDeckId()));
+			StepDefsDecks.latestDeckID = String.valueOf(deckDto.getDeckId());
+		}
+		
+		assertThat(latestDeckIDs.size(), is(count));
 	}
 	
 	@And("^The json response should contain card \"([^\"]*)\" deck with shuffle \"([^\"]*)\" having \"([^\"]*)\" and \"([^\"]*)\" for game \"([^\"]*)\"$")
@@ -214,13 +244,13 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		}
 		
 		// expected , actual
-		assertEquals(Integer.parseInt(gameId), jsonDtoDeck.getGameDto().getGameId());
+		assertThat(Integer.parseInt(gameId), is(jsonDtoDeck.getGameDto().getGameId()));
 		
 		if (!card.isEmpty()) {
 			if (jsonDtoDeck.getCardDto().getCardId() == new Card(card).getCardId()) {
 				// assert if the input cardDto has the input dealtToDto and cardOder
 				if (!dealtTo.isEmpty()) {
-					assertEquals(Integer.parseInt(dealtTo), jsonDtoDeck.getDealtToDto().getPlayerId());
+					assertThat(Integer.parseInt(dealtTo), is(jsonDtoDeck.getDealtToDto().getPlayerId()));
 				}
 				if (!cardOrder.isEmpty()) {
 					// actual, matchers
@@ -230,7 +260,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 			
 		}
 		// AC is the first cardDto when not shuffled
-		assertEquals(shuffle, (jsonDtoDeck.getCardDto().getCardId() != "AC"));
+		assertThat(shuffle, is((jsonDtoDeck.getCardDto().getCardId() != "AC")));
 	}
 	
 	@And("^The json response should contain a dealtTo$")

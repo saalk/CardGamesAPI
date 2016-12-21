@@ -18,6 +18,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
@@ -129,6 +130,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	public void iShouldSeeThatTheResponseHas(int HTTPstatusCode) throws Throwable {
 		final HttpStatus currentStatusCode = latestResponse.getTheResponse().getStatusCode();
 		
+		// assertThat is introduces with Junit 4.4 and is more readable
 		assertThat("status code is incorrect : " + latestResponse.getBody(), currentStatusCode.value(), is(HTTPstatusCode));
 	}
 	
@@ -155,8 +157,9 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 			latestPlayerIDs.add(String.valueOf(playerDto.getPlayerId()));
 			StepDefsPlayers.latestPlayerID = String.valueOf(playerDto.getPlayerId());
 		}
-		// at least equal but more can exist
-		assertTrue(latestPlayerIDs.size()>=count);
+		// at least equal but more can exist actual, expected
+		//assertTrue(latestPlayerIDs.size()>=count);
+		assertThat(latestPlayerIDs.size(), greaterThanOrEqualTo(count));
 	}
 	
 	@And("^The json response should contain human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")

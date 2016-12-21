@@ -52,10 +52,21 @@ Feature: Execute a lifecycle of a deck in the card game
     Then I should see that the response has HTTP status "<HTTP status code>"
     And The json response should contain at least "<count>" decks
 
-    Examples: This is the default games
+    Examples: This is the default decks
 
       | count | HTTP status code |
       | 52    | 200              |
+
+  @Api @Decks
+  Scenario Outline: A frontend makes call to GET /api/decks?game={game}
+    Given I try to get all decks for game "<game>"
+    Then I should see that the response has HTTP status "<HTTP status code>"
+    And The json response should contain exactly "<count>" decks
+
+    Examples: This is the default decks
+
+      | game   | count | HTTP status code |
+      | latest | 52     | 200              |
 
   @Api @Decks
   Scenario Outline: A frontend makes call to POST /api/players to make a dealtTo

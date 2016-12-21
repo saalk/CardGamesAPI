@@ -30,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -86,8 +87,15 @@ import lombok.Setter;
  * @since v1 - console game
  */
 @Entity
-@Table(name = "DECK", indexes = {
-        @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")})
+@Table(name = "DECK",
+        indexes = {
+                          @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX"),
+                          @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")},
+        uniqueConstraints =
+        @UniqueConstraint(name="UC_GAME_CARD", columnNames={"GAME_ID","CARD_ID"}))
+        
+//        indexes = {
+//        @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")})
 //@Relation(value = "deck", collectionRelation = "decks")
 @Getter
 @Setter
@@ -136,13 +144,4 @@ public class Deck implements Serializable {
      */
     public Deck() {
     }
-
-//    public Deck(Game game, Card card, int cardOrder, Player dealtTo) {
-//        this();
-//        this.game = game;
-//        this.card = card;
-//        this.cardOrder = cardOrder;
-//        this.dealtTo = dealtTo;
-//    }
-
 }
