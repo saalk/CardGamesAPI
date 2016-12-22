@@ -34,6 +34,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 	private static List<String> latestHandIDs = new ArrayList<>();
 	
 	private static String latestCasinoID = "";
+	private static List<String> latestCasinoIDs = new ArrayList<>();
 	private static String latestPlayerID = "";
 	private static String latestGameID = "";
 	
@@ -42,8 +43,10 @@ public class StepDefsHands extends SpringIntegrationTest {
 	private static String handsUrlWithId = "http://localhost:8383/api/hands/{id}";
 	
 	private static String casinosUrl = "http://localhost:8383/api/casinos/";
+	private static String allCasinosUrl = "http://localhost:8383/api/casinos";
+	
 	private static String playersUrl = "http://localhost:8383/api/players/";
-	private static String gamesUrl = "http://localhost:8383/api/players/";
+	private static String gamesUrl = "http://localhost:8383/api/games/";
 	
 	// API          HTTP
 	//
@@ -85,27 +88,60 @@ public class StepDefsHands extends SpringIntegrationTest {
 		executeGet(allHandsUrl + "?casino=" + casinoId);
 	}
 	
+	@Given("^I try to post a casino for a hand with game \"([^\"]*)\" and players \"([^\"]*)\" having playingOrder \"([^\"]*)\"$")
+	public void iTryToPostACasinoForAHandWithPlayerAndPlayingOrder(String game, String player, String playingOrder) throws Throwable {
+		
+		CasinoDto postCasinoDto = new CasinoDto();
+		postCasinoDto.setPlayingOrder(Integer.parseInt(playingOrder));
+		
+		if (game.equals("latest")) {
+			game = StepDefsHands.latestGameID;
+		}
+		
+		if (!game.isEmpty()) {
+			GameDto postGameDto = new GameDto();
+			postGameDto.setGameId(Integer.parseInt(game));
+			postCasinoDto.setGameDto(postGameDto);
+		} else {
+			postCasinoDto.setGameDto(null);
+		}
+		
+		// players are passed as params so set to null in the body
+		postCasinoDto.setPlayerDto(null);
+		if (player.equals("latest")) {
+			player = StepDefsHands.latestPlayerID;
+		}
+		
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//Object to JSON in String
+		String jsonInString = mapper.writeValueAsString(postCasinoDto);
+		executePost(allCasinosUrl + "?player=" + player, jsonInString);
+		
+	}
+	
 	@Given("^I try to post a new hand with cards \"([^\"]*)\" and orders \"([^\"]*)\" for a player \"([^\"]*)\" and a casino \"([^\"]*)\"$")
-	public void iTryToPostAHandWithCardsAndPlayerAndCasino(String cards, String cardOrders, String playerId, String casinoId) throws Throwable {
+	public void iTryToPostAHandWithCardsAndPlayerAndCasino(String cards, String cardOrders, String player, String casino) throws Throwable {
 		
 		HandDto postHandDto = new HandDto();
 		postHandDto.setCardOrder(0); // do not use cardOrder for new hands, this is generated
 		
-		if (playerId.equals("latest")) {
-			playerId = StepDefsHands.latestPlayerID;
+		if (player.equals("latest")) {
+			player = StepDefsHands.latestPlayerID;
 		}
-		if (!playerId.isEmpty()) {
+		if (!player.isEmpty()) {
 			PlayerDto postPlayerDto = new PlayerDto();
-			postPlayerDto.setPlayerId(Integer.parseInt(playerId));
+			postPlayerDto.setPlayerId(Integer.parseInt(player));
 			postHandDto.setPlayerDto(postPlayerDto);
 		}
 		
-		if (casinoId.equals("latest")) {
-			casinoId = StepDefsHands.latestCasinoID;
+		if (casino.equals("latest")) {
+			casino = StepDefsHands.latestCasinoID;
 		}
-		if (!casinoId.isEmpty()) {
+		if (!casino.isEmpty()) {
 			CasinoDto postCasinoDto = new CasinoDto();
-			postCasinoDto.setCasinoId(Integer.parseInt(casinoId));
+			postCasinoDto.setCasinoId(Integer.parseInt(casino));
 			postHandDto.setCasinoDto(postCasinoDto);
 		}
 		
@@ -119,7 +155,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 		for (int i = 0; i < cardsList.length; i++) {
 			
 			// TODO use ArrayList instead of Array
-			if (cardsList[i]!= null) {
+			if (cardsList[i] != null) {
 				
 				CardDto cardDto = new CardDto();
 				cardDto.setCardId(cardsList[i]);
@@ -185,8 +221,8 @@ public class StepDefsHands extends SpringIntegrationTest {
 		executeDelete(playersUrl + player, null);
 	}
 	
-	@Given("^I try to delete a game for a casino with \"([^\"]*)\"$")
-	public void iTryToDeleteAGameForACasinoWith(String gameId) throws Throwable {
+	@Given("^I try to delete a game for a casino for the hand with \"([^\"]*)\"$")
+	public void iTryToDeleteAGameForACasinoForAHandWith(String gameId) throws Throwable {
 		if (gameId.equals("latest")) {
 			gameId = StepDefsHands.latestGameID;
 		}
@@ -201,7 +237,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 		executeDelete(casinosUrl + casinoId, null);
 	}
 	
-	@And("^The json response should contain at least \"([^\"]*)\" hands")
+	@And("^The json response should contain at least \"([^\"]*)\" hands$")
 	public void theJsonHandResponseBodyShouldContainAtLeast(int count) throws Throwable {
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -220,9 +256,53 @@ public class StepDefsHands extends SpringIntegrationTest {
 		assertThat(latestHandIDs.size(), greaterThanOrEqualTo(count));
 	}
 	
-	@And("^The json response should contain cards \"([^\"]*)\" hand with cardOrders \"([^\"]*)\" having \"([^\"]*)\" and casino \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeAHandWithCardsAndPlayerAndCasino(String cards, String cardOrders, String playerId, String casinoId) throws Throwable {
+	@And("^The json response should contain a list of cards \"([^\"]*)\" hand with cardOrders \"([^\"]*)\" having \"([^\"]*)\" and casino \"([^\"]*)\"$")
+	public void theJsonResponseBodyShouldBeAHandWithCardsAndPlayerAndCasino(List<String> cards, List<String> cardOrders, String player, String casino) throws Throwable {
 		
+		
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		
+		//JSON string to Object
+		List<HandDto> jsonHandDtos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<HandDto>>() {
+		});
+		
+		latestHandIDs.clear();
+		for (HandDto handDto : jsonHandDtos) {
+			latestHandIDs.add(String.valueOf(handDto.getHandId()));
+			StepDefsHands.latestHandID = String.valueOf(handDto.getHandId());
+		}
+		
+		if (casino.equals("latest")) {
+			casino = StepDefsHands.latestCasinoID;
+		}
+		if (player.equals("latest")) {
+			player = StepDefsHands.latestPlayerID;
+		}
+		
+		int i = 0;
+		for (HandDto handDto : jsonHandDtos) {
+			
+			
+			// expected , actual all hands have the same casino and player
+			assertThat(Integer.parseInt(casino), is(handDto.getCasinoDto().getCasinoId()));
+			assertThat(Integer.parseInt(player), is(handDto.getPlayerDto().getPlayerId()));
+			
+			if (!cards.isEmpty() && !cardOrders.isEmpty()) {
+				
+				// expected , actual all hands have a different card and cardOrder
+				// start with get(0), afterwards update the i
+				assertThat(cards.get(i), is(handDto.getCardDto().getCardId()));
+				assertThat(Integer.parseInt(cardOrders.get(i)), is(handDto.getCardOrder()));
+			}
+			
+			i += 1;
+		}
+	}
+	
+	@And("^The json response should contain the card \"([^\"]*)\" hand with cardOrder \"([^\"]*)\" having \"([^\"]*)\" and casino \"([^\"]*)\"$")
+	public void theJsonResponseBodyShouldBeAHandWithACardAndPlayerAndCasino(String cards, String cardOrders, String playerId, String casinoId) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -246,30 +326,27 @@ public class StepDefsHands extends SpringIntegrationTest {
 		
 		if (!cards.isEmpty() && !cardOrders.isEmpty()) {
 			
-			String cardsList[] = new String[53]; // all cards with one joker
-			if (cards.contains(",")) {
-				cardsList = cards.split(",");
-			} else {
-				cardsList[0] = cards;
-			}
-			String cardOrdersList[] = new String[53];
-			if (cardOrders.contains(",")) {
-				cardOrdersList = cardOrders.split(",");
-			} else {
-				cardOrdersList[0] = cardOrders;
-			}
-			
-			for (int i = 0; i < cardsList.length; i++) {
-				
-				assertThat(cardsList[i], is(jsonDtoHand.getCardDto().getCardId()));
-				assertThat(cardOrdersList[i], is(jsonDtoHand.getCardOrder()));
-				
-			}
+			// expected , actual
+			assertThat(cards, is(jsonDtoHand.getCardDto().getCardId()));
+			assertThat(Integer.parseInt(cardOrders), is(jsonDtoHand.getCardOrder()));
 		}
 	}
 	
+	@And("^The json response should contain a game for a hand$")
+	public void theJsonResponseBodyShouldBeANewGameForAHand() throws Throwable {
+		
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
+		
+		StepDefsHands.latestGameID = String.valueOf(jsonGame.getGameId());
+		
+	}
+	
 	@And("^The json response should contain a player for a hand$")
-	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAlias() throws Throwable {
+	public void theJsonResponseBodyShouldBeANewHumanPlayerForAHand() throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -281,15 +358,22 @@ public class StepDefsHands extends SpringIntegrationTest {
 		
 	}
 	
-	@And("^The json response should contain a casino for a hand$")
+	@And("^The json response should contain a list of casinos for a hand$")
 	public void theJsonResponseBodyShouldBeANewCasinoForAHand() throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//JSON string to Object
-		CasinoDto jsonCasino = mapper.readValue(latestResponse.getBody(), CasinoDto.class);
-		StepDefsHands.latestCasinoID = String.valueOf(jsonCasino.getCasinoId());
+		List<CasinoDto> jsonCasinos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<CasinoDto>>() {
+		});
+		
+		latestCasinoIDs.clear();
+		for (CasinoDto casinoDto : jsonCasinos) {
+			latestCasinoIDs.add(String.valueOf(casinoDto.getCasinoId()));
+			StepDefsHands.latestCasinoID = String.valueOf(casinoDto.getCasinoId());
+		}
+		
 		
 	}
 }

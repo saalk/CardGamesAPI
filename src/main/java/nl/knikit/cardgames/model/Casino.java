@@ -53,21 +53,27 @@ public class Casino implements Serializable {
     @Column(name = "CREATED", length = 25)
     ////@JsonProperty("created")
     private String created;
-
+    
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the child Casino: do no delete the Game
+    // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(optional=false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
     ////@JsonProperty("game")
     private Game game;
     
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the child Casino: do no delete the Player !
+    // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(optional=false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
     ////@JsonProperty("player")
     private Player player;
     
     // Cascade = any change happened on this entity must cascade to the parent/child as well
-    // since this is the parent Player: delete Game when Player is deleted (no other actions!)
+    // since this is the parent Casino: delete Hands when Casino is deleted (no other actions!)
     //@JsonIgnore
     @OneToMany(cascade=CascadeType.REMOVE)
     @JsonIgnore

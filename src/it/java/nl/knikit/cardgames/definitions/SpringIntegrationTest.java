@@ -1,17 +1,10 @@
 package nl.knikit.cardgames.definitions;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
@@ -19,9 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -129,6 +120,7 @@ public class SpringIntegrationTest {
 		// Make a uri and fill in the queryParams eg.
 		// resource/{uriParams}?queryParams=queryParams[0],queryParams[2], etc
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(urlWithUriParams);
+		
 		// iterate over a hashmap with a for loop passing the key and value into the builder.queryParam
 		for (Map.Entry<String, String> entry : queryParams.entrySet()) {
 			// Add query parameters to the builder

@@ -53,7 +53,6 @@ public class TestData {
 		
 		// a playerDto having 9 + 2 fields
 		playerDtoFixture.setPlayerId(id);
-		playerDtoFixture.setCreated("2");
 		playerDtoFixture.setAlias("John 'DtoTest' Doe");
 		playerDtoFixture.setHuman(false);
 		playerDtoFixture.setAiLevel(AiLevel.LOW);
@@ -119,7 +118,6 @@ public class TestData {
 		
 		// Given a gameDto having 14 + 3 fields
 		gameDtoFixture.setGameId(id);
-		gameDtoFixture.setCreated("3");
 		gameDtoFixture.setState(GalacticCasinoStateMachine.State.ITERATE_PLAYERS);
 		gameDtoFixture.setGameType(GameType.BLACKJACK);
 		gameDtoFixture.setAnte(100);

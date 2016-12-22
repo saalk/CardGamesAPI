@@ -43,22 +43,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Scope("prototype")
 public class HandResource {
-
-    // @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-    @Autowired
-    private IHandService handService;
 	
-    @Autowired
-    private IPlayerService playerService;
-    
-    @Autowired
-    private ICasinoService casinoService;
-    
-    @Autowired
-    private ICardService cardService;
-    
-    @Autowired
-    private ModelMapperUtil mapUtil;
+	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
+	@Autowired
+	private IHandService handService;
+	
+	@Autowired
+	private IPlayerService playerService;
+	
+	@Autowired
+	private ICasinoService casinoService;
+	
+	@Autowired
+	private ICardService cardService;
+	
+	@Autowired
+	private ModelMapperUtil mapUtil;
 	
 	@GetMapping("/hands/{id}")
 	@Produces({MediaType.APPLICATION_JSON})
@@ -106,7 +106,7 @@ public class HandResource {
 	@GetMapping(value = "/hands", params = {"casino"})
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getHandsWhere(
-			@RequestParam(value = "casino", required = true) String casino) {
+			                                   @RequestParam(value = "casino", required = true) String casino) {
 		
 		try {
 			List<Hand> hands = handService.findAllWhere("casino", casino);
@@ -174,7 +174,7 @@ public class HandResource {
 		try {
 			for (int i = 0; i < cards.size(); i++) {
 				Card card = new Card();
-				card.setCardId(cards.get(i));
+				card.setCardId(cards.get(i)); // this sets rank and suit as well..
 				if (card == null) {
 					return ResponseEntity
 							       .status(HttpStatus.NOT_FOUND)
@@ -199,10 +199,21 @@ public class HandResource {
 			order = hands.size() + 1;
 		}
 		
+		// check for cards in the hand equal to the cards in the param
+		for (Hand hand : hands) {
+			for (String card : cards) {
+				if (hand.getCard().getCardId() == card) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body("Card already in this players Hand: " + card);
+				}
+			}
+		}
+		
 		// Add all cards after the existing cardOrder
 		List<HandDto> newHandDtos = new ArrayList<>();
 		for (Card card : newCards) {
-			Hand newHand= new Hand();
+			Hand newHand = new Hand();
 			newHand.setCard(card);
 			newHand.setCardOrder(order++);
 			newHand.setPlayer(player);
@@ -226,62 +237,62 @@ public class HandResource {
 				       .status(HttpStatus.CREATED)
 				       .body(newHandDtos);
 	}
-
-    @DeleteMapping("/hands/{id}")
-    public ResponseEntity deleteHands(
-            @PathVariable("id") int id) {
 	
-	    try {
-		    Hand deleteHand = handService.findOne(id);
-		    if (deleteHand == null) {
-			    return ResponseEntity
-					           .status(HttpStatus.NOT_FOUND)
-					           .body("Hand not found");
-		    }
-		    handService.deleteOne(deleteHand);
-		    return ResponseEntity
-				           .status(HttpStatus.NO_CONTENT)
-				           .body("");
-	    } catch (Exception e) {
-		    return ResponseEntity
-				           .status(HttpStatus.INTERNAL_SERVER_ERROR)
-				           .body(e);
-	    }
-    }
-
-
-    // @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
-    //
-    // SPRING
-    // use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
-    // you fromLabel the Date dataOrNull for ?date=12-05-2013
-    //
-    // JAX_RS
-    // also use: @DefaultValue("false") @QueryParam("from") boolean human
-    // you fromLabel the boolean human with value 'true' for ?human=true
-
-    // /Hands?id=1,2,3,4
-    @DeleteMapping(value = "/hands", params = { "id" } )
-    public ResponseEntity deleteHandsById(
-            @RequestParam(value = "id", required = false) List<String> ids) {
+	@DeleteMapping("/hands/{id}")
+	public ResponseEntity deleteHands(
+			                                 @PathVariable("id") int id) {
+		
+		try {
+			Hand deleteHand = handService.findOne(id);
+			if (deleteHand == null) {
+				return ResponseEntity
+						       .status(HttpStatus.NOT_FOUND)
+						       .body("Hand not found");
+			}
+			handService.deleteOne(deleteHand);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
+	}
 	
-	    try {
-		    for (int i = 0; i < ids.size(); i++) {
-			    Hand deleteHand = handService.findOne(Integer.parseInt(ids.get(i)));
-			    if (deleteHand == null) {
-				    return ResponseEntity
-						           .status(HttpStatus.NOT_FOUND)
-						           .body("Hand not found: " + ids.get(i));
-			    }
-		    }
-		    handService.deleteAllByIds(new Hand(), ids);
-		    return ResponseEntity
-				           .status(HttpStatus.NO_CONTENT)
-				           .body("");
-	    } catch (Exception e) {
-		    return ResponseEntity
-				           .status(HttpStatus.INTERNAL_SERVER_ERROR)
-				           .body(e);
-	    }
-    }
+	
+	// @MultipartConfig is a JAX-RS framework annotation and @RequestParam is from Spring
+	//
+	// SPRING
+	// use @RequestParam(value = "date", required = false, defaultValue = "01-01-1999") Date dateOrNull)
+	// you fromLabel the Date dataOrNull for ?date=12-05-2013
+	//
+	// JAX_RS
+	// also use: @DefaultValue("false") @QueryParam("from") boolean human
+	// you fromLabel the boolean human with value 'true' for ?human=true
+	
+	// /Hands?id=1,2,3,4
+	@DeleteMapping(value = "/hands", params = {"id"})
+	public ResponseEntity deleteHandsById(
+			                                     @RequestParam(value = "id", required = false) List<String> ids) {
+		
+		try {
+			for (int i = 0; i < ids.size(); i++) {
+				Hand deleteHand = handService.findOne(Integer.parseInt(ids.get(i)));
+				if (deleteHand == null) {
+					return ResponseEntity
+							       .status(HttpStatus.NOT_FOUND)
+							       .body("Hand not found: " + ids.get(i));
+				}
+			}
+			handService.deleteAllByIds(new Hand(), ids);
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body("");
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
+	}
 }

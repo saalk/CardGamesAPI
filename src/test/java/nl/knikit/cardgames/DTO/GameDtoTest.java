@@ -31,7 +31,6 @@ public class GameDtoTest extends TestData {
 		String gameFixtureName = "Highlow#0001 (Ante:50) [Select_game]";
 		assertEquals(gameFixtureName, actual.getName());
 		assertEquals(gameFixture.getGameId(), actual.getGameId());
-		assertEquals(gameFixture.getCreated(), actual.getCreated());
 		assertEquals(gameFixture.getState().toString(), actual.getState());
 		assertEquals(gameFixture.getGameType().toString(), actual.getGameType());
 		assertEquals(gameFixture.getAnte(), actual.getAnte());
@@ -62,7 +61,6 @@ public class GameDtoTest extends TestData {
 		
 		// Then - expected 17, actual 14
 		assertEquals(gameDtoFixture.getGameId(), actual.getGameId());
-		assertEquals(gameDtoFixture.getCreated(), actual.getCreated());
 		assertEquals(gameDtoFixture.getState(), actual.getState().toString());
 		assertEquals(gameDtoFixture.getGameType(), actual.getGameType().toString());
 		assertEquals(gameDtoFixture.getAnte(), actual.getAnte());

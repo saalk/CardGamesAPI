@@ -75,19 +75,22 @@ public class Hand implements Serializable {
     // since this is the child Hand: do nothing when Hand is delete on the parent Player
     // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional= false)
+    @ManyToOne(optional= false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"), nullable=false)
     ////@JsonProperty("player")
     private Player player;
-
+    
+    // Cascade = any change happened on this entity must cascade to the parent/child as well
+    // since this is the child Hand: do nothing when Hand is delete on the parent Casino
+    // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
     ////@JsonProperty("casino")
     private Casino casino;
     
     //@JsonIgnore
-    @OneToOne(optional=false, cascade = CascadeType.DETACH)
+    @OneToOne(optional=true)
     @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
     ////@JsonProperty("card")
     private Card card;

@@ -31,9 +31,6 @@ import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class GameDto implements Serializable {
 	
-//	@Autowired
-//	private ModelMapperUtil mapUtil;
-	
 	public GameDto() {
 	}
 	
@@ -43,7 +40,7 @@ public class GameDto implements Serializable {
 	@Setter(AccessLevel.NONE)
 	private String name; // extra field "Highlow:0005 (Ante:100) [GameSelected]"
 	private int gameId;
-	private String created;
+	// private String created; to prevent setting, this is generated
 	private String state;
 	private String gameType;
 	private int ante;

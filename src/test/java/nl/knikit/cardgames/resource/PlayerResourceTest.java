@@ -83,7 +83,6 @@ public class PlayerResourceTest {
 	    
 	    // Given for POST, PUT
 	    playerDtoFixture.setPlayerId(2);
-	    playerDtoFixture.setCreated("2");
 	    playerDtoFixture.setAlias("John 'DtoTest' Doe");
 	    playerDtoFixture.setHuman(false);
 	    playerDtoFixture.setAiLevel(AiLevel.LOW);

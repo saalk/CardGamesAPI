@@ -21,9 +21,6 @@ import lombok.Setter;
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class CasinoDto implements Serializable {
 
-//	@Autowired
-//	private ModelMapperUtil mapUtil;
-	
 	public CasinoDto() {
 	}
 	
@@ -32,6 +29,7 @@ public class CasinoDto implements Serializable {
 	@Setter(AccessLevel.NONE)
 	private String name; // extra field
 	private int casinoId;
+	// private String created; to prevent setting, this is generated
 	//@JsonManagedReference(value="gameDto")
 	private GameDto gameDto;
 	private PlayerDto playerDto;
@@ -52,15 +50,17 @@ public class CasinoDto implements Serializable {
 	}
 	
 	public void setCardCount() {
-		if (handDtos !=null) {
-			this.cardCount = handDtos.size();
-		} else {
+//		if (handDtos !=null) {
+//			this.cardCount = handDtos.size();
+//		} else {
+//			this.cardCount = 0;
+//		}
 			this.cardCount = 0;
-		}
 	}
 	
 	public void setHandDtos(List<HandDto> handDtos) {
 		this.handDtos = handDtos;
+		this.cardCount = handDtos !=null ? handDtos.size() : 0;
 	}
 	
 	public List<HandDto> getHandDtos() {

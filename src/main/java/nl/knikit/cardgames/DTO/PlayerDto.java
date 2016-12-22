@@ -27,12 +27,11 @@ import lombok.Setter;
 public class PlayerDto implements Serializable {
 	
 	// Player has 9 fields, PlayerDto has 2 more
-	
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
 	private String name; // extra field "Script Joe(Human|Smart) [Elf]"
 	private int playerId;
-	private String created;
+	// private String created; to prevent setting, this is generated
 	private String alias;
 	@Setter(AccessLevel.NONE)
 	private String human; // changed field for boolean

@@ -115,7 +115,7 @@ public class DeckResource {
 		try {
 			List<Deck> decks = deckService.findAllWhere("game", param);
 			if (decks == null) {
-				// TODO getDeckDtos empty is not an error
+				// getDeckDtos empty is not an error
 				return ResponseEntity
 						       .status(HttpStatus.OK)
 						       .body("{}");

@@ -36,8 +36,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,7 +61,12 @@ import static org.apache.commons.lang3.StringUtils.right;
  */
 
 @Entity
-@Table(name = "CARD")
+@Table(name = "CARD",
+		indexes = {
+			@Index(name = "CARD_INDEX", columnList = "CARD_ID")},
+		uniqueConstraints = {
+		@UniqueConstraint(name="UC_RANK_SUIT", columnNames = {"RANK", "SUIT"})
+		}		)
 @DynamicUpdate
 @Getter
 @Setter
@@ -73,18 +81,18 @@ public class Card implements Serializable {
 	@Id
 	@Column(name = "CARD_ID", length = 3)
 	//////@JsonProperty("cardId")
+	@Setter(AccessLevel.NONE)
 	private String cardId;
-	
 	
 	@Enumerated(EnumType.STRING)
 	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	@Column(name = "RANK")
+	@Column(name = "RANK", nullable = false)
 	////@JsonProperty("rank")
 	private Rank rank;
 	
 	@Enumerated(EnumType.STRING)
 	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	@Column(name = "SUIT")
+	@Column(name = "SUIT", nullable = false)
 	////@JsonProperty("suit")
 	private Suit suit;
 	
@@ -129,9 +137,41 @@ public class Card implements Serializable {
 	
 	public Card(String cardId) {
 		this();
+		
 		if (cardId.isEmpty() || !(cardId.length() > 1)) {
 			throw new NullPointerException(cardId + " empty cardId");
 		}
+		this.cardId = cardId;
+		
+		// auto fill the rest for convenience
+		String rankPart = cardId.length()==2?left(cardId,1):left(cardId,2);
+		this.rank = Rank.fromLabel(rankPart);
+		this.suit = Suit.fromLabel(right(cardId, 1));
+		
+		switch (rank) {
+			case JOKER:
+				value = 0;
+				break;
+			case ACE:
+				value = 1;
+				break;
+			case KING:
+				value = 13;
+				break;
+			case QUEEN:
+				value = 12;
+				break;
+			case JACK:
+				value = 11;
+				break;
+			default:
+				value = Integer.parseInt(rank.getLabel());
+		}
+		this.value = value != 0 ? rank.getValue(GameType.HIGHLOW) : 0;
+	}
+	
+	public void setCardId(String cardId){
+		// auto fill the rest for convenience
 		String rankPart = cardId.length()==2?left(cardId,1):left(cardId,2);
 		this.rank = Rank.fromLabel(rankPart);
 		this.suit = Suit.fromLabel(right(cardId, 1));
@@ -159,8 +199,6 @@ public class Card implements Serializable {
 		}
 		this.value = value != 0 ? rank.getValue(GameType.HIGHLOW) : 0;
 	}
-	
-	
 	// static fields and methods to easily make decks and add jokers
 	protected static final Card joker = new Card(Rank.JOKER, Suit.JOKERS);
 	

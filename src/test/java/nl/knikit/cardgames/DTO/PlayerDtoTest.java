@@ -29,7 +29,6 @@ public class PlayerDtoTest extends TestData {
 		String playerFixtureName = "John 'Test' Doe(Human) [Elf]";
 		assertEquals(playerFixtureName, actual.getName());
 		assertEquals(playerFixture.getPlayerId(), actual.getPlayerId());
-		assertEquals(playerFixture.getCreated(), actual.getCreated());
 		assertEquals(playerFixture.getAlias(), actual.getAlias());
 		assertEquals(String.valueOf(playerFixture.getHuman()), actual.getHuman());
 		assertEquals(playerFixture.getAiLevel().toString(), actual.getAiLevel());
@@ -52,7 +51,6 @@ public class PlayerDtoTest extends TestData {
 		
 		// Then - expected 9 , actual 11
 		assertEquals(playerDtoFixture.getPlayerId(), actual.getPlayerId());
-		assertEquals(playerDtoFixture.getCreated(), actual.getCreated());
 		assertEquals(playerDtoFixture.getAlias(), actual.getAlias());
 		assertEquals(playerDtoFixture.getHuman(), String.valueOf(actual.getHuman()));
 		assertEquals(playerDtoFixture.getAiLevel(), actual.getAiLevel().toString());
