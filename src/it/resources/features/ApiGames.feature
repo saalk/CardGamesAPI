@@ -11,7 +11,7 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the no ante HIGHLOW Game
 
       | id   | decks | winner | state       | gameType | currentRound | ante | HTTP status code |
-      | 1234 | []    |        | SELECT_GAME | HIGHLOW  | 0            | 0    | 404              |
+      | 1234 | []    |        | IS_SETUP | HIGHLOW  | 0            | 0    | 404              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to POST /api/games
@@ -22,11 +22,11 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default ante HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    |        | SELECT_GAME | BLACKJACK | 0            | 10   | 201              |
-      | latest | []    |        | SELECT_GAME | HIGHLOW   | 0            | 200  | 201              |
-      | latest | []    |        | SELECT_GAME | HIGHLOW   | 0            | 50   | 201              |
+      | latest | []    |        | IS_SETUP | BLACKJACK | 0            | 10   | 201              |
+      | latest | []    |        | IS_SETUP | HIGHLOW   | 0            | 200  | 201              |
+      | latest | []    |        | IS_SETUP | HIGHLOW   | 0            | 50   | 201              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to GET /api/games/{id}
     Given I try to get a game with valid "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -35,9 +35,9 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default ante HIGHLOW Game
 
       | id     | decks | winner | state       | gameType | currentRound | ante | HTTP status code |
-      | latest | []    |        | SELECT_GAME | HIGHLOW  | 0            | 50   | 200              |
+      | latest | []    |        | IS_SETUP | HIGHLOW  | 0            | 50   | 200              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to GET /api/games?gameType={gameType}
     Given I try to get all gameType "<gameType>" games
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -49,7 +49,7 @@ Feature: Execute a lifecycle of a game in the card game
       | HIGHLOW    | 2     | 200              |
       | BLACKJACK  | 1     | 200              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to GET /api/games
     Given I try to get all games
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -60,7 +60,7 @@ Feature: Execute a lifecycle of a game in the card game
       | count | HTTP status code |
       | 2     | 200              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to PUT /api/games/{id}
     Given I try to put a game with "<id>" having gameType "<gameType>" winner "<winner>" and ante "<ante>" and state "<state>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -69,9 +69,9 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    |        | SELECT_GAME | BLACKJACK | 0            | 100  | 200              |
+      | latest | []    |        | IS_SETUP | BLACKJACK | 0            | 100  | 200              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to POST /api/players to make a winner
     Given I try to post a human "<human>" winner having "<avatar>" and "<alias>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -82,7 +82,7 @@ Feature: Execute a lifecycle of a game in the card game
       | id     | avatar | alias      | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest | ELF    | Winner Doe | true  | HUMAN   | 0      | 0           | 201              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to PUT /api/games/{id}?winner={winner}
     Given I try to put a game with "<id>" having winner "<winner>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -91,9 +91,9 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    | latest | SELECT_GAME | BLACKJACK | 0            | 100  | 200              |
+      | latest | []    | latest | IS_SETUP | BLACKJACK | 0            | 100  | 200              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to DELETE /api/games/{id}
     Given I try to delete a game with "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -102,9 +102,9 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    | latest | SELECT_GAME | BLACKJACK | 0            | 100  | 204              |
+      | latest | []    | latest | IS_SETUP | BLACKJACK | 0            | 100  | 204              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to DELETE /api/players/{id} winner
     Given I try to delete the winner "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -115,7 +115,7 @@ Feature: Execute a lifecycle of a game in the card game
       | id     | avatar   | alias      | human | aiLevel | cubits | securedLoan | HTTP status code |
       | latest | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
 
-  @Api @Games
+  @Ignore
   Scenario Outline: A frontend makes call to DELETE /api/games?id={id},{id}
     Given I try to delete all games with "<ids>"
     Then I should see that the response has HTTP status "<HTTP status code>"

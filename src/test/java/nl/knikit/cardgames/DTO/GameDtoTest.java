@@ -28,7 +28,7 @@ public class GameDtoTest extends TestData {
 		actual.setTurn();
 		
 		// Then - expected 14, actual 17
-		String gameFixtureName = "Highlow#0001 (Ante:50) [Select_game]";
+		String gameFixtureName = "Highlow#0001 (Ante:50) [Is_setup]";
 		assertEquals(gameFixtureName, actual.getName());
 		assertEquals(gameFixture.getGameId(), actual.getGameId());
 		assertEquals(gameFixture.getState().toString(), actual.getState());

@@ -21,8 +21,8 @@ Feature: Execute a lifecycle of a hand in the card game
 
     Examples: This is the default ante HIGHLOW Game
 
-      | id     | decks | winner | state           | gameType | currentRound | ante | HTTP status code |
-      | latest | []    |        | ITERATE_PLAYERS | HIGHLOW  | 0            | 50   | 201              |
+      | id     | decks | winner | state    | gameType | currentRound | ante | HTTP status code |
+      | latest | []    |        | GAME_WON | HIGHLOW  | 0            | 50   | 201              |
 
   @Api @Hands
   Scenario Outline: A frontend makes call to POST /api/players to make a player for hand
@@ -110,7 +110,7 @@ Feature: Execute a lifecycle of a hand in the card game
     Examples: This is the default HIGHLOW Casino
 
       | id     | hands | winner | state           | casinoType | currentRound | ante | HTTP status code |
-      | latest | []    |        | ITERATE_PLAYERS | HIGHLOW    | 0            | 50   | 204              |
+      | latest | []    |        | GAME_WON | HIGHLOW    | 0            | 50   | 204              |
 
   @Api @Hands
   Scenario Outline: A frontend makes call to DELETE /api/games/{id} for a casino
@@ -121,7 +121,7 @@ Feature: Execute a lifecycle of a hand in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state           | gameType | currentRound | ante | HTTP status code |
-      | latest | []    |        | ITERATE_PLAYERS | HIGHLOW  | 0            | 50   | 204              |
+      | latest | []    |        | GAME_WON | HIGHLOW  | 0            | 50   | 204              |
 
   @Api @Hands
   Scenario Outline: A frontend makes call to DELETE /api/players/{id} the player

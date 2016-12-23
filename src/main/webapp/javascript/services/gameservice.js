@@ -33,13 +33,13 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         //    HILOW_5_IN_A_ROW(Type.HIGHLOW, "'5-in-a-row'");
     
         if (type === "HIGHLOW") {
-           newGame = { "type": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 9, "minRounds": 1,
+           newGame = { "type": "HIGHLOW", "state": "IS_CONFIGURED", "maxRounds": 9, "minRounds": 1,
             "currentRound": 0, "maxTurns": 3, "minTurns": 1, "currentTurn": 0,
             "turnsToWin": 3, "ante": 50, "playerId": null };
         } else {
             // default HILOW_1ROUND rules
             //TODO deck: null needed?
-           newGame = { "type": "HIGHLOW", "state": "SELECT_GAME", "maxRounds": 1, "minRounds": 1,
+           newGame = { "type": "HIGHLOW", "state": "IS_CONFIGURED", "maxRounds": 1, "minRounds": 1,
             "currentRound": 0, "maxTurns": 9, "minTurns": 1, "currentTurn": 0,
             "turnsToWin": 0, "ante": 50, "playerId": null };
         }

@@ -32,7 +32,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
+import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 @Entity
 @DynamicUpdate
 @Table(name = "GAME", indexes = {@Index(name = "GAME_INDEX", columnList = "GAME_ID")})

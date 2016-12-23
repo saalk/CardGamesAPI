@@ -14,7 +14,7 @@ import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.Rank;
 import nl.knikit.cardgames.model.Suit;
-import nl.knikit.cardgames.model.state.GalacticCasinoStateMachine;
+import nl.knikit.cardgames.model.state.CardGameStateMachine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +83,7 @@ public class TestData {
 		// Given a gameDto having 14 fields
 		gameFixture.setGameId(id);
 		gameFixture.setCreated("1");
-		gameFixture.setState(GalacticCasinoStateMachine.State.SELECT_GAME);
+		gameFixture.setState(CardGameStateMachine.State.IS_SETUP);
 		gameFixture.setGameType(GameType.HIGHLOW);
 		gameFixture.setAnte(50);
 		gameFixture.setMinRounds(1);
@@ -118,7 +118,7 @@ public class TestData {
 		
 		// Given a gameDto having 14 + 3 fields
 		gameDtoFixture.setGameId(id);
-		gameDtoFixture.setState(GalacticCasinoStateMachine.State.ITERATE_PLAYERS);
+		gameDtoFixture.setState(CardGameStateMachine.State.PLAYING);
 		gameDtoFixture.setGameType(GameType.BLACKJACK);
 		gameDtoFixture.setAnte(100);
 		gameDtoFixture.setName(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"

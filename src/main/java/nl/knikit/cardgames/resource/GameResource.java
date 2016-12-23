@@ -5,7 +5,7 @@ import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.Player;
-import nl.knikit.cardgames.model.state.GalacticCasinoStateMachine;
+import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IGameService;
 import nl.knikit.cardgames.service.IPlayerService;
 
@@ -336,7 +336,7 @@ public class GameResource {
 		
 		// set defaults for notNull fields
 		if (gameDto.getState() == null) {
-			gameDto.setState(GalacticCasinoStateMachine.State.SELECT_GAME);
+			gameDto.setState(CardGameStateMachine.State.IS_SETUP);
 		}
 		if (gameDto.getGameType() == null) {
 			gameDto.setGameType(GameType.HIGHLOW);

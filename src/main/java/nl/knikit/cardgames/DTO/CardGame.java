@@ -27,9 +27,9 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
-public class GameDto implements Serializable {
+public class CardGame implements Serializable {
 	
-	public GameDto() {
+	public CardGame() {
 	}
 	
 	// Game has 14 fields, GameDto has 3 more
@@ -58,12 +58,6 @@ public class GameDto implements Serializable {
 	//@JsonProperty(value = "decks")
 	@Setter(AccessLevel.NONE)
 	private List<DeckDto> deckDtos;
-	
-	//@JsonBackReference(value="gameDto")
-	//@JsonProperty(value = "decks")
-	@Setter(AccessLevel.NONE)
-	private List<CasinoDto> casinoDtos;
-	
 	// "10C  Ten of Clubs"
 	// "  *  40 cards left
 	// "---  -------------

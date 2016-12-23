@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.mapper;
 
 import nl.knikit.cardgames.DTO.CardDto;
+import nl.knikit.cardgames.DTO.CardGame;
 import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
@@ -90,6 +91,22 @@ public class ModelMapperUtil {
 			gameDto.setWinner(null);
 		}
 		return gameDto;
+	}
+	
+	public CardGame convertFromDto(GameDto gameDto) {
+		CardGame cardGame = new CardGame();
+		
+		if (gameDto.getCasinoDtos() != null) {
+			// gameDto.setWinner(convertToDto(game.getPlayer())); // this created a loop...
+			PlayerDto playerDto = new PlayerDto();
+			playerDto.setGameDtos(null);
+			playerDto.setName();
+			playerDto.setWinCount();
+			gameDto.setWinner(playerDto);
+		} else {
+			gameDto.setWinner(null);
+		}
+		return cardGame;
 	}
 	
 	public Game convertToEntity(GameDto gameDto) throws ParseException {

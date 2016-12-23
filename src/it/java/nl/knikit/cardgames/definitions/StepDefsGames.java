@@ -19,7 +19,7 @@ import java.util.Map;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 
-import static nl.knikit.cardgames.model.state.GalacticCasinoStateMachine.State;
+import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;

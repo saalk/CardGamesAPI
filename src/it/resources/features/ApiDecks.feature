@@ -22,7 +22,7 @@ Feature: Execute a lifecycle of a deck in the card game
     Examples: This is the default ante HIGHLOW Game
 
       | id     | decks | winner | state      | gameType | currentRound | ante | HTTP status code |
-      | latest | []    |        | SETUP_GAME | HIGHLOW  | 0            | 50   | 201              |
+      | latest | []    |        | HAS_PLAYERS | HIGHLOW  | 0            | 50   | 201              |
 
   @Api @Decks
   Scenario Outline: A frontend makes call to POST /api/decks
@@ -132,4 +132,4 @@ Feature: Execute a lifecycle of a deck in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state      | type      | currentRound | ante | HTTP status code |
-      | latest | []    | latest | SETUP_GAME | BLACKJACK | 0            | 100  | 204              |
+      | latest | []    | latest | HAS_PLAYERS | BLACKJACK | 0            | 100  | 204              |

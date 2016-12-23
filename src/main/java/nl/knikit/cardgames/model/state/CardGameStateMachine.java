@@ -13,14 +13,14 @@ import lombok.Setter;
 @Setter
 @Component
 @Scope("prototype")
-public class GalacticCasinoStateMachine {
+public class CardGameStateMachine {
     
     public enum State {
-        SELECT_GAME, SETUP_GAME, ITERATE_PLAYERS, ITERATE_TURNS, STOP_GAME, OFFER_FICHES
+        IS_CONFIGURED, HAS_PLAYERS, IS_SETUP, PLAYING, GAME_WON, NO_WINNER, EMPTY_DECK
     }
 
     public enum Trigger {
-        GAME_SELECTED, GAME_STOPPED, GAME_SETUP, TURN_STARTED, ANOTHER_TURN, TURN_ENDED, ROUNDS_ENDED, PLAYER_WINS, DECK_EMPTY, GAME_FINISHED, OFFER_ACCEPTED, QUIT
+        GAME_ADDED, GAME_CHANGED, HUMAN_ADDED, PLAYERS_CHANGED, HUMAN_DELETED, DECK_SHUFFLED, CARD_DEALT, TURN_PASSED, AI_TURNED, TURN_STARTED, SHOW_RESULTS, ROUNDS_ENDED, PLAYER_WINS, NO_CARDS_LEFT, GET_PRIZE
     }
 
     private StateMachine<State, Trigger> sm;
@@ -30,7 +30,7 @@ public class GalacticCasinoStateMachine {
     }
 
     public void initialize(final StateMachineConfig<State, Trigger> config) {
-        this.initialize(config, State.SELECT_GAME);
+        this.initialize(config, State.IS_SETUP);
     }
 
     public void check(final State state) {

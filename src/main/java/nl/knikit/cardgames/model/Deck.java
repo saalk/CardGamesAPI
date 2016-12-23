@@ -123,7 +123,8 @@ public class Deck implements Serializable {
     
     //@JsonIgnore
     @OneToOne(optional=false, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", foreignKey = @ForeignKey(name = "CARD_ID"))
+    // TODO No fk since that created a unique foreign key that only allows unique cards in all decks..?
+    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID")
     ////@JsonProperty("card")
     private Card card;
 
