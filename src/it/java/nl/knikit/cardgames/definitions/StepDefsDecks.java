@@ -31,19 +31,6 @@ import static org.junit.Assert.assertTrue;
 
 public class StepDefsDecks extends SpringIntegrationTest {
 	
-	private static String latestDeckID = "";
-	private static List<String> latestDeckIDs = new ArrayList<>();
-	
-	private static String latestGameID = "";
-	private static String latestPlayerID = "";
-	
-	private static String decksUrl = "http://localhost:8383/api/decks/";
-	private static String allDecksUrl = "http://localhost:8383/api/decks";
-	private static String decksUrlWithId = "http://localhost:8383/api/decks/{id}";
-	
-	private static String gamesUrl = "http://localhost:8383/api/games/";
-	private static String playersUrl = "http://localhost:8383/api/players/";
-	
 	// API          HTTP
 	//
 	// UPDATE,PUT   OK(200, "OK"),
@@ -56,7 +43,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 	@Given("^I try to get a deck with valid \"([^\"]*)\"$")
 	public void iTryToGetADeckWithValid(String deckId) throws Throwable {
 		if (deckId.equals("latest")) {
-			deckId = StepDefsDecks.latestDeckID;
+			deckId = latestDecksID;
 		}
 		executeGet(decksUrl + deckId);
 	}
@@ -64,7 +51,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 	@Given("^I try to get a deck with invalid \"([^\"]*)\"$")
 	public void iTryToGetADeckWithInvalid(String deckId) throws Throwable {
 		if (deckId.equals("latest")) {
-			deckId = StepDefsDecks.latestDeckID;
+			deckId = latestDecksID;
 		}
 		executeGet(decksUrl + deckId);
 	}
@@ -79,7 +66,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 	public void iTryToGetAllDecksForAGame(String gameId) throws Throwable {
 		
 		if (gameId.equals("latest")) {
-			gameId = StepDefsDecks.latestGameID;
+			gameId = StepDefsDecks.latestGamesID;
 		}
 		executeGet(allDecksUrl + "?game=" + gameId);
 	}
@@ -91,7 +78,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		DeckDto postDeckDto = new DeckDto();
 		
 		if (gameId.equals("latest")) {
-			gameId = StepDefsDecks.latestGameID;
+			gameId = StepDefsDecks.latestGamesID;
 		}
 		
 		if (!gameId.isEmpty()) {
@@ -131,10 +118,10 @@ public class StepDefsDecks extends SpringIntegrationTest {
 	@Given("^I try to put a deck with \"([^\"]*)\" having dealtTo \"([^\"]*)\"$")
 	public void iTryToPutAnExistingDeckWithDealtTo(String deckId, String dealtTo) throws Throwable {
 		if (deckId.equals("latest")) {
-			deckId = StepDefsDecks.latestDeckID;
+			deckId = latestDecksID;
 		}
 		if (dealtTo.equals("latest")) {
-			dealtTo = StepDefsDecks.latestPlayerID;
+			dealtTo = StepDefsDecks.latestPlayersID;
 		}
 		
 		// Uri (URL) parameters
@@ -152,9 +139,9 @@ public class StepDefsDecks extends SpringIntegrationTest {
 	@Given("^I try to delete a deck with \"([^\"]*)\"$")
 	public void iTryToDeleteADeckWith(String deckId) throws Throwable {
 		if (deckId.equals("latest")) {
-			deckId = StepDefsDecks.latestDeckID;
-			if (!StepDefsDecks.latestDeckIDs.isEmpty()) {
-				StepDefsDecks.latestDeckIDs.remove(latestDeckIDs.size() - 1);
+			deckId = latestDecksID;
+			if (!latestDecksIDs.isEmpty()) {
+				latestDecksIDs.remove(latestDecksIDs.size() - 1);
 			}
 		}
 		executeDelete(decksUrl + deckId, null);
@@ -165,26 +152,9 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		if (ids.equals("all")) {
 			// all
 		}
-		executeDelete(allDecksUrl + "?id=" + StringUtils.join(latestDeckIDs, ','), null);
-		StepDefsDecks.latestDeckIDs.clear();
+		executeDelete(allDecksUrl + "?id=" + StringUtils.join(latestDecksIDs, ','), null);
+		latestDecksIDs.clear();
 	}
-	
-	@Given("^I try to delete the dealtTo \"([^\"]*)\"$")
-	public void iTryToDeleteTheDealtTo(String dealtTo) throws Throwable {
-		if (dealtTo.equals("latest")) {
-			dealtTo = StepDefsDecks.latestPlayerID;
-		}
-		executeDelete(playersUrl + dealtTo, null);
-	}
-	
-	@Given("^I try to delete a game for a deck with \"([^\"]*)\"$")
-	public void iTryToDeleteAGameWith(String gameId) throws Throwable {
-		if (gameId.equals("latest")) {
-			gameId = StepDefsDecks.latestGameID;
-		}
-		executeDelete(gamesUrl + gameId, null);
-	}
-	
 	
 	@And("^The json response should contain at least \"([^\"]*)\" decks")
 	public void theJsonDeckResponseBodyShouldContainAtLeast(int count) throws Throwable {
@@ -195,14 +165,14 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		List<DeckDto> jsonDecks = mapper.readValue(latestResponse.getBody(), new TypeReference<List<DeckDto>>() {
 		});
 		
-		latestDeckIDs.clear();
+		latestDecksIDs.clear();
 		for (DeckDto deckDto : jsonDecks) {
-			latestDeckIDs.add(String.valueOf(deckDto.getDeckId()));
-			StepDefsDecks.latestDeckID = String.valueOf(deckDto.getDeckId());
+			latestDecksIDs.add(String.valueOf(deckDto.getDeckId()));
+			latestDecksID = String.valueOf(deckDto.getDeckId());
 		}
 		
 		// at least equal but more can exist
-		assertThat(latestDeckIDs.size(), greaterThanOrEqualTo(count));
+		assertThat(latestDecksIDs.size(), greaterThanOrEqualTo(count));
 		
 	}
 	
@@ -215,13 +185,13 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		List<DeckDto> jsonDecks = mapper.readValue(latestResponse.getBody(), new TypeReference<List<DeckDto>>() {
 		});
 		
-		latestDeckIDs.clear();
+		latestDecksIDs.clear();
 		for (DeckDto deckDto : jsonDecks) {
-			latestDeckIDs.add(String.valueOf(deckDto.getDeckId()));
-			StepDefsDecks.latestDeckID = String.valueOf(deckDto.getDeckId());
+			latestDecksIDs.add(String.valueOf(deckDto.getDeckId()));
+			latestDecksID = String.valueOf(deckDto.getDeckId());
 		}
 		
-		assertThat(latestDeckIDs.size(), is(count));
+		assertThat(latestDecksIDs.size(), is(count));
 	}
 	
 	@And("^The json response should contain card \"([^\"]*)\" deck with shuffle \"([^\"]*)\" having \"([^\"]*)\" and \"([^\"]*)\" for game \"([^\"]*)\"$")
@@ -233,14 +203,14 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		//JSON string to Object
 		//Deck jsonDeck = mapper.readValue(latestResponse.getBody(), Deck.class);
 		DeckDto jsonDtoDeck = mapper.readValue(latestResponse.getBody(), DeckDto.class);
-		StepDefsDecks.latestDeckID = String.valueOf(jsonDtoDeck.getDeckId());
+		latestDecksID = String.valueOf(jsonDtoDeck.getDeckId());
 		
 		if (gameId.equals("latest")) {
-			gameId = StepDefsDecks.latestGameID;
+			gameId = latestGamesID;
 		}
 		
 		if (dealtTo.equals("latest")) {
-			dealtTo = StepDefsDecks.latestPlayerID;
+			dealtTo = latestPlayersID;
 		}
 		
 		// expected , actual
@@ -263,28 +233,4 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		assertThat(shuffle, is((jsonDtoDeck.getCardDto().getCardId() != "AC")));
 	}
 	
-	@And("^The json response should contain a dealtTo$")
-	public void theJsonResponseBodyShouldBeANewHumanDealtToWithAvatarAlias() throws Throwable {
-		
-		// jackson has ObjectMapper that converts String to JSON
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//JSON string to Object
-		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
-		
-		StepDefsDecks.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
-		
-	}
-	
-	@And("^The json response should contain a game for a deck$")
-	public void theJsonResponseBodyShouldBeANewGameForADeck() throws Throwable {
-		
-		// jackson has ObjectMapper that converts String to JSON
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//JSON string to Object
-		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
-		StepDefsDecks.latestGameID = String.valueOf(jsonGame.getGameId());
-		
-	}
 }

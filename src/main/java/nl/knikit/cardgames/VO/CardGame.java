@@ -1,11 +1,12 @@
-package nl.knikit.cardgames.DTO;
+package nl.knikit.cardgames.VO;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
-import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.DTO.DeckDto;
+import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.GameType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +24,8 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 
 @Getter
 @Setter
-@Relation(value = "game", collectionRelation = "games")
-@JsonIdentityInfo(generator = JSOGGenerator.class)
+//@Relation(value = "cardgame", collectionRelation = "cardgames")
+//@JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class CardGame implements Serializable {
@@ -32,7 +33,7 @@ public class CardGame implements Serializable {
 	public CardGame() {
 	}
 	
-	// Game has 14 fields, GameDto has 3 more
+	// CardGame has 14 fields, CardGameDto has 3 more
 	
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
@@ -55,7 +56,7 @@ public class CardGame implements Serializable {
 	private int maxTurns;
 	
 	//@JsonBackReference(value="gameDto")
-	//@JsonProperty(value = "decks")
+	@JsonProperty(value = "cardsInDeck")
 	@Setter(AccessLevel.NONE)
 	private List<DeckDto> deckDtos;
 	// "10C  Ten of Clubs"
@@ -109,29 +110,6 @@ public class CardGame implements Serializable {
 		this.state = (String.valueOf(state));
 	}
 	
-	@JsonIgnore
-	public Game getNameConverted(String name) {
-		// "Highlow#0005 (Ante:100) [Is_Setup]"
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(name, "Ante:"), "]"), " ["), "#()");
-		
-		if (splitName.length != 4 ||
-				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty() || splitName[3].isEmpty()) {
-			Game newGame = new Game();
-			newGame.setGameType(GameType.fromLabel(splitName[0]));
-			newGame.setGameId(Integer.parseInt(splitName[1]));
-			newGame.setAnte(Integer.parseInt(splitName[2]));
-			newGame.setState(State.valueOf(splitName[3]));
-			return newGame;
-		}
-		
-		Game newGame = new Game();
-		newGame.setGameType(GameType.fromLabel(this.gameType));
-		newGame.setGameId(this.gameId);
-		newGame.setAnte(this.ante);
-		newGame.setState(State.valueOf(this.state));
-		return newGame;
-	}
-	
 	public void setName() {
 		
 		// "Highlow#0005 (Ante:100) [Is_Setup]"
@@ -145,42 +123,9 @@ public class CardGame implements Serializable {
 		return this.round = "Round " + this.currentRound + " [" + this.minRounds + "-" + this.maxRounds + "]";
 	}
 	
-	@JsonIgnore
-	public void setRoundConverted(String round) {
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(round, "Round "), " "), "[-]");
-		if (splitName.length != 3 ||
-				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty()) {
-			this.currentRound = 1;
-			this.minRounds = 1;
-			this.maxRounds = 9;
-		}
-		this.currentRound = Integer.parseInt(splitName[0]);
-		this.minRounds = Integer.parseInt(splitName[1]);
-		this.maxRounds = Integer.parseInt(splitName[2]);
-		
-	}
-	
 	public String setTurn() {
 		// "Turn 2 (3 to win) [1-9]"
 		return this.turn = "Turn " + this.currentTurn + " (" + this.turnsToWin + " to win) [" + this.minTurns + "-" + this.maxTurns + "]";
-	}
-	
-	@JsonIgnore
-	public void setTurnConverted(String turn) {
-		// "Turn 2 (3 to win) [1-9]"
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(StringUtils.remove(round, "to win"), "Turn "), " ["), "]"), "()-");
-		if (splitName.length != 4 ||
-				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty() || splitName[3].isEmpty()) {
-			this.currentTurn = 1;
-			this.minTurns = 1;
-			this.maxTurns = 9;
-			this.turnsToWin = 3;
-		}
-		this.currentTurn = Integer.parseInt(splitName[0]);
-		this.turnsToWin = Integer.parseInt(splitName[1]);
-		this.minTurns = Integer.parseInt(splitName[2]);
-		this.maxTurns = Integer.parseInt(splitName[3]);
-		
 	}
 	
 	public void setWinner(PlayerDto playerDto) {

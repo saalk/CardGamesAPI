@@ -24,13 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 public class StepDefsPlayers extends SpringIntegrationTest {
 	
-	private static String latestPlayerID = "";
-	private static List<String> latestPlayerIDs = new ArrayList<>();
-	
-	private static String playersUrl = "http://localhost:8383/api/players/";
-	private static String allPlayersUrl = "http://localhost:8383/api/players";
-	private static String playersUrlWithId = "http://localhost:8383/api/players/{id}";
-	
 	// API          HTTP
 	//
 	// UPDATE,PUT   OK(200, "OK"),
@@ -43,7 +36,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	@Given("^I try to get a player with valid \"([^\"]*)\"$")
 	public void iTryToGetAPlayerValidWith(String playerId) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = StepDefsPlayers.latestPlayerID;
+			playerId = latestPlayersID;
 		}
 		executeGet(playersUrl + playerId);
 	}
@@ -51,20 +44,20 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	@Given("^I try to get a player with invalid \"([^\"]*)\"$")
 	public void iTryToGetAPlayerInvalidWith(String playerId) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = StepDefsPlayers.latestPlayerID;
+			playerId = StepDefsPlayers.latestPlayersID;
 		}
 		executeGet(playersUrl + playerId);
 	}
 	
 	@Given("^I try to get all human \"([^\"]*)\" players$")
 	public void iTryToGetAllHumanOrAlienPlayers(String human) throws Throwable {
-
+		
 		executeGet(allPlayersUrl + "?human=" + human);
 	}
 	
 	@Given("^I try to get all players")
 	public void iTryToGetAllPlayers() throws Throwable {
-
+		
 		executeGet(allPlayersUrl);
 	}
 	
@@ -90,7 +83,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 	@Given("^I try to put a player with \"([^\"]*)\" having human \"([^\"]*)\" avatar \"([^\"]*)\" and alias \"([^\"]*)\" and \"([^\"]*)\"$")
 	public void iTryToPutANewHumanPlayerWithAvatarAlias(String playerId, String human, String avatar, String alias, String aiLevel) throws Throwable {
 		if (playerId.equals("latest")) {
-			playerId = StepDefsPlayers.latestPlayerID;
+			playerId = StepDefsPlayers.latestPlayersID;
 		}
 		PlayerDto postPlayer = new PlayerDto();
 		postPlayer.setPlayerId(Integer.parseInt(playerId));
@@ -109,13 +102,19 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		
 	}
 	
-	@Given("^I try to delete a player with \"([^\"]*)\"$")
-	public void iTryToDeleteAPlayerWith(String playerId) throws Throwable {
-		if (playerId.equals("latest")) {
-			playerId = StepDefsPlayers.latestPlayerID;
-			StepDefsPlayers.latestPlayerIDs.remove(latestPlayerIDs.size()-1);
+	@Given("^I try to delete a player \"([^\"]*)\"$")
+	public void iTryToDeleteThePlayerForTheCasino(String player) throws Throwable {
+		if (player.equals("latest")) {
+			player = latestPlayersID;
+		} else if (player.equals("latest-1")) {
+			player = latestPlayersID2;
 		}
-		executeDelete(playersUrl + playerId, null);
+		
+		if (!latestPlayersIDs.isEmpty()) {
+			latestPlayersIDs.remove(latestPlayersIDs.size() - 1);
+		}
+		
+		executeDelete(playersUrl + player, null);
 	}
 	
 	@Given("^I try to delete all players with \"([^\"]*)\"$")
@@ -123,7 +122,7 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		if (ids.equals("all")) {
 			// all
 		}
-		executeDelete(allPlayersUrl + "?id=" + StringUtils.join(latestPlayerIDs,','), null);
+		executeDelete(allPlayersUrl + "?id=" + StringUtils.join(latestPlayersIDs, ','), null);
 	}
 	
 	@Then("^I should see that the response has HTTP status \"([^\"]*)\"$")
@@ -150,16 +149,17 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//JSON string to Object
-		List<PlayerDto> jsonPlayers = mapper.readValue(latestResponse.getBody(),new TypeReference<List<PlayerDto>>(){});
+		List<PlayerDto> jsonPlayers = mapper.readValue(latestResponse.getBody(), new TypeReference<List<PlayerDto>>() {
+		});
 		
-		latestPlayerIDs.clear();
-		for (PlayerDto playerDto : jsonPlayers ) {
-			latestPlayerIDs.add(String.valueOf(playerDto.getPlayerId()));
-			StepDefsPlayers.latestPlayerID = String.valueOf(playerDto.getPlayerId());
+		latestPlayersIDs.clear();
+		for (PlayerDto playerDto : jsonPlayers) {
+			latestPlayersIDs.add(String.valueOf(playerDto.getPlayerId()));
+			StepDefsPlayers.latestPlayersID = String.valueOf(playerDto.getPlayerId());
 		}
 		// at least equal but more can exist actual, expected
-		//assertTrue(latestPlayerIDs.size()>=count);
-		assertThat(latestPlayerIDs.size(), greaterThanOrEqualTo(count));
+		//assertTrue(latestPlayersIDs.size()>=count);
+		assertThat(latestPlayersIDs.size(), greaterThanOrEqualTo(count));
 	}
 	
 	@And("^The json response should contain human \"([^\"]*)\" player having \"([^\"]*)\" and \"([^\"]*)\" and \"([^\"]*)\"$")
@@ -170,12 +170,26 @@ public class StepDefsPlayers extends SpringIntegrationTest {
 		
 		//JSON string to Object
 		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
-		StepDefsPlayers.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
+		StepDefsPlayers.latestPlayersID = String.valueOf(jsonPlayer.getPlayerId());
 		
 		assertThat(jsonPlayer.getHuman(), is(human));
 		assertThat(jsonPlayer.getAvatar(), is(avatar));
 		assertThat(jsonPlayer.getAlias(), is(alias));
 		assertThat(jsonPlayer.getAiLevel(), is(aiLevel));
 		
+	}
+	
+	@And("^The json response should contain a player$")
+	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAliasForACasino() throws Throwable {
+		
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
+		
+		// move the latest to latest-1
+		latestPlayersID2 = latestPlayersID;
+		latestPlayersID = String.valueOf(jsonPlayer.getPlayerId());
 	}
 }

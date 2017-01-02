@@ -1,11 +1,7 @@
 package nl.knikit.cardgames.resource;
 
-import nl.knikit.cardgames.DTO.CardGame;
-import nl.knikit.cardgames.DTO.GameDto;
+import nl.knikit.cardgames.VO.CardGame;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
-import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.service.IGameService;
-import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -13,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
-import java.util.ArrayList;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
@@ -42,85 +36,407 @@ import lombok.extern.slf4j.Slf4j;
 public class CardGameResource {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-	@Autowired
-	private IGameService gameService;
-	
-	@Autowired
-	private IPlayerService playerService;
-	
+
 	@Autowired
 	private ModelMapperUtil mapUtil;
 	
-	@GetMapping("/cardgames/{id}")
+	@GetMapping("/cardgames/{id}/{resource}/{resourceId}/{extraResource}") // get (player(s), cardsInHand or cardsInDeck for) cardGame
 	@Produces({MediaType.APPLICATION_JSON})
-	public ResponseEntity getCardGame(@PathVariable("id") int id) {
+	public ResponseEntity getCardGames(
+			                                  @PathVariable("id") Integer id,
+			                                  @PathVariable("resource") String resource,
+			                                  @PathVariable("resourceId") Integer resourceId,
+			                                  @PathVariable("extraResource") String extraResource) {
+
+		//GET    api/cardgames/1
+		//GET    api/cardgames/1/player                     // gives active player
+		//GET    api/cardgames/1/players
+		//GET    api/cardgames/1/cardsindeck
+		//GET    api/cardgames/1/players                    // also gives cardsinhand and indication active player
+		//GET    api/cardgames/1/players/2/cardsinhand      // only cardsinhand
+
+		String responseText = "";
 		
-		try {
-			Game game = gameService.findOne(id);
-			if (game == null) {
-				return ResponseEntity
-						       .status(HttpStatus.NOT_FOUND)
-						       .body("CardGame not found");
-			}
-			GameDto gameDto = mapUtil.convertToDto(game);
-			CardGame cardGame = mapUtil.convertFromDto(gameDto);
-			return ResponseEntity
-					       .status(HttpStatus.OK)
-					       .body(cardGame);
-		} catch (Exception e) {
-			return ResponseEntity
-					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(e);
+		if (id==null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
 		}
-	}
-	
-	@GetMapping("/cardgames")
-	@Produces({MediaType.APPLICATION_JSON})
-	public ResponseEntity getCardGames() {
-		
-		ArrayList<Game> games;
-		try {
-			games = (ArrayList<Game>) gameService.findAll("game", "ASC");
-			ArrayList<CardGame> cardGames = new ArrayList<>();
-			for (Game game : games) {
-				GameDto gameDto = mapUtil.convertToDto(game);
-				cardGames.add(mapUtil.convertFromDto(gameDto));
-			}
-			return ResponseEntity
-					       .status(HttpStatus.OK)
-					       .body(cardGames);
-		} catch (Exception e) {
-			return ResponseEntity
-					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-					       .body(e);
+
+		if (resource.equals("")) {
+			responseText += " No resource in path specified";
+		} else {
+			responseText += " Resource in path=" + resource;
 		}
-	}
-	
-	@PostMapping(value = "/cardgames/setup", params = {"name", "avatar", "aiLevel"})
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity createCardGame(
-			                                    @RequestBody CardGame cardGame,
-			                                    @RequestParam(value = "name", required = true) String name) throws Exception {
-		
+
+		if (resourceId.toString().isEmpty()) {
+			responseText += " No resourceId in path specified";
+		} else {
+			responseText += " ResourceId in path=" + resourceId;
+		}
+
+		if (extraResource.equals("")) {
+			responseText += " No extraResource in path specified";
+		} else {
+			responseText += " ExtraResource in path=" + extraResource;
+		}
+
 		return ResponseEntity
-				       .status(HttpStatus.BAD_REQUEST)
-				       .body("TODO");
-		
+				       .status(HttpStatus.OK)
+				       .body(responseText);
 	}
-	
 	
 	// a body is always needed but can be {}
-	@PutMapping(value = "/cardGames/setup/{id}")
+	@PostMapping(value = "/cardgames/init", params = {"gameType", "ante"}) 	//new cardGame with existing human if present
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity updateCardGame(
-			                                    @PathVariable("id") Integer pathId,
-			                                    @RequestBody CardGame cardGameToUpdate,
-			                                    @RequestParam(value = "playingOrder", required = true) Integer playingOrder) throws ParseException {
+	public ResponseEntity initCardGame(
+			                                  @RequestBody CardGame cardGameToUpdate,
+			                                  @RequestParam(value = "gameType", required = false) String gameType,
+			                                  @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
+		
+		//POST   api/cardgames/init           ?gameType/ante
+		//POST   api/cardgames/init/human/2   ?gameType/ante
+		
+		String responseText = "api/cardgames/init = ";
+		
+		if (gameType.equals("")) {
+			responseText += "No gameType in param specified";
+		} else {
+			responseText += "GameType in param=" + gameType;
+		}
+		if (ante == null || ante.toString().isEmpty()) {
+			responseText += " No ante in param specified";
+		} else {
+			responseText += " Ante in param=" + ante;
+		}
+		
 		return ResponseEntity
-				       .status(HttpStatus.BAD_REQUEST)
-				       .body("TODO");
+				       .status(HttpStatus.CREATED)
+				       .body(responseText);
+		
+	}
+	
+	// a body is always needed but can be {}
+	@PostMapping(value = "/cardgames/init/human/{playerId}", params = {"gameType", "ante"}) 	//new cardGame with existing human if present
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity initCardGameForHuman(
+			                                  @PathVariable("playerId") Integer playerId,
+			                                  @RequestBody CardGame cardGameToUpdate,
+			                                  @RequestParam(value = "gameType", required = false) String gameType,
+			                                  @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
+		
+		//POST   api/cardgames/init           ?gameType/ante
+		//POST   api/cardgames/init/human/2   ?gameType/ante
+		
+		String responseText = "api/cardgames/init/human/{id} = ";
+		
+		if (playerId.toString().isEmpty()) {
+			responseText += "No playerId in path specified";
+		} else {
+			responseText += "PlayerId in path=" + playerId;
+		}
+		
+		if (gameType.equals("")) {
+			responseText += " No gameType in param specified";
+		} else {
+			responseText += " GameType in param=" + gameType;
+		}
+		if (ante == null || ante.toString().isEmpty()) {
+			responseText += " No ante in param specified";
+		} else {
+			responseText += " Ante in param=" + ante;
+		}
+		
+		return ResponseEntity
+				       .status(HttpStatus.CREATED)
+				       .body(responseText);
+		
+	}
+	
+	// a body is always needed but can be {}
+	@PostMapping(value = "/cardgames/{id}/setup/{humanOrAi}" , params = {"alias", "avatar", "aiLevel", "securedLoan"}) // add human or ai to cardGame
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity setupPlayerForCardGame(
+			                                    @PathVariable("id") Integer id,
+			                                    @PathVariable("humanOrAi") String humanOrAi,
+			                                    @RequestBody CardGame cardGameToUpdate,
+			                                    @RequestParam(value = "alias", required = false) String alias,
+			                                    @RequestParam(value = "avatar", required = false) String avatar,
+			                                    @RequestParam(value = "aiLevel", required = false) String aiLevel,
+			                                    @RequestParam(value = "securedLoan", required = false) Integer securedLoan) throws Exception {
+
+		//POST   api/cardgames/1/setup/human        ?alias/avatar/securedLoan            // no dealing yet
+		//POST   api/cardgames/1/setup/ai           ?alias/avatar/securedLoan/aiLevel
+
+		String responseText = "api/cardgames/{id}/setup/{humanOrAi} = ";
+		
+		if (id==null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+		if (humanOrAi.equals("")) {
+			responseText += " No humanOrAiOrCardsInDeck in path specified";
+		} else {
+			responseText += " humanOrAiOrCardsInDeck in path=" + humanOrAi;
+		}
+
+		if (alias.equals("")) {
+			responseText += " No alias in param specified";
+		} else {
+			responseText += " alias in param=" + alias;
+		}
+		if (avatar.equals("")) {
+			responseText += " No avatar in param specified";
+		} else {
+			responseText += " avatar in param=" + avatar;
+		}
+		if (aiLevel.equals("")) {
+			responseText += " No aiLevel in param specified";
+		} else {
+			responseText += " AiLevel in param=" + alias;
+		}
+		if (securedLoan == null || securedLoan.toString().isEmpty()) {
+			responseText += " No securedLoan in param specified";
+		} else {
+			responseText += " SecuredLoan in param=" + securedLoan;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.CREATED)
+				       .body(responseText);
+
 	}
 
+	// a body is always needed but can be {}
+	@PostMapping(value = "/cardgames/{id}/shuffle" , params = {"jokers"}) // add human or ai to cardGame
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity shuffleDeckForCardGame(
+			                                             @PathVariable("id") Integer id,
+			                                             @RequestBody CardGame cardGameToUpdate,
+			                                             @RequestParam(value = "jokers", required = false) Integer jokers) throws Exception {
+
+		//POST   api/cardgames/1/shuffle  ?jokers                             // no dealing yet
+
+		String responseText = "api/cardgames/{id}/shuffle = ";
+		
+		if (id==null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+
+		if (jokers == null || jokers.toString().isEmpty()) {
+			responseText += " No jokers in param specified";
+		} else {
+			responseText += " Jokers in param=" + jokers;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.CREATED)
+				       .body(responseText);
+	}
+
+	// a body is always needed but can be {}
+	@PutMapping(value = "/cardgames/{id}/init") // change an initial cardGame
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity initExistingCardGame(
+			                                    @PathVariable("id") Integer id,
+			                                    @RequestBody CardGame cardGameToUpdate,
+			                                    @RequestParam(value = "gameType", required = false) String gameType,
+			                                    @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
+
+		//PUT    api/cardgames/1/setup          ?gameType/ante
+
+		String responseText = "api/cardgames/{id}/init = ";
+
+		if (id==null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+
+		if (gameType.equals("")) {
+			responseText += " No gameType in param specified";
+		} else {
+			responseText += " GameType in param=" + gameType;
+		}
+		if (ante==null || ante.toString().isEmpty()) {
+			responseText += " No ante in param specified";
+		} else {
+			responseText += " Ante in param=" + ante;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.OK)
+				       .body(responseText);
+	}
+
+	// a body is always needed but can be {}
+	@PutMapping(value = "/cardgames/{id}/setup/player/{playerId}") // change player in cardGame
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity setupPlayerInExistingCardGame(
+			                                    @PathVariable("id") Integer id,
+			                                    @PathVariable("playerId") Integer playerId,
+			                                    @RequestBody CardGame cardGameToUpdate,
+			                                    @RequestParam(value = "alias", required = false) String alias,
+			                                    @RequestParam(value = "avatar", required = false) String avatar,
+			                                    @RequestParam(value = "aiLevel", required = false) String aiLevel,
+			                                    @RequestParam(value = "securedLoan", required = false) Integer securedLoan,
+			                                    @RequestParam(value = "playingOrder", required = false) Integer playingOrder) throws Exception {
+
+		//PUT    api/cardgames/1/setup/players/2   ?alias/avatar/securedLoan/aiLevel/playingOrder
+
+		String responseText = "api/cardgames/{id}/setup/player/{playerId} = ";
+
+		if (id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+		if (playerId.toString().isEmpty()) {
+			responseText += " No playerId in path specified";
+		} else {
+			responseText += " PlayerId in path=" + playerId;
+		}
+
+		if (alias.equals("")) {
+			responseText += " No alias in param specified";
+		} else {
+			responseText += " alias in param=" + alias;
+		}
+		if (avatar.equals("")) {
+			responseText += " No avatar in param specified";
+		} else {
+			responseText += " avatar in param=" + avatar;
+		}
+		if (aiLevel.equals("")) {
+			responseText += " No aiLevel in param specified";
+		} else {
+			responseText += " AiLevel in param=" + alias;
+		}
+		if (securedLoan == null || securedLoan.toString().isEmpty()) {
+			responseText += " No securedLoan in param specified";
+		} else {
+			responseText += " SecuredLoan in param=" + securedLoan;
+		}
+		if (playingOrder == null || playingOrder.toString().isEmpty()) {
+			responseText += " No playingOrder in param specified";
+		} else {
+			responseText += " PlayingOrder in param=" + playingOrder;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.OK)
+				       .body(responseText);
+	}
+
+	// a body is always needed but can be {}
+	@PutMapping(value = "/cardgames/{id}/turn/players/(playerId}") // a player plays a cardGame
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity turnFromPlayerInCardGame(
+			                                    @PathVariable("id") Integer id,
+			                                    @PathVariable("playerId") Integer playerId,
+			                                    @RequestBody CardGame cardGameToUpdate,
+			                                    @RequestParam(value = "action", required = false) String action) throws Exception {
+
+
+		//PUT    api/cardgames/1/turn/    players/2   ?action=deal/higher/lower/pass for human player
+		//PUT    api/cardgames/1/autoturn/players/3   // auto deal, higher, lower or pass for ai player
+
+		String responseText = "api/cardgames/{id}/turn/players/(playerId} = ";
+
+		if (id == null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+		if (playerId == null || playerId.toString().isEmpty()) {
+			responseText += " No playerId in path specified";
+		} else {
+			responseText += " PlayerId in path=" + playerId;
+		}
+
+		if (action.equals("")) {
+			responseText += " No action in param specified";
+		} else {
+			responseText += " Action in param=" + action;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.OK)
+				       .body(responseText);
+	}
+
+	// a body is always needed but can be {}
+	@PutMapping(value = "/cardgames/{id}/autoturn/players/(playerId}") // a player plays a cardGame
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseEntity autoturnForPlayerIOnCardGame(
+			                                  @PathVariable("id") Integer id,
+			                                  @PathVariable("playerId") Integer playerId,
+			                                  @RequestBody CardGame cardGameToUpdate,
+			                                  @RequestParam(value = "action", required = false) String action) throws Exception {
+
+
+		//PUT    api/cardgames/1/turn/    players/2   ?action=deal/higher/lower/pass for human player
+		//PUT    api/cardgames/1/autoturn/players/3   // auto deal, higher, lower or pass for ai player
+
+		String responseText = "api/cardgames/{id}/autoturn/players/(playerId} = ";
+
+		if (id == null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+
+		if (playerId == null || playerId.toString().isEmpty()) {
+			responseText += " No playerId in path specified";
+		} else {
+			responseText += " PlayerId in path=" + playerId;
+		}
+
+		if (action.equals("")) {
+			responseText += " No action in param specified";
+		} else {
+			responseText += " Action in param=" + action;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.OK)
+				       .body(responseText);
+	}
+
+	@DeleteMapping(value = "/cardgames/setup/{id}/players/{playerId}")
+	public ResponseEntity deletePlayerInCardGame(
+			@PathVariable("id") Integer id,
+			@PathVariable("playerId") Integer playerId) {
+
+		//DELETE api/cardgames/setup/1/players/3 // only for ai players, possible no dealing yet
+		String responseText = "api/cardgames/{id}/{turnOrAutoTurn}/players/(playerId} = ";
+
+		if (id == null || id.toString().isEmpty()) {
+			responseText += "No id in path specified";
+		} else {
+			responseText += "Id in path=" + id;
+		}
+		if (playerId == null || playerId.toString().isEmpty()) {
+			responseText += " No playerId in path specified";
+		} else {
+			responseText += " PlayerId in path=" + playerId;
+		}
+
+		return ResponseEntity
+				       .status(HttpStatus.OK)
+				       .body(responseText);
+	}
+
+	
 }

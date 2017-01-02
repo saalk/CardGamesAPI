@@ -1,7 +1,7 @@
 package nl.knikit.cardgames.mapper;
 
 import nl.knikit.cardgames.DTO.CardDto;
-import nl.knikit.cardgames.DTO.CardGame;
+import nl.knikit.cardgames.VO.CardGame;
 import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
@@ -93,18 +93,24 @@ public class ModelMapperUtil {
 		return gameDto;
 	}
 	
-	public CardGame convertFromDto(GameDto gameDto) {
-		CardGame cardGame = new CardGame();
+	public CardGame convertFromGameEntity(Game game) {
+		ModelMapper modelMapper = new ModelMapper();
+		CardGame cardGame = modelMapper.map(game, CardGame.class);
 		
-		if (gameDto.getCasinoDtos() != null) {
+		cardGame.setName();
+		cardGame.setRound();
+		cardGame.setTurn();
+		
+		if (game.getPlayer() != null) {
 			// gameDto.setWinner(convertToDto(game.getPlayer())); // this created a loop...
-			PlayerDto playerDto = new PlayerDto();
+			modelMapper = new ModelMapper();
+			PlayerDto playerDto = modelMapper.map(game.getPlayer(), PlayerDto.class);
 			playerDto.setGameDtos(null);
 			playerDto.setName();
 			playerDto.setWinCount();
-			gameDto.setWinner(playerDto);
+			cardGame.setWinner(playerDto);
 		} else {
-			gameDto.setWinner(null);
+			cardGame.setWinner(null);
 		}
 		return cardGame;
 	}

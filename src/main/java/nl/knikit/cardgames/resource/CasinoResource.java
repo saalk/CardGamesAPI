@@ -1,10 +1,8 @@
 package nl.knikit.cardgames.resource;
 
 import nl.knikit.cardgames.DTO.CasinoDto;
-import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Casino;
-import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.ICasinoService;

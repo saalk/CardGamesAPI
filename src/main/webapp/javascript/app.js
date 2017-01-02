@@ -6,7 +6,7 @@
 // 2. 'ngAnimate', 'toastr' is for angular-toastr (
 angular.module('myApp', ['ngRoute', 'ngAnimate', 'toastr']);
 angular.module('myApp')
-        .config(function($httpProvider, $routeProvider, toastrConfig) {
+        .config(function($httpProvider, $routeProvider, $locationProvider, toastrConfig) {
             
     $httpProvider.defaults.headers.common = {};
     $httpProvider.defaults.headers.post = {};
@@ -14,17 +14,20 @@ angular.module('myApp')
     $httpProvider.defaults.headers.patch = {};
 
 
-    $routeProvider.when('/player/', {
+    $routeProvider.when('/player', {
        templateUrl: 'partials/player.html'
-    }).when('/game/', {
+    }).when('/game', {
        templateUrl: 'partials/game.html'
-    }).when('/casino/', {
+    }).when('/casino', {
        templateUrl: 'partials/casino.html'
-    }).when('/results/', {
+    }).when('/results', {
        templateUrl: 'partials/results.html'  
     }).otherwise({
-        redirectTo: '/player/'
+        redirectTo: '/player'
     });
+
+    // use the HTML5 History API
+    $locationProvider.html5Mode(true);
 
     angular.extend(toastrConfig, {
         newestOnTop: false,
@@ -53,4 +56,5 @@ angular.module('myApp')
         titleClass: 'toast-title',
         toastClass: 'toast'
     });
- });
+
+});

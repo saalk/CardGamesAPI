@@ -28,17 +28,6 @@ import static org.junit.Assert.assertTrue;
 
 public class StepDefsGames extends SpringIntegrationTest {
 	
-	private static String latestGameID = "";
-	private static List<String> latestGameIDs = new ArrayList<>();
-	
-	private static String latestPlayerID = "";
-	
-	private static String gamesUrl = "http://localhost:8383/api/games/";
-	private static String allGamesUrl = "http://localhost:8383/api/games";
-	
-	private static String playersUrl = "http://localhost:8383/api/players/";
-	private static String gamesUrlWithId = "http://localhost:8383/api/games/{id}";
-	
 	// API          HTTP
 	//
 	// UPDATE,PUT   OK(200, "OK"),
@@ -51,7 +40,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 	@Given("^I try to get a game with valid \"([^\"]*)\"$")
 	public void iTryToGetAGameWithValid(String gameId) throws Throwable {
 		if (gameId.equals("latest")) {
-			gameId = StepDefsGames.latestGameID;
+			gameId = latestGamesID;
 		}
 		executeGet(gamesUrl + gameId);
 	}
@@ -59,13 +48,11 @@ public class StepDefsGames extends SpringIntegrationTest {
 	@Given("^I try to get a game with invalid \"([^\"]*)\"$")
 	public void iTryToGetAGameWithInvalid(String gameId) throws Throwable {
 		if (gameId.equals("latest")) {
-			gameId = StepDefsGames.latestGameID;
+			gameId = latestGamesID;
 		}
 		executeGet(gamesUrl + gameId);
 	}
-	
-	
-	
+		
 	@Given("^I try to get all gameType \"([^\"]*)\" games$")
 	public void iTryToGetAllGames(String gameType) throws Throwable {
 		
@@ -77,8 +64,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		executeGet(allGamesUrl);
 	}
-	
-	
+		
 	@Given("^I try to post a gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
 	public void iTryToPostANewTypeGameWithWinnerAndAnte(String gameType, String winner, String ante,  String state) throws Throwable {
 		
@@ -126,7 +112,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		GameDto postGameDto = new GameDto();
 		if (gameId.equals("latest")) {
-			gameId = StepDefsGames.latestGameID;
+			gameId = latestGamesID;
 		}
 		postGameDto.setGameId(Integer.parseInt(gameId));
 		postGameDto.setGameType(GameType.valueOf(gameType));
@@ -135,7 +121,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		if (!winner.isEmpty()) {
 			if (winner.equals("latest")) {
-				winner = StepDefsGames.latestGameID;
+				winner = latestGamesID;
 			}
 			PlayerDto postPlayer = new PlayerDto();
 			postPlayer.setPlayerId(Integer.parseInt(winner));
@@ -155,10 +141,10 @@ public class StepDefsGames extends SpringIntegrationTest {
 	@Given("^I try to put a game with \"([^\"]*)\" having winner \"([^\"]*)\"$")
 	public void iTryToPutAnExistingGameWithWinner(String gameId, String winner) throws Throwable {
 		if (gameId.equals("latest")) {
-			gameId = StepDefsGames.latestGameID;
+			gameId = latestGamesID;
 		}
 		if (winner.equals("latest")) {
-			winner = StepDefsGames.latestPlayerID;
+			winner = latestPlayersID;
 		}
 		
 		// Uri (URL) parameters
@@ -173,12 +159,14 @@ public class StepDefsGames extends SpringIntegrationTest {
 		executePutWithUriAndQueryParam(gamesUrlWithId, uriParams, "{}", queryParams);
 	}
 	
-	@Given("^I try to delete a game with \"([^\"]*)\"$")
+	@Given("^I try to delete a game \"([^\"]*)\"$")
 	public void iTryToDeleteAGameWith(String gameId) throws Throwable {
 		if (gameId.equals("latest")) {
-			gameId = StepDefsGames.latestGameID;
-			StepDefsGames.latestGameIDs.remove(latestGameIDs.size()-1);
-			
+			gameId = latestGamesID;
+		}
+		
+		if (!latestGamesIDs.isEmpty()) {
+			latestGamesIDs.remove(latestGamesIDs.size() - 1);
 		}
 		executeDelete(gamesUrl + gameId, null);
 	}
@@ -188,16 +176,8 @@ public class StepDefsGames extends SpringIntegrationTest {
 		if (ids.equals("all")) {
 			// all
 		}
-		executeDelete(allGamesUrl + "?id=" + StringUtils.join(latestGameIDs,','), null);
-		StepDefsGames.latestGameIDs.clear();
-	}
-	
-	@Given("^I try to delete the winner \"([^\"]*)\"$")
-	public void iTryToDeleteTheWinner(String winner) throws Throwable {
-		if (winner.equals("latest")) {
-			winner = StepDefsGames.latestPlayerID;
-		}
-		executeDelete(playersUrl + winner, null);
+		executeDelete(allGamesUrl + "?id=" + StringUtils.join(latestGamesIDs,','), null);
+		latestGamesIDs.clear();
 	}
 	
 	@And("^The json response should contain at least \"([^\"]*)\" games$")
@@ -208,14 +188,14 @@ public class StepDefsGames extends SpringIntegrationTest {
 		//JSON string to Object
 		List<GameDto> jsonGames = mapper.readValue(latestResponse.getBody(),new TypeReference<List<GameDto>>(){});
 		
-		latestGameIDs.clear();
+		latestGamesIDs.clear();
 		for (GameDto gameDto : jsonGames ) {
-			latestGameIDs.add(String.valueOf(gameDto.getGameId()));
-			StepDefsGames.latestGameID = String.valueOf(gameDto.getGameId());
+			latestGamesIDs.add(String.valueOf(gameDto.getGameId()));
+			latestGamesID = String.valueOf(gameDto.getGameId());
 		}
 		
 		// at least equal but more can exist
-		assertThat(latestGameIDs.size(), greaterThanOrEqualTo(count));
+		assertThat(latestGamesIDs.size(), greaterThanOrEqualTo(count));
 	}
 	
 	@And("^The json response should contain gameType \"([^\"]*)\" game having \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
@@ -226,7 +206,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		//JSON string to Object
 		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
-		StepDefsGames.latestGameID = String.valueOf(jsonGame.getGameId());
+		latestGamesID = String.valueOf(jsonGame.getGameId());
 		// do not set the player here, the player has been set before when making the player
 		
 		assertThat(jsonGame.getGameType(), is(gameType));
@@ -235,7 +215,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		
 		if (playerDto.equals("latest")) {
-			playerDto = StepDefsGames.latestPlayerID;
+			playerDto = latestPlayersID;
 		}
 		
 		if (!playerDto.isEmpty()) {
@@ -243,16 +223,17 @@ public class StepDefsGames extends SpringIntegrationTest {
 			// assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(playerDto));
 		}
 	}
-
-	@And("^The json response should contain a winner$")
-	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAlias() throws Throwable {
+	
+	@And("^The json response should contain a game$")
+	public void theJsonResponseBodyShouldBeAGame() throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
 		
 		//JSON string to Object
-		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
-		StepDefsGames.latestPlayerID  = String.valueOf(jsonPlayer.getPlayerId());
-
+		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
+		latestGamesID = String.valueOf(jsonGame.getGameId());
+		
 	}
+	
 }

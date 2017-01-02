@@ -56,7 +56,7 @@ public class GameResource {
 	@Autowired
 	private ModelMapperUtil mapUtil;
 	
-	@GetMapping("/games/{id}")
+	@GetMapping(value = "/games/{id}")
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGame(@PathVariable("id") int id) {
 		
@@ -78,7 +78,7 @@ public class GameResource {
 		}
 	}
 	
-	@GetMapping("/games")
+	@GetMapping(value = "/games")
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getGames() {
 		
@@ -123,7 +123,7 @@ public class GameResource {
 		}
 	}
 	
-	@PostMapping(name = "/games")
+	@PostMapping(value = "/games")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGame(@RequestBody GameDto gameDto) throws ParseException {
@@ -154,7 +154,7 @@ public class GameResource {
 		}
 	}
 	
-	@PostMapping(name = "/games", params = {"jokers"})
+	@PostMapping(value = "/games", params = {"jokers"})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity createGameWithDeck(
@@ -276,7 +276,7 @@ public class GameResource {
 	}
 	
 	
-	@DeleteMapping("/games/{id}")
+	@DeleteMapping(value = "/games/{id}")
 	public ResponseEntity deleteGames(@PathVariable("id") int id) {
 		
 		try {

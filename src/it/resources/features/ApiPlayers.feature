@@ -74,7 +74,7 @@ Feature: Execute a lifecycle of a player in the card game
 
   @Api @Players
   Scenario Outline: A frontend makes call to DELETE /api/players/{id}
-    Given I try to delete a player with "<id>"
+    Given I try to delete a player "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
     And The json response body should have no content
 

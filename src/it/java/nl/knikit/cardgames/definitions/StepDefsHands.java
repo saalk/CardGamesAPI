@@ -30,24 +30,6 @@ import static org.junit.Assert.assertTrue;
 
 public class StepDefsHands extends SpringIntegrationTest {
 	
-	private static String latestHandID = "";
-	private static List<String> latestHandIDs = new ArrayList<>();
-	
-	private static String latestCasinoID = "";
-	private static List<String> latestCasinoIDs = new ArrayList<>();
-	private static String latestPlayerID = "";
-	private static String latestGameID = "";
-	
-	private static String handsUrl = "http://localhost:8383/api/hands/";
-	private static String allHandsUrl = "http://localhost:8383/api/hands";
-	private static String handsUrlWithId = "http://localhost:8383/api/hands/{id}";
-	
-	private static String casinosUrl = "http://localhost:8383/api/casinos/";
-	private static String allCasinosUrl = "http://localhost:8383/api/casinos";
-	
-	private static String playersUrl = "http://localhost:8383/api/players/";
-	private static String gamesUrl = "http://localhost:8383/api/games/";
-	
 	// API          HTTP
 	//
 	// UPDATE,PUT   OK(200, "OK"),
@@ -60,7 +42,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 	@Given("^I try to get a hand with valid \"([^\"]*)\"$")
 	public void iTryToGetAHandWithValid(String handId) throws Throwable {
 		if (handId.equals("latest")) {
-			handId = StepDefsHands.latestHandID;
+			handId = latestHandsID;
 		}
 		executeGet(handsUrl + handId);
 	}
@@ -68,7 +50,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 	@Given("^I try to get a hand with invalid \"([^\"]*)\"$")
 	public void iTryToGetAHandWithInvalid(String handId) throws Throwable {
 		if (handId.equals("latest")) {
-			handId = StepDefsHands.latestHandID;
+			handId = latestHandsID;
 		}
 		executeGet(handsUrl + handId);
 	}
@@ -83,7 +65,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 	public void iTryToGetAllDecksForACasino(String casinoId) throws Throwable {
 		
 		if (casinoId.equals("latest")) {
-			casinoId = StepDefsHands.latestCasinoID;
+			casinoId = latestCasinosID;
 		}
 		executeGet(allHandsUrl + "?casino=" + casinoId);
 	}
@@ -95,7 +77,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 		postCasinoDto.setPlayingOrder(Integer.parseInt(playingOrder));
 		
 		if (game.equals("latest")) {
-			game = StepDefsHands.latestGameID;
+			game = latestGamesID;
 		}
 		
 		if (!game.isEmpty()) {
@@ -109,7 +91,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 		// players are passed as params so set to null in the body
 		postCasinoDto.setPlayerDto(null);
 		if (player.equals("latest")) {
-			player = StepDefsHands.latestPlayerID;
+			player = latestPlayersID;
 		}
 		
 		// jackson has ObjectMapper that converts String to JSON
@@ -128,7 +110,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 		postHandDto.setCardOrder(0); // do not use cardOrder for new hands, this is generated
 		
 		if (player.equals("latest")) {
-			player = StepDefsHands.latestPlayerID;
+			player = latestPlayersID;
 		}
 		if (!player.isEmpty()) {
 			PlayerDto postPlayerDto = new PlayerDto();
@@ -137,7 +119,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 		}
 		
 		if (casino.equals("latest")) {
-			casino = StepDefsHands.latestCasinoID;
+			casino = latestCasinosID;
 		}
 		if (!casino.isEmpty()) {
 			CasinoDto postCasinoDto = new CasinoDto();
@@ -174,10 +156,10 @@ public class StepDefsHands extends SpringIntegrationTest {
 	@Given("^I try to put a hand with \"([^\"]*)\" having player \"([^\"]*)\"$")
 	public void iTryToPutAnExistingHandWithPlayer(String handId, String player) throws Throwable {
 		if (handId.equals("latest")) {
-			handId = StepDefsHands.latestHandID;
+			handId = latestHandsID;
 		}
 		if (player.equals("latest")) {
-			player = StepDefsHands.latestPlayerID;
+			player = latestPlayersID;
 		}
 		
 		// Uri (URL) parameters
@@ -195,9 +177,9 @@ public class StepDefsHands extends SpringIntegrationTest {
 	@Given("^I try to delete a hand with \"([^\"]*)\"$")
 	public void iTryToDeleteAHandWith(String handId) throws Throwable {
 		if (handId.equals("latest")) {
-			handId = StepDefsHands.latestHandID;
-			if (!StepDefsHands.latestHandIDs.isEmpty()) {
-				StepDefsHands.latestHandIDs.remove(latestHandIDs.size() - 1);
+			handId = StepDefsHands.latestHandsID;
+			if (!latestHandsIDs.isEmpty()) {
+				latestHandsIDs.remove(latestHandsIDs.size() - 1);
 			}
 			
 		}
@@ -209,22 +191,14 @@ public class StepDefsHands extends SpringIntegrationTest {
 		if (ids.equals("all")) {
 			// all
 		}
-		executeDelete(allHandsUrl + "?id=" + StringUtils.join(latestHandIDs, ','), null);
-		StepDefsHands.latestHandIDs.clear();
-	}
-	
-	@Given("^I try to delete the player for the hand \"([^\"]*)\"$")
-	public void iTryToDeleteThePlayer(String player) throws Throwable {
-		if (player.equals("latest")) {
-			player = StepDefsHands.latestPlayerID;
-		}
-		executeDelete(playersUrl + player, null);
+		executeDelete(allHandsUrl + "?id=" + StringUtils.join(latestHandsIDs, ','), null);
+		latestHandsIDs.clear();
 	}
 	
 	@Given("^I try to delete a game for a casino for the hand with \"([^\"]*)\"$")
 	public void iTryToDeleteAGameForACasinoForAHandWith(String gameId) throws Throwable {
 		if (gameId.equals("latest")) {
-			gameId = StepDefsHands.latestGameID;
+			gameId = StepDefsHands.latestGamesID;
 		}
 		executeDelete(gamesUrl + gameId, null);
 	}
@@ -232,7 +206,7 @@ public class StepDefsHands extends SpringIntegrationTest {
 	@Given("^I try to delete a casino for a hand with \"([^\"]*)\"$")
 	public void iTryToDeleteACasinoForAHandWith(String casinoId) throws Throwable {
 		if (casinoId.equals("latest")) {
-			casinoId = StepDefsHands.latestCasinoID;
+			casinoId = latestCasinosID;
 		}
 		executeDelete(casinosUrl + casinoId, null);
 	}
@@ -246,14 +220,14 @@ public class StepDefsHands extends SpringIntegrationTest {
 		List<HandDto> jsonHands = mapper.readValue(latestResponse.getBody(), new TypeReference<List<HandDto>>() {
 		});
 		
-		latestHandIDs.clear();
+		latestHandsIDs.clear();
 		for (HandDto handDto : jsonHands) {
-			latestHandIDs.add(String.valueOf(handDto.getHandId()));
-			StepDefsHands.latestHandID = String.valueOf(handDto.getHandId());
+			latestHandsIDs.add(String.valueOf(handDto.getHandId()));
+			latestHandsID = String.valueOf(handDto.getHandId());
 		}
 		
 		// at least equal but more can exist
-		assertThat(latestHandIDs.size(), greaterThanOrEqualTo(count));
+		assertThat(latestHandsIDs.size(), greaterThanOrEqualTo(count));
 	}
 	
 	@And("^The json response should contain a list of cards \"([^\"]*)\" hand with cardOrders \"([^\"]*)\" having \"([^\"]*)\" and casino \"([^\"]*)\"$")
@@ -268,17 +242,17 @@ public class StepDefsHands extends SpringIntegrationTest {
 		List<HandDto> jsonHandDtos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<HandDto>>() {
 		});
 		
-		latestHandIDs.clear();
+		latestHandsIDs.clear();
 		for (HandDto handDto : jsonHandDtos) {
-			latestHandIDs.add(String.valueOf(handDto.getHandId()));
-			StepDefsHands.latestHandID = String.valueOf(handDto.getHandId());
+			latestHandsIDs.add(String.valueOf(handDto.getHandId()));
+			latestHandsID = String.valueOf(handDto.getHandId());
 		}
 		
 		if (casino.equals("latest")) {
-			casino = StepDefsHands.latestCasinoID;
+			casino = latestCasinosID;
 		}
 		if (player.equals("latest")) {
-			player = StepDefsHands.latestPlayerID;
+			player = latestPlayersID;
 		}
 		
 		int i = 0;
@@ -311,13 +285,13 @@ public class StepDefsHands extends SpringIntegrationTest {
 		//Hand jsonHand = mapper.readValue(latestResponse.getBody(), Hand.class);
 		// TODO make it a list response ?
 		HandDto jsonDtoHand = mapper.readValue(latestResponse.getBody(), HandDto.class);
-		StepDefsHands.latestHandID = String.valueOf(jsonDtoHand.getHandId());
+		latestHandsID = String.valueOf(jsonDtoHand.getHandId());
 		
 		if (casinoId.equals("latest")) {
-			casinoId = StepDefsHands.latestCasinoID;
+			casinoId = latestCasinosID;
 		}
 		if (playerId.equals("latest")) {
-			playerId = StepDefsHands.latestPlayerID;
+			playerId = latestPlayersID;
 		}
 		
 		// expected , actual
@@ -332,32 +306,6 @@ public class StepDefsHands extends SpringIntegrationTest {
 		}
 	}
 	
-	@And("^The json response should contain a game for a hand$")
-	public void theJsonResponseBodyShouldBeANewGameForAHand() throws Throwable {
-		
-		// jackson has ObjectMapper that converts String to JSON
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//JSON string to Object
-		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
-		
-		StepDefsHands.latestGameID = String.valueOf(jsonGame.getGameId());
-		
-	}
-	
-	@And("^The json response should contain a player for a hand$")
-	public void theJsonResponseBodyShouldBeANewHumanPlayerForAHand() throws Throwable {
-		
-		// jackson has ObjectMapper that converts String to JSON
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//JSON string to Object
-		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
-		
-		StepDefsHands.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
-		
-	}
-	
 	@And("^The json response should contain a list of casinos for a hand$")
 	public void theJsonResponseBodyShouldBeANewCasinoForAHand() throws Throwable {
 		
@@ -368,12 +316,10 @@ public class StepDefsHands extends SpringIntegrationTest {
 		List<CasinoDto> jsonCasinos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<CasinoDto>>() {
 		});
 		
-		latestCasinoIDs.clear();
+		latestCasinosIDs.clear();
 		for (CasinoDto casinoDto : jsonCasinos) {
-			latestCasinoIDs.add(String.valueOf(casinoDto.getCasinoId()));
-			StepDefsHands.latestCasinoID = String.valueOf(casinoDto.getCasinoId());
+			latestCasinosIDs.add(String.valueOf(casinoDto.getCasinoId()));
+			latestCasinosID = String.valueOf(casinoDto.getCasinoId());
 		}
-		
-		
 	}
 }

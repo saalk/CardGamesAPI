@@ -93,7 +93,7 @@ NO_WINNER -up-> IS_SETUP: GAME_FINISHED
 import com.github.oxo42.stateless4j.StateMachineConfig;
 //TODO import com.github.oxo42.stateless4j.delegates.Action;
 
-import nl.knikit.cardgames.DTO.CardGame;
+import nl.knikit.cardgames.VO.CardGame;
 
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.State.IS_SETUP;
@@ -125,8 +125,8 @@ public class CardGameController {
 		
 		// start on player page
 		cardGameConfig.configure(State.IS_CONFIGURED)
-				.permitReentry(Trigger.GAME_ADDED)
-				.permitReentry(Trigger.GAME_CHANGED)
+				.permitReentry(Trigger.GAME_ADDED)   //POST_INIT
+				.permitReentry(Trigger.GAME_CHANGED) //PUT_INIT
 				// continue on game page
 				.permit(Trigger.HUMAN_ADDED, State.HAS_PLAYERS);
 		
@@ -145,7 +145,7 @@ public class CardGameController {
 				.permitReentry(Trigger.TURN_PASSED)
 				.permitReentry(Trigger.AI_TURNED)
 				.permit(Trigger.PLAYER_WINS, State.GAME_WON)
-				.permit(Trigger.NO_CARDS_LEFT, State.EMPTY_DECK)
+				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
 				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER);
 		
 		// continue on results page
@@ -153,14 +153,11 @@ public class CardGameController {
 				.permitReentry(Trigger.GET_PRIZE)
 				.permitReentry(Trigger.SHOW_RESULTS)
 				.permit(Trigger.CARD_DEALT, State.PLAYING) // allow continue with deck?
-				.permit(Trigger.NO_CARDS_LEFT, State.EMPTY_DECK);
+				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER);
 		
 		cardGameConfig.configure(State.NO_WINNER)
 				.permit(Trigger.CARD_DEALT, State.PLAYING) // allow continue with deck?
-				.permit(Trigger.NO_CARDS_LEFT, State.EMPTY_DECK)
-				.permitReentry(Trigger.SHOW_RESULTS);
-		
-		cardGameConfig.configure(State.EMPTY_DECK)
+				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
 				.permitReentry(Trigger.SHOW_RESULTS);
 		
 		// @formatter:on
@@ -171,30 +168,33 @@ public class CardGameController {
 		
 		switch (cardGame.getState()) {
 			case "Null":
-				//POST   api/cardgames/select?gameType={g},ante={a}
-				//PUT    api/cardgames/select/1?gameType={g},ante={a}
+				//POST   api/cardgames/init?gameType={g},ante={a}
+				//PUT    api/cardgames/init/1?gameType={g},ante={a}
 				//GET    api/cardgames/1
 				
-				// cardGame.fire(Trigger.HUMAN_ADDED);
-				// state IS_SETUP
+				// cardGame.fire(Trigger.INIT);
+				// state IS_CONFIGURED
 				break;
-			case "IS_SETUP":
-				//POST   api/cardgames/setup/human/2?gameType={g},ante={a} // no dealing yet
-				//POST   api/cardgames/setup/1/human?name/avatar/securedLoan // no dealing yet
-				//POST   api/cardgames/setup/1/ai?name/avatar/securedLoan/aiLevel
-				//PUT    api/cardgames/setup/1?ante
-				//DELETE api/cardgames/setup/1/players/3 // only for ai players, possible no dealing yet
-				//PUT    api/cardgames/setup/1/players/2?name/avatar/securedLoan/aiLevel/playingOrder
+				
+			case "IS_CONFIGURED":
+				//POST   api/cardgames/init/human/2?gameType={g},ante={a} // no dealing yet
+				//POST   api/cardgames/1/setup/human?name/avatar/securedLoan // no dealing yet
+				//POST   api/cardgames/1/setup/ai?name/avatar/securedLoan/aiLevel
+				//PUT    api/cardgames/1/setup?ante
+				//DELETE api/cardgames/1/setup/players/3 // only for ai players, possible no dealing yet
+				//PUT    api/cardgames/1/setup/players/2?name/avatar/securedLoan/aiLevel/playingOrder
 				//GET    api/cardgames/1/players
 				
 				// state HasPlayers
 				break;
-			case "HasPlayers":
 				
-				//PUT    api/cardgames/deal/1/ // start dealing a card to the first player
-				//PUT    api/cardgames/deal/1/player/2?action=higher/lower // for human player
-				//PUT    api/cardgames/pass/1/player/2 // for human player pass on the card or new card ?
-				//PUT    api/cardgames/turn/1/player/3 // auto deal or pass for ai player
+			case "HAS_PLAYERS":
+				
+				//PUT    api/cardgames/1/deal/ // start dealing a card to the first player
+				//PUT    api/cardgames/1/deal/player/2?action=higher/lower // for human player
+				//PUT    api/cardgames/1/pass/player/2 // for human player pass on the card or new card ?
+				//PUT    api/cardgames/1/turn/player/3 // auto deal or pass for ai player
+				
 				//GET    api/cardgames/1/cardsindeck
 				//GET    api/cardgames/1/players // also gives cardsinhand and indication active player
 				//GET    api/cardgames/1/player // gives active player
@@ -203,16 +203,29 @@ public class CardGameController {
 				// state PLAYING
 				// state GameWon, NoMoreCards or RoundsEnded
 				break;
-			case "GameWon": //GameWon, NoMoreCards or RoundsEnded
-				// GET    api/cardgames/results/1/cardsindeck
-				// GET    api/cardgames/results/1/players
-				// GET    api/cardgames/results/1/players/2/cardsinhand
-				// GET    api/cardgames/results/1
+			
+			case "PLAYING":
 				
-				// state IS_SETUP
+				//PUT    api/cardgames/1/deal/ // start dealing a card to a new player
+				//PUT    api/cardgames/1/deal/player/2?action=higher/lower // for human player
+				//PUT    api/cardgames/1/pass/player/2 // for human player pass on the card or new card ?
+				//PUT    api/cardgames/1/turn/player/3 // auto deal or pass for ai player
+				
+				//GET    api/cardgames/1/cardsindeck
+				//GET    api/cardgames/1/players // also gives cardsinhand and indication active player
+				//GET    api/cardgames/1/player // gives active player
+				//GET    api/cardgames/1/players/2/cardsinhand // only cardsinhand
+				
+				// state GameWon, NoMoreCards or RoundsEnded
 				break;
+			
 			default:
-				//
+				// state GAME_WON, IS_SETUP, NO_WINNER, EMPTY_DECK, RROUNDS_ENDED
+				
+				// GET    api/cardgames/1/cardsindeck
+				// GET    api/cardgames/1/players
+				// GET    api/cardgames/1/players/2/cardsinhand
+				// GET    api/cardgames/1
 				break;
 		}
 	}

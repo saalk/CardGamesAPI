@@ -17,7 +17,7 @@ Feature: Execute a lifecycle of a deck in the card game
   Scenario Outline: A frontend makes call to POST /api/games to make a game for a deck
     Given I try to post a gameType "<gameType>" game having "<winner>" and ante "<ante>" and state "<state>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a game for a deck
+    And The json response should contain a game
 
     Examples: This is the default ante HIGHLOW Game
 
@@ -72,7 +72,7 @@ Feature: Execute a lifecycle of a deck in the card game
   Scenario Outline: A frontend makes call to POST /api/players to make a dealtTo
     Given I try to post a human "<human>" dealtTo having "<avatar>" and "<alias>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a dealtTo
+    And The json response should contain a player
 
     Examples: This is the default Human Player
 
@@ -103,7 +103,7 @@ Feature: Execute a lifecycle of a deck in the card game
 
   @Api @Decks
   Scenario Outline: A frontend makes call to DELETE /api/players/<id> the dealtTo
-    Given I try to delete the dealtTo "<id>"
+    Given I try to delete a player "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
     And The json response body should have no content
 
@@ -125,7 +125,7 @@ Feature: Execute a lifecycle of a deck in the card game
 
   @Api @Decks
   Scenario Outline: A frontend makes call to DELETE /api/games/<id> for a deck
-    Given I try to delete a game for a deck with "<id>"
+    Given I try to delete a game "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
     And The json response body should have no content
 

@@ -18,7 +18,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     
     /**
      * Swagger UI adds a set of resources which you must configure as part of a class
-     * nthat extends WebMvcConfigurerAdapter, and is annotated with @EnableWebMvc.
+     * that extends WebMvcConfigurerAdapter, and is annotated with @EnableWebMvc.
      */
      
     @Override

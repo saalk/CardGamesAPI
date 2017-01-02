@@ -27,21 +27,6 @@ import static org.hamcrest.Matchers.is;
 
 public class StepDefsCasinos extends SpringIntegrationTest {
 	
-	private static String latestCasinoID = "";
-	private static List<String> latestCasinoIDs = new ArrayList<>();
-	
-	private static String latestGameID = "";
-	private static String latestPlayerID = "";
-	private static String latestPlayerID2 = "";
-	
-	
-	private static String casinosUrl = "http://localhost:8383/api/casinos/";
-	private static String allCasinosUrl = "http://localhost:8383/api/casinos";
-	private static String casinosUrlWithId = "http://localhost:8383/api/casinos/{id}";
-	
-	private static String gamesUrl = "http://localhost:8383/api/games/";
-	private static String playersUrl = "http://localhost:8383/api/players/";
-	
 	// API          HTTP
 	//
 	// UPDATE,PUT   OK(200, "OK"),
@@ -54,7 +39,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	@Given("^I try to get a casino with valid \"([^\"]*)\"$")
 	public void iTryToGetACasinoWithValid(String casinoId) throws Throwable {
 		if (casinoId.equals("latest")) {
-			casinoId = StepDefsCasinos.latestCasinoID;
+			casinoId = latestCasinosID;
 		}
 		executeGet(casinosUrl + casinoId);
 	}
@@ -62,7 +47,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	@Given("^I try to get a casino with invalid \"([^\"]*)\"$")
 	public void iTryToGetACasinoWithInvalid(String casinoId) throws Throwable {
 		if (casinoId.equals("latest")) {
-			casinoId = StepDefsCasinos.latestCasinoID;
+			casinoId = latestCasinosID;
 		}
 		executeGet(casinosUrl + casinoId);
 	}
@@ -77,7 +62,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	public void iTryToGetAllCasinosForAGame(String gameId) throws Throwable {
 		
 		if (gameId.equals("latest")) {
-			gameId = StepDefsCasinos.latestGameID;
+			gameId = latestGamesID;
 		}
 		executeGet(allCasinosUrl + "?game=" + gameId);
 	}
@@ -89,7 +74,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		postCasinoDto.setPlayingOrder(Integer.parseInt(playingOrder));
 		
 		if (game.equals("latest")) {
-			game = StepDefsCasinos.latestGameID;
+			game = latestGamesID;
 		}
 		
 		if (!game.isEmpty()) {
@@ -103,9 +88,9 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		// players are passed as params
 		postCasinoDto.setPlayerDto(null);
 		if (player.equals("latest")) {
-			player = StepDefsCasinos.latestPlayerID;
+			player = latestPlayersID;
 		} else if (player.equals("latest-1")) {
-			player = StepDefsCasinos.latestPlayerID2;
+			player = latestPlayersID2;
 		}
 		
 		
@@ -139,7 +124,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	@Given("^I try to put a casino \"([^\"]*)\" with a new playingOrder \"([^\"]*)\"$")
 	public void iTryToPutAnExistingCasinoWithPlayingOrder(String casino, String playingOrder) throws Throwable {
 		if (casino.equals("latest")) {
-			casino = StepDefsCasinos.latestCasinoID;
+			casino = latestCasinosID;
 		}
 		// Uri (URL) parameters
 		Map<String, String> uriParams = new HashMap<>();
@@ -156,9 +141,9 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	@Given("^I try to delete a casino with \"([^\"]*)\"$")
 	public void iTryToDeleteACasinoWith(String casinoId) throws Throwable {
 		if (casinoId.equals("latest")) {
-			casinoId = StepDefsCasinos.latestCasinoID;
-			if (!StepDefsCasinos.latestCasinoIDs.isEmpty()) {
-				StepDefsCasinos.latestCasinoIDs.remove(latestCasinoIDs.size() - 1);
+			casinoId = latestCasinosID;
+			if (!latestCasinosIDs.isEmpty()) {
+				latestCasinosIDs.remove(latestCasinosIDs.size() - 1);
 			}
 		}
 		executeDelete(casinosUrl + casinoId, null);
@@ -169,28 +154,28 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		if (ids.equals("all")) {
 			// all
 		}
-		executeDelete(allCasinosUrl + "?id=" + StringUtils.join(latestCasinoIDs, ','), null);
-		StepDefsCasinos.latestCasinoIDs.clear();
+		executeDelete(allCasinosUrl + "?id=" + StringUtils.join(latestCasinosIDs, ','), null);
+		latestCasinosIDs.clear();
 	}
 	
-	@Given("^I try to delete the player \"([^\"]*)\" for the casino$")
-	public void iTryToDeleteThePlayerForTheCasino(String player) throws Throwable {
-		if (player.equals("latest")) {
-			player = StepDefsCasinos.latestPlayerID;
-		} else if (player.equals("latest-1")) {
-			player = StepDefsCasinos.latestPlayerID2;
-		}
-		
-		executeDelete(playersUrl + player, null);
-	}
+//	@Given("^I try to delete a player \"([^\"]*)\" for the casino$")
+//	public void iTryToDeleteThePlayerForTheCasino(String player) throws Throwable {
+//		if (player.equals("latest")) {
+//			player = latestPlayersID;
+//		} else if (player.equals("latest-1")) {
+//			player = latestPlayersID2;
+//		}
+//
+//		executeDelete(playersUrl + player, null);
+//	}
 	
-	@Given("^I try to delete a game for a casino for a hand with \"([^\"]*)\"$")
-	public void iTryToDeleteAGameForACasinoWith(String gameId) throws Throwable {
-		if (gameId.equals("latest")) {
-			gameId = StepDefsCasinos.latestGameID;
-		}
-		executeDelete(gamesUrl + gameId, null);
-	}
+//	@Given("^I try to delete a game \"([^\"]*)\" for a casino$")
+//	public void iTryToDeleteAGameForACasinoWith(String gameId) throws Throwable {
+//		if (gameId.equals("latest")) {
+//			gameId = latestGamesID;
+//		}
+//		executeDelete(gamesUrl + gameId, null);
+//	}
 	
 	@And("^The json response should contain at least \"([^\"]*)\" casinos")
 	public void theJsonCasinoResponseBodyShouldContainAtLeast(int count) throws Throwable {
@@ -201,14 +186,14 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		List<CasinoDto> jsonCasinos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<CasinoDto>>() {
 		});
 		
-		latestCasinoIDs.clear();
+		latestCasinosIDs.clear();
 		for (CasinoDto casinoDto : jsonCasinos) {
-			latestCasinoIDs.add(String.valueOf(casinoDto.getCasinoId()));
-			StepDefsCasinos.latestCasinoID = String.valueOf(casinoDto.getCasinoId());
+			latestCasinosIDs.add(String.valueOf(casinoDto.getCasinoId()));
+			latestCasinosID = String.valueOf(casinoDto.getCasinoId());
 		}
 		
 		// at least equal but more can exist
-		assertThat(latestCasinoIDs.size(), greaterThanOrEqualTo(count));
+		assertThat(latestCasinosIDs.size(), greaterThanOrEqualTo(count));
 		
 	}
 	
@@ -221,26 +206,26 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		List<CasinoDto> jsonCasinos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<CasinoDto>>() {
 		});
 		
-		latestCasinoIDs.clear();
+		latestCasinosIDs.clear();
 		for (CasinoDto casinoDto : jsonCasinos) {
-			latestCasinoIDs.add(String.valueOf(casinoDto.getCasinoId()));
-			StepDefsCasinos.latestCasinoID = String.valueOf(casinoDto.getCasinoId());
+			latestCasinosIDs.add(String.valueOf(casinoDto.getCasinoId()));
+			latestCasinosID = String.valueOf(casinoDto.getCasinoId());
 		}
 		
-		assertThat(latestCasinoIDs.size(), is(count));
+		assertThat(latestCasinosIDs.size(), is(count));
 	}
 	
 	@And("^The json response should contain a casino having game \"([^\"]*)\" and player \"([^\"]*)\" for playingOrder \"([^\"]*)\"$")
 	public void theJsonResponseBodyShouldBeACasinoWithGameAndPlayerAndPlayingOrder(String game, String player, String playingOrder) throws Throwable {
 		
 		if (game.equals("latest")) {
-			game = StepDefsCasinos.latestGameID;
+			game = latestGamesID;
 		}
 		
 		if (player.equals("latest")) {
-			player = StepDefsCasinos.latestPlayerID;
+			player = latestPlayersID;
 		} else if (player.equals("latest-1")) {
-			player = StepDefsCasinos.latestPlayerID2;
+			player = latestPlayersID2;
 		} else {
 			player = "";
 		}
@@ -266,13 +251,13 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	public void theJsonResponseBodyShouldBeAListOfCasinoWithGameAndPlayerAndPlayingOrder(String game, String player, String playingOrder) throws Throwable {
 		
 		if (game.equals("latest")) {
-			game = StepDefsCasinos.latestGameID;
+			game = latestGamesID;
 		}
 		
 		if (player.equals("latest")) {
-			player = StepDefsCasinos.latestPlayerID;
+			player = latestPlayersID;
 		} else if (player.equals("latest-1")) {
-			player = StepDefsCasinos.latestPlayerID2;
+			player = latestPlayersID2;
 		} else {
 			player = "";
 		}
@@ -285,10 +270,10 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		List<CasinoDto> jsonCasinoDtos = mapper.readValue(latestResponse.getBody(), new TypeReference<List<CasinoDto>>() {
 		});
 		
-		latestCasinoIDs.clear();
+		latestCasinosIDs.clear();
 		for (CasinoDto casinoDto : jsonCasinoDtos) {
-			latestCasinoIDs.add(String.valueOf(casinoDto.getCasinoId()));
-			StepDefsCasinos.latestCasinoID = String.valueOf(casinoDto.getCasinoId());
+			latestCasinosIDs.add(String.valueOf(casinoDto.getCasinoId()));
+			latestCasinosID = String.valueOf(casinoDto.getCasinoId());
 			
 			// expected , actual each casino should have the same game
 			assertThat(Integer.parseInt(game), is(casinoDto.getGameDto().getGameId()));
@@ -309,7 +294,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 	public void theJsonResponseBodyShouldBeACasinoWithANewPlayingOrder(String casino, String playingOrder) throws Throwable {
 		
 		if (casino.equals("latest")) {
-			casino = StepDefsCasinos.latestCasinoID;
+			casino = latestCasinosID;
 		}
 		
 		// jackson has ObjectMapper that converts String to JSON
@@ -325,30 +310,30 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 		
 	}
 	
-	@And("^The json response should contain a player for a casino$")
-	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAliasForACasino() throws Throwable {
-		
-		// jackson has ObjectMapper that converts String to JSON
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//JSON string to Object
-		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
-		
-		// move the latest to latest-1
-		StepDefsCasinos.latestPlayerID2 = StepDefsCasinos.latestPlayerID;
-		StepDefsCasinos.latestPlayerID = String.valueOf(jsonPlayer.getPlayerId());
-		
-	}
+//	@And("^The json response should contain a player for a casino$")
+//	public void theJsonResponseBodyShouldBeANewHumanPlayerWithAvatarAliasForACasino() throws Throwable {
+//
+//		// jackson has ObjectMapper that converts String to JSON
+//		ObjectMapper mapper = new ObjectMapper();
+//
+//		//JSON string to Object
+//		PlayerDto jsonPlayer = mapper.readValue(latestResponse.getBody(), PlayerDto.class);
+//
+//		// move the latest to latest-1
+//		latestPlayersID2 = latestPlayersID;
+//		latestPlayersID = String.valueOf(jsonPlayer.getPlayerId());
+//
+//	}
 	
-	@And("^The json response should contain a game for a casino$")
-	public void theJsonResponseBodyShouldBeANewGameForACasino() throws Throwable {
-		
-		// jackson has ObjectMapper that converts String to JSON
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//JSON string to Object
-		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
-		StepDefsCasinos.latestGameID = String.valueOf(jsonGame.getGameId());
-		
-	}
+//	@And("^The json response should contain a game for a casino$")
+//	public void theJsonResponseBodyShouldBeANewGameForACasino() throws Throwable {
+//
+//		// jackson has ObjectMapper that converts String to JSON
+//		ObjectMapper mapper = new ObjectMapper();
+//
+//		//JSON string to Object
+//		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
+//		latestGamesID = String.valueOf(jsonGame.getGameId());
+//
+//	}
 }

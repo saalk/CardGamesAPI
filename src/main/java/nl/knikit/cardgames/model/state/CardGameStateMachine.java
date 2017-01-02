@@ -16,7 +16,7 @@ import lombok.Setter;
 public class CardGameStateMachine {
     
     public enum State {
-        IS_CONFIGURED, HAS_PLAYERS, IS_SETUP, PLAYING, GAME_WON, NO_WINNER, EMPTY_DECK
+        IS_CONFIGURED, HAS_PLAYERS, IS_SETUP, PLAYING, GAME_WON, NO_WINNER
     }
 
     public enum Trigger {
