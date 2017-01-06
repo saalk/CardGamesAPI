@@ -1,17 +1,15 @@
 package nl.knikit.cardgames.VO;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,7 +26,7 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 //@JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
-public class CardGame implements Serializable {
+public class CardGame extends Game implements Serializable {
 	
 	public CardGame() {
 	}
@@ -40,8 +38,8 @@ public class CardGame implements Serializable {
 	private String name; // extra field "Highlow:0005 (Ante:100) [GameSelected]"
 	private int gameId;
 	// private String created; to prevent setting, this is generated
-	private String state;
-	private String gameType;
+	private State state;
+	private GameType gameType;
 	private int ante;
 	@Setter(AccessLevel.NONE)
 	private String round; // extra field "Round 3 [1-9]"
@@ -56,7 +54,7 @@ public class CardGame implements Serializable {
 	private int maxTurns;
 	
 	//@JsonBackReference(value="gameDto")
-	@JsonProperty(value = "cardsInDeck")
+	@JsonProperty(value = "cards")
 	@Setter(AccessLevel.NONE)
 	private List<DeckDto> deckDtos;
 	// "10C  Ten of Clubs"
@@ -78,16 +76,6 @@ public class CardGame implements Serializable {
 		return converted;
 	}
 	
-	public void setGameType(GameType gameType) {
-		// static Eum methods:
-		// - valueOf() - returns enum instance taking a String
-		// - values()  - returns all enum instances
-		// instance Enum method:
-		// - name()    - returns name of enum constant
-		// -> better use toString() to get the user-friendly name
-		this.gameType = (String.valueOf(gameType));
-	}
-	
 	@JsonIgnore
 	public State getStateConverted(String state) throws Exception {
 		State converted = State.valueOf(state);
@@ -97,25 +85,12 @@ public class CardGame implements Serializable {
 		return converted;
 	}
 	
-	public void setState(State state) {
-		// static Eum methods:
-		// - valueOf() - returns enum instance taking a String
-		// - values()  - returns all enum instances
-		// instance Enum method:
-		// - name()    - returns name of enum constant
-		// -> better use toString() to get the user-friendly name
-		
-		//
-		
-		this.state = (String.valueOf(state));
-	}
-	
 	public void setName() {
 		
 		// "Highlow#0005 (Ante:100) [Is_Setup]"
-		this.name = WordUtils.capitalizeFully(this.gameType) + "#" +
+		this.name = WordUtils.capitalizeFully(this.gameType.toString()) + "#" +
 				            StringUtils.leftPad(String.valueOf(this.gameId), 4, "0") +
-				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state) + "]";
+				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state.toString()) + "]";
 	}
 	
 	public String setRound() {

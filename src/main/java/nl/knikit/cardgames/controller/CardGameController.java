@@ -22,9 +22,9 @@ NO_WINNER
 OFFER_FICHES
  }
 enum Trigger {
-GAME_ADDED
-CARD_DEALT
-HUMAN_ADDED
+POST_INIT
+PUT_TURN
+POST_INIT_HUMAN
 ..
 TURN_STARTED
 SHOW_RESULTS
@@ -68,10 +68,10 @@ IS_SETUP -down-> OFFER_FICHES: QUIT
 IS_SETUP: start : +1000 fiches
 IS_SETUP: offer : +500 fiches
 note right of IS_SETUP: Games\n HIGHLOW\n- simple double or nothing\n- three in a row
-IS_SETUP -down-> HAS_PLAYERS: GAME_ADDED
-HAS_PLAYERS --> IS_SETUP: CARD_DEALT
+IS_SETUP -down-> HAS_PLAYERS: POST_INIT
+HAS_PLAYERS --> IS_SETUP: PUT_TURN
 HAS_PLAYERS: select # bots
-HAS_PLAYERS --> GameEngine: HUMAN_ADDED
+HAS_PLAYERS --> GameEngine: POST_INIT_HUMAN
 OFFER_FICHES -up-> IS_SETUP: OFFER_ACCEPTED
 OFFER_FICHES --> [*]
 
@@ -94,9 +94,22 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 //TODO import com.github.oxo42.stateless4j.delegates.Action;
 
 import nl.knikit.cardgames.VO.CardGame;
+import nl.knikit.cardgames.VO.CardGameFlowDTO;
+import nl.knikit.cardgames.commons.controller.AbstractController;
+import nl.knikit.cardgames.commons.event.FlowDTOBuilder;
+import nl.knikit.cardgames.event.GetCardGameEvent;
+import nl.knikit.cardgames.response.CardGameResponse;
+
+import org.springframework.context.ApplicationContext;
+
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
-import static nl.knikit.cardgames.model.state.CardGameStateMachine.State.IS_SETUP;
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.Trigger;
 
 /**
@@ -109,86 +122,123 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.Trigger;
  * src="../../../../../../src/main/resources/plantuml/GalacticCasinoController.png" alt="UML1">
  * <h2>Controller Class diagram 'state and triggers</h2><img src="../../../../../../src/main/resources/plantuml/StateMachine.png"
  * alt="UML2">
- *
- * @author Klaas van der Meulen
- * @version 1.0
- * @since v1 - console game
  **/
 
-public class CardGameController {
+// TODO make this CardGame controller special to a HightLowCardGame, BlackJackCardGame, etc.. ?
+@Slf4j
+public class CardGameController extends AbstractController<CardGame> {
 	
-	private static StateMachineConfig<State, Trigger> cardGameConfig = new StateMachineConfig<>();
+	// 1 - configure the state machine in the AbstractController
+	private static StateMachineConfig<State, Trigger> config = new StateMachineConfig<>();
 	
 	static {
-		
 		// @formatter:off
-		
 		// start on player page
-		cardGameConfig.configure(State.IS_CONFIGURED)
-				.permitReentry(Trigger.GAME_ADDED)   //POST_INIT
-				.permitReentry(Trigger.GAME_CHANGED) //PUT_INIT
+		config.configure(State.IS_CONFIGURED)
+				// continue on players page
+				.permitReentry(Trigger.POST_INIT)
+				.permitReentry(Trigger.PUT_INIT)
 				// continue on game page
-				.permit(Trigger.HUMAN_ADDED, State.HAS_PLAYERS);
+				.permit(Trigger.POST_INIT_HUMAN, State.HAS_PLAYERS)
+				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_PLAYERS);
 		
-		cardGameConfig.configure(State.HAS_PLAYERS)
-				.permitReentry(Trigger.PLAYERS_CHANGED)
-				.permitReentry(Trigger.GAME_CHANGED)
-				.permit(Trigger.HUMAN_DELETED, State.IS_CONFIGURED)
+		config.configure(State.HAS_PLAYERS)
+				.permitReentry(Trigger.POST_SETUP_AI)
+				.permitReentry(Trigger.DELETE_SETUP_AI)
+				.permitReentry(Trigger.PUT_INIT)
+				.permitReentry(Trigger.PUT_SETUP_PLAYER)
+				// continue on players page
+				.permit(Trigger.DELETE_SETUP_HUMAN, State.IS_CONFIGURED)
 				// continue on casino page
-				.permit(Trigger.DECK_SHUFFLED, State.IS_SETUP);
+				.permit(Trigger.POST_SHUFFLE, State.IS_SETUP);
 		
-		cardGameConfig.configure(IS_SETUP)
-				.permit(Trigger.CARD_DEALT, State.PLAYING);
+		config.configure(State.IS_SETUP)
+				.permit(Trigger.PUT_TURN, State.PLAYING);
 		
-		cardGameConfig.configure(State.PLAYING)
-				.permitReentry(Trigger.CARD_DEALT)
-				.permitReentry(Trigger.TURN_PASSED)
-				.permitReentry(Trigger.AI_TURNED)
+		config.configure(State.PLAYING)
+				.permitReentry(Trigger.PUT_TURN)
+				// continue on results page
 				.permit(Trigger.PLAYER_WINS, State.GAME_WON)
 				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
 				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER);
 		
-		// continue on results page
-		cardGameConfig.configure(State.GAME_WON)
-				.permitReentry(Trigger.GET_PRIZE)
-				.permitReentry(Trigger.SHOW_RESULTS)
-				.permit(Trigger.CARD_DEALT, State.PLAYING) // allow continue with deck?
-				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER);
+		config.configure(State.GAME_WON)
+				.permit(Trigger.PUT_TURN, State.PLAYING); // allows continue!
 		
-		cardGameConfig.configure(State.NO_WINNER)
-				.permit(Trigger.CARD_DEALT, State.PLAYING) // allow continue with deck?
-				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
-				.permitReentry(Trigger.SHOW_RESULTS);
-		
+		config.configure(State.NO_WINNER)
+				.permitReentry(Trigger.NO_CARDS_LEFT)
+				.permitReentry(Trigger.ROUNDS_ENDED)
+				.permit(Trigger.PUT_TURN, State.PLAYING); // allows continue!
 		// @formatter:on
 	}
 	
-	// CONTROLLER
-	public void play(CardGame cardGame) {
-		
-		switch (cardGame.getState()) {
-			case "Null":
+	protected StateMachineConfig<State, Trigger> getStateMachineConfiguration() {
+		return config;
+	}
+	
+	// 2 - Prepare a builder for CardGameFlowDTO and get methods like
+	//     addEvent, addStateMachine, getNextInFlow and
+	//     start, transition, build
+	private FlowDTOBuilder<CardGameFlowDTO> builder;
+	@Resource
+	private ApplicationContext applicationContext;
+	
+	@PostConstruct
+	public void init() {
+		this.builder = new FlowDTOBuilder<>(new CardGameFlowDTO());
+		this.builder.setApplicationContext(applicationContext);
+	}
+/*  example post construct:
+	public class Foo {
+		@Inject
+		Logger LOG;
+		@PostConstruct
+		public void fooInit(){
+			LOG.info("This will be printed; LOG has already been injected");
+		}
+		public Foo() {
+			LOG.info("This will NOT be printed, LOG is still null");
+			// NullPointerException will be thrown here
+		}
+	}  */
+	
+
+	// 3 - Play a the CardGame based on the Trigger and a list of input data
+	public CardGameResponse play(Trigger trigger, Map<String, String> pathAndQueryData) {
+		CardGameFlowDTO flowDTO = new CardGameFlowDTO();
+		switch (trigger) {
+			
+			case POST_INIT:
+				
 				//POST   api/cardgames/init?gameType={g},ante={a}
+				flowDTO = builder
+						          .addEvent(GetCardGameEvent.class)
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				flowDTO.start();
+				this.updateState(flowDTO.getStateMachine().getCurrentState());
+				break;
+			
+			case PUT_INIT:
 				//PUT    api/cardgames/init/1?gameType={g},ante={a}
-				//GET    api/cardgames/1
 				
 				// cardGame.fire(Trigger.INIT);
 				// state IS_CONFIGURED
 				break;
+			
+			case POST_INIT_HUMAN:
 				
-			case "IS_CONFIGURED":
 				//POST   api/cardgames/init/human/2?gameType={g},ante={a} // no dealing yet
 				//POST   api/cardgames/1/setup/human?name/avatar/securedLoan // no dealing yet
 				//POST   api/cardgames/1/setup/ai?name/avatar/securedLoan/aiLevel
 				//PUT    api/cardgames/1/setup?ante
 				//DELETE api/cardgames/1/setup/players/3 // only for ai players, possible no dealing yet
 				//PUT    api/cardgames/1/setup/players/2?name/avatar/securedLoan/aiLevel/playingOrder
-				//GET    api/cardgames/1/players
 				
 				// state HasPlayers
-				break;
 				
-			case "HAS_PLAYERS":
+				break;
+			case POST_SETUP_HUMAN:
 				
 				//PUT    api/cardgames/1/deal/ // start dealing a card to the first player
 				//PUT    api/cardgames/1/deal/player/2?action=higher/lower // for human player
@@ -202,9 +252,19 @@ public class CardGameController {
 				
 				// state PLAYING
 				// state GameWon, NoMoreCards or RoundsEnded
+				
 				break;
-			
-			case "PLAYING":
+			case DELETE_SETUP_HUMAN:
+				break;
+			case DELETE_SETUP_AI:
+				break;
+			case POST_SETUP_AI:
+				break;
+			case PUT_SETUP_PLAYER:
+				break;
+			case POST_SHUFFLE:
+				break;
+			case PUT_TURN:
 				
 				//PUT    api/cardgames/1/deal/ // start dealing a card to a new player
 				//PUT    api/cardgames/1/deal/player/2?action=higher/lower // for human player
@@ -217,17 +277,21 @@ public class CardGameController {
 				//GET    api/cardgames/1/players/2/cardsinhand // only cardsinhand
 				
 				// state GameWon, NoMoreCards or RoundsEnded
+				
 				break;
 			
 			default:
-				// state GAME_WON, IS_SETUP, NO_WINNER, EMPTY_DECK, RROUNDS_ENDED
 				
-				// GET    api/cardgames/1/cardsindeck
-				// GET    api/cardgames/1/players
-				// GET    api/cardgames/1/players/2/cardsinhand
 				// GET    api/cardgames/1
+				// GET    api/cardgames/1/cards
+				// GET    api/cardgames/1/players
+				// GET    api/cardgames/1/players/2/cards
+				
 				break;
 		}
+		
+		this.updateState(flowDTO.getStateMachine().getCurrentState());
+		return flowDTO.getResponse();
 	}
 }
 

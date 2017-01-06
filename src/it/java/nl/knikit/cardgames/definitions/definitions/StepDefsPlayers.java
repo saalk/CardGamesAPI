@@ -1,16 +1,16 @@
-package nl.knikit.cardgames.definitions;
+package nl.knikit.cardgames.definitions.definitions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.DTO.PlayerDto;
+import nl.knikit.cardgames.definitions.commons.SpringIntegrationTest;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cucumber.api.java.en.And;

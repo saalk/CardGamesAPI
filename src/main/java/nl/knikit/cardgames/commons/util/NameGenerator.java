@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.utils;
+package nl.knikit.cardgames.commons.util;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

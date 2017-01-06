@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.definitions;
+package nl.knikit.cardgames.definitions.commons;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequest;
@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.util.Map;
 
 public class HeaderSettingRequestCallback implements RequestCallback {
-    final Map<String, String> requestHeaders;
-
-    private String body;
-
-    public HeaderSettingRequestCallback(final Map<String, String> headers) {
+    final private Map<String, String> requestHeaders;
+    
+    protected  String body;
+    
+    HeaderSettingRequestCallback(final Map<String, String> headers) {
         this.requestHeaders = headers;
     }
 

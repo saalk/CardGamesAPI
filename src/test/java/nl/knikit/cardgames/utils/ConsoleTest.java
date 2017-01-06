@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.utils;
 
+import nl.knikit.cardgames.commons.util.Console;
+
 import static org.junit.Assert.*;
 
 import org.junit.Before;

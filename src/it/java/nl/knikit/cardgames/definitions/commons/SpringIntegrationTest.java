@@ -1,9 +1,4 @@
-package nl.knikit.cardgames.definitions;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.knikit.cardgames.DTO.GameDto;
-import nl.knikit.cardgames.DTO.PlayerDto;
+package nl.knikit.cardgames.definitions.commons;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(classes = SpringWebAppInitializer.class)
 @WebAppConfiguration
@@ -34,47 +26,47 @@ import cucumber.api.java.en.Given;
 public class SpringIntegrationTest {
 	
 	
-	static ResponseResults latestResponse = null;
+	protected static ResponseResults latestResponse = null;
 	
-	static String latestCardGamesID = "";
+	protected static String latestCardGamesID = "";
 	
-	static String latestPlayersID = "";
-	static String latestPlayersID2 = "";
-	static String latestGamesID = "";
-	static String latestCasinosID = "";
-	static String latestHandsID = "";
-	static String latestDecksID = "";
+	protected static String latestPlayersID = "";
+	protected static String latestPlayersID2 = "";
+	protected static String latestGamesID = "";
+	protected static String latestCasinosID = "";
+	protected static String latestHandsID = "";
+	protected static String latestDecksID = "";
 	
-	static List<String> latestCardGamesIDs = new ArrayList<>();
+	protected static List<String> latestCardGamesIDs = new ArrayList<>();
 	
-	static List<String> latestPlayersIDs = new ArrayList<>();
-	static List<String> latestGamesIDs = new ArrayList<>();
-	static List<String> latestCasinosIDs = new ArrayList<>();
-	static List<String> latestHandsIDs = new ArrayList<>();
-	static List<String> latestDecksIDs = new ArrayList<>();
-		
+	protected static List<String> latestPlayersIDs = new ArrayList<>();
+	protected static List<String> latestGamesIDs = new ArrayList<>();
+	protected static List<String> latestCasinosIDs = new ArrayList<>();
+	protected static List<String> latestHandsIDs = new ArrayList<>();
+	protected static List<String> latestDecksIDs = new ArrayList<>();
+	
 	private static String api = "http://localhost:8383/api";
 	
-	static String baseCardGamesUrl = api + "/cardgames";
-	static String cardGamesUrlWithId = baseCardGamesUrl + "/{id}";
+	protected static String baseCardGamesUrl = api + "/cardgames";
+	protected static String cardGamesUrlWithId = baseCardGamesUrl + "/{id}";
 	
-	static String allPlayersUrl = api + "/players";
-	static String allGamesUrl = api + "/games";
-	static String allCasinosUrl = api + "/casinos";
-	static String allHandsUrl = api + "/hands";
-	static String allDecksUrl = api + "/decks";
+	protected static String allPlayersUrl = api + "/players";
+	protected static String allGamesUrl = api + "/games";
+	protected static String allCasinosUrl = api + "/casinos";
+	protected static String allHandsUrl = api + "/hands";
+	protected static String allDecksUrl = api + "/decks";
 	
-	static String playersUrl = api + "/players/";
-	static String gamesUrl = api + "/games/";
-	static String casinosUrl = api + "/casinos/";
-	static String handsUrl = api + "/hands/";
-	static String decksUrl = api + "/decks/";
+	protected static String playersUrl = api + "/players/";
+	protected static String gamesUrl = api + "/games/";
+	protected static String casinosUrl = api + "/casinos/";
+	protected static String handsUrl = api + "/hands/";
+	protected static String decksUrl = api + "/decks/";
 	
-	static String playersUrlWithId = api + "/players/{id}";
-	static String gamesUrlWithId = api + "/games/{id}";
-	static String casinosUrlWithId = api + "/casinos/{id}";
-	static String handsUrlWithId = api + "/hands/{id}";
-	static String decksUrlWithId = api + "/decks/{id}";
+	protected static String playersUrlWithId = api + "/players/{id}";
+	protected static String gamesUrlWithId = api + "/games/{id}";
+	protected static String casinosUrlWithId = api + "/casinos/{id}";
+	protected static String handsUrlWithId = api + "/hands/{id}";
+	protected static String decksUrlWithId = api + "/decks/{id}";
 	
 	// API          HTTP
 	//
@@ -117,11 +109,11 @@ public class SpringIntegrationTest {
 		//headers.put("Accept", "application/json");
 		headers.put("Content-Type", "application/json");
 		
-		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback( headers);
+		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback(headers);
 		requestCallback.setBody(body);
 		
 		final ResponseResultErrorHandler errorHandler = new ResponseResultErrorHandler();
-
+		
 		if (restTemplate == null) {
 			restTemplate = new RestTemplate();
 		}
@@ -156,7 +148,7 @@ public class SpringIntegrationTest {
 			builder.queryParam(entry.getKey(), entry.getValue());
 		}
 		
-		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback( headers);
+		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback(headers);
 		requestCallback.setBody(body);
 		final ResponseResultErrorHandler errorHandler = new ResponseResultErrorHandler();
 		if (restTemplate == null) {
@@ -184,7 +176,7 @@ public class SpringIntegrationTest {
 		//headers.put("Accept", "application/json");
 		headers.put("Content-Type", "application/json");
 		
-		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback( headers);
+		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback(headers);
 		requestCallback.setBody(body);
 		
 		final ResponseResultErrorHandler errorHandler = new ResponseResultErrorHandler();
@@ -223,7 +215,7 @@ public class SpringIntegrationTest {
 			builder.queryParam(entry.getKey(), entry.getValue());
 		}
 		
-		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback( headers);
+		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback(headers);
 		requestCallback.setBody(body);
 		final ResponseResultErrorHandler errorHandler = new ResponseResultErrorHandler();
 		if (restTemplate == null) {
@@ -251,7 +243,7 @@ public class SpringIntegrationTest {
 		//headers.put("Accept", "application/json");
 		headers.put("Content-Type", "application/json");
 		
-		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback( headers);
+		final HeaderSettingRequestCallback requestCallback = new HeaderSettingRequestCallback(headers);
 		requestCallback.setBody(body);
 		
 		final ResponseResultErrorHandler errorHandler = new ResponseResultErrorHandler();

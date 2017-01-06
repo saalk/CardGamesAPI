@@ -29,8 +29,15 @@ import org.springframework.web.servlet.DispatcherServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.annotation.MultipartConfig;
 
 // so bootstrap DispatcherServlet without web.xml
+//@MultipartConfig(
+//        location="/tmp",
+//        fileSizeThreshold=1024*1024,    // 1 MB
+//        maxFileSize=1024*1024*5,        // 5 MB
+//        maxRequestSize=1024*1024*5*5*3  // 75 MB
+//)
 public class SpringWebAppInitializer implements WebApplicationInitializer {
 
     @Override
