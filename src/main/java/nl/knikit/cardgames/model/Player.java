@@ -54,7 +54,7 @@ public class Player implements Serializable {
     @Id
     @Column(name = "PLAYER_ID")
     @GeneratedValue(strategy = GenerationType.TABLE)
-    ////@JsonProperty("playerId")
+    ////@JsonProperty("suppliedPlayerId")
     private int playerId;
 
     @Column(name = "CREATED", length = 25)

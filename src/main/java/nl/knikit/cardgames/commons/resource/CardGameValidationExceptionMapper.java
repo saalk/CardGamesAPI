@@ -13,8 +13,9 @@ public class CardGameValidationExceptionMapper implements ExceptionMapper<Invali
 
 	@Override
 	public Response toResponse(InvalidCardGameException e) {
-		CardGameResponse response = new CardGameResponse();
-		response.setErrorCode(ResourceConstants.ERROR_CODE_INVALID_CARDGAME);
-		return Response.status(Response.Status.FORBIDDEN).entity(response).build();
+		final CardGameResponse.CardGameResponseBuilder responseBuilder = CardGameResponse.builder();
+		responseBuilder.build();
+		responseBuilder.errorCode(ResourceConstants.ERROR_CODE_INVALID_CARDGAME);
+		return Response.status(Response.Status.FORBIDDEN).entity(responseBuilder).build();
 	}
 }

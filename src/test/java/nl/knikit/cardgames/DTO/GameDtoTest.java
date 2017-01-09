@@ -31,8 +31,8 @@ public class GameDtoTest extends TestData {
 		String gameFixtureName = "Highlow#0001 (Ante:50) [Is_setup]";
 		assertEquals(gameFixtureName, actual.getName());
 		assertEquals(gameFixture.getGameId(), actual.getGameId());
-		assertEquals(gameFixture.getState().toString(), actual.getState());
-		assertEquals(gameFixture.getGameType().toString(), actual.getGameType());
+		assertEquals(gameFixture.getState(), actual.getState());
+		assertEquals(gameFixture.getGameType(), actual.getGameType());
 		assertEquals(gameFixture.getAnte(), actual.getAnte());
 		assertEquals(gameFixture.getMinRounds(), actual.getMinRounds());
 		assertEquals(gameFixture.getCurrentRound(), actual.getCurrentRound());
@@ -61,8 +61,8 @@ public class GameDtoTest extends TestData {
 		
 		// Then - expected 17, actual 14
 		assertEquals(gameDtoFixture.getGameId(), actual.getGameId());
-		assertEquals(gameDtoFixture.getState(), actual.getState().toString());
-		assertEquals(gameDtoFixture.getGameType(), actual.getGameType().toString());
+		assertEquals(gameDtoFixture.getState(), actual.getState());
+		assertEquals(gameDtoFixture.getGameType(), actual.getGameType());
 		assertEquals(gameDtoFixture.getAnte(), actual.getAnte());
 		assertEquals(gameDtoFixture.getMinRounds(), actual.getMinRounds());
 		assertEquals(gameDtoFixture.getCurrentRound(), actual.getCurrentRound());
@@ -72,7 +72,7 @@ public class GameDtoTest extends TestData {
 		assertEquals(gameDtoFixture.getTurnsToWin(), actual.getTurnsToWin());
 		assertEquals(gameDtoFixture.getMaxTurns(), actual.getMaxTurns());
 		// TODO fix me
-		// assertEquals(gameDtoFixture.getWinner().getPlayerId(), actual.getPlayer().getPlayerId());
+		// assertEquals(gameDtoFixture.getWinner().getSuppliedPlayerId(), actual.getPlayer().getSuppliedPlayerId());
 		// assertEquals(gameDtoFixture.getDeckDtos().size(), actual.getDecks().size());
 	}
 }

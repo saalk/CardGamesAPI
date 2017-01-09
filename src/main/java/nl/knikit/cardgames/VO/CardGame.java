@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.knikit.cardgames.DTO.DeckDto;
+import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
@@ -26,7 +27,7 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 //@JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
-public class CardGame extends Game implements Serializable {
+public class CardGame extends GameDto implements Serializable {
 	
 	public CardGame() {
 	}

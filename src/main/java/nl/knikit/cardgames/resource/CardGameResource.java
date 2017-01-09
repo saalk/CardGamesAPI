@@ -43,7 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CardGameResource extends AbstractResource {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-
+	@Autowired
+	CardGameController controller;
+	
 	@Autowired
 	private ModelMapperUtil mapUtil;
 	
@@ -100,46 +102,41 @@ public class CardGameResource extends AbstractResource {
 		
 		//POST   api/cardgames/init           ?gameType/ante
 		
-		// TODO @Valid + @NotNull and validate from AbstractResource
-		// TODO add a overloadMitigator and security events
-		
-		CardGameResponse response;
-		CardGameController controller = new CardGameController();
-		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameType", gameType);
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
+		CardGameResponse response;
 		response = controller.play(CardGameStateMachine.Trigger.POST_INIT, pathAndRequestParams);
 		
-		if (response.isSuccess()) {
-//			return ResponseEntity
-//					       .status(HttpStatus.CREATED)
-//					       .body(response);
-
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(response);
+			
 		} else {
-//			return ResponseEntity
-//					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					       .body(e);
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
 		
 		// TODO import org.springframework.http.ResponseEntity vs import javax.ws.rs.core.Response;
 		
-		// STUBBED RESULT
-		String responseText = "api/cardgames/init = ";
-		if (gameType.equals("")) {
-			responseText += "No gameType in param specified";
-		} else {
-			responseText += "GameType in param=" + gameType;
-		}
-		if (ante == null || ante.toString().isEmpty()) {
-			responseText += " No ante in param specified";
-		} else {
-			responseText += " Ante in param=" + ante;
-		}
-		return ResponseEntity
-				       .status(HttpStatus.CREATED)
-				       .body(responseText);
+//		// STUBBED RESULT
+//		String responseText = "api/cardgames/init = ";
+//		if (gameType.equals("")) {
+//			responseText += "No gameType in param specified";
+//		} else {
+//			responseText += "GameType in param=" + gameType;
+//		}
+//		if (ante == null || ante.toString().isEmpty()) {
+//			responseText += " No ante in param specified";
+//		} else {
+//			responseText += " Ante in param=" + ante;
+//		}
+//		return ResponseEntity
+//				       .status(HttpStatus.CREATED)
+//				       .body(responseText);
 	}
 	
 	// a body is always needed but can be {}
@@ -154,28 +151,47 @@ public class CardGameResource extends AbstractResource {
 		
 		//POST   api/cardgames/init/human/2   ?gameType/ante
 		
-		String responseText = "api/cardgames/init/human/{id} = ";
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("gameType", gameType);
+		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
-		if (playerId.toString().isEmpty()) {
-			responseText += "No playerId in path specified";
+		CardGameResponse response;
+		response = controller.play(CardGameStateMachine.Trigger.POST_INIT_HUMAN, pathAndRequestParams);
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(response);
+			
 		} else {
-			responseText += "PlayerId in path=" + playerId;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
 		
-		if (gameType.equals("")) {
-			responseText += " No gameType in param specified";
-		} else {
-			responseText += " GameType in param=" + gameType;
-		}
-		if (ante == null || ante.toString().isEmpty()) {
-			responseText += " No ante in param specified";
-		} else {
-			responseText += " Ante in param=" + ante;
-		}
-		
-		return ResponseEntity
-				       .status(HttpStatus.CREATED)
-				       .body(responseText);
+//		String responseText = "api/cardgames/init/human/{id} = ";
+//
+//		if (playerId.toString().isEmpty()) {
+//			responseText += "No playerId in path specified";
+//		} else {
+//			responseText += "PlayerId in path=" + playerId;
+//		}
+//
+//		if (gameType.equals("")) {
+//			responseText += " No gameType in param specified";
+//		} else {
+//			responseText += " GameType in param=" + gameType;
+//		}
+//		if (ante == null || ante.toString().isEmpty()) {
+//			responseText += " No ante in param specified";
+//		} else {
+//			responseText += " Ante in param=" + ante;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.CREATED)
+//				       .body(responseText);
 		
 	}
 	
@@ -194,44 +210,70 @@ public class CardGameResource extends AbstractResource {
 
 		//POST   api/cardgames/1/setup/human        ?alias/avatar/securedLoan            // no dealing yet
 		//POST   api/cardgames/1/setup/ai           ?alias/avatar/securedLoan/aiLevel
-
-		String responseText = "api/cardgames/{id}/setup/{humanOrAi} = ";
 		
-		if (id==null || id.toString().isEmpty()) {
-			responseText += "No id in path specified";
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("gameId", String.valueOf(id));
+		pathAndRequestParams.put("humanOrAi", humanOrAi);
+		pathAndRequestParams.put("alias", alias);
+		pathAndRequestParams.put("avatar", avatar);
+		pathAndRequestParams.put("aiLevel", aiLevel);
+		pathAndRequestParams.put("securedLoan", String.valueOf(securedLoan));
+		
+		CardGameResponse response;
+		if (humanOrAi.equals("human")) {
+			response = controller.play(CardGameStateMachine.Trigger.POST_SETUP_HUMAN, pathAndRequestParams);
 		} else {
-			responseText += "Id in path=" + id;
+			response = controller.play(CardGameStateMachine.Trigger.POST_SETUP_AI, pathAndRequestParams);
 		}
-		if (humanOrAi.equals("")) {
-			responseText += " No humanOrAi in path specified";
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(response);
+			
 		} else {
-			responseText += " HumanOrAi in path=" + humanOrAi;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
-
-		if (alias.equals("")) {
-			responseText += " No alias in param specified";
-		} else {
-			responseText += " Alias in param=" + alias;
-		}
-		if (avatar.equals("")) {
-			responseText += " No avatar in param specified";
-		} else {
-			responseText += " Avatar in param=" + avatar;
-		}
-		if (aiLevel.equals("")) {
-			responseText += " No aiLevel in param specified";
-		} else {
-			responseText += " AiLevel in param=" + alias;
-		}
-		if (securedLoan == null || securedLoan.toString().isEmpty()) {
-			responseText += " No securedLoan in param specified";
-		} else {
-			responseText += " SecuredLoan in param=" + securedLoan;
-		}
-
-		return ResponseEntity
-				       .status(HttpStatus.CREATED)
-				       .body(responseText);
+		
+//		String responseText = "api/cardgames/{id}/setup/{humanOrAi} = ";
+//
+//		if (id==null || id.toString().isEmpty()) {
+//			responseText += "No id in path specified";
+//		} else {
+//			responseText += "Id in path=" + id;
+//		}
+//		if (humanOrAi.equals("")) {
+//			responseText += " No humanOrAi in path specified";
+//		} else {
+//			responseText += " HumanOrAi in path=" + humanOrAi;
+//		}
+//
+//		if (alias.equals("")) {
+//			responseText += " No alias in param specified";
+//		} else {
+//			responseText += " Alias in param=" + alias;
+//		}
+//		if (avatar.equals("")) {
+//			responseText += " No avatar in param specified";
+//		} else {
+//			responseText += " Avatar in param=" + avatar;
+//		}
+//		if (aiLevel.equals("")) {
+//			responseText += " No aiLevel in param specified";
+//		} else {
+//			responseText += " AiLevel in param=" + alias;
+//		}
+//		if (securedLoan == null || securedLoan.toString().isEmpty()) {
+//			responseText += " No securedLoan in param specified";
+//		} else {
+//			responseText += " SecuredLoan in param=" + securedLoan;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.CREATED)
+//				       .body(responseText);
 
 	}
 
@@ -245,24 +287,43 @@ public class CardGameResource extends AbstractResource {
 			                                             @RequestParam(value = "jokers", required = false) Integer jokers) throws Exception {
 
 		//POST   api/cardgames/1/shuffle/cards  ?jokers                             // no dealing yet
-
-		String responseText = "api/cardgames/{id}/shuffle = ";
 		
-		if (id==null || id.toString().isEmpty()) {
-			responseText += "No id in path specified";
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("gameId", String.valueOf(id));
+		pathAndRequestParams.put("jokers", String.valueOf(jokers));
+		
+		CardGameResponse response;
+		response = controller.play(CardGameStateMachine.Trigger.POST_SHUFFLE, pathAndRequestParams);
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.CREATED)
+					       .body(response);
+			
 		} else {
-			responseText += "Id in path=" + id;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
-
-		if (jokers == null || jokers.toString().isEmpty()) {
-			responseText += " No jokers in param specified";
-		} else {
-			responseText += " Jokers in param=" + jokers;
-		}
-
-		return ResponseEntity
-				       .status(HttpStatus.CREATED)
-				       .body(responseText);
+		
+		
+//		String responseText = "api/cardgames/{id}/shuffle = ";
+//
+//		if (id==null || id.toString().isEmpty()) {
+//			responseText += "No id in path specified";
+//		} else {
+//			responseText += "Id in path=" + id;
+//		}
+//
+//		if (jokers == null || jokers.toString().isEmpty()) {
+//			responseText += " No jokers in param specified";
+//		} else {
+//			responseText += " Jokers in param=" + jokers;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.CREATED)
+//				       .body(responseText);
 	}
 
 	// a body is always needed but can be {}
@@ -276,29 +337,48 @@ public class CardGameResource extends AbstractResource {
 			                                    @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
 
 		//PUT    api/cardgames/1/init          ?gameType/ante
-
-		String responseText = "api/cardgames/{id}/init = ";
-
-		if (id==null || id.toString().isEmpty()) {
-			responseText += "No id in path specified";
+		
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("gameId", String.valueOf(id));
+		pathAndRequestParams.put("gameType", gameType);
+		pathAndRequestParams.put("ante", String.valueOf(ante));
+		
+		CardGameResponse response;
+		response = controller.play(CardGameStateMachine.Trigger.PUT_INIT, pathAndRequestParams);
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(response);
+			
 		} else {
-			responseText += "Id in path=" + id;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
-
-		if (gameType.equals("")) {
-			responseText += " No gameType in param specified";
-		} else {
-			responseText += " GameType in param=" + gameType;
-		}
-		if (ante==null || ante.toString().isEmpty()) {
-			responseText += " No ante in param specified";
-		} else {
-			responseText += " Ante in param=" + ante;
-		}
-
-		return ResponseEntity
-				       .status(HttpStatus.OK)
-				       .body(responseText);
+		
+//		String responseText = "api/cardgames/{id}/init = ";
+//
+//		if (id==null || id.toString().isEmpty()) {
+//			responseText += "No id in path specified";
+//		} else {
+//			responseText += "Id in path=" + id;
+//		}
+//
+//		if (gameType.equals("")) {
+//			responseText += " No gameType in param specified";
+//		} else {
+//			responseText += " GameType in param=" + gameType;
+//		}
+//		if (ante==null || ante.toString().isEmpty()) {
+//			responseText += " No ante in param specified";
+//		} else {
+//			responseText += " Ante in param=" + ante;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.OK)
+//				       .body(responseText);
 	}
 
 	// a body is always needed but can be {}
@@ -316,49 +396,72 @@ public class CardGameResource extends AbstractResource {
 			                                    @RequestParam(value = "playingOrder", required = false) Integer playingOrder) throws Exception {
 
 		//PUT    api/cardgames/1/setup/players/2   ?alias/avatar/securedLoan/aiLevel/playingOrder
-
-		String responseText = "api/cardgames/{id}/setup/players/{playerId} = ";
-
-		if (id.toString().isEmpty()) {
-			responseText += "No id in path specified";
+		
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("gameId", String.valueOf(id));
+		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("alias", alias);
+		pathAndRequestParams.put("avatar", avatar);
+		pathAndRequestParams.put("aiLevel", aiLevel);
+		pathAndRequestParams.put("securedLoan", String.valueOf(securedLoan));
+		pathAndRequestParams.put("playingOrder", String.valueOf(playingOrder));
+		
+		CardGameResponse response;
+		response = controller.play(CardGameStateMachine.Trigger.PUT_SETUP_PLAYER, pathAndRequestParams);
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(response);
+			
 		} else {
-			responseText += "Id in path=" + id;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
-		if (playerId.toString().isEmpty()) {
-			responseText += " No playerId in path specified";
-		} else {
-			responseText += " PlayerId in path=" + playerId;
-		}
-
-		if (alias.equals("")) {
-			responseText += " No alias in param specified";
-		} else {
-			responseText += " Alias in param=" + alias;
-		}
-		if (avatar.equals("")) {
-			responseText += " No avatar in param specified";
-		} else {
-			responseText += " Avatar in param=" + avatar;
-		}
-		if (aiLevel.equals("")) {
-			responseText += " No aiLevel in param specified";
-		} else {
-			responseText += " AiLevel in param=" + alias;
-		}
-		if (securedLoan == null || securedLoan.toString().isEmpty()) {
-			responseText += " No securedLoan in param specified";
-		} else {
-			responseText += " SecuredLoan in param=" + securedLoan;
-		}
-		if (playingOrder == null || playingOrder.toString().isEmpty()) {
-			responseText += " No playingOrder in param specified";
-		} else {
-			responseText += " PlayingOrder in param=" + playingOrder;
-		}
-
-		return ResponseEntity
-				       .status(HttpStatus.OK)
-				       .body(responseText);
+		
+//		String responseText = "api/cardgames/{id}/setup/players/{playerId} = ";
+//
+//		if (id.toString().isEmpty()) {
+//			responseText += "No id in path specified";
+//		} else {
+//			responseText += "Id in path=" + id;
+//		}
+//		if (playerId.toString().isEmpty()) {
+//			responseText += " No playerId in path specified";
+//		} else {
+//			responseText += " PlayerId in path=" + playerId;
+//		}
+//
+//		if (alias.equals("")) {
+//			responseText += " No alias in param specified";
+//		} else {
+//			responseText += " Alias in param=" + alias;
+//		}
+//		if (avatar.equals("")) {
+//			responseText += " No avatar in param specified";
+//		} else {
+//			responseText += " Avatar in param=" + avatar;
+//		}
+//		if (aiLevel.equals("")) {
+//			responseText += " No aiLevel in param specified";
+//		} else {
+//			responseText += " AiLevel in param=" + alias;
+//		}
+//		if (securedLoan == null || securedLoan.toString().isEmpty()) {
+//			responseText += " No securedLoan in param specified";
+//		} else {
+//			responseText += " SecuredLoan in param=" + securedLoan;
+//		}
+//		if (playingOrder == null || playingOrder.toString().isEmpty()) {
+//			responseText += " No playingOrder in param specified";
+//		} else {
+//			responseText += " PlayingOrder in param=" + playingOrder;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.OK)
+//				       .body(responseText);
 	}
 
 	// a body is always needed but can be {}
@@ -373,29 +476,48 @@ public class CardGameResource extends AbstractResource {
 
 
 		//PUT    api/cardgames/1/turn/    players/2   ?action=deal/higher/lower/pass/auto for human or ai player
-
-		String responseText = "api/cardgames/{id}/turn/players/{playerId} = ";
-
-		if (id == null || id.toString().isEmpty()) {
-			responseText += "No id in path specified";
+		
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("gameId", String.valueOf(id));
+		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("action", action);
+		
+		CardGameResponse response;
+		response = controller.play(CardGameStateMachine.Trigger.PUT_TURN, pathAndRequestParams);
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.OK)
+					       .body(response);
+			
 		} else {
-			responseText += "Id in path=" + id;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
-		if (playerId == null || playerId.toString().isEmpty()) {
-			responseText += " No playerId in path specified";
-		} else {
-			responseText += " PlayerId in path=" + playerId;
-		}
-
-		if (action.equals("")) {
-			responseText += " No action in param specified";
-		} else {
-			responseText += " Action in param=" + action;
-		}
-
-		return ResponseEntity
-				       .status(HttpStatus.OK)
-				       .body(responseText);
+		
+//		String responseText = "api/cardgames/{id}/turn/players/{playerId} = ";
+//
+//		if (id == null || id.toString().isEmpty()) {
+//			responseText += "No id in path specified";
+//		} else {
+//			responseText += "Id in path=" + id;
+//		}
+//		if (playerId == null || playerId.toString().isEmpty()) {
+//			responseText += " No playerId in path specified";
+//		} else {
+//			responseText += " PlayerId in path=" + playerId;
+//		}
+//
+//		if (action.equals("")) {
+//			responseText += " No action in param specified";
+//		} else {
+//			responseText += " Action in param=" + action;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.OK)
+//				       .body(responseText);
 	}
 
 	@DeleteMapping(value = "/cardgames/{id}/setup/{humanOrAi}/{playerId}")
@@ -409,28 +531,50 @@ public class CardGameResource extends AbstractResource {
 		//DELETE api/cardgames/1/setup/human/3
 		//DELETE api/cardgames/1/setup/ai/2
 		
-		String responseText = "api/cardgames/{id}/setup/{humanOrAi}/(playerId} = ";
-
-		if (id == null || id.toString().isEmpty()) {
-			responseText += "No id in path specified";
+		Map<String, String> pathAndRequestParams = new HashMap<>();
+		pathAndRequestParams.put("gameId", String.valueOf(id));
+		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("humanOrAi", humanOrAi);
+		
+		CardGameResponse response;
+		
+		if (humanOrAi.equals("human")) {
+			response = controller.play(CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN, pathAndRequestParams);
 		} else {
-			responseText += "Id in path=" + id;
+			response = controller.play(CardGameStateMachine.Trigger.DELETE_SETUP_AI, pathAndRequestParams);
 		}
-		if (humanOrAi.equals("")) {
-			responseText += " No humanOrAi in path specified";
+		
+		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
+			return ResponseEntity
+					       .status(HttpStatus.NO_CONTENT)
+					       .body(response);
+			
 		} else {
-			responseText += " HumanOrAi in path=" + humanOrAi;
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(response);
 		}
-		if (playerId == null || playerId.toString().isEmpty()) {
-			responseText += " No playerId in path specified";
-		} else {
-			responseText += " PlayerId in path=" + playerId;
-		}
-
-		return ResponseEntity
-				       .status(HttpStatus.OK)
-				       .body(responseText);
+		
+//		String responseText = "api/cardgames/{id}/setup/{humanOrAi}/(playerId} = ";
+//
+//		if (id == null || id.toString().isEmpty()) {
+//			responseText += "No id in path specified";
+//		} else {
+//			responseText += "Id in path=" + id;
+//		}
+//		if (humanOrAi.equals("")) {
+//			responseText += " No humanOrAi in path specified";
+//		} else {
+//			responseText += " HumanOrAi in path=" + humanOrAi;
+//		}
+//		if (playerId == null || playerId.toString().isEmpty()) {
+//			responseText += " No playerId in path specified";
+//		} else {
+//			responseText += " PlayerId in path=" + playerId;
+//		}
+//
+//		return ResponseEntity
+//				       .status(HttpStatus.OK)
+//				       .body(responseText);
 	}
-
-	
 }

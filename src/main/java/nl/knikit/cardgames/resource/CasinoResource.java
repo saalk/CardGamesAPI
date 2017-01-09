@@ -150,7 +150,7 @@ public class CasinoResource {
 		if (casinoDto == null || casinoDto.getGameDto() == null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("Body or gameId not present");
+					       .body("Body or suppliedGameId not present");
 		}
 		Game game = gameService.findOne((casinoDto.getGameDto().getGameId()));
 		if (game == null) {

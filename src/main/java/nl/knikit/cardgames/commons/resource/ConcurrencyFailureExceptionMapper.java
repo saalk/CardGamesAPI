@@ -16,9 +16,10 @@ public class ConcurrencyFailureExceptionMapper implements ExceptionMapper<Concur
 
   @Override
   public Response toResponse(ConcurrencyFailureException e) {
-    CardGameResponse response = new CardGameResponse();
-    response.setErrorCode(ResourceConstants.ERROR_CODE_CONCURRENT_CARDGAME);
-    return Response.status(Response.Status.OK).entity(response).build();
+    final CardGameResponse.CardGameResponseBuilder responseBuilder = CardGameResponse.builder();
+    responseBuilder.build();
+    responseBuilder.errorCode(ResourceConstants.ERROR_CODE_CONCURRENT_CARDGAME);
+    return Response.status(Response.Status.OK).entity(responseBuilder).build();
   }
 
 }

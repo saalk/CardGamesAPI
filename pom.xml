@@ -542,7 +542,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- scope means that it is not packaged to war
@@ -861,7 +861,6 @@
             <artifactId>encryption</artifactId>
             <version>0.2-RELEASE</version>
         </dependency>
-
     </dependencies>
 
     <profiles>

@@ -2,7 +2,9 @@ package nl.knikit.cardgames.dao.common;
 
 import com.google.common.base.Preconditions;
 
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.state.CardGameStateMachine;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -265,6 +267,47 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 			log.error(errorMessage);
 			throw e;
 		}
+	}
+	
+	@Override
+	public T createDefaultGame(T entity) {
+		String message = String.format("Entity default to create in DAO: %s", entity.toString());
+		log.info(message);
+		
+		Preconditions.checkNotNull(entity);
+		try {
+			Game gameToCreate = (Game) entity;
+			gameToCreate.setGameType(GameType.HIGHLOW);
+			// the state is supplied
+			create((T) gameToCreate);
+			
+		} catch (Exception e) {
+			String errorMessage = String.format("Entity state to update error: %s in DAO by entity: %s", e, entity);
+			log.error(errorMessage);
+			throw e;
+		}
+		return entity;
+	}
+	
+	@Override
+	public T updateStateInGame(T entity) {
+		
+		String message = String.format("Entity state to update in DAO: %s", entity.toString());
+		log.info(message);
+		
+		Preconditions.checkNotNull(entity);
+		try {
+			Game gameToUpdate = (Game) entity;
+			Game stateToUpdate = (Game) findOne(gameToUpdate.getGameId());
+			stateToUpdate.setState(gameToUpdate.getState());
+			getCurrentSession().update(String.valueOf(Game.class), stateToUpdate);
+			
+		} catch (Exception e) {
+			String errorMessage = String.format("Entity state to update error: %s in DAO by entity: %s", e, entity);
+			log.error(errorMessage);
+			throw e;
+		}
+		return entity;
 	}
 	
 	// private method

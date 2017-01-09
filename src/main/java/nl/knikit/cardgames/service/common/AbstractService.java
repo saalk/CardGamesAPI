@@ -41,12 +41,22 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     public T create(final T entity) {
         return getDao().create(entity);
     }
+    
+    @Override
+    public T createDefaultGame(final T entity) {
+        return getDao().createDefaultGame(entity);
+    }
 
     @Override
     public T update(final T entity) {
         return getDao().update(entity);
     }
-
+    
+    @Override
+    public T updateStateInGame(final T entity) {
+        return getDao().updateStateInGame(entity);
+    }
+    
     @Override
     public void deleteOne(final T entity) {
         getDao().deleteOne(entity);

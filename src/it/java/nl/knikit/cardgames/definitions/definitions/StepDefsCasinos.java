@@ -167,11 +167,11 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 //	}
 	
 //	@Given("^I try to delete a game \"([^\"]*)\" for a casino$")
-//	public void iTryToDeleteAGameForACasinoWith(String gameId) throws Throwable {
-//		if (gameId.equals("latest")) {
-//			gameId = latestGamesID;
+//	public void iTryToDeleteAGameForACasinoWith(String suppliedGameId) throws Throwable {
+//		if (suppliedGameId.equals("latest")) {
+//			suppliedGameId = latestGamesID;
 //		}
-//		executeDelete(gamesUrl + gameId, null);
+//		executeDelete(gamesUrl + suppliedGameId, null);
 //	}
 	
 	@And("^The json response should contain at least \"([^\"]*)\" casinos")
@@ -318,7 +318,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 //
 //		// move the latest to latest-1
 //		latestPlayersID2 = latestPlayersID;
-//		latestPlayersID = String.valueOf(jsonPlayer.getPlayerId());
+//		latestPlayersID = String.valueOf(jsonPlayer.getSuppliedPlayerId());
 //
 //	}
 	
@@ -330,7 +330,7 @@ public class StepDefsCasinos extends SpringIntegrationTest {
 //
 //		//JSON string to Object
 //		GameDto jsonGame = mapper.readValue(latestResponse.getBody(), GameDto.class);
-//		latestGamesID = String.valueOf(jsonGame.getGameId());
+//		latestGamesID = String.valueOf(jsonGame.getSuppliedGameId());
 //
 //	}
 }

@@ -18,8 +18,12 @@ public interface IOperations<T extends Serializable> {
     <SK> List<T> findAllByAttributes(AttributesHashMap<T> attributes, SingularAttribute<T, SK> order);
     
     T create(final T entity);
+    
+    T createDefaultGame(final T entity);
 
     T update(final T entity);
+    
+    T updateStateInGame(final T entity);
 
     void deleteOne(final T entity);
 

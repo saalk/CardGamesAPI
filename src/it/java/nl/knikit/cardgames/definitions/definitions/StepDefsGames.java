@@ -220,7 +220,7 @@ public class StepDefsGames extends SpringIntegrationTest {
 		
 		if (!playerDto.isEmpty()) {
 			assertThat(jsonGame.getWinner().getPlayerId(), is(Integer.parseInt(playerDto)));
-			// assertEquals(jsonGame.getWinner().getPlayerId(), Integer.parseInt(playerDto));
+			// assertEquals(jsonGame.getWinner().getSuppliedPlayerId(), Integer.parseInt(playerDto));
 		}
 	}
 	

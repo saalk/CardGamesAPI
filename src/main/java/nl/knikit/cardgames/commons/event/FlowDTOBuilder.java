@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.commons.event;
 
 
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 
 import org.springframework.beans.BeansException;
@@ -30,7 +31,13 @@ public class FlowDTOBuilder<T extends AbstractFlowDTO> implements ApplicationCon
         flowDTO.setStateMachine(stateMachine);
         return this;
     }
-
+    
+    public FlowDTOBuilder<T> addContext(Game context) {
+        flowDTO.setGameContext(context);
+        return this;
+    }
+    
+    
     @SuppressWarnings("unchecked")
     public T build() {
         return flowDTO;

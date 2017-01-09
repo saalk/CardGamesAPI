@@ -39,8 +39,8 @@ public class GameDto implements Serializable {
 	private String name; // extra field "Highlow:0005 (Ante:100) [GameSelected]"
 	private int gameId;
 	// private String created; to prevent setting, this is generated
-	private String state;
-	private String gameType;
+	private State state;
+	private GameType gameType;
 	private int ante;
 	@Setter(AccessLevel.NONE)
 	private String round; // extra field "Round 3 [1-9]"
@@ -90,7 +90,7 @@ public class GameDto implements Serializable {
 		// instance Enum method:
 		// - name()    - returns name of enum constant
 		// -> better use toString() to get the user-friendly name
-		this.gameType = (String.valueOf(gameType));
+		this.gameType = gameType;
 	}
 	
 	@JsonIgnore
@@ -112,7 +112,7 @@ public class GameDto implements Serializable {
 		
 		//
 		
-		this.state = (String.valueOf(state));
+		this.state = state;
 	}
 	
 	@JsonIgnore
@@ -131,19 +131,19 @@ public class GameDto implements Serializable {
 		}
 		
 		Game newGame = new Game();
-		newGame.setGameType(GameType.fromLabel(this.gameType));
+		newGame.setGameType(this.gameType);
 		newGame.setGameId(this.gameId);
 		newGame.setAnte(this.ante);
-		newGame.setState(State.valueOf(this.state));
+		newGame.setState(this.state);
 		return newGame;
 	}
 	
 	public void setName() {
 		
 		// "Highlow#0005 (Ante:100) [Is_Setup]"
-		this.name = WordUtils.capitalizeFully(this.gameType) + "#" +
+		this.name = WordUtils.capitalizeFully(this.gameType.toString()) + "#" +
 				            StringUtils.leftPad(String.valueOf(this.gameId), 4, "0") +
-				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state) + "]";
+				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state.toString()) + "]";
 	}
 	
 	public String setRound() {

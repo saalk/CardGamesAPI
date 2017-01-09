@@ -5,9 +5,11 @@ import nl.knikit.cardgames.model.state.CardGameStateMachine;
 
 public interface Controller<T extends Game> {
 	
-	void init(T context, CardGameStateMachine.State currentState);
+	T init(T context, CardGameStateMachine.State currentState);
 	
-	void init(T context);
+	T init(T context);
+	
+	T reinstate(final int id);
 	
 	T getContext();
 	

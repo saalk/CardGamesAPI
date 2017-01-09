@@ -1,5 +1,6 @@
 package nl.knikit.cardgames.commons.event;
 
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 
 import java.util.Queue;
@@ -16,7 +17,14 @@ public abstract class AbstractFlowDTO implements FlowEventCallback {
     @Setter
     @Getter
     private CardGameStateMachine stateMachine;
-
+    
+    @Getter @Setter private Game gameContext;
+    
+    public AbstractFlowDTO addContext(Game context){
+        this.gameContext = context;
+        return this;
+    }
+        
     public AbstractEvent getNextInFlow() {
         return chain.poll();
     }

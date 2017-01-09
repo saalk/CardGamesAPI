@@ -52,8 +52,8 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 			if (playerId.equals("latest")) {
 				playerId = latestPlayersID;
 			}
-			url += "/human/{playerId}";
-			uriParams.put("playerId", playerId);
+			url += "/human/{suppliedPlayerId}";
+			uriParams.put("suppliedPlayerId", playerId);
 		}
 		
 		// Query parameters
@@ -132,7 +132,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		// Uri (URL) parameters
 		Map<String, String> uriParams = new HashMap<>();
 		uriParams.put("id", cardGameId);
-		uriParams.put("playerId", playerId);
+		uriParams.put("suppliedPlayerId", playerId);
 		
 		// Query parameters
 		Map<String, String>  queryParams = new HashMap<>();
@@ -142,7 +142,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		queryParams.put("aiLevel", aiLevel);
 		
 		// body cannot be null since there is a put that wants a request body
-		executePutWithUriAndQueryParam("http://localhost:8383/api/cardgames/"+ cardGameId + "/setup/players/{playerId}?", uriParams, "{}", queryParams);
+		executePutWithUriAndQueryParam("http://localhost:8383/api/cardgames/"+ cardGameId + "/setup/players/{suppliedPlayerId}?", uriParams, "{}", queryParams);
 		
 	}
 	
@@ -183,14 +183,14 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		// Uri (URL) parameters
 		Map<String, String> uriParams = new HashMap<>();
 		uriParams.put("id", cardGameId);
-		uriParams.put("playerId", playerId);
+		uriParams.put("suppliedPlayerId", playerId);
 		
 		// Query parameters
 		Map<String, String>  queryParams = new HashMap<>();
 		queryParams.put("action", action);
 		
 		// body cannot be null since there is a put that wants a request body
-		executePutWithUriAndQueryParam(cardGamesUrlWithId + "/turn/players/{playerId}", uriParams, "{}", queryParams);
+		executePutWithUriAndQueryParam(cardGamesUrlWithId + "/turn/players/{suppliedPlayerId}", uriParams, "{}", queryParams);
 		
 	}
 	

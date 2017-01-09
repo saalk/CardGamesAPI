@@ -1,10 +1,11 @@
 package nl.knikit.cardgames.commons.resource;
 
-import nl.knikit.cardgames.commons.util.MiscUtils;
 import nl.knikit.cardgames.service.IGameService;
 
+import org.springframework.validation.Validator;
+
 import javax.annotation.Resource;
-import javax.validation.Validator;
+
 
 public abstract class AbstractResource {
 
@@ -50,8 +51,6 @@ public abstract class AbstractResource {
      * Validates the input
      * @param field - input field
      */
-    protected final void validate(final Object field) {
-        MiscUtils.validate(field, validator);
-    }
+	// use of Validator
 
 }

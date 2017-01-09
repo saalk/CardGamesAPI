@@ -113,11 +113,11 @@ public class PlayerResourceTest {
         int statusCodeValue = result.getStatusCodeValue();
         
 	    // message, expected, actual
-        assertEquals("GET /api/players/{playerId} should result in HTTP status OK", HttpStatus.OK, statusCode);
-        assertEquals("GET /api/players/{playerId} should result in HTTP status value 200", 200, statusCodeValue);
+        assertEquals("GET /api/players/{suppliedPlayerId} should result in HTTP status OK", HttpStatus.OK, statusCode);
+        assertEquals("GET /api/players/{suppliedPlayerId} should result in HTTP status value 200", 200, statusCodeValue);
         
-        //assertEquals("GET /api/players/{playerId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
-        //assertEquals("GET /api/players/{playerId} should result in a player with playerId {playerId}", "player", body);
+        //assertEquals("GET /api/players/{suppliedPlayerId} should result with MediaType " + MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, contentType);
+        //assertEquals("GET /api/players/{suppliedPlayerId} should result in a player with suppliedPlayerId {suppliedPlayerId}", "player", body);
         
     }
 

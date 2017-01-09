@@ -26,7 +26,7 @@ import org.modelmapper.PropertyMap;
 public class GameMapFromEntity extends PropertyMap<Game, GameDto> {
 	@Override
 	protected void configure() {
-		// set the gameDto.winner playerId with a source from game.player fields
-		// map().setWinner(source.getPlayer().getPlayerId());
+		// set the gameDto.winner suppliedPlayerId with a source from game.player fields
+		// map().setWinner(source.getPlayer().getSuppliedPlayerId());
 	}
 };

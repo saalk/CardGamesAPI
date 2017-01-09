@@ -167,7 +167,7 @@ public class DeckResource {
 //		}
 //		ArrayList<DeckDto> responseDecksDto = new ArrayList<>();
 //		for (Deck deck : decks) {
-//			if (dealtTo != 0 && deck.getDealtTo().getPlayerId()==dealtTo) {
+//			if (dealtTo != 0 && deck.getDealtTo().getSuppliedPlayerId()==dealtTo) {
 //				responseDecksDto.add(mapUtil.convertToDto(deck));
 //			}
 //		}

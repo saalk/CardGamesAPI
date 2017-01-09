@@ -27,7 +27,6 @@ Feature: Execute a lifecycle of a cardGame in the card game
   Scenario Outline: INIT a NEW CardGame with POST /api/cardgames/init?gameType=<gameType>&ante=<ante>
     Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default ante HIGHLOW CardGame
 
@@ -37,8 +36,10 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | latest | []    | []      |          | IS_CONFIGURED | BLACKJACK |      | 201              | api/cardgames/init = GameType in param=BLACKJACK No ante in param specified |
       | latest | []    | []      |          | IS_CONFIGURED |           |  750 | 201              | api/cardgames/init = No gameType in param specified Ante in param=750 |
       | latest | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
+      | latest | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
+      | latest | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
 
-  @Ignore
+  @Api @CardGames
   Scenario Outline: A frontend makes call to POST /api/players to make a player
     Given I try to post a human "<human>" player having "<avatar>" and "<alias>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -53,80 +54,77 @@ Feature: Execute a lifecycle of a cardGame in the card game
   Scenario Outline: INIT a NEW CardGame for a player with POST /api/cardgames/init/human/{playerId}?gameType=<gameType>&ante=<ante>
     Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default ante HIGHLOW CardGame
 
-      | id     | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
-      | latest | []    | []      | 1        | IS_CONFIGURED | HIGHLOW   | 1000 | 201              | api/cardgames/init/human/{id} = PlayerId in path=1 GameType in param=HIGHLOW Ante in param=1000 |
-      | latest | []    | []      | 2        | IS_CONFIGURED | BLACKJACK |  500 | 201              | api/cardgames/init/human/{id} = PlayerId in path=2 GameType in param=BLACKJACK Ante in param=500 |
-      | latest | []    | []      | 3        | IS_CONFIGURED | BLACKJACK |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=3 GameType in param=BLACKJACK No ante in param specified |
-      | latest | []    | []      | 4        | IS_CONFIGURED |           |  750 | 201              | api/cardgames/init/human/{id} = PlayerId in path=4 No gameType in param specified Ante in param=750 |
-      | latest | []    | []      | 5        | IS_CONFIGURED |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
+      | id | decks | casinos | playerId | state       | gameType  | ante | HTTP status code | response |
+      | 2  | []    | []      | latest   | HAS_PLAYERS | HIGHLOW   | 1000 | 201              | api/cardgames/init/human/{id} = PlayerId in path=1 GameType in param=HIGHLOW Ante in param=1000 |
+      | 3  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |  500 | 201              | api/cardgames/init/human/{id} = PlayerId in path=2 GameType in param=BLACKJACK Ante in param=500 |
+      | 4  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=3 GameType in param=BLACKJACK No ante in param specified |
+      | 5  | []    | []      | latest   | HAS_PLAYERS |           |  750 | 201              | api/cardgames/init/human/{id} = PlayerId in path=4 No gameType in param specified Ante in param=750 |
+      | 6  | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
+      | 7  | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
 
   @Api @CardGames
   Scenario Outline: INIT some CHANGES for a CardGame with PUT /api/cardgames/{id}/init?gameType=<gameType>&ante=<ante>
     Given I try to init changes to a cardGame with id "<id>" having gameType "<gameType>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default HIGHLOW CardGame
 
-      | id     | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
-      | 97     | []    | []      | 1        | IS_CONFIGURED | HIGHLOW   | 1000 | 200              | api/cardgames/{id}/init = Id in path=97 GameType in param=HIGHLOW Ante in param=1000 |
-      | 98     | []    | []      | 2        | IS_CONFIGURED | BLACKJACK |  500 | 200              | api/cardgames/{id}/init = Id in path=98 GameType in param=BLACKJACK Ante in param=500 |
-      | 99     | []    | []      | 3        | IS_CONFIGURED | BLACKJACK |      | 200              | api/cardgames/{id}/init = Id in path=99 GameType in param=BLACKJACK No ante in param specified |
-      | 100    | []    | []      | 4        | IS_CONFIGURED |           |  750 | 200              | api/cardgames/{id}/init = Id in path=100 No gameType in param specified Ante in param=750 |
-      | 101    | []    | []      | 3        | IS_CONFIGURED |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
+      | id   | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
+      | 2    | []    | []      | 1        | IS_CONFIGURED | HIGHLOW   | 1000 | 200              | api/cardgames/{id}/init = Id in path=97 GameType in param=HIGHLOW Ante in param=1000 |
+      | 3    | []    | []      | 2        | IS_CONFIGURED | BLACKJACK |  500 | 200              | api/cardgames/{id}/init = Id in path=98 GameType in param=BLACKJACK Ante in param=500 |
+      | 4    | []    | []      | 3        | IS_CONFIGURED | BLACKJACK |      | 200              | api/cardgames/{id}/init = Id in path=99 GameType in param=BLACKJACK No ante in param specified |
+      | 5    | []    | []      | 4        | IS_CONFIGURED |           |  750 | 200              | api/cardgames/{id}/init = Id in path=100 No gameType in param specified Ante in param=750 |
+      | 6    | []    | []      | 3        | IS_CONFIGURED |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
+      | 7    | []    | []      | 3        | IS_CONFIGURED |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
 
   @Api @CardGames
   Scenario Outline: SETUP a human or ai player for a CardGame with POST /api/cardgames/{id}/setup/"<HumanOrAi>"?alias="<alias>"&avatar="<avatar>"&securedLoan="<securedLoan>"&aiLevel="<aiLevel>"
     Given I try to setup a HumanOrAi "<HumanOrAi>" player for cardGame with id "<id>" having "<alias>" and "<avatar>" and "<securedLoan>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default Human Player
 
-      | id     | avatar | alias              | HumanOrAi | aiLevel | cubits | securedLoan | HTTP status code | response |
-      | 97     | ELF    | CardGame human Doe | human     | HUMAN   | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=97 HumanOrAi in path=human Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 |
-      | 98     |        | CardGame ai Doe    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=98 HumanOrAi in path=ai Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
-      | 99     | ELF    | CardGame ai Doe    | human     | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=99 HumanOrAi in path=human Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
-      | 100    | ELF    | CardGame ai Doe    | ai        |         | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=100 HumanOrAi in path=ai Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 |
-      | 101    | ELF    |                    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
+      | id   | avatar | alias              | HumanOrAi | aiLevel | cubits | securedLoan | HTTP status code | response |
+      | 2    | ELF    | CardGame human Doe | human     | HUMAN   | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=97 HumanOrAi in path=human Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 |
+      | 3    |        | CardGame ai Doe    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=98 HumanOrAi in path=ai Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
+      | 4    | ELF    | CardGame ai Doe    | human     | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=99 HumanOrAi in path=human Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
+      | 5    | ELF    | CardGame ai Doe    | ai        |         | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=100 HumanOrAi in path=ai Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 |
+      | 6    | ELF    |                    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
+      | 7    | ELF    |                    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
 
   @Api @CardGames
   Scenario Outline: SETUP some CHANGES to a CardGame with PUT /api/cardgames/{id}/setup/{playerId}?alias/avatar/aiLevel/securedLoan
     Given I try to setup changes to a cardGame with id "<id>" having "<playerId>" player with "<alias>" and "<avatar>" and "<securedLoan>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default ante HIGHLOW CardGame
 
-      | id     | playerId | avatar | alias              | human | aiLevel | cubits | securedLoan | HTTP status code | response |
-      | 97     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=97 PlayerId in path=1 Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 98     | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=98 PlayerId in path=2 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 99     | 3        |        | CardGame ai Doe    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=99 PlayerId in path=3 Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 100    | 4        | ELF    | CardGame ai Doe    | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=100 PlayerId in path=4 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 101    | 5        | ELF    | CardGame ai Doe    | ai    |         | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
-      | 102    | 6        | ELF    |                    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
+      | id    | playerId | avatar | alias              | human | aiLevel | cubits | securedLoan | HTTP status code | response |
+      | 2     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=97 PlayerId in path=1 Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 3     | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=98 PlayerId in path=2 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 4     | 3        |        | CardGame ai Doe    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=99 PlayerId in path=3 Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 5     | 4        | ELF    | CardGame ai Doe    | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=100 PlayerId in path=4 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 6     | 5        | ELF    | CardGame ai Doe    | ai    |         | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
+      | 7     | 6        | ELF    |                    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
 
   @Api @CardGames
   Scenario Outline: DELETE a player for a CardGame with DELETE /api/cardgames/{id}/"<HumanOrAi>"/{playerId}
     Given I try to delete a HumanOrAi "<HumanOrAi>" player with "<playerId>" for a cardGame with id "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default ante HIGHLOW CardGame
 
-      | id     | HumanOrAi | playerId | avatar | alias              | human | aiLevel | cubits | securedLoan | HTTP status code | response |
-      | 97     | human     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 200              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=97 HumanOrAi in path=human PlayerId in path=1 |
-      | 98     | ai        | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
+      | id    | HumanOrAi | playerId | avatar | alias              | human | aiLevel | cubits | securedLoan | HTTP status code | response |
+      | 2     | human     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=97 HumanOrAi in path=human PlayerId in path=1 |
+      | 3     | ai        | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
 
   @Api @CardGames
   Scenario Outline: SHUFFLE a CardGame with POST /api/cardgames/{id}/shuffle/cards?jokers
     Given I try to shuffle a cardGame with id "<id>" and jokers "<jokers>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default Human Player
 
@@ -139,7 +137,6 @@ Feature: Execute a lifecycle of a cardGame in the card game
   Scenario Outline: TURN for a player in a CardGame with PUT /api/cardgames/{id}/turn/players/(playerId}
     Given I try to make a turn with "<action>" action for player with id "<playerId>" in a cardGame with id "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
-    And The json response should contain a cardGame with response "<response>"
 
     Examples: This is the default Human Player
 

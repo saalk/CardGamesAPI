@@ -6,6 +6,7 @@ import com.github.oxo42.stateless4j.StateRepresentation;
 import nl.knikit.cardgames.commons.event.AbstractFlowDTO;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IGameService;
 
@@ -40,20 +41,43 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 	}
 	
 	@Override
-	public void init(final T context) {
+	public T init(final T context) {
 		this.context = context;
 		
 		stateMachine.initialize(getStateMachineConfiguration());
 		context.setState(stateMachine.getCurrentStateEnum());
+		
+		// init a new default game has gameType HIGHLOW with the initial state set in the state machine
+		context.setGameType(GameType.HIGHLOW);
+		context.setMaxRounds(9);
+		context.setMinRounds(1);
+		context.setMaxTurns(9);
+		context.setMinTurns(1);
+		context.setTurnsToWin(3);
+		this.setContext((T) gameService.createDefaultGame(this.getContext()));
+		
+		return context;
 	}
 	
 	@Override
-	public void init(final T context, final State currentState) {
-		this.context = context;
+	public T init(final T context, final State currentState) {
 		
+		this.context = context;
 		StateMachineConfig<State, Trigger> config = getStateMachineConfiguration();
 		stateMachine.initialize(config, currentState);
 		context.setState(stateMachine.getCurrentStateEnum());
+		
+		return context;
+	}
+	
+	@Override
+	public T reinstate(final int gameId) {
+		
+		this.setContext((T) gameService.findOne(gameId));
+		if(this.context == null){
+			throw new IllegalStateException("A resinstate was fired, but no game could be found to match it");
+		}
+		return init(this.context,this.context.getState());
 	}
 	
 	/**
@@ -90,7 +114,9 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 	 */
 	public void updateState(final String state) {
 		this.getContext().setState(State.valueOf(state));
-		this.setContext((T) gameService.update(this.getContext()));
+		
+		// update the game with the new state
+		this.setContext((T) gameService.updateStateInGame(this.getContext()));
 	}
 	
 	public void transition(final Trigger trigger) {
