@@ -21,7 +21,11 @@ public class updateCardGameDetailsEvent extends AbstractEvent {
         updateCardGameDetailsEventDTO flowDTO = (updateCardGameDetailsEventDTO) eventInput[0];
 
         // get the game and update the gametype and ante
-        
+	    String message = String.format("Entity state to update in EVENT: %s", flowDTO.getSuppliedTrigger());
+	    log.info(message);
+	
+	
+	
 	    // set a trigger for EventOutput to trigger a transition in the state machine
         EventOutput eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
         return eventOutput;

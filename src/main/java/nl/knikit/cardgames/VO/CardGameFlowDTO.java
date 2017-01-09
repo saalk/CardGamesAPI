@@ -57,7 +57,7 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	// input fields
 	private Map<String, String> pathAndQueryParams;
 	public void processPathAndQueryParams() {
-		if (pathAndQueryParams == null) {
+		if (this.pathAndQueryParams == null) {
 			return;
 		}
 		

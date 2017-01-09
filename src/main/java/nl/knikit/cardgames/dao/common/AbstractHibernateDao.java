@@ -55,6 +55,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	
 	@Override
 	public List<T> findAll(final String column, final String direction) {
+		
 		if (column.isEmpty() || direction.isEmpty()) { // changed from null to empty
 			return getCurrentSession().createQuery("from " + clazz.getName()).list();
 		} else {
@@ -65,6 +66,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	
 	@Override
 	public List<T> findAllWhere(final String column, final String inputValue) {
+		
 		String idMessage = String.format("findAllWhere dao entity: %s", clazz.getName());
 		log.info(idMessage);
 		
@@ -182,6 +184,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	
 	@Override
 	public final T create(final T entity) {
+		
 		String message = String.format("Entity to create in DAO: %s", entity.toString());
 		log.info(message);
 		
@@ -199,6 +202,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	
 	@Override
 	public final T update(final T entity) {
+		
 		String message = String.format("Entity to update in DAO: %s", entity.toString());
 		log.info(message);
 		
@@ -217,6 +221,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	// the deletes
 	@Override
 	public final void deleteOne(final T entity) {
+		
 		String message = String.format("Entity to delete in DAO: %s", entity.toString());
 		log.info(message);
 		Preconditions.checkNotNull(entity);
@@ -232,6 +237,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	@Override
 	@Modifying
 	public final void deleteAll(final T entity) {
+		
 		String message = String.format("Entity to delete all in DAO: %s", entity.toString());
 		log.info(message);
 		Preconditions.checkNotNull(entity);
@@ -271,6 +277,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	
 	@Override
 	public T createDefaultGame(T entity) {
+		
 		String message = String.format("Entity default to create in DAO: %s", entity.toString());
 		log.info(message);
 		
@@ -278,11 +285,11 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 		try {
 			Game gameToCreate = (Game) entity;
 			gameToCreate.setGameType(GameType.HIGHLOW);
-			// the state is supplied
+			// the state and gametype must be is supplied
 			create((T) gameToCreate);
 			
 		} catch (Exception e) {
-			String errorMessage = String.format("Entity state to update error: %s in DAO by entity: %s", e, entity);
+			String errorMessage = String.format("Entity default to create error: %s in DAO by entity: %s", e, entity);
 			log.error(errorMessage);
 			throw e;
 		}
@@ -292,14 +299,13 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	@Override
 	public T updateStateInGame(T entity) {
 		
-		String message = String.format("Entity state to update in DAO: %s", entity.toString());
-		log.info(message);
-		
 		Preconditions.checkNotNull(entity);
 		try {
 			Game gameToUpdate = (Game) entity;
 			Game stateToUpdate = (Game) findOne(gameToUpdate.getGameId());
 			stateToUpdate.setState(gameToUpdate.getState());
+			String message = String.format("Entity state to update in DAO: %s - the state is: %s", entity.toString(),gameToUpdate.getState());
+			log.info(message);
 			getCurrentSession().update(String.valueOf(Game.class), stateToUpdate);
 			
 		} catch (Exception e) {
