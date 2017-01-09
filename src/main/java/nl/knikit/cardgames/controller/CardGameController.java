@@ -411,6 +411,7 @@ public class CardGameController extends AbstractController<Game> {
 		}
 		
 		// generic tasks
+		transition(trigger);
 		this.updateState(flowDTO.getStateMachine().getCurrentState());
 		
 		// make response
