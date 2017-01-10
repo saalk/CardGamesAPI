@@ -6,6 +6,8 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -66,6 +68,16 @@ public class CardGameStateMachine {
 				     .equals(state)) {
 			throw new IllegalStateException("Unexpected state found: " + sm.getState() + " instead of: " + state);
 		}
+	}
+	
+	public void checkAll(final List<State> states) {
+		
+		boolean found = false;
+		for (State state : states) {
+			if (sm.getState().equals(state))
+				found = true;
+		}
+		if (!found) throw new IllegalStateException("Unexpected state found: " + sm.getState() + " instead of: " + states.toString());
 	}
 	
 	public String transition(final Trigger trigger) {

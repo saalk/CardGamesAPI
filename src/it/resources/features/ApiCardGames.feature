@@ -93,7 +93,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 4    | ELF    | CardGame ai Doe    | human     | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=99 HumanOrAi in path=human Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
       | 5    | ELF    | CardGame ai Doe    | ai        |         | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=100 HumanOrAi in path=ai Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 |
       | 6    | ELF    |                    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
-      | 7    | ELF    |                    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
+      | 7    | ELF    |                    | human     | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
 
   @Api @CardGames
   Scenario Outline: SETUP some CHANGES to a CardGame with PUT /api/cardgames/{id}/setup/{playerId}?alias/avatar/aiLevel/securedLoan
@@ -106,9 +106,9 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 2     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=97 PlayerId in path=1 Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 No playingOrder in param specified |
       | 3     | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=98 PlayerId in path=2 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
       | 4     | 3        |        | CardGame ai Doe    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=99 PlayerId in path=3 Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 5     | 4        | ELF    | CardGame ai Doe    | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=100 PlayerId in path=4 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 6     | 5        | ELF    | CardGame ai Doe    | ai    |         | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
-      | 7     | 6        | ELF    |                    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
+      | 5     | 4        | ELF    | CardGame human Doe | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=100 PlayerId in path=4 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 6     | 5        | ELF    | CardGame human Doe | human |         | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
+      | 7     | 6        | ELF    |                    | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
 
   @Api @CardGames
   Scenario Outline: DELETE a player for a CardGame with DELETE /api/cardgames/{id}/"<HumanOrAi>"/{playerId}
@@ -128,10 +128,10 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
     Examples: This is the default Human Player
 
-      | id     | jokers | HTTP status code | response |
-      | 97     | 0      | 201              | api/cardgames/{id}/shuffle = Id in path=97 Jokers in param=0 |
-      | 98     | 1      | 201              | api/cardgames/{id}/shuffle = Id in path=98 Jokers in param=1 |
-      | 99     |        | 201              | api/cardgames/{id}/shuffle = Id in path=99 No jokers in param specified |
+      | id    | jokers | HTTP status code | response |
+      | 5     | 0      | 201              | api/cardgames/{id}/shuffle = Id in path=97 Jokers in param=0 |
+      | 6     | 1      | 201              | api/cardgames/{id}/shuffle = Id in path=98 Jokers in param=1 |
+      | 7     |        | 201              | api/cardgames/{id}/shuffle = Id in path=99 No jokers in param specified |
 
   @Api @CardGames
   Scenario Outline: TURN for a player in a CardGame with PUT /api/cardgames/{id}/turn/players/(playerId}
@@ -140,11 +140,10 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
     Examples: This is the default Human Player
 
-      | id     | playerId | action | HTTP status code | response |
-      | 97     | 2        | HIGHER | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=97 PlayerId in path=2 Action in param=HIGHER |
-      | 98     | 2        | LOWER  | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=98 PlayerId in path=2 Action in param=LOWER |
-      | 99     | 2        | LOWER  | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=99 PlayerId in path=2 Action in param=LOWER |
-      | 100    | 3        | AUTO   | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=100 PlayerId in path=3 Action in param=AUTO |
+      | id    | playerId | action | HTTP status code | response |
+      | 5     | 2        | HIGHER | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=97 PlayerId in path=2 Action in param=HIGHER |
+      | 6     | 2        | LOWER  | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=99 PlayerId in path=2 Action in param=LOWER |
+      | 7     | 3        | AUTO   | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=100 PlayerId in path=3 Action in param=AUTO |
 
   @Ignore
   Scenario Outline: A frontend makes call to DELETE /api/cardgames/{id}
