@@ -12,13 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class updateCardGameDetailsEvent extends AbstractEvent {
+public class UpdateCardGameDetailsEvent extends AbstractEvent {
 
     
     @Override
     protected EventOutput execution(final Object... eventInput) {
     
-        updateCardGameDetailsEventDTO flowDTO = (updateCardGameDetailsEventDTO) eventInput[0];
+        UpdateCardGameDetailsEventDTO flowDTO = (UpdateCardGameDetailsEventDTO) eventInput[0];
 
         // get the game and update the gametype and ante
 	    String message = String.format("Entity state to update in EVENT: %s", flowDTO.getSuppliedTrigger());
@@ -31,7 +31,7 @@ public class updateCardGameDetailsEvent extends AbstractEvent {
         return eventOutput;
     }
 
-    public interface updateCardGameDetailsEventDTO {
+    public interface UpdateCardGameDetailsEventDTO {
         
         void setCurrentGame(Game game);
         String getSuppliedGameId();

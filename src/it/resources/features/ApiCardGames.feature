@@ -31,13 +31,13 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default ante HIGHLOW CardGame
 
       | id     | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
-      | latest | []    | []      |          | IS_CONFIGURED | HIGHLOW   | 1000 | 201              | api/cardgames/init = GameType in param=HIGHLOW Ante in param=1000 |
-      | latest | []    | []      |          | IS_CONFIGURED | BLACKJACK |  500 | 201              | api/cardgames/init = GameType in param=BLACKJACK Ante in param=500 |
-      | latest | []    | []      |          | IS_CONFIGURED | BLACKJACK |      | 201              | api/cardgames/init = GameType in param=BLACKJACK No ante in param specified |
-      | latest | []    | []      |          | IS_CONFIGURED |           |  750 | 201              | api/cardgames/init = No gameType in param specified Ante in param=750 |
-      | latest | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
-      | latest | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
-      | latest | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
+      | 0      | []    | []      |          | IS_CONFIGURED | HIGHLOW   | 1000 | 201              | api/cardgames/init = GameType in param=HIGHLOW Ante in param=1000 |
+      | 1      | []    | []      |          | IS_CONFIGURED | BLACKJACK |  500 | 201              | api/cardgames/init = GameType in param=BLACKJACK Ante in param=500 |
+      | 2      | []    | []      |          | IS_CONFIGURED | BLACKJACK |      | 201              | api/cardgames/init = GameType in param=BLACKJACK No ante in param specified |
+      | 3      | []    | []      |          | IS_CONFIGURED |           |  750 | 201              | api/cardgames/init = No gameType in param specified Ante in param=750 |
+      | 4      | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
+      | 5      | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
+      | 6      | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
 
   @Api @CardGames
   Scenario Outline: A frontend makes call to POST /api/players to make a player
@@ -48,7 +48,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default Human Player
 
       | id     | avatar | alias        | human | aiLevel | cubits | securedLoan | HTTP status code |
-      | latest | ELF    | CardGame Doe | true  | HUMAN   | 0      | 0           | 201              |
+      | 0      | ELF    | CardGame Doe | true  | HUMAN   | 0      | 0           | 201              |
 
   @Api @CardGames
   Scenario Outline: INIT a NEW CardGame for a player with POST /api/cardgames/init/human/{playerId}?gameType=<gameType>&ante=<ante>
@@ -58,12 +58,12 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default ante HIGHLOW CardGame
 
       | id | decks | casinos | playerId | state       | gameType  | ante | HTTP status code | response |
-      | 2  | []    | []      | latest   | HAS_PLAYERS | HIGHLOW   | 1000 | 201              | api/cardgames/init/human/{id} = PlayerId in path=1 GameType in param=HIGHLOW Ante in param=1000 |
-      | 3  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |  500 | 201              | api/cardgames/init/human/{id} = PlayerId in path=2 GameType in param=BLACKJACK Ante in param=500 |
-      | 4  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=3 GameType in param=BLACKJACK No ante in param specified |
-      | 5  | []    | []      | latest   | HAS_PLAYERS |           |  750 | 201              | api/cardgames/init/human/{id} = PlayerId in path=4 No gameType in param specified Ante in param=750 |
-      | 6  | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
-      | 7  | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
+      | 7  | []    | []      | latest   | HAS_PLAYERS | HIGHLOW   | 1000 | 201              | api/cardgames/init/human/{id} = PlayerId in path=1 GameType in param=HIGHLOW Ante in param=1000 |
+      | 8  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |  500 | 201              | api/cardgames/init/human/{id} = PlayerId in path=2 GameType in param=BLACKJACK Ante in param=500 |
+      | 9  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=3 GameType in param=BLACKJACK No ante in param specified |
+      | 10 | []    | []      | latest   | HAS_PLAYERS |           |  750 | 201              | api/cardgames/init/human/{id} = PlayerId in path=4 No gameType in param specified Ante in param=750 |
+      | 11 | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
+      | 12 | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
 
   @Api @CardGames
   Scenario Outline: INIT some CHANGES for a CardGame with PUT /api/cardgames/{id}/init?gameType=<gameType>&ante=<ante>
@@ -73,12 +73,12 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default HIGHLOW CardGame
 
       | id   | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
-      | 2    | []    | []      | 1        | IS_CONFIGURED | HIGHLOW   | 1000 | 200              | api/cardgames/{id}/init = Id in path=97 GameType in param=HIGHLOW Ante in param=1000 |
-      | 3    | []    | []      | 2        | IS_CONFIGURED | BLACKJACK |  500 | 200              | api/cardgames/{id}/init = Id in path=98 GameType in param=BLACKJACK Ante in param=500 |
-      | 4    | []    | []      | 3        | IS_CONFIGURED | BLACKJACK |      | 200              | api/cardgames/{id}/init = Id in path=99 GameType in param=BLACKJACK No ante in param specified |
-      | 5    | []    | []      | 4        | IS_CONFIGURED |           |  750 | 200              | api/cardgames/{id}/init = Id in path=100 No gameType in param specified Ante in param=750 |
-      | 6    | []    | []      | 3        | IS_CONFIGURED |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
-      | 7    | []    | []      | 3        | IS_CONFIGURED |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
+      | 0    | []    | []      | 1        | IS_CONFIGURED | HIGHLOW   | 1000 | 200              | api/cardgames/{id}/init = Id in path=97 GameType in param=HIGHLOW Ante in param=1000 |
+      | 1    | []    | []      | 2        | IS_CONFIGURED | BLACKJACK |  500 | 200              | api/cardgames/{id}/init = Id in path=98 GameType in param=BLACKJACK Ante in param=500 |
+      | 2    | []    | []      | 3        | IS_CONFIGURED | BLACKJACK |      | 200              | api/cardgames/{id}/init = Id in path=99 GameType in param=BLACKJACK No ante in param specified |
+      | 7    | []    | []      | 4        | HAS_PLAYERS   |           |  750 | 200              | api/cardgames/{id}/init = Id in path=100 No gameType in param specified Ante in param=750 |
+      | 8    | []    | []      | 3        | HAS_PLAYERS   |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
+      | 9    | []    | []      | 3        | HAS_PLAYERS   |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
 
   @Api @CardGames
   Scenario Outline: SETUP a human or ai player for a CardGame with POST /api/cardgames/{id}/setup/"<HumanOrAi>"?alias="<alias>"&avatar="<avatar>"&securedLoan="<securedLoan>"&aiLevel="<aiLevel>"
@@ -87,13 +87,13 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
     Examples: This is the default Human Player
 
-      | id   | avatar | alias              | HumanOrAi | aiLevel | cubits | securedLoan | HTTP status code | response |
-      | 2    | ELF    | CardGame human Doe | human     | HUMAN   | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=97 HumanOrAi in path=human Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 |
-      | 3    |        | CardGame ai Doe    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=98 HumanOrAi in path=ai Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
-      | 4    | ELF    | CardGame ai Doe    | human     | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=99 HumanOrAi in path=human Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
-      | 5    | ELF    | CardGame ai Doe    | ai        |         | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=100 HumanOrAi in path=ai Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 |
-      | 6    | ELF    |                    | ai        | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
-      | 7    | ELF    |                    | human     | LOW     | 0      | 0           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
+      | id   | playerId | avatar | alias              | HumanOrAi | aiLevel | cubits | securedLoan | HTTP status code | response |
+      | 7    | 1        | ELF    | CardGame human Doe | human     | HUMAN   | 0      | 1           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=97 HumanOrAi in path=human Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 |
+      | 8    | 2        |        | CardGame ai Doe    | ai        | LOW     | 0      | 2           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=98 HumanOrAi in path=ai Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
+      | 9    | 3        | ELF    | CardGame ai Doe    | human     | LOW     | 0      | 3           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=99 HumanOrAi in path=human Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 |
+      | 10   | 4        | ELF    | CardGame ai Doe    | ai        |         | 0      | 4           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=100 HumanOrAi in path=ai Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 |
+      | 10   | 5        | ELF    |                    | ai        | LOW     | 0      | 5           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
+      | 10   | 6        | ELF    |                    | human     | LOW     | 0      | 6           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
 
   @Api @CardGames
   Scenario Outline: SETUP some CHANGES to a CardGame with PUT /api/cardgames/{id}/setup/{playerId}?alias/avatar/aiLevel/securedLoan
@@ -102,13 +102,13 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
     Examples: This is the default ante HIGHLOW CardGame
 
-      | id    | playerId | avatar | alias              | human | aiLevel | cubits | securedLoan | HTTP status code | response |
-      | 2     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=97 PlayerId in path=1 Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 3     | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=98 PlayerId in path=2 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 4     | 3        |        | CardGame ai Doe    | ai    | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=99 PlayerId in path=3 Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 5     | 4        | ELF    | CardGame human Doe | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=100 PlayerId in path=4 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
-      | 6     | 5        | ELF    | CardGame human Doe | human |         | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
-      | 7     | 6        | ELF    |                    | human | LOW     | 0      | 0           | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
+      | id    | playerId | avatar   | alias               | human | aiLevel | cubits | securedLoan | HTTP status code | response |
+      | 7     | 1        | MAGICIAN | CardGame2 human Doe | true  | MEDIUM  | 0      | 120         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=97 PlayerId in path=1 Alias in param=CardGame human Doe Avatar in param=ELF AiLevel in param=CardGame human Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 8     | 2        | ROMAN    | CardGame2 ai Doe    | false | HIGH    | 0      | 130         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=98 PlayerId in path=2 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 9     | 3        | GOBLIN   | CardGame2 ai Doe    | ai    | NONE    | 0      | 140         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=99 PlayerId in path=3 Alias in param=CardGame ai Doe No avatar in param specified AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 10    | 4        |          | CardGame2 human Doe | human |         | 0      | 150         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=100 PlayerId in path=4 Alias in param=CardGame ai Doe Avatar in param=ELF AiLevel in param=CardGame ai Doe SecuredLoan in param=0 No playingOrder in param specified |
+      | 10    | 5        | ELF      | CardGame2 human Doe | human | HIGH    | 0      | 160         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
+      | 10    | 6        | ELF      |                     | human | LOW     | 0      | 170         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
 
   @Api @CardGames
   Scenario Outline: DELETE a player for a CardGame with DELETE /api/cardgames/{id}/"<HumanOrAi>"/{playerId}
@@ -118,8 +118,10 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default ante HIGHLOW CardGame
 
       | id    | HumanOrAi | playerId | avatar | alias              | human | aiLevel | cubits | securedLoan | HTTP status code | response |
-      | 2     | human     | 1        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=97 HumanOrAi in path=human PlayerId in path=1 |
-      | 3     | ai        | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
+      | 10    | human     | 4        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=97 HumanOrAi in path=human PlayerId in path=1 |
+      | 10    | human     | 6        | ELF    | CardGame human Doe | true  | HUMAN   | 0      | 0           | 404              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=97 HumanOrAi in path=human PlayerId in path=1 |
+      | 9     | human     | 3        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
+      | 8     | human     | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
 
   @Api @CardGames
   Scenario Outline: SHUFFLE a CardGame with POST /api/cardgames/{id}/shuffle/cards?jokers
@@ -129,9 +131,9 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default Human Player
 
       | id    | jokers | HTTP status code | response |
-      | 5     | 0      | 201              | api/cardgames/{id}/shuffle = Id in path=97 Jokers in param=0 |
-      | 6     | 1      | 201              | api/cardgames/{id}/shuffle = Id in path=98 Jokers in param=1 |
-      | 7     |        | 201              | api/cardgames/{id}/shuffle = Id in path=99 No jokers in param specified |
+      | 7     | 0      | 201              | api/cardgames/{id}/shuffle = Id in path=97 Jokers in param=0 |
+      | 8     | 1      | 500              | api/cardgames/{id}/shuffle = Id in path=98 Jokers in param=1 |
+      | 12    |        | 201              | api/cardgames/{id}/shuffle = Id in path=99 No jokers in param specified |
 
   @Api @CardGames
   Scenario Outline: TURN for a player in a CardGame with PUT /api/cardgames/{id}/turn/players/(playerId}
@@ -141,11 +143,11 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default Human Player
 
       | id    | playerId | action | HTTP status code | response |
-      | 5     | 2        | HIGHER | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=97 PlayerId in path=2 Action in param=HIGHER |
-      | 6     | 2        | LOWER  | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=99 PlayerId in path=2 Action in param=LOWER |
-      | 7     | 3        | AUTO   | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=100 PlayerId in path=3 Action in param=AUTO |
+      | 7     | 1        | DEAL   | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=97 PlayerId in path=2 Action in param=HIGHER |
+      | 7     | 1        | HIGHER | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=99 PlayerId in path=2 Action in param=LOWER |
+      | 12    | 3        | HIGHER | 500              | api/cardgames/{id}/turn/players/{playerId} = Id in path=100 PlayerId in path=3 Action in param=AUTO |
 
-  @Ignore
+  @Api @CardGames
   Scenario Outline: A frontend makes call to DELETE /api/cardgames/{id}
     Given I try to delete a cardGame "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -155,11 +157,21 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default HIGHLOW CardGame
 
       | id     | decks | casinos | human | state         | gameType  | ante | HTTP status code | response |
-      | 97     | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
-      | 98     | []    | []      | 2     | IS_CONFIGURED | BLACKJACK |  500 | 204              | api/cardgames/init =  GameType in param=BLACKJACK Ante in param=500 |
-      | 99     | []    | []      | 3     | IS_CONFIGURED |           |      | 204              | api/cardgames/init =  No gameType in param specified No ante in param specified |
+      | 0      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 1      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 2      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 3      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 4      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 5      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 6      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 7      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 8      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 9      | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 10     | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 11     | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
+      | 12     | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
 
-  @Ignore
+  @Api @CardGames
   Scenario Outline: A frontend makes call to DELETE /api/players/{id} cardGame player
     Given I try to delete a player "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -168,5 +180,11 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default Human Player
 
       | id     | avatar   | alias      | human | aiLevel | cubits | securedLoan | HTTP status code |
+      | 0      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
       | 1      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
+      | 2      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
+      | 3      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
+      | 4      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
+      | 5      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
+      | 6      | MAGICIAN | Cukes Doe2 | false | HUMAN   | 0      | 0           | 204              |
 

@@ -93,12 +93,11 @@ NO_WINNER -up-> IS_SETUP: GAME_FINISHED
 import com.github.oxo42.stateless4j.StateMachineConfig;
 //TODO import com.github.oxo42.stateless4j.delegates.Action;
 
-import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.VO.CardGameFlowDTO;
 import nl.knikit.cardgames.commons.controller.AbstractController;
 import nl.knikit.cardgames.commons.event.FlowDTOBuilder;
 
-import nl.knikit.cardgames.event.updateCardGameDetailsEvent;
+import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.response.CardGameResponse;
@@ -226,7 +225,7 @@ public class CardGameController extends AbstractController<Game> {
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.init(new Game()))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -249,7 +248,7 @@ public class CardGameController extends AbstractController<Game> {
 				
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -267,7 +266,7 @@ public class CardGameController extends AbstractController<Game> {
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.init(new Game()))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -286,7 +285,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -309,7 +308,7 @@ public class CardGameController extends AbstractController<Game> {
 				
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -332,7 +331,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -351,7 +350,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -374,7 +373,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -394,7 +393,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -416,7 +415,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(updateCardGameDetailsEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);

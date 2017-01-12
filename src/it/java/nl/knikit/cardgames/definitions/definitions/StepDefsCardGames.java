@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.VO.CardGame;
 import nl.knikit.cardgames.definitions.commons.SpringIntegrationTest;
+import nl.knikit.cardgames.model.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,11 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 	public void iTryToGetACardGameWithValid(String cardGameId) throws Throwable {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
+		
 		executeGet(baseCardGamesUrl + cardGameId);
 	}
 		
@@ -51,6 +56,9 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (!playerId.isEmpty()) {
 			if (playerId.equals("latest")) {
 				playerId = latestPlayersID;
+			} else {
+				Player player = (Player) StackableResponses.peekAt("players", Integer.parseInt(playerId));
+				playerId = String.valueOf(player.getPlayerId());
 			}
 			url += "/human/{suppliedPlayerId}";
 			uriParams.put("suppliedPlayerId", playerId);
@@ -74,6 +82,10 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		// Uri (URL) parameters
@@ -99,6 +111,9 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		// Uri (URL) parameters
@@ -127,6 +142,9 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		// Uri (URL) parameters
@@ -155,6 +173,9 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		// Uri (URL) parameters
@@ -178,6 +199,9 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		// Uri (URL) parameters
@@ -202,6 +226,16 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
+		}
+		
+		if (playerId.equals("latest")) {
+			playerId = latestPlayersID;
+		} else {
+			Player player = (Player) StackableResponses.peekAt("players", Integer.parseInt(playerId));
+			playerId = String.valueOf(player.getPlayerId());
 		}
 		
 		// body cannot be null since there is a put that wants a request body
@@ -213,6 +247,9 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 	public void iTryToDeleteACardGameWith(String cardGameId) throws Throwable {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
+		} else {
+			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		if (!latestCardGamesIDs.isEmpty()) {
@@ -223,7 +260,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 	
 	//  And The json response should contain gameType "<gameType>" cardGame having human "<human>" and ante "<ante>" and state "<state>"
 	@And("^The json response should contain gameType \"([^\"]*)\" cardGame having human \"([^\"]*)\" and ante \"([^\"]*)\" and state \"([^\"]*)\"$")
-	public void theJsonResponseBodyShouldBeANewTypeCardGameHavingHumanAnteState(String gameType, String human, String ante, String state) throws Throwable {
+	public void theJsonResponseBodyShouldBeANewTypeCardGameHavingHumanAnteState(String gameType, String playerId, String ante, String state) throws Throwable {
 		
 		// jackson has ObjectMapper that converts String to JSON
 		ObjectMapper mapper = new ObjectMapper();
@@ -238,12 +275,15 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		assertThat(jsonGame.getState(), is(state));
 		
 		
-		if (human.equals("latest")) {
-			human = latestPlayersID;
+		if (playerId.equals("latest")) {
+			playerId = latestPlayersID;
+		} else {
+			Player player = (Player) StackableResponses.peekAt("players", Integer.parseInt(playerId));
+			playerId = String.valueOf(player.getPlayerId());
 		}
 		
-		if (!human.isEmpty()) {
-			assertThat(jsonGame.getWinner().getPlayerId(), is(Integer.parseInt(human)));
+		if (!playerId.isEmpty()) {
+			assertThat(jsonGame.getWinner().getPlayerId(), is(Integer.parseInt(playerId)));
 		}
 	}
 	

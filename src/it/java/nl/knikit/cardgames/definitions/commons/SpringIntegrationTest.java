@@ -1,5 +1,7 @@
 package nl.knikit.cardgames.definitions.commons;
 
+import nl.knikit.cardgames.commons.util.StackableResponses;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
@@ -22,7 +24,7 @@ import java.util.Map;
 @WebAppConfiguration
 //@IntegrationTest
 @Controller
-@Scope("prototype")
+@Scope("request")
 public class SpringIntegrationTest {
 	
 	
@@ -78,6 +80,8 @@ public class SpringIntegrationTest {
 	// wrong id     NOT_FOUND(404, "Not Found"),
 	@Autowired
 	protected RestTemplate restTemplate;
+
+	protected StackableResponses StackableResponses = new StackableResponses();
 	
 	protected void executeGet(String url) throws IOException {
 		final Map<String, String> headers = new HashMap<>();
@@ -100,7 +104,6 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
-		
 	}
 	
 	protected void executePost(String url, String body) throws IOException {
@@ -129,6 +132,8 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
+		StackableResponses.push(latestResponse);
+		
 		
 	}
 	
@@ -167,6 +172,7 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
+		StackableResponses.push(latestResponse);
 		
 	}
 	
@@ -263,6 +269,8 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
+		StackableResponses.pop(latestResponse);
+		
 		
 	}
 	

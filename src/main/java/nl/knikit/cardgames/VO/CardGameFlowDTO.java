@@ -1,7 +1,7 @@
 package nl.knikit.cardgames.VO;
 
 import nl.knikit.cardgames.commons.event.AbstractFlowDTO;
-import nl.knikit.cardgames.event.updateCardGameDetailsEvent;
+import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CardGameFlowDTO extends AbstractFlowDTO implements
-		updateCardGameDetailsEvent.updateCardGameDetailsEventDTO {
+		UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO {
 	
 	// suppress lombok setter for these fixed values
 	@Setter(AccessLevel.NONE) private String applicationId = "001";
