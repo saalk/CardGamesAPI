@@ -42,6 +42,10 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	// frontend path ids
 	private String suppliedGameId;
 	private String suppliedPlayerId;
+	private String suppliedCasinoId;
+	private String suppliedDeckId;
+	private String suppliedHandId;
+	private String suppliedCardId;
 	
 	// frontend query params
 	private String suppliedHumanOrAi;
