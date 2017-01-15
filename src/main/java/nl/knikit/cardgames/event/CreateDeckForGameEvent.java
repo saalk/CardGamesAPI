@@ -1,29 +1,33 @@
 package nl.knikit.cardgames.event;
 
+import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
+import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
+import nl.knikit.cardgames.service.IDeckService;
 import nl.knikit.cardgames.service.IGameService;
-import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class UpdateCardGameDetailsEvent extends AbstractEvent {
+public class CreateDeckForGameEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
 	private IGameService gameService;
 	
 	@Autowired
-	private IPlayerService playerService;
+	private IDeckService deckService;
 	
 	@Autowired
 	private ModelMapperUtil mapUtil;
@@ -31,47 +35,38 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
-		UpdateCardGameDetailsEventDTO flowDTO = (UpdateCardGameDetailsEventDTO) eventInput[0];
+		CreateDeckForGameEventDTO flowDTO = (CreateDeckForGameEventDTO) eventInput[0];
 		EventOutput eventOutput;
-
 		
 		// get the game and update the gametype and ante
-		// init
 		Game gameToUpdate;
 		Game updatedGame;
 		
-		// check path var game/{id}
-		String id = flowDTO.getSuppliedGameId();
+		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOneWithString(id);
+			gameToUpdate = gameService.findOneWithString(gameId);
 			if (gameToUpdate == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
-			String message = String.format("Entity to find before update in Event: %s", id);
-			log.info(message);
 		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
-	
-		// do the update
-		gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
-		gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
+		
+		// do the add
+		gameToUpdate.addShuffledDeckToGame(Integer.parseInt(flowDTO.getSuppliedJokers()));
 		
 		try {
 			updatedGame = gameService.update(gameToUpdate);
 			if (updatedGame == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
-			String message = String.format("Entity to update in Event: %s", id);
-			log.info(message);
 		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
-		
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(updatedGame);
@@ -79,15 +74,15 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		return eventOutput;
 	}
 	
-	public interface UpdateCardGameDetailsEventDTO {
-		
-		void setCurrentGame(Game game);
+	public interface CreateDeckForGameEventDTO {
 		
 		String getSuppliedGameId();
 		
-		GameType getSuppliedGameType();
+		void setCurrentGame(Game game);
 		
-		String getSuppliedAnte();
+		String getSuppliedJokers();
+		
+		void setCurrentDeck(Deck deck);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

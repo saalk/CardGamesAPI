@@ -3,8 +3,10 @@ package nl.knikit.cardgames.definitions.definitions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.knikit.cardgames.VO.CardGame;
+import nl.knikit.cardgames.definitions.commons.ResponseResults;
 import nl.knikit.cardgames.definitions.commons.SpringIntegrationTest;
 import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.response.CardGameResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -57,7 +59,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 			if (playerId.equals("latest")) {
 				playerId = latestPlayersID;
 			} else {
-				Player player = (Player) StackableResponses.peekAt("players", Integer.parseInt(playerId));
+				Player player = (Player) stackableResponses.peekAt("players", Integer.parseInt(playerId));
 				playerId = String.valueOf(player.getPlayerId());
 			}
 			url += "/human/{suppliedPlayerId}";
@@ -72,6 +74,15 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		// body cannot be null since there is a put that wants a request body
 		executePostWithUriAndQueryParam(url, uriParams, "{}", queryParams);
 		
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+		CardGameResponse cardGameResponse = mapper.readValue(latestResponse.getBody(), CardGameResponse.class);
+		CardGame jsonGame = cardGameResponse.getCardGame();
+		stackableResponses.push(jsonGame);
+		
+		
 	}
 	
 	// INIT CHANGES
@@ -83,8 +94,8 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -112,7 +123,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -131,6 +142,14 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		// body cannot be null since there is a put that wants a request body
 		executePostWithUriAndQueryParam(cardGamesUrlWithId + "/setup/{human}?", uriParams, "{}", queryParams);
 		
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+		CardGameResponse cardGameResponse = mapper.readValue(latestResponse.getBody(), CardGameResponse.class);
+		CardGame jsonGame = cardGameResponse.getCardGame();
+		stackableResponses.push(jsonGame);
+		
 	}
 	
 	
@@ -143,7 +162,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -174,7 +193,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -200,7 +219,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -227,14 +246,14 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
 		if (playerId.equals("latest")) {
 			playerId = latestPlayersID;
 		} else {
-			Player player = (Player) StackableResponses.peekAt("players", Integer.parseInt(playerId));
+			Player player = (Player) stackableResponses.peekAt("players", Integer.parseInt(playerId));
 			playerId = String.valueOf(player.getPlayerId());
 		}
 		
@@ -248,7 +267,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (cardGameId.equals("latest")) {
 			cardGameId = latestCardGamesID;
 		} else {
-			CardGame cardGame = (CardGame) StackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
+			CardGame cardGame = (CardGame) stackableResponses.peekAt("cardgames", Integer.parseInt(cardGameId));
 			cardGameId = String.valueOf(cardGame.getGameId());
 		}
 		
@@ -256,6 +275,16 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 			latestCardGamesIDs.remove(latestCardGamesIDs.size() - 1);
 		}
 		executeDelete(baseCardGamesUrl + "/" + cardGameId, null);
+		// jackson has ObjectMapper that converts String to JSON
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//JSON string to Object
+
+		CardGameResponse cardGameResponse = mapper.readValue(latestResponse.getBody(), CardGameResponse.class);
+		CardGame jsonGame = cardGameResponse.getCardGame();
+		stackableResponses.pop(jsonGame);
+		
+		
 	}
 	
 	//  And The json response should contain gameType "<gameType>" cardGame having human "<human>" and ante "<ante>" and state "<state>"
@@ -278,7 +307,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		if (playerId.equals("latest")) {
 			playerId = latestPlayersID;
 		} else {
-			Player player = (Player) StackableResponses.peekAt("players", Integer.parseInt(playerId));
+			Player player = (Player) stackableResponses.peekAt("players", Integer.parseInt(playerId));
 			playerId = String.valueOf(player.getPlayerId());
 		}
 		

@@ -49,7 +49,8 @@ public class CardGameStateMachine {
 		
 		RESET,
 		OK,
-		NOT_OK
+		NOT_OK,
+		ERROR
 	}
 	
 	// @formatter:on

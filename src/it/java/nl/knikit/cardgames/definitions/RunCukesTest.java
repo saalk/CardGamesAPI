@@ -19,7 +19,7 @@ search for feature files and step definitions.
 public class RunCukesTest {
 	
 	
-//	Built-in formatter PLUGIN types: junit,
+//	Built-in formatter PLUGIN types: junit,n
 //	- html, pretty, progress, json, usage, rerun, testng.
 //
 // Built-in summary PLUGIN types:

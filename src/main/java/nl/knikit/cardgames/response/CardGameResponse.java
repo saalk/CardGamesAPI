@@ -14,6 +14,7 @@ import nl.knikit.cardgames.model.Player;
 
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,20 +35,44 @@ public class CardGameResponse {
 	}
 	
 	private CardGame cardGame;
-		
-	private List<Deck> cardsLeftInDeck;
 	
-	private Card topCardInDeck;
-	private List<Hand> currentPlayersHand;
+	@JsonIgnore
+	public Reason getReason() {
+		return reason;
+	}
 	
-	private Player winner;
-	private Player activePlayer;
-	private List<Casino> allPlayers;
+	@JsonIgnore
+	public void setReason(Reason reason) {
+		this.reason = reason;
+	}
 	
+	@JsonIgnore
+	public String getErrorCode() {
+		return errorCode;
+	}
+	
+	@JsonIgnore
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+	
+	@JsonIgnore
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private String errorCode;
+	
+	@JsonIgnore
+	public String getErrorReason() {
+		return errorReason;
+	}
+	@JsonIgnore
+	public void setErrorReason(String errorReason) {
+		this.errorReason = errorReason;
+	}
+	
+	@JsonIgnore
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private String errorReason;
 	
 }
-	
-	
-

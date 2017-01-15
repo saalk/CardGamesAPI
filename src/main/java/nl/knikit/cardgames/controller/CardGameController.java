@@ -97,7 +97,11 @@ import nl.knikit.cardgames.VO.CardGameFlowDTO;
 import nl.knikit.cardgames.commons.controller.AbstractController;
 import nl.knikit.cardgames.commons.event.FlowDTOBuilder;
 
+import nl.knikit.cardgames.event.CreateCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.CreateDeckForGameEvent;
+import nl.knikit.cardgames.event.CreatePlayerEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
+import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.response.CardGameResponse;
@@ -147,9 +151,11 @@ public class CardGameController extends AbstractController<Game> {
 				.permitReentry(Trigger.PUT_INIT)
 				// continue on game page
 				.permit(Trigger.POST_INIT_HUMAN, State.HAS_PLAYERS)
-				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_PLAYERS);
+				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_PLAYERS)
+				.permit(Trigger.ERROR, State.ERROR);
 		
 		config.configure(State.HAS_PLAYERS)
+				.permitReentry(Trigger.ERROR)
 				.permitReentry(Trigger.POST_SETUP_AI)
 				.permitReentry(Trigger.DELETE_SETUP_AI)
 				.permitReentry(Trigger.PUT_INIT)
@@ -157,17 +163,22 @@ public class CardGameController extends AbstractController<Game> {
 				// continue on players page
 				.permit(Trigger.DELETE_SETUP_HUMAN, State.IS_CONFIGURED)
 				// continue on casino page
-				.permit(Trigger.POST_SHUFFLE, State.IS_SETUP);
+				.permit(Trigger.POST_SHUFFLE, State.IS_SETUP)
+				.permit(Trigger.ERROR, State.ERROR);
 		
 		config.configure(State.IS_SETUP)
-				.permit(Trigger.PUT_TURN, State.PLAYING);
+				.permit(Trigger.PUT_TURN, State.PLAYING)
+				.permit(Trigger.ERROR, State.ERROR);
+		
 		
 		config.configure(State.PLAYING)
 				.permitReentry(Trigger.PUT_TURN)
 				// continue on results page
 				.permit(Trigger.PLAYER_WINS, State.GAME_WON)
 				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
-				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER);
+				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER)
+				.permit(Trigger.ERROR, State.ERROR);
+		
 		
 		config.configure(State.GAME_WON)
 				.permit(Trigger.PUT_TURN, State.PLAYING); // allows continue!
@@ -175,7 +186,9 @@ public class CardGameController extends AbstractController<Game> {
 		config.configure(State.NO_WINNER)
 				.permitReentry(Trigger.NO_CARDS_LEFT)
 				.permitReentry(Trigger.ROUNDS_ENDED)
-				.permit(Trigger.PUT_TURN, State.PLAYING); // allows continue!
+				.permit(Trigger.PUT_TURN, State.PLAYING) // allows continue!
+				.permit(Trigger.ERROR, State.ERROR);
+		
 		// @formatter:on
 	}
 	
@@ -224,9 +237,9 @@ public class CardGameController extends AbstractController<Game> {
 				//POST   api/cardgames/init?gameType={g},ante={a}
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
-						          .addContext(super.init(new Game()))
 						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
+						          .addContext(super.init(new Game()))
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
 				flowDTO.processPathAndQueryParams();
@@ -267,6 +280,7 @@ public class CardGameController extends AbstractController<Game> {
 				flowDTO = builder
 						          .addContext(super.init(new Game()))
 						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -285,7 +299,8 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(CreatePlayerEvent.class)
+						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -308,7 +323,8 @@ public class CardGameController extends AbstractController<Game> {
 				
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(CreatePlayerEvent.class)
+						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -331,7 +347,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(UpdatePlayerDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -350,7 +366,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(CreateDeckForGameEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
@@ -435,6 +451,7 @@ public class CardGameController extends AbstractController<Game> {
 				// GET    api/cardgames/1/players/2/cards
 				break;
 		}
+		
 		
 		// generic tasks
 		transition(trigger);

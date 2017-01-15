@@ -1,5 +1,8 @@
 package nl.knikit.cardgames.definitions.commons;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import nl.knikit.cardgames.VO.CardGame;
 import nl.knikit.cardgames.commons.util.StackableResponses;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +84,7 @@ public class SpringIntegrationTest {
 	@Autowired
 	protected RestTemplate restTemplate;
 
-	protected StackableResponses StackableResponses = new StackableResponses();
+	protected StackableResponses stackableResponses = new StackableResponses();
 	
 	protected void executeGet(String url) throws IOException {
 		final Map<String, String> headers = new HashMap<>();
@@ -132,8 +135,6 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
-		StackableResponses.push(latestResponse);
-		
 		
 	}
 	
@@ -172,8 +173,7 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
-		StackableResponses.push(latestResponse);
-		
+	
 	}
 	
 	protected void executePut(String url, String body) throws IOException {
@@ -269,9 +269,6 @@ public class SpringIntegrationTest {
 				}
 			}
 		});
-		StackableResponses.pop(latestResponse);
-		
-		
 	}
 	
 	private class ResponseResultErrorHandler implements ResponseErrorHandler {

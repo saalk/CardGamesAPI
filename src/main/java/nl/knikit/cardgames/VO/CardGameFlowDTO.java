@@ -1,11 +1,18 @@
 package nl.knikit.cardgames.VO;
 
 import nl.knikit.cardgames.commons.event.AbstractFlowDTO;
+import nl.knikit.cardgames.event.CreateCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.CreateDeckForGameEvent;
+import nl.knikit.cardgames.event.CreatePlayerEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
+import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
+import nl.knikit.cardgames.model.AiLevel;
+import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
+import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.Hand;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
@@ -21,10 +28,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CardGameFlowDTO extends AbstractFlowDTO implements
-		UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO {
+		CreateCasinoForGameAndPlayerEvent.CreateCasinoForGameAndPlayerEventDTO,
+		CreateDeckForGameEvent.CreateDeckForGameEventDTO,
+		CreatePlayerEvent.CreatePlayerEventDTO,
+		UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO,
+		UpdatePlayerDetailsEvent.UpdatePlayerDetailsEventDTO
+{
 	
 	// suppress lombok setter for these fixed values
-	@Setter(AccessLevel.NONE) private String applicationId = "001";
+	@Setter(AccessLevel.NONE)
+	private String applicationId = "001";
 	
 	// frontend path ids
 	private String suppliedGameId;
@@ -32,12 +45,12 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	
 	// frontend query params
 	private String suppliedHumanOrAi;
-	private String suppliedGameType;
+	private GameType suppliedGameType;
 	private String suppliedAnte;
 	private String suppliedAlias;
-	private String suppliedAvatar;
+	private Avatar suppliedAvatar;
 	private String suppliedSecuredLoan;
-	private String suppliedAiLevel;
+	private AiLevel suppliedAiLevel;
 	private String suppliedJokers;
 	private String suppliedPlayingOrder;
 	private String suppliedAction;
@@ -47,15 +60,22 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	
 	
 	// lists of all the 6 entities, no setter: that is done in the EventDTO's
-	@Setter(AccessLevel.NONE) private List<Game> games;
-	@Setter(AccessLevel.NONE) private List<Player> players;
-	@Setter(AccessLevel.NONE) private List<Deck> decks;
-	@Setter(AccessLevel.NONE) private List<Card> cards;
-	@Setter(AccessLevel.NONE) private List<Hand> hands;
-	@Setter(AccessLevel.NONE) private List<Casino> casinos;
+	@Setter(AccessLevel.NONE)
+	private List<Game> games;
+	@Setter(AccessLevel.NONE)
+	private List<Player> players;
+	@Setter(AccessLevel.NONE)
+	private List<Deck> decks;
+	@Setter(AccessLevel.NONE)
+	private List<Card> cards;
+	@Setter(AccessLevel.NONE)
+	private List<Hand> hands;
+	@Setter(AccessLevel.NONE)
+	private List<Casino> casinos;
 	
 	// input fields
 	private Map<String, String> pathAndQueryParams;
+	
 	public void processPathAndQueryParams() {
 		if (this.pathAndQueryParams == null) {
 			return;
@@ -74,7 +94,7 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 		
 		// pass queryParam's to the Flow
 		if (pathAndQueryParams.containsKey("gameType")) {
-			this.suppliedGameType = pathAndQueryParams.get("gameType");
+			this.suppliedGameType = GameType.fromLabel(pathAndQueryParams.get("gameType"));
 		}
 		if (pathAndQueryParams.containsKey("ante")) {
 			this.suppliedAnte = pathAndQueryParams.get("ante");
@@ -83,10 +103,10 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 			this.suppliedAlias = pathAndQueryParams.get("alias");
 		}
 		if (pathAndQueryParams.containsKey("avatar")) {
-			this.suppliedAvatar = pathAndQueryParams.get("avatar");
+			this.suppliedAvatar = Avatar.fromLabel(pathAndQueryParams.get("avatar"));
 		}
 		if (pathAndQueryParams.containsKey("aiLevel")) {
-			this.suppliedAiLevel = pathAndQueryParams.get("aiLevel");
+			this.suppliedAiLevel = AiLevel.fromLabel(pathAndQueryParams.get("aiLevel"));
 		}
 		if (pathAndQueryParams.containsKey("securedLoan")) {
 			this.suppliedSecuredLoan = pathAndQueryParams.get("securedLoan");
@@ -102,7 +122,7 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 		if (pathAndQueryParams.containsKey("action")) {
 			this.suppliedAction = pathAndQueryParams.get("action");
 		}
-			
+		
 	}
 	
 	// processing related
@@ -115,14 +135,16 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	private Casino currentCasino;
 	
 	// business rules related
-	@Setter(AccessLevel.NONE) private List<Game> abandonedGames;
+	@Setter(AccessLevel.NONE)
+	private List<Game> abandonedGames;
 	
 	// return fields
 	private Integer rulesCode;
-
+	
 	public Game getGame() {
 		return currentGame;
 	}
+	
 	public void setContextByGame() {
 		getGameContext().setGameId(currentGame.getGameId());
 		getGameContext().setCreated(currentGame.getCreated());
@@ -156,7 +178,6 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 		this.currentGame = game;
 	}
 	
-	@Override
 	public void setCurrentPlayer(Player player) {
 		this.currentPlayer = player;
 	}

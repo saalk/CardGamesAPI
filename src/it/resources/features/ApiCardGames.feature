@@ -32,14 +32,8 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
       | id     | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
       | 0      | []    | []      |          | IS_CONFIGURED | HIGHLOW   | 1000 | 201              | api/cardgames/init = GameType in param=HIGHLOW Ante in param=1000 |
-      | 1      | []    | []      |          | IS_CONFIGURED | BLACKJACK |  500 | 201              | api/cardgames/init = GameType in param=BLACKJACK Ante in param=500 |
-      | 2      | []    | []      |          | IS_CONFIGURED | BLACKJACK |      | 201              | api/cardgames/init = GameType in param=BLACKJACK No ante in param specified |
-      | 3      | []    | []      |          | IS_CONFIGURED |           |  750 | 201              | api/cardgames/init = No gameType in param specified Ante in param=750 |
-      | 4      | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
-      | 5      | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
-      | 6      | []    | []      |          | IS_CONFIGURED |           |      | 201              | api/cardgames/init = No gameType in param specified No ante in param specified |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: A frontend makes call to POST /api/players to make a player
     Given I try to post a human "<human>" player having "<avatar>" and "<alias>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -50,7 +44,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | id     | avatar | alias        | human | aiLevel | cubits | securedLoan | HTTP status code |
       | 0      | ELF    | CardGame Doe | true  | HUMAN   | 0      | 0           | 201              |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: INIT a NEW CardGame for a player with POST /api/cardgames/init/human/{playerId}?gameType=<gameType>&ante=<ante>
     Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -58,14 +52,9 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default ante HIGHLOW CardGame
 
       | id | decks | casinos | playerId | state       | gameType  | ante | HTTP status code | response |
-      | 7  | []    | []      | latest   | HAS_PLAYERS | HIGHLOW   | 1000 | 201              | api/cardgames/init/human/{id} = PlayerId in path=1 GameType in param=HIGHLOW Ante in param=1000 |
-      | 8  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |  500 | 201              | api/cardgames/init/human/{id} = PlayerId in path=2 GameType in param=BLACKJACK Ante in param=500 |
-      | 9  | []    | []      | latest   | HAS_PLAYERS | BLACKJACK |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=3 GameType in param=BLACKJACK No ante in param specified |
-      | 10 | []    | []      | latest   | HAS_PLAYERS |           |  750 | 201              | api/cardgames/init/human/{id} = PlayerId in path=4 No gameType in param specified Ante in param=750 |
-      | 11 | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
-      | 12 | []    | []      | latest   | HAS_PLAYERS |           |      | 201              | api/cardgames/init/human/{id} = PlayerId in path=5 No gameType in param specified No ante in param specified |
+      | 1  | []    | []      | latest   | HAS_PLAYERS | HIGHLOW   | 1000 | 201              | api/cardgames/init/human/{id} = PlayerId in path=1 GameType in param=HIGHLOW Ante in param=1000 |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: INIT some CHANGES for a CardGame with PUT /api/cardgames/{id}/init?gameType=<gameType>&ante=<ante>
     Given I try to init changes to a cardGame with id "<id>" having gameType "<gameType>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -74,13 +63,8 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
       | id   | decks | casinos | playerId | state         | gameType  | ante | HTTP status code | response |
       | 0    | []    | []      | 1        | IS_CONFIGURED | HIGHLOW   | 1000 | 200              | api/cardgames/{id}/init = Id in path=97 GameType in param=HIGHLOW Ante in param=1000 |
-      | 1    | []    | []      | 2        | IS_CONFIGURED | BLACKJACK |  500 | 200              | api/cardgames/{id}/init = Id in path=98 GameType in param=BLACKJACK Ante in param=500 |
-      | 2    | []    | []      | 3        | IS_CONFIGURED | BLACKJACK |      | 200              | api/cardgames/{id}/init = Id in path=99 GameType in param=BLACKJACK No ante in param specified |
-      | 7    | []    | []      | 4        | HAS_PLAYERS   |           |  750 | 200              | api/cardgames/{id}/init = Id in path=100 No gameType in param specified Ante in param=750 |
-      | 8    | []    | []      | 3        | HAS_PLAYERS   |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
-      | 9    | []    | []      | 3        | HAS_PLAYERS   |           |      | 200              | api/cardgames/{id}/init = Id in path=101 No gameType in param specified No ante in param specified |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: SETUP a human or ai player for a CardGame with POST /api/cardgames/{id}/setup/"<HumanOrAi>"?alias="<alias>"&avatar="<avatar>"&securedLoan="<securedLoan>"&aiLevel="<aiLevel>"
     Given I try to setup a HumanOrAi "<HumanOrAi>" player for cardGame with id "<id>" having "<alias>" and "<avatar>" and "<securedLoan>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -95,7 +79,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 10   | 5        | ELF    |                    | ai        | LOW     | 0      | 5           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
       | 10   | 6        | ELF    |                    | human     | LOW     | 0      | 6           | 201              | api/cardgames/{id}/setup/{humanOrAi} = Id in path=101 HumanOrAi in path=ai No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: SETUP some CHANGES to a CardGame with PUT /api/cardgames/{id}/setup/{playerId}?alias/avatar/aiLevel/securedLoan
     Given I try to setup changes to a cardGame with id "<id>" having "<playerId>" player with "<alias>" and "<avatar>" and "<securedLoan>" and "<aiLevel>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -110,7 +94,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 10    | 5        | ELF      | CardGame2 human Doe | human | HIGH    | 0      | 160         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=101 PlayerId in path=5 Alias in param=CardGame ai Doe Avatar in param=ELF No aiLevel in param specified SecuredLoan in param=0 No playingOrder in param specified |
       | 10    | 6        | ELF      |                     | human | LOW     | 0      | 170         | 200              | api/cardgames/{id}/setup/players/{playerId} = Id in path=102 PlayerId in path=6 No alias in param specified Avatar in param=ELF AiLevel in param= SecuredLoan in param=0 No playingOrder in param specified |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: DELETE a player for a CardGame with DELETE /api/cardgames/{id}/"<HumanOrAi>"/{playerId}
     Given I try to delete a HumanOrAi "<HumanOrAi>" player with "<playerId>" for a cardGame with id "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -123,7 +107,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 9     | human     | 3        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
       | 8     | human     | 2        | ELF    | CardGame ai Doe    | false | LOW     | 0      | 0           | 204              | api/cardgames/{id}/setup/{humanOrAi}/(playerId} = Id in path=98 HumanOrAi in path=ai PlayerId in path=2 |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: SHUFFLE a CardGame with POST /api/cardgames/{id}/shuffle/cards?jokers
     Given I try to shuffle a cardGame with id "<id>" and jokers "<jokers>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -135,7 +119,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 8     | 1      | 500              | api/cardgames/{id}/shuffle = Id in path=98 Jokers in param=1 |
       | 12    |        | 201              | api/cardgames/{id}/shuffle = Id in path=99 No jokers in param specified |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: TURN for a player in a CardGame with PUT /api/cardgames/{id}/turn/players/(playerId}
     Given I try to make a turn with "<action>" action for player with id "<playerId>" in a cardGame with id "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -147,7 +131,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 7     | 1        | HIGHER | 200              | api/cardgames/{id}/turn/players/{playerId} = Id in path=99 PlayerId in path=2 Action in param=LOWER |
       | 12    | 3        | HIGHER | 500              | api/cardgames/{id}/turn/players/{playerId} = Id in path=100 PlayerId in path=3 Action in param=AUTO |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: A frontend makes call to DELETE /api/cardgames/{id}
     Given I try to delete a cardGame "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
@@ -171,7 +155,7 @@ Feature: Execute a lifecycle of a cardGame in the card game
       | 11     | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
       | 12     | []    | []      | 1     | IS_CONFIGURED | HIGHLOW   | 1000 | 204              | api/cardgames/init =  GameType in param=HIGHLOW Ante in param=1000 |
 
-  @Api @CardGames
+  @Ignore
   Scenario Outline: A frontend makes call to DELETE /api/players/{id} cardGame player
     Given I try to delete a player "<id>"
     Then I should see that the response has HTTP status "<HTTP status code>"
