@@ -24,9 +24,11 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
+@Slf4j
 public class CardGameFlowDTO extends AbstractFlowDTO implements
 		CreateCasinoForGameAndPlayerEvent.CreateCasinoForGameAndPlayerEventDTO,
 		CreateDeckForGameEvent.CreateDeckForGameEventDTO,
@@ -85,6 +87,9 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 			return;
 		}
 		
+		String message = String.format("CardGameFlowDTO processPathAndQueryParams is: %s", pathAndQueryParams);
+		log.info(message);
+				
 		// pass pathid's to the Flow
 		if (pathAndQueryParams.containsKey("gameId")) {
 			this.suppliedGameId = pathAndQueryParams.get("gameId");
@@ -182,7 +187,30 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 		this.currentGame = game;
 	}
 	
+	@Override
 	public void setCurrentPlayer(Player player) {
 		this.currentPlayer = player;
 	}
+	
+	@Override
+	public void setCurrentCasino(Casino casino) {
+		this.currentCasino = casino;
+	}
+	
+	@Override
+	public void setSuppliedPlayerId(String playerId) {
+		this.suppliedPlayerId = playerId;
+	}
+	
+	@Override
+	public void setSuppliedCasinoId(String casinoId) {
+		this.suppliedCasinoId = casinoId;
+	}
+	
+	@Override
+	public String getSuppliedGameId() {
+		return this.suppliedGameId ;
+	}
+	
+	
 }

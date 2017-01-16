@@ -200,6 +200,7 @@ public class CardGameController extends AbstractController<Game> {
 	//     addEvent, addStateMachine, getNextInFlow and
 	//     start, transition, build
 	private FlowDTOBuilder<CardGameFlowDTO> builder;
+	
 	@Resource
 	private ApplicationContext applicationContext;
 	
@@ -207,6 +208,9 @@ public class CardGameController extends AbstractController<Game> {
 	public void init() {
 		this.builder = new FlowDTOBuilder<>(new CardGameFlowDTO());
 		this.builder.setApplicationContext(applicationContext);
+		
+		String message = String.format("PostConstruct in controller is: %s", applicationContext);
+		log.info(message);
 	}
 /*  example post construct:
 	public class Foo {
@@ -230,19 +234,24 @@ public class CardGameController extends AbstractController<Game> {
 	public CardGameResponse play(Trigger trigger, Map<String, String> pathAndQueryData) {
 		
 		CardGameFlowDTO flowDTO = new CardGameFlowDTO();
+		
 		switch (trigger) {
 			
 			case POST_INIT:
 				
+				String message = String.format("Trigger to execute in controller is: %s and data %s", trigger, pathAndQueryData);
+				log.info(message);
+				
 				//POST   api/cardgames/init?gameType={g},ante={a}
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
-						          .addEvent(UpdateCardGameDetailsEvent.class)
-						          .addStateMachine(this.stateMachine)
 						          .addContext(super.init(new Game()))
+						          .addStateMachine(this.stateMachine)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
 				flowDTO.processPathAndQueryParams();
+				flowDTO.setSuppliedGameId(String.valueOf(flowDTO.getGameContext().getGameId()));
 				flowDTO.setSuppliedTrigger(trigger);
 				
 				flowDTO.start();
@@ -261,8 +270,8 @@ public class CardGameController extends AbstractController<Game> {
 				
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
 				flowDTO.processPathAndQueryParams();
@@ -279,12 +288,13 @@ public class CardGameController extends AbstractController<Game> {
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.init(new Game()))
+						          .addStateMachine(this.stateMachine)
 						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
-						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.setPathAndQueryParams(pathAndQueryData);
 				flowDTO.processPathAndQueryParams();
+				flowDTO.setSuppliedGameId(String.valueOf(flowDTO.getGameContext().getGameId()));
 				flowDTO.setSuppliedTrigger(trigger);
 				
 				flowDTO.start();

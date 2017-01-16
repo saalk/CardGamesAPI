@@ -54,7 +54,7 @@ public class CreatePlayerEvent extends AbstractEvent {
 	
 		void setCurrentPlayer(Player player);
 		
-		String setSuppliedPlayerId(String playerId);
+		void setSuppliedPlayerId(String playerId);
 		
 		String getSuppliedHumanOrAi();
 		

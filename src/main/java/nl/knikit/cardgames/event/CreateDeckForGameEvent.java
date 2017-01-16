@@ -44,7 +44,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOneWithString(gameId);
+			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
 			if (gameToUpdate == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;

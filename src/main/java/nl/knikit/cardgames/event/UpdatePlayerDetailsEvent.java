@@ -40,7 +40,7 @@ public class UpdatePlayerDetailsEvent extends AbstractEvent {
 		// check path var player/{id}
 		String id = flowDTO.getSuppliedPlayerId();
 		try {
-			playerToUpdate = playerService.findOneWithString(id);
+			playerToUpdate = playerService.findOne(Integer.parseInt(id));
 			if (playerToUpdate == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;

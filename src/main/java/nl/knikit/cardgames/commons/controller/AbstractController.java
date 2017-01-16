@@ -56,7 +56,7 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		context.setTurnsToWin(3);
 		this.setContext((T) gameService.createDefaultGame(this.getContext()));
 		
-		return context;
+		return this.context;
 	}
 	
 	@Override
@@ -65,9 +65,9 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		this.context = context;
 		StateMachineConfig<State, Trigger> config = getStateMachineConfiguration();
 		stateMachine.initialize(config, currentState);
-		context.setState(stateMachine.getCurrentStateEnum());
+		this.context.setState(stateMachine.getCurrentStateEnum());
 		
-		return context;
+		return this.context;
 	}
 	
 	@Override

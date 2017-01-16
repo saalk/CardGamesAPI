@@ -33,7 +33,9 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		
 		UpdateCardGameDetailsEventDTO flowDTO = (UpdateCardGameDetailsEventDTO) eventInput[0];
 		EventOutput eventOutput;
-
+		
+		String message = String.format("UpdateCardGameDetailsEvent game to update is: %s", flowDTO.getSuppliedGameId());
+		log.info(message);
 		
 		// get the game and update the gametype and ante
 		// init
@@ -43,14 +45,16 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		// check path var game/{id}
 		String id = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOneWithString(id);
+			gameToUpdate = gameService.findOne(Integer.parseInt(id));
+			message = String.format("UpdateCardGameDetailsEvent game find before update in Event: %s", gameToUpdate);
+			log.info(message);
 			if (gameToUpdate == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
-			String message = String.format("Entity to find before update in Event: %s", id);
-			log.info(message);
 		} catch (Exception e) {
+			message = String.format("UpdateCardGameDetailsEvent game find before update has exception: %s", e);
+			log.info(message);
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 			return eventOutput;
 		}
@@ -59,13 +63,16 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
 		gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
 		
+		message = String.format("UpdateCardGameDetailsEvent gameType before update has details: %s", flowDTO.getSuppliedGameType());
+		log.info(message);
+		
 		try {
 			updatedGame = gameService.update(gameToUpdate);
 			if (updatedGame == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
-			String message = String.format("Entity to update in Event: %s", id);
+			message = String.format("UpdateCardGameDetailsEvent game update in Event: %s", id);
 			log.info(message);
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);

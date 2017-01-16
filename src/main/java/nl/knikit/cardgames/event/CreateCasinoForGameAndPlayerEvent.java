@@ -48,7 +48,7 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOneWithString(gameId);
+			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
 			if (gameToUpdate == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
@@ -60,7 +60,7 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		String playerId = flowDTO.getSuppliedPlayerId();
 		try {
-			playerToUpdate = playerService.findOneWithString(playerId);
+			playerToUpdate = playerService.findOne(Integer.parseInt(playerId));
 			if (playerToUpdate == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
@@ -106,7 +106,7 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		void setCurrentCasino(Casino casino);
 		
-		String setSuppliedCasinoId(String casinoId);
+		void setSuppliedCasinoId(String casinoId);
 		
 		void setCurrentPlayer(Player player);
 		
