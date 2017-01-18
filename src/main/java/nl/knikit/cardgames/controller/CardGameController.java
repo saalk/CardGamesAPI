@@ -91,16 +91,20 @@ NO_WINNER -up-> IS_SETUP: GAME_FINISHED
 // @formatter:on
 
 import com.github.oxo42.stateless4j.StateMachineConfig;
-//TODO import com.github.oxo42.stateless4j.delegates.Action;
 
 import nl.knikit.cardgames.VO.CardGameFlowDTO;
 import nl.knikit.cardgames.commons.controller.AbstractController;
 import nl.knikit.cardgames.commons.event.FlowDTOBuilder;
-
 import nl.knikit.cardgames.event.CreateCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.CreateDeckForGameEvent;
+import nl.knikit.cardgames.event.CreateHandForCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.CreatePlayerEvent;
+import nl.knikit.cardgames.event.DeleteCardGameEvent;
+import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
+import nl.knikit.cardgames.event.UpdateCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.UpdateDeckForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
@@ -108,6 +112,7 @@ import nl.knikit.cardgames.response.CardGameResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -121,6 +126,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.Trigger;
+
+//TODO import com.github.oxo42.stateless4j.delegates.Action;
 
 /**
  * <H1>GalacticCasinoController</H1>Main functionality: <ul> <li>a native casino adventure
@@ -137,6 +144,7 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.Trigger;
 // TODO make this CardGame controller special to a context HightLowCardGame, BlackJackCardGame, etc.. ?
 @Slf4j
 @Component
+@Scope("prototype")
 public class CardGameController extends AbstractController<Game> {
 	
 	// 1 - configure the state machine in the AbstractController
@@ -149,6 +157,7 @@ public class CardGameController extends AbstractController<Game> {
 				// continue on players page
 				.permitReentry(Trigger.POST_INIT)
 				.permitReentry(Trigger.PUT_INIT)
+				.permitReentry(Trigger.OK)
 				// continue on game page
 				.permit(Trigger.POST_INIT_HUMAN, State.HAS_PLAYERS)
 				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_PLAYERS)
@@ -160,6 +169,7 @@ public class CardGameController extends AbstractController<Game> {
 				.permitReentry(Trigger.DELETE_SETUP_AI)
 				.permitReentry(Trigger.PUT_INIT)
 				.permitReentry(Trigger.PUT_SETUP_PLAYER)
+				.permitReentry(Trigger.OK)
 				// continue on players page
 				.permit(Trigger.DELETE_SETUP_HUMAN, State.IS_CONFIGURED)
 				// continue on casino page
@@ -167,12 +177,16 @@ public class CardGameController extends AbstractController<Game> {
 				.permit(Trigger.ERROR, State.ERROR);
 		
 		config.configure(State.IS_SETUP)
+				.permitReentry(Trigger.OK)
+				
 				.permit(Trigger.PUT_TURN, State.PLAYING)
 				.permit(Trigger.ERROR, State.ERROR);
 		
 		
 		config.configure(State.PLAYING)
 				.permitReentry(Trigger.PUT_TURN)
+				.permitReentry(Trigger.OK)
+				
 				// continue on results page
 				.permit(Trigger.PLAYER_WINS, State.GAME_WON)
 				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
@@ -181,9 +195,11 @@ public class CardGameController extends AbstractController<Game> {
 		
 		
 		config.configure(State.GAME_WON)
+				.permitReentry(Trigger.OK)
 				.permit(Trigger.PUT_TURN, State.PLAYING); // allows continue!
 		
 		config.configure(State.NO_WINNER)
+				.permitReentry(Trigger.OK)
 				.permitReentry(Trigger.NO_CARDS_LEFT)
 				.permitReentry(Trigger.ROUNDS_ENDED)
 				.permit(Trigger.PUT_TURN, State.PLAYING) // allows continue!
@@ -235,12 +251,12 @@ public class CardGameController extends AbstractController<Game> {
 		
 		CardGameFlowDTO flowDTO = new CardGameFlowDTO();
 		
+		String message = String.format("CardGameController Trigger to execute is: %s and data %s", trigger, pathAndQueryData);
+		log.info(message);
+		
 		switch (trigger) {
 			
 			case POST_INIT:
-				
-				String message = String.format("Trigger to execute in controller is: %s and data %s", trigger, pathAndQueryData);
-				log.info(message);
 				
 				//POST   api/cardgames/init?gameType={g},ante={a}
 				// init makes a default card game and adds it as context to flowDTO
@@ -249,18 +265,24 @@ public class CardGameController extends AbstractController<Game> {
 						          .addStateMachine(this.stateMachine)
 						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedGameId(String.valueOf(flowDTO.getGameContext().getGameId()));
-				flowDTO.setSuppliedTrigger(trigger);
-				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.setGameByContext();
 				flowDTO.start();
+				
+				message = String.format("CardGameController gametype are: %s", flowDTO.getSuppliedGameType());
+				log.info(message);
+				
 				// state IS_CONFIGURED
 				break;
 			
 			case PUT_INIT:
 				
 				//PUT    api/cardgames/init/1?gameType={g},ante={a}
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addStateMachine(this.stateMachine)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .build();
 				
 				// reinstate get the card game and adds it as context to flowDTO
 				List<State> possiblePUT_INITStates = new ArrayList<>();
@@ -268,15 +290,7 @@ public class CardGameController extends AbstractController<Game> {
 				possiblePUT_INITStates.add(State.HAS_PLAYERS);
 				stateMachine.checkAll(possiblePUT_INITStates);
 				
-				flowDTO = builder
-						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addStateMachine(this.stateMachine)
-						          .addEvent(UpdateCardGameDetailsEvent.class)
-						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
-				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state IS_CONFIGURED or HAS_PLAYERS
 				break;
@@ -292,11 +306,8 @@ public class CardGameController extends AbstractController<Game> {
 						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedGameId(String.valueOf(flowDTO.getGameContext().getGameId()));
-				flowDTO.setSuppliedTrigger(trigger);
-				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.setGameByContext();
 				flowDTO.start();
 				// state HAS_PLAYERS
 				break;
@@ -304,7 +315,6 @@ public class CardGameController extends AbstractController<Game> {
 			case POST_SETUP_HUMAN:
 				
 				//POST   api/cardgames/1/setup/human        ?alias/avatar/securedLoan            // no dealing yet
-				stateMachine.check(State.IS_CONFIGURED);
 				
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
@@ -313,65 +323,67 @@ public class CardGameController extends AbstractController<Game> {
 						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
 				
+				List<State> possiblePOST_SETUPStates = new ArrayList<>();
+				possiblePOST_SETUPStates.add(State.IS_CONFIGURED);
+				possiblePOST_SETUPStates.add(State.HAS_PLAYERS);
+				stateMachine.checkAll(possiblePOST_SETUPStates);
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state HAS_PLAYERS
 				break;
-				
+			
 			case POST_SETUP_AI:
 				
 				//POST   api/cardgames/1/setup/ai           ?alias/avatar/securedLoan/aiLevel
-				List<State> possiblePOST_SETUP_AIStates = new ArrayList<>();
-				possiblePOST_SETUP_AIStates.add(State.IS_CONFIGURED);
-				possiblePOST_SETUP_AIStates.add(State.HAS_PLAYERS);
 				
 				// reinstate get the card game and adds it as context to flowDTO
-				stateMachine.checkAll(possiblePOST_SETUP_AIStates);
-				
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
 						          .addEvent(CreatePlayerEvent.class)
 						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
 				
+				List<State> possiblePOST_SETUP_AIStates = new ArrayList<>();
+				possiblePOST_SETUP_AIStates.add(State.IS_CONFIGURED);
+				possiblePOST_SETUP_AIStates.add(State.HAS_PLAYERS);
+				stateMachine.checkAll(possiblePOST_SETUP_AIStates);
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state HAS_PLAYERS or stays IS_CONFIGURED
 				break;
-				
+			
 			case PUT_SETUP_PLAYER:
 				
 				//PUT    api/cardgames/1/setup/players/2?name/avatar/securedLoan/aiLevel/playingOrder
+				
+				
+				// reinstate get the card game and adds it as context to flowDTO
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(UpdatePlayerDetailsEvent.class)
+						          .addEvent(UpdateCasinoForGameAndPlayerEvent.class)
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				
 				//stateMachine.check(State.IS_CONFIGURED); surround with if
 				List<State> possiblePUT_SETUP_PLAYERStates = new ArrayList<>();
 				possiblePUT_SETUP_PLAYERStates.add(State.IS_CONFIGURED);
 				possiblePUT_SETUP_PLAYERStates.add(State.HAS_PLAYERS);
 				stateMachine.checkAll(possiblePUT_SETUP_PLAYERStates);
 				
-				// reinstate get the card game and adds it as context to flowDTO
-				flowDTO = builder
-						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdatePlayerDetailsEvent.class)
-						          .addStateMachine(this.stateMachine)
-						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
-				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// stays state HAS_PLAYERS or stays IS_CONFIGURED
 				break;
-				
+			
 			case POST_SHUFFLE:
 				
 				//POST    api/cardgames/1/shuffle?jokers=0
-				stateMachine.check(State.HAS_PLAYERS);
+				
 				
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
@@ -379,53 +391,54 @@ public class CardGameController extends AbstractController<Game> {
 						          .addEvent(CreateDeckForGameEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
 				
+				stateMachine.check(State.HAS_PLAYERS);
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state IS_SETUP
 				break;
-				
+			
 			case PUT_TURN:
 				
-				//PUT    api/cardgames/1/turn/player/2?action=deal/higher/lower/pass // for human player
-				//PUT    api/cardgames/1/turn/player/3?action=auto  // auto deal or pass for ai player
-				List<State> possiblePUT_TURNStates = new ArrayList<>();
-				possiblePUT_TURNStates.add(State.IS_CONFIGURED);
-				possiblePUT_TURNStates.add(State.HAS_PLAYERS);
-				stateMachine.checkAll(possiblePUT_TURNStates);
+				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
+				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
+				
 				
 				// reinstate get the card game and adds it as context to flowDTO
+				// TODO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(UpdateDeckForGameAndPlayerEvent.class)
+						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
 				
+				List<State> possiblePUT_TURNStates = new ArrayList<>();
+				possiblePUT_TURNStates.add(State.IS_SETUP);
+				possiblePUT_TURNStates.add(State.PLAYING);
+				stateMachine.checkAll(possiblePUT_TURNStates);
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state PLAYING or still in IS_SETUP
-				// state GameWon, NoMoreCards or RoundsEnded
+				// TODO determine event for state GameWon, NoMoreCards or RoundsEnded
 				break;
 			
 			case DELETE_SETUP_HUMAN:
 				
 				//DELETE api/cardgames/1/setup/human/2
-				stateMachine.check(State.HAS_PLAYERS);
 				
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(DeleteCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
 				
+				stateMachine.check(State.HAS_PLAYERS);
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state back to IS_CONFIGURED
 				break;
@@ -433,43 +446,88 @@ public class CardGameController extends AbstractController<Game> {
 			case DELETE_SETUP_AI:
 				
 				//DELETE api/cardgames/1/setup/ai/3
+				
+				
+				// reinstate get the card game and adds it as context to flowDTO
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(DeleteCasinoForGameAndPlayerEvent.class)
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				
 				List<State> possibleDELETE_SETUP_AIStates = new ArrayList<>();
 				possibleDELETE_SETUP_AIStates.add(State.IS_CONFIGURED);
 				possibleDELETE_SETUP_AIStates.add(State.HAS_PLAYERS);
 				stateMachine.checkAll(possibleDELETE_SETUP_AIStates);
 				
-				// reinstate get the card game and adds it as context to flowDTO
-				flowDTO = builder
-						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateCardGameDetailsEvent.class)
-						          .addStateMachine(this.stateMachine)
-						          .build();
-				flowDTO.setPathAndQueryParams(pathAndQueryData);
-				flowDTO.processPathAndQueryParams();
-				flowDTO.setSuppliedTrigger(trigger);
-				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state stays HAS_PLAYERS or stays IS_CONFIGURED
 				break;
 			
+			case DELETE:
+				
+				// Trigger is OK
+				
+				//DELETE    api/cardgames/1                           // deletes the hands, decks, players, casinos and finally the game
+				//DELETE    api/cardgames/1/players                   // deletes all players as resource
+				//DELETE    api/cardgames/1/cards                     // gives cards in the deck as resources
+				//DELETE    api/cardgames/1/players/2                 // gives a player as resource with resourceId
+				//DELETE    api/cardgames/1/players/2/cards           // gives a player as resource with resourceId and cards in the hand as extraResource
+				
+				
+				// reinstate get the card game and adds it as context to flowDTO
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(DeleteCardGameEvent.class)
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.start();
+				// state stays HAS_PLAYERS or stays IS_CONFIGURED
+				
+				break;
+			
 			default:
 				
-				// GET    api/cardgames/1
-				// GET    api/cardgames/1/cards
-				// GET    api/cardgames/1/players
-				// GET    api/cardgames/1/players/2
-				// GET    api/cardgames/1/players/2/cards
+				// Trigger is GET
+				
+				//GET    api/cardgames/1
+				//GET    api/cardgames/1/player                    // gives active casino (resource=player)
+				//GET    api/cardgames/1/players                   // gives all casinos (resource=players)
+				//GET    api/cardgames/1/cards                     // gives all decks (resources=cards)
+				//GET    api/cardgames/1/players/2                 // gives a specific casino (resource=players, resourceId=int)
+				//GET    api/cardgames/1/players/2/cards           // gives a all hands for a player (resource=players, resourceId=int, extraResource=cards)
+				
+				// reinstate get the card game and adds it as context to flowDTO
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(GetCardGameDetailsEvent.class)
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.start();
+				// state does not matter
+				
 				break;
 		}
 		
 		
 		// generic tasks
-		transition(trigger);
-		this.updateState(flowDTO.getStateMachine().getCurrentState());
+		message = String.format("CardGameController Trigger without transition (is done in event) is: %s", trigger);
+		log.info(message);
+		
+		if (trigger != Trigger.GET && trigger != Trigger.DELETE) {
+			this.updateState(flowDTO.getStateMachine().getCurrentState());
+		}
 		
 		// make response
 		final CardGameResponse.CardGameResponseBuilder responseBuilder = CardGameResponse.builder();
-		responseBuilder.cardGame(mapUtil.convertFromGameEntity(flowDTO.getGameContext()));
+		if (trigger != Trigger.DELETE) {
+			message = String.format("CardGameController convertFromGameEntity is: %s", flowDTO.getCurrentGame());
+			log.info(message);
+			responseBuilder.cardGame(mapUtil.convertFromGameEntity(flowDTO.getCurrentGame()));
+		}
 		
 		// TODO more mappings
 		

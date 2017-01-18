@@ -30,7 +30,7 @@ public abstract class AbstractFlowDTO implements FlowEventCallback {
     }
         
     public AbstractEvent getNextInFlow() {
-        String message = String.format("AbstractFlowDTO in addEvent chain is: %s", chain);
+        String message = String.format("AbstractFlowDTO in getNextInFlow chain is: %s", chain);
         log.info(message);
         return chain.poll();
     }
@@ -48,11 +48,17 @@ public abstract class AbstractFlowDTO implements FlowEventCallback {
     }
 
     public boolean addEvent(AbstractEvent event) {
-    	
-        String message = String.format("AbstractFlowDTO in addEvent chain is: %s", chain);
-        log.info(message);
-        
-        return !running && chain.add(event);
+    
+        if (!running) {
+            chain.add(event);
+            String message = String.format("AbstractFlowDTO in addEvent chain is: %s", chain);
+            log.info(message);
+        } else {
+            String message = String.format("AbstractFlowDTO in addEvent is running so no addEvent to chain");
+            log.info(message);
+            return false;
+        }
+        return true;
     }
 
     public void start() {

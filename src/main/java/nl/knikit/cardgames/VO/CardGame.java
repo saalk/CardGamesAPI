@@ -3,6 +3,7 @@ package nl.knikit.cardgames.VO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
@@ -57,7 +58,14 @@ public class CardGame extends GameDto implements Serializable {
 	//@JsonBackReference(value="gameDto")
 	@JsonProperty(value = "cards")
 	@Setter(AccessLevel.NONE)
-	private List<DeckDto> deckDtos;
+	@Getter(AccessLevel.NONE)
+	private List<DeckDto> cards;
+	
+	@JsonProperty(value = "players")
+	@Setter(AccessLevel.NONE)
+	@Getter(AccessLevel.NONE)
+	private List<CasinoDto> players;
+	
 	// "10C  Ten of Clubs"
 	// "  *  40 cards left
 	// "---  -------------
@@ -112,11 +120,24 @@ public class CardGame extends GameDto implements Serializable {
 		return this.winner;
 	}
 	
-	public void setDeckDtos(List<DeckDto> deckDtos) {
-		this.deckDtos = deckDtos;
+	@JsonIgnore
+	public void setCards(List<DeckDto> deckDtos) {
+		this.cards = deckDtos;
 	}
 	
-	public List<DeckDto> getDeckDtos() {
-		return this.deckDtos;
+	@JsonIgnore
+	public List<DeckDto> getCards() {
+		return this.cards;
 	}
+	
+	@JsonIgnore
+	public void setPlayers(List<CasinoDto> casinoDtos) {
+		this.players = casinoDtos;
+	}
+	
+	@JsonIgnore
+	public List<CasinoDto> getPlayers() {
+		return this.players;
+	}
+	
 }

@@ -25,6 +25,7 @@ public class FlowDTOBuilder<T extends AbstractFlowDTO> implements ApplicationCon
 
     public FlowDTOBuilder<T> addEvent(Class<? extends AbstractEvent> eventClass) {
         final AbstractEvent eventBean = applicationContext.getBean(eventClass);
+        // addEvent call in AbstractFlowDTO
         flowDTO.addEvent(eventBean);
         String message = String.format("FlowDTOBuilder in addEvent is: %s", eventBean);
         log.info(message);

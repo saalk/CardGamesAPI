@@ -31,8 +31,12 @@ public abstract class AbstractEvent {
         AbstractEvent next = dto.getNextInFlow();
         if (result.isSuccess()) {
             if(result.getTrigger() != null) {
+                message = String.format("AbstractEvent fireChainedEvent transition has trigger: %s", result.getTrigger());
+                log.info(message);
                 dto.transition(result.getTrigger());
             } else {
+                message = String.format("AbstractEvent fireChainedEvent transition has no trigger", result.getTrigger());
+                log.info(message);
                 //dto.transition(Trigger.OK);
             }
             if (next != null) {

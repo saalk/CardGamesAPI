@@ -69,20 +69,31 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		}
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(updatedGame);
-		eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
+		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
+		String message = String.format("UpdateCardGameDetailsEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		log.info(message);
+		
+		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SHUFFLE) {
+			// key event so do a transition
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
+			message = String.format("UpdateCardGameDetailsEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
+			log.info(message);
+		} else {
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
+			message = String.format("UpdateCardGameDetailsEvent do no transition");
+			log.info(message);
+		}
 		return eventOutput;
 	}
 	
 	public interface CreateDeckForGameEventDTO {
 		
+		// all game fields
 		String getSuppliedGameId();
-		
 		void setCurrentGame(Game game);
+		Game getCurrentGame();
 		
 		String getSuppliedJokers();
-		
-		void setCurrentDeck(Deck deck);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

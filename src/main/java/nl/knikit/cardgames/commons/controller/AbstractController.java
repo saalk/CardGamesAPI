@@ -15,9 +15,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 import static nl.knikit.cardgames.model.state.CardGameStateMachine.Trigger;
 
+@Slf4j
 public abstract class AbstractController<T extends Game> implements Controller<T> {
 	
 	@Resource
@@ -45,6 +48,8 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		this.context = context;
 		
 		stateMachine.initialize(getStateMachineConfiguration());
+		log.info(String.format("AbstractController init sets state: %s", stateMachine.getCurrentStateEnum()));
+		
 		context.setState(stateMachine.getCurrentStateEnum());
 		
 		// init a new default game has gameType HIGHLOW with the initial state set in the state machine
@@ -64,8 +69,11 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		
 		this.context = context;
 		StateMachineConfig<State, Trigger> config = getStateMachineConfiguration();
+		log.info(String.format("AbstractController init current state: %s", currentState));
+		
 		stateMachine.initialize(config, currentState);
 		this.context.setState(stateMachine.getCurrentStateEnum());
+		log.info(String.format("AbstractController init new state: %s", stateMachine.getCurrentStateEnum()));
 		
 		return this.context;
 	}
@@ -77,6 +85,8 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		if(this.context == null){
 			throw new IllegalStateException("A resinstate was fired, but no game could be found to match it");
 		}
+		log.info(String.format("AbstractController reinstate current state: %s", this.context.getState()));
+		
 		return init(this.context,this.context.getState());
 	}
 	
@@ -86,15 +96,16 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 	 * DO NOT OVERRIDE!!!!
 	 */
 	public ControllerResponse reset() {
-		if (stateMachine.getSm().canFire(Trigger.RESET)) {
-			final ControllerResponse result = performRollback();
-			if (result.isSuccess()) {
-				transition(Trigger.RESET);
-			}
-			return result;
-		} else {
-			throw new IllegalStateException("Cannot reset from " + stateMachine.getCurrentState());
-		}
+//		if (stateMachine.getSm().canFire(Trigger.RESET)) {
+//			final ControllerResponse result = performRollback();
+//			if (result.isSuccess()) {
+//				transition(Trigger.RESET);
+//			}
+//			return result;
+//		} else {
+//			throw new IllegalStateException("Cannot reset from " + stateMachine.getCurrentState());
+//		}
+		return null;
 	}
 	
 	/**
@@ -113,15 +124,23 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 	 * @param state - State to move to
 	 */
 	public void updateState(final String state) {
+		log.info(String.format("AbstractController updateState before update: %s", state));
+		
 		this.getContext().setState(State.valueOf(state));
 		
 		// update the game with the new state
 		this.setContext((T) gameService.updateStateInGame(this.getContext()));
+		log.info(String.format("AbstractController updateState after update: %s", this.context.getState()));
+		
 	}
 	
 	public void transition(final Trigger trigger) {
+		log.info(String.format("AbstractController transition trigger is: %s", trigger));
+		
 		String nextState = this.stateMachine.transition(trigger);
+		log.info(String.format("AbstractController transition next state: %s", nextState));
 		this.updateState(nextState);
+		
 	}
 	
 	protected abstract StateMachineConfig<State, Trigger> getStateMachineConfiguration();

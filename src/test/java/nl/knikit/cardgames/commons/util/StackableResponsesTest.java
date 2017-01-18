@@ -48,7 +48,7 @@ public class StackableResponsesTest {
 	@Test
 	public void peekAt() throws Exception {
 		
-		Object object = fixture.peekAt("cardGames", 0);
+		Object object = fixture.peekAt("cardGames", 1);
 		assertThat(object instanceof CardGame, is(true));
 		
 		CardGame cardGame = (CardGame) object;

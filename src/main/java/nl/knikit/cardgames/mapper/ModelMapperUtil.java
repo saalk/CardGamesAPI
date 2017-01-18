@@ -112,6 +112,35 @@ public class ModelMapperUtil {
 		} else {
 			cardGame.setWinner(null);
 		}
+		
+		List<CasinoDto> casinoDtos = new ArrayList<>();
+		if (game.getCasinos() != null) {
+			for (Casino casino: game.getCasinos()) {
+				// casinoDtos.add(convertToDto(casino)); this created a loop
+				modelMapper = new ModelMapper();
+				CasinoDto casinoDto = modelMapper.map(casino, CasinoDto.class);
+				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
+				casinoDtos.add(casinoDto);
+			}
+			cardGame.setPlayers(casinoDtos);
+		} else {
+			cardGame.setPlayers(null);
+		}
+		
+		List<DeckDto> deckDtos = new ArrayList<>();
+		if (game.getDecks() != null) {
+			for (Deck deck: game.getDecks()) {
+				// casinoDtos.add(convertToDto(casino)); this created a loop
+				modelMapper = new ModelMapper();
+				DeckDto deckDto = modelMapper.map(deck, DeckDto.class);
+				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
+				deckDtos.add(deckDto);
+			}
+			cardGame.setCards(deckDtos);
+		} else {
+			cardGame.setCards(null);
+		}
+		
 		return cardGame;
 	}
 	

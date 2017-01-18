@@ -31,7 +31,7 @@ public class StackableResponses{
 	
 	static public Object peekAt(String object, int number) {
 		LinkedList<Object> linkedList = responses.get(object.toLowerCase());
-		return linkedList.get(number);
+		return linkedList.get(number-1);
 	}
 	
 	static public Object peekAndPop(String object) {

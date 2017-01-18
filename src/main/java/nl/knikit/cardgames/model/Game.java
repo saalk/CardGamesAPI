@@ -83,6 +83,14 @@ public class Game implements Serializable {
 	private List<Deck> decks;
 	
 	// Cascade = any change happened on this entity must cascade to the parent/child as well
+	// since this is the parent Game: do all when Game is delete on the deck childs
+	// meaning do set cascade type to all -> changed to delete not create
+	//@JsonIgnore
+	@OneToMany(cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
+	private List<Casino> casinos;
+	
+	// Cascade = any change happened on this entity must cascade to the parent/child as well
 	// since this is the child Game: do nothing when Game is delete on the winner Player
 	// meaning do not set cascade options
 	//@JsonIgnore

@@ -43,9 +43,9 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		Game updatedGame;
 		
 		// check path var game/{id}
-		String id = flowDTO.getSuppliedGameId();
+		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOne(Integer.parseInt(id));
+			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
 			message = String.format("UpdateCardGameDetailsEvent game find before update in Event: %s", gameToUpdate);
 			log.info(message);
 			if (gameToUpdate == null) {
@@ -60,8 +60,12 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		}
 	
 		// do the update
-		gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
-		gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
+		if (flowDTO.getSuppliedGameType() != null) {
+			gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
+		}
+		if (flowDTO.getSuppliedAnte() != null && !flowDTO.getSuppliedAnte().equals("null") && !flowDTO.getSuppliedAnte().isEmpty()) {
+			gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
+		}
 		
 		message = String.format("UpdateCardGameDetailsEvent gameType before update has details: %s", flowDTO.getSuppliedGameType());
 		log.info(message);
@@ -72,7 +76,7 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
-			message = String.format("UpdateCardGameDetailsEvent game update in Event: %s", id);
+			message = String.format("UpdateCardGameDetailsEvent game update in Event: %s", gameId);
 			log.info(message);
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
@@ -81,19 +85,33 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(updatedGame);
-		eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
+		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
+		message = String.format("UpdateCardGameDetailsEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		log.info(message);
+		
+		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_INIT) {
+			// key event so do a transition
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
+			message = String.format("UpdateCardGameDetailsEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
+			log.info(message);
+		} else {
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
+			message = String.format("UpdateCardGameDetailsEvent do no transition");
+			log.info(message);
+		}
+		
 		return eventOutput;
 	}
 	
 	public interface UpdateCardGameDetailsEventDTO {
 		
-		void setCurrentGame(Game game);
-		
+		// all game fields
 		String getSuppliedGameId();
+		void setCurrentGame(Game game);
+		Game getCurrentGame();
 		
+		// rest
 		GameType getSuppliedGameType();
-		
 		String getSuppliedAnte();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();

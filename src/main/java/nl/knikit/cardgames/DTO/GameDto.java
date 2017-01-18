@@ -56,11 +56,14 @@ public class GameDto implements Serializable {
 	
 	//@JsonBackReference(value="gameDto")
 	//@JsonProperty(value = "decks")
+	
+	@JsonIgnore
 	@Setter(AccessLevel.NONE)
 	private List<DeckDto> deckDtos;
 	
 	//@JsonBackReference(value="gameDto")
 	//@JsonProperty(value = "decks")
+	@JsonIgnore
 	@Setter(AccessLevel.NONE)
 	private List<CasinoDto> casinoDtos;
 	

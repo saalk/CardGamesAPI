@@ -4,6 +4,7 @@ import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
+import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IPlayerService;
@@ -44,26 +45,29 @@ public class CreatePlayerEvent extends AbstractEvent {
 		flowDTO.setCurrentPlayer(createdPlayer);
 		flowDTO.setSuppliedPlayerId(String.valueOf(createdPlayer.getPlayerId()));
 		
-		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
+		
+		// never do a transition, this is no key event
+		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
+		String message = String.format("CreatePlayerEvent never does no transition");
+		log.info(message);
+		
 		return eventOutput;
 	}
 	
 	public interface CreatePlayerEventDTO {
 		
-	
+		// all game fields
+		String getSuppliedGameId();
+		void setCurrentGame(Game game);
+		Game getCurrentGame();
+		
+		// rest
 		void setCurrentPlayer(Player player);
-		
 		void setSuppliedPlayerId(String playerId);
-		
 		String getSuppliedHumanOrAi();
-		
 		String getSuppliedAlias();
-		
 		Avatar getSuppliedAvatar();
-		
 		String getSuppliedSecuredLoan();
-		
 		AiLevel getSuppliedAiLevel();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
@@ -73,29 +77,35 @@ public class CreatePlayerEvent extends AbstractEvent {
 		
 		// set defaults for human or aline
 		Player player = new Player();
-		if (flowDTO.getSuppliedHumanOrAi() == "human") {
+		if (flowDTO.getSuppliedHumanOrAi().equals("human")) {
 			player.setAiLevel(AiLevel.HUMAN);
-			if (flowDTO.getSuppliedAlias().isEmpty()){
+			player.setHuman(true);
+			if (flowDTO.getSuppliedAlias() != null && flowDTO.getSuppliedAlias().isEmpty()) {
 				player.setAlias("Stranger");
 			} else {
 				player.setAlias(flowDTO.getSuppliedAlias());
 			}
 		} else {
+			player.setHuman(false);
 			if (flowDTO.getSuppliedAiLevel().equals(AiLevel.HUMAN)) {
 				player.setAiLevel(AiLevel.MEDIUM);
 			} else {
 				player.setAiLevel(flowDTO.getSuppliedAiLevel());
 			}
-			if (flowDTO.getSuppliedAlias().isEmpty()){
+			if (flowDTO.getSuppliedAlias() != null && flowDTO.getSuppliedAlias().isEmpty()) {
 				player.setAlias("Alien");
 			} else {
 				player.setAlias(flowDTO.getSuppliedAlias());
 			}
 		}
 		
-		player.setAvatar(flowDTO.getSuppliedAvatar());
-		player.setSecuredLoan(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
+		if (flowDTO.getSuppliedAvatar() != null) {
+			player.setAvatar(flowDTO.getSuppliedAvatar());
+		}
 		
+		if (flowDTO.getSuppliedSecuredLoan() != null && !flowDTO.getSuppliedSecuredLoan().equals("null") && !flowDTO.getSuppliedSecuredLoan().isEmpty()) {
+			player.setSecuredLoan(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
+		}
 		return player;
 	}
 }
