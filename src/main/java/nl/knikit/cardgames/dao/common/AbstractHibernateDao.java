@@ -139,7 +139,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 			return getCurrentSession().createQuery(criteria).list();
 			
 		} catch (Exception e) {
-			String errorMessage = String.format("Error findAllWhere, class: %s column: %s where: %s query: %s error: %s", clazz.getName(), column, inputValue, criteria, e);
+			String errorMessage = String.format("ErrorResponse findAllWhere, class: %s column: %s where: %s query: %s error: %s", clazz.getName(), column, inputValue, criteria, e);
 			log.error(errorMessage);
 			throw e;
 		}
@@ -302,9 +302,10 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 	public T updateStateInGame(T entity) {
 		
 		Preconditions.checkNotNull(entity);
+		Game stateToUpdate;
 		try {
 			Game gameToUpdate = (Game) entity;
-			Game stateToUpdate = (Game) findOne(gameToUpdate.getGameId());
+			stateToUpdate = (Game) findOne(gameToUpdate.getGameId());
 			stateToUpdate.setState(gameToUpdate.getState());
 			String message = String.format("Entity state to update in DAO: %s - the state is: %s", entity.toString(),gameToUpdate.getState());
 			log.info(message);
@@ -316,7 +317,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 			log.error(errorMessage);
 			throw e;
 		}
-		return entity;
+		return (T) stateToUpdate;
 	}
 	
 	// private method

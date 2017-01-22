@@ -52,20 +52,20 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		EventOutput eventOutput;
 		
 		// get the game and make a hand
-		Game gameToUpdate;
+		Game gameToCheck;
 		
-		Player playerToDealTo;
 		Card cardToDeal;
-		Casino casinoToDealTo = new Casino();
+		Casino casinoToDealTo;
 		
 		Hand handToCreate = new Hand();
-		List<Hand> handsForCasino;
+		Hand createdHand;
+		List<Hand> otherHandsForCasino;
 		
 		// find the game
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToUpdate == null) {
+			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
+			if (gameToCheck == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -87,12 +87,11 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		
-		// find the player
-		String playerId = flowDTO.getSuppliedPlayerId();
+		// find the casino
+		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
-			playerToDealTo = playerService.findOne(Integer.parseInt(playerId));
-			if (playerToDealTo == null) {
+			casinoToDealTo = casinoService.findOne(Integer.parseInt(casinoId));
+			if (casinoToDealTo == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -101,51 +100,24 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		// find the casino for the player and game
-		List<Casino> casinos;
+		// find all the Hands for the Casino
 		try {
-			casinos = casinoService.findAllWhere("game", gameId);
-			if (casinos == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		boolean found = false;
-		for (Casino casino : casinos) {
-			if (casino.getPlayer().equals(playerToDealTo.getPlayerId())) {
-				casinoToDealTo = casino;
-				found = true;
-			}
-		}
-		if (!found) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		// find the existing hands for the player and casino
-		try {
-			handsForCasino = handService.findAllWhere("casino", String.valueOf(casinoToDealTo.getCasinoId()));
-			if (handsForCasino == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
+			otherHandsForCasino = handService.findAllWhere("casino", casinoId);
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
 		
+
 		// do the add
 		handToCreate.setCasino(casinoToDealTo);
-		handToCreate.setPlayer(playerToDealTo);
+		handToCreate.setPlayer(casinoToDealTo.getPlayer());
 		handToCreate.setCard(cardToDeal);
-		handToCreate.setCardOrder(handsForCasino.size()+1);
+		handToCreate.setCardOrder(otherHandsForCasino.size()+1);
 		
 		try {
-			handToCreate = handService.create(handToCreate);
-			if (handToCreate == null) {
+			createdHand = handService.create(handToCreate);
+			if (createdHand == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -161,11 +133,11 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		log.info(message);
 		
 		// update ids
-		flowDTO.setSuppliedHandId(String.valueOf(handToCreate.getHandId()));
+		flowDTO.setSuppliedHandId(String.valueOf(createdHand.getHandId()));
 		
 		// update entities found
-		flowDTO.setCurrentPlayer(playerToDealTo);
-		flowDTO.setCurrentHand(handToCreate);
+		flowDTO.setCurrentPlayer(casinoToDealTo.getPlayer());
+		flowDTO.setCurrentHand(createdHand);
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_TURN) {
 			// key event so do a transition
@@ -188,7 +160,7 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		Game getCurrentGame();
 		
 		// rest
-		String getSuppliedPlayerId();
+		String getSuppliedCasinoId();
 		Card getCurrentCard();
 		
 		void setSuppliedHandId(String handId);

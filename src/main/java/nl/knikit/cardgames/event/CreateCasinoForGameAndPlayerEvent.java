@@ -14,6 +14,8 @@ import nl.knikit.cardgames.service.IPlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -39,17 +41,17 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		CreateCasinoForGameAndPlayerEventDTO flowDTO = (CreateCasinoForGameAndPlayerEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
-		// get the game and update the gametype and ante
-		Game gameToUpdate;
-		Player playerToUpdate;
+		// check the game
+		Game gameToCheck;
+		Player playerToCheck;
 		
 		Casino casinoToCreate = new Casino();
 		Casino createdCasino;
 		
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToUpdate == null) {
+			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
+			if (gameToCheck == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -60,8 +62,20 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		String playerId = flowDTO.getSuppliedPlayerId();
 		try {
-			playerToUpdate = playerService.findOne(Integer.parseInt(playerId));
-			if (playerToUpdate == null) {
+			playerToCheck = playerService.findOne(Integer.parseInt(playerId));
+			if (playerToCheck == null) {
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+				return eventOutput;
+			}
+		} catch (Exception e) {
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+			return eventOutput;
+		}
+		
+		List<Casino> existingCasinos; //TODO should be ordered with a set
+		try {
+			existingCasinos = casinoService.findAllWhere("game", gameId);
+			if (existingCasinos == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -71,10 +85,10 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		}
 		
 		// do the add
-		casinoToCreate.setGame(gameToUpdate);
-		casinoToCreate.setPlayer(playerToUpdate);
-		// TODO list casinos for game to count
-		casinoToCreate.setPlayingOrder(1);
+		casinoToCreate.setGame(gameToCheck);
+		casinoToCreate.setPlayer(playerToCheck);
+		casinoToCreate.setPlayingOrder(existingCasinos.size() + 1);
+		
 		try {
 			createdCasino = casinoService.create(casinoToCreate);
 			if (createdCasino == null) {
@@ -88,23 +102,22 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		String message = String.format("UpdateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		String message = String.format("CreateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 
-		flowDTO.setCurrentCasino(casinoToCreate);
+		flowDTO.setCurrentCasino(createdCasino);
 		flowDTO.setSuppliedCasinoId(String.valueOf(createdCasino.getCasinoId()));
-		flowDTO.setCurrentPlayer(playerToUpdate);
 		
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_INIT_HUMAN ||
 		flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SETUP_HUMAN ) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
-			message = String.format("UpdateCardGameDetailsEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
+			message = String.format("CreateCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
 			log.info(message);
 		} else {
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			message = String.format("UpdateCardGameDetailsEvent do no transition");
+			message = String.format("CreateCasinoForGameAndPlayerEvent do no transition");
 			log.info(message);
 		}
 		
@@ -122,7 +135,6 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		String getSuppliedPlayerId();
 		void setCurrentCasino(Casino casino);
 		void setSuppliedCasinoId(String casinoId);
-		void setCurrentPlayer(Player player);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

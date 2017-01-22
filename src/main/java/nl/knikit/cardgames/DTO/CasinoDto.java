@@ -2,8 +2,10 @@ package nl.knikit.cardgames.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
@@ -28,10 +30,13 @@ public class CasinoDto implements Serializable {
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
 	private String name; // extra field
+	@JsonProperty(value = "playerId")
 	private int casinoId;
 	// private String created; to prevent setting, this is generated
 	//@JsonManagedReference(value="gameDto")
+	@JsonIgnore
 	private GameDto gameDto;
+	@JsonProperty(value = "player")
 	private PlayerDto playerDto;
 	private int playingOrder;
 	
@@ -45,8 +50,9 @@ public class CasinoDto implements Serializable {
 		//
 	}
 	
-	public void setName() throws Exception {
-		this.name = "Name of the game";
+	public void setName() {
+		// "Script Joe(Human|Smart) [Elf]"
+		this.name = playerDto.getAlias() + "(" + WordUtils.capitalizeFully(playerDto.getAiLevel()) + ") [" + WordUtils.capitalizeFully(playerDto.getAvatar()) + "]";
 	}
 	
 	public void setCardCount() {

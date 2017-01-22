@@ -10,7 +10,7 @@ import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForGameAndPlayerEvent;
-import nl.knikit.cardgames.event.UpdateDeckForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.UpdateDeckForGameAndCasinoEvent;
 import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
@@ -45,7 +45,7 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 				GetCardGameDetailsEvent.GetCardGameDetailsEventDTO,
 				UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO,
 				UpdateCasinoForGameAndPlayerEvent.UpdateCasinoForGameAndPlayerEventDTO,
-				UpdateDeckForGameAndPlayerEvent.UpdateDeckForGameAndPlayerEventDTO,
+				UpdateDeckForGameAndCasinoEvent.UpdateDeckForGameAndCasinoEventDTO,
 				UpdatePlayerDetailsEvent.UpdatePlayerDetailsEventDTO {
 	
 	// suppress lombok setter for these fixed values
@@ -94,6 +94,10 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 			if (pathAndQueryData.containsKey("playerId")) {
 				this.suppliedPlayerId = pathAndQueryData.get("playerId");
 			}
+			if (pathAndQueryData.containsKey("casinoId")) {
+				this.suppliedCasinoId = pathAndQueryData.get("casinoId");
+			}
+			
 			if (pathAndQueryData.containsKey("humanOrAi")) {
 				this.suppliedHumanOrAi = pathAndQueryData.get("humanOrAi");
 			}

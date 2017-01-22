@@ -1,6 +1,7 @@
 package nl.knikit.cardgames.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
@@ -38,9 +39,12 @@ public class HandDto implements Serializable {
 	// "(01)  AS+ Script Joe [ELF]-"
 	// "(02)  RJ  Script Joe [ELF]"
 	private int handId;
+	@JsonIgnore
 	private PlayerDto playerDto;
 	//@JsonManagedReference(value="playerDto")
+	@JsonIgnore
 	private CasinoDto casinoDto;
+	@JsonProperty(value = "card")
 	private CardDto cardDto;
 	private int cardOrder;
 	

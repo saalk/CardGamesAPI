@@ -44,7 +44,7 @@ public class SecurityService {
             byte[] b = input.getBytes();
             return new String(encryption.decrypt(b));
         } catch (final Exception e) {
-            throw new WebApplicationException("Error decrypting value: " + input, Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException("ErrorResponse decrypting value: " + input, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -62,7 +62,7 @@ public class SecurityService {
             byte[] b = input.getBytes();
             return new String(encryption.encrypt(b));
         } catch (final Exception e) {
-            throw new WebApplicationException("Error encrypting value: " + input, Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException("ErrorResponse encrypting value: " + input, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 }

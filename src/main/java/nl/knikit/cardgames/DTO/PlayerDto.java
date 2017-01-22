@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Relation(value = "player", collectionRelation = "players")
+@Relation(value = "visitor", collectionRelation = "visitors")
 @JsonIdentityInfo(generator=JSOGGenerator.class)
 public class PlayerDto implements Serializable {
 	
@@ -30,6 +30,7 @@ public class PlayerDto implements Serializable {
 	// discard lombok setter for this field -> make your own
 	@Setter(AccessLevel.NONE)
 	private String name; // extra field "Script Joe(Human|Smart) [Elf]"
+	@JsonProperty(value = "visitorId")
 	private int playerId;
 	// private String created; to prevent setting, this is generated
 	private String alias;

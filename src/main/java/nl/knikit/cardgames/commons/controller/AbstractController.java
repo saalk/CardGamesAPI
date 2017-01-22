@@ -123,7 +123,7 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 	 *
 	 * @param state - State to move to
 	 */
-	public void updateState(final String state) {
+	public T updateState(final String state) {
 		log.info(String.format("AbstractController updateState before update: %s", state));
 		
 		this.getContext().setState(State.valueOf(state));
@@ -131,6 +131,8 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		// update the game with the new state
 		this.setContext((T) gameService.updateStateInGame(this.getContext()));
 		log.info(String.format("AbstractController updateState after update: %s", this.context.getState()));
+		
+		return this.context;
 		
 	}
 	

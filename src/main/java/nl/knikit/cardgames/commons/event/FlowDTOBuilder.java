@@ -46,7 +46,6 @@ public class FlowDTOBuilder<T extends AbstractFlowDTO> implements ApplicationCon
         return this;
     }
     
-    
     @SuppressWarnings("unchecked")
     public T build() {
 	    String message = String.format("FlowDTOBuilder in build flowDTO is: %s", flowDTO);

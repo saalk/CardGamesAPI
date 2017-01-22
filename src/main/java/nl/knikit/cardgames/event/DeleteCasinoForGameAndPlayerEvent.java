@@ -2,10 +2,8 @@ package nl.knikit.cardgames.event;
 
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
-import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IGameService;
@@ -14,8 +12,9 @@ import nl.knikit.cardgames.service.IPlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,15 +39,15 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 		EventOutput eventOutput;
 		
 		// get the game and update the gametype and ante
-		Game gameToUpdate;
-		Player playerToRemove;
+		Game gameToCheck;
+		Casino casinoToDelete;
+		Casino otherCasinoToUpdate;
 		
-		Casino casinoToDelete = new Casino();
-		
+		// always check the game
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToUpdate == null) {
+			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
+			if (gameToCheck == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -57,10 +56,11 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		String playerId = flowDTO.getSuppliedPlayerId();
+		// find casino to delete
+		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
-			playerToRemove = playerService.findOne(Integer.parseInt(playerId));
-			if (playerToRemove == null) {
+			casinoToDelete = casinoService.findOne(Integer.parseInt(casinoId));
+			if (casinoToDelete == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -69,6 +69,14 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
+		// sort casinos on playing order
+		List<Casino> allCasinosForAGame = gameToCheck.getCasinos();
+		Map<Integer, Casino> casinosSorted = new HashMap<>(); // is sorted key automatically
+		for (Casino casino : allCasinosForAGame) {
+			casinosSorted.put(casino.getPlayingOrder(), casino);
+		}
+		
+		// find casino to update
 		List<Casino> casinos;
 		try {
 			casinos = casinoService.findAllWhere("game", gameId);
@@ -81,20 +89,23 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		// do the remove
-		boolean found = false;
-		for (Casino casino : casinos) {
-			if (casino.getPlayer().equals(playerToRemove.getPlayerId())) {
-				try {
-					casinoService.deleteOne(casino);
-				} catch (Exception e) {
-					eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-					return eventOutput;
+		// do the delete
+		try {
+			Integer oldPlayingOrder = casinoToDelete.getPlayingOrder();
+			
+			// delete the current
+			casinoService.deleteOne(casinoToDelete);
+			
+			// change playing order on the others
+			for (Casino casino : casinosSorted.values()) {
+				if (casino.getPlayingOrder() > oldPlayingOrder) {
+					
+					casino.setPlayingOrder(casino.getPlayingOrder() - 1);
+					casinoService.update(casino);
 				}
-				found = true;
 			}
-		}
-		if (!found) {
+			
+		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
@@ -105,7 +116,6 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 		log.info(message);
 		
 		flowDTO.setCurrentCasino(null);
-		flowDTO.setCurrentPlayer(playerToRemove);
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN) {
 			// key event so do a transition but only when human
@@ -125,14 +135,15 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// all game fields
 		String getSuppliedGameId();
+		
 		void setCurrentGame(Game game);
+		
 		Game getCurrentGame();
 		
 		// rest
+		String getSuppliedCasinoId();
 		
-		String getSuppliedPlayerId();
 		void setCurrentCasino(Casino casino);
-		void setCurrentPlayer(Player player);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

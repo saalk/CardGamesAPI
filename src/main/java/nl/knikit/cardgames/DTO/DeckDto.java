@@ -1,7 +1,9 @@
 package nl.knikit.cardgames.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
@@ -39,12 +41,15 @@ public class DeckDto implements Serializable {
 	// "---- ---  -------------
 	// "(01)  AS+ Script Joe [ELF]-"
 	// "(02)  RJ  Script Joe [ELF]"
+	@JsonIgnore
 	private int deckId;
 	//@JsonManagedReference(value="gameDto")
+	@JsonIgnore
 	private GameDto gameDto;
+	@JsonProperty(value = "card")
 	private CardDto cardDto;
 	private int cardOrder;
-	
+	@JsonIgnore
 	private PlayerDto dealtToDto;
 	
 	public Deck getNameConverted(String name) {

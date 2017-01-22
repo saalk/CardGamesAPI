@@ -94,6 +94,8 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 
 import nl.knikit.cardgames.VO.CardGameFlowDTO;
 import nl.knikit.cardgames.commons.controller.AbstractController;
+import nl.knikit.cardgames.commons.error.ErrorResponse;
+import nl.knikit.cardgames.commons.error.HttpError;
 import nl.knikit.cardgames.commons.event.FlowDTOBuilder;
 import nl.knikit.cardgames.event.CreateCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.CreateDeckForGameEvent;
@@ -104,7 +106,7 @@ import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForGameAndPlayerEvent;
-import nl.knikit.cardgames.event.UpdateDeckForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.UpdateDeckForGameAndCasinoEvent;
 import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
@@ -247,9 +249,11 @@ public class CardGameController extends AbstractController<Game> {
 	@Autowired
 	private ModelMapperUtil mapUtil;
 	
-	public CardGameResponse play(Trigger trigger, Map<String, String> pathAndQueryData) {
+	public CardGameResponse play(Trigger trigger, Map<String, String> pathAndQueryData) throws Exception {
 		
 		CardGameFlowDTO flowDTO = new CardGameFlowDTO();
+		final CardGameResponse.CardGameResponseBuilder responseBuilder;
+		
 		
 		String message = String.format("CardGameController Trigger to execute is: %s and data %s", trigger, pathAndQueryData);
 		log.info(message);
@@ -288,9 +292,18 @@ public class CardGameController extends AbstractController<Game> {
 				List<State> possiblePUT_INITStates = new ArrayList<>();
 				possiblePUT_INITStates.add(State.IS_CONFIGURED);
 				possiblePUT_INITStates.add(State.HAS_PLAYERS);
-				stateMachine.checkAll(possiblePUT_INITStates);
-				
-				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				try {
+					stateMachine.checkAll(possiblePUT_INITStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "init", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
+			
+			flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
 				// state IS_CONFIGURED or HAS_PLAYERS
 				break;
@@ -327,7 +340,16 @@ public class CardGameController extends AbstractController<Game> {
 				List<State> possiblePOST_SETUPStates = new ArrayList<>();
 				possiblePOST_SETUPStates.add(State.IS_CONFIGURED);
 				possiblePOST_SETUPStates.add(State.HAS_PLAYERS);
-				stateMachine.checkAll(possiblePOST_SETUPStates);
+				try {
+					stateMachine.checkAll(possiblePOST_SETUPStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "setup", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -349,7 +371,16 @@ public class CardGameController extends AbstractController<Game> {
 				List<State> possiblePOST_SETUP_AIStates = new ArrayList<>();
 				possiblePOST_SETUP_AIStates.add(State.IS_CONFIGURED);
 				possiblePOST_SETUP_AIStates.add(State.HAS_PLAYERS);
-				stateMachine.checkAll(possiblePOST_SETUP_AIStates);
+				try {
+					stateMachine.checkAll(possiblePOST_SETUP_AIStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "setup", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -373,7 +404,16 @@ public class CardGameController extends AbstractController<Game> {
 				List<State> possiblePUT_SETUP_PLAYERStates = new ArrayList<>();
 				possiblePUT_SETUP_PLAYERStates.add(State.IS_CONFIGURED);
 				possiblePUT_SETUP_PLAYERStates.add(State.HAS_PLAYERS);
-				stateMachine.checkAll(possiblePUT_SETUP_PLAYERStates);
+				try {
+					stateMachine.checkAll(possiblePUT_SETUP_PLAYERStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "setup", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -392,7 +432,16 @@ public class CardGameController extends AbstractController<Game> {
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
-				stateMachine.check(State.HAS_PLAYERS);
+				try {
+					stateMachine.check(State.HAS_PLAYERS);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, setup or turn", "shuffle", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -409,7 +458,7 @@ public class CardGameController extends AbstractController<Game> {
 				// TODO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdateDeckForGameAndPlayerEvent.class)
+						          .addEvent(UpdateDeckForGameAndCasinoEvent.class)
 						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
@@ -417,7 +466,16 @@ public class CardGameController extends AbstractController<Game> {
 				List<State> possiblePUT_TURNStates = new ArrayList<>();
 				possiblePUT_TURNStates.add(State.IS_SETUP);
 				possiblePUT_TURNStates.add(State.PLAYING);
-				stateMachine.checkAll(possiblePUT_TURNStates);
+				try {
+					stateMachine.checkAll(possiblePUT_TURNStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, setup or shuffle", "turn", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -436,7 +494,16 @@ public class CardGameController extends AbstractController<Game> {
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
-				stateMachine.check(State.HAS_PLAYERS);
+				try {
+					stateMachine.check(State.HAS_PLAYERS);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, shuffle or play", "setup", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -458,7 +525,17 @@ public class CardGameController extends AbstractController<Game> {
 				List<State> possibleDELETE_SETUP_AIStates = new ArrayList<>();
 				possibleDELETE_SETUP_AIStates.add(State.IS_CONFIGURED);
 				possibleDELETE_SETUP_AIStates.add(State.HAS_PLAYERS);
-				stateMachine.checkAll(possibleDELETE_SETUP_AIStates);
+				
+				try {
+					stateMachine.checkAll(possibleDELETE_SETUP_AIStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, shuffle or play", "setup", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
@@ -501,7 +578,6 @@ public class CardGameController extends AbstractController<Game> {
 				
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
-						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
 						          .addEvent(GetCardGameDetailsEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
@@ -518,11 +594,11 @@ public class CardGameController extends AbstractController<Game> {
 		log.info(message);
 		
 		if (trigger != Trigger.GET && trigger != Trigger.DELETE) {
-			this.updateState(flowDTO.getStateMachine().getCurrentState());
+			flowDTO.setCurrentGame(this.updateState(flowDTO.getStateMachine().getCurrentState()));
 		}
 		
 		// make response
-		final CardGameResponse.CardGameResponseBuilder responseBuilder = CardGameResponse.builder();
+		responseBuilder = CardGameResponse.builder();
 		if (trigger != Trigger.DELETE) {
 			message = String.format("CardGameController convertFromGameEntity is: %s", flowDTO.getCurrentGame());
 			log.info(message);
@@ -541,6 +617,9 @@ public class CardGameController extends AbstractController<Game> {
 		}
 		
 		return responseBuilder.build();
+		
+
+		
 	}
 }
 

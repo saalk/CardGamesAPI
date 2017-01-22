@@ -93,7 +93,7 @@ public class ModelMapperUtil {
 		return gameDto;
 	}
 	
-	public CardGame convertFromGameEntity(Game game) {
+	public CardGame convertFromGameEntity(Game game) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		CardGame cardGame = modelMapper.map(game, CardGame.class);
 		
@@ -114,12 +114,45 @@ public class ModelMapperUtil {
 		}
 		
 		List<CasinoDto> casinoDtos = new ArrayList<>();
+		List<HandDto> handDtos = new ArrayList<>();
 		if (game.getCasinos() != null) {
 			for (Casino casino: game.getCasinos()) {
-				// casinoDtos.add(convertToDto(casino)); this created a loop
+				
 				modelMapper = new ModelMapper();
 				CasinoDto casinoDto = modelMapper.map(casino, CasinoDto.class);
 				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
+				
+				if (casino.getPlayer() != null) {
+					modelMapper = new ModelMapper();
+					PlayerDto playerDto = modelMapper.map(casino.getPlayer(), PlayerDto.class);
+
+					playerDto.setGameDtos(null);
+					playerDto.setName();
+					playerDto.setWinCount();
+					casinoDto.setPlayerDto(playerDto);
+					casinoDto.setName();
+				}
+				
+				if (casino.getHands() != null) {
+					for (Hand hand : casino.getHands()) {
+						
+						modelMapper = new ModelMapper();
+						HandDto handDto = modelMapper.map(hand, HandDto.class);
+						
+						if (hand.getCard() != null) {
+							modelMapper = new ModelMapper();
+							CardDto cardDto = modelMapper.map(hand.getCard(), CardDto.class);
+							
+							handDto.setCardDto(cardDto);
+						}
+						
+						handDto.setPlayerDto(null);
+						handDto.setCasinoDto(null);
+						handDto.setName();
+						handDtos.add(handDto);
+					}
+					casinoDto.setHandDtos(handDtos);
+				}
 				casinoDtos.add(casinoDto);
 			}
 			cardGame.setPlayers(casinoDtos);
@@ -130,10 +163,17 @@ public class ModelMapperUtil {
 		List<DeckDto> deckDtos = new ArrayList<>();
 		if (game.getDecks() != null) {
 			for (Deck deck: game.getDecks()) {
-				// casinoDtos.add(convertToDto(casino)); this created a loop
+				
 				modelMapper = new ModelMapper();
 				DeckDto deckDto = modelMapper.map(deck, DeckDto.class);
 				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
+				
+				if (deck.getCard() != null) {
+					deckDto.setCardDto(convertToDto(deck.getCard()));
+					deckDto.setName();
+				} else {
+					deckDto.setCardDto(null);
+				}
 				deckDtos.add(deckDto);
 			}
 			cardGame.setCards(deckDtos);

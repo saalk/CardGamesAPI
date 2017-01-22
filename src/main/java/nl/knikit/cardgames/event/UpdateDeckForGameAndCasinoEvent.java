@@ -6,12 +6,10 @@ import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IDeckService;
 import nl.knikit.cardgames.service.IGameService;
-import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,14 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
+public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
 	private IGameService gameService;
 	
 	@Autowired
-	private IPlayerService playerService;
+	private ICasinoService casinoService;
 	
 	@Autowired
 	private IDeckService deckService;
@@ -37,27 +35,15 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
-		UpdateDeckForGameAndPlayerEventDTO flowDTO = (UpdateDeckForGameAndPlayerEventDTO) eventInput[0];
+		UpdateDeckForGameAndCasinoEventDTO flowDTO = (UpdateDeckForGameAndCasinoEventDTO) eventInput[0];
 		EventOutput eventOutput;
-		
-		String upOrDown;
-		if (flowDTO.getSuppliedPlayingOrder() == null || flowDTO.getSuppliedPlayingOrder().equals("null") || flowDTO.getSuppliedPlayingOrder().isEmpty()) {
-			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			String message = String.format("UpdateDeckForGameAndPlayerEvent no getSuppliedPlayingOrder");
-			log.info(message);
-			return eventOutput;
-		} else if (flowDTO.getSuppliedPlayingOrder().equals("-1")) {
-			upOrDown = "up";
-		} else {
-			upOrDown = "down";
-		}
 		
 		// get the game and update the gametype and ante
 		Game gameToUpdate;
-		Player dealtToThisPlayer;
+		Casino dealToThisCasino;
 		
 		Deck deckToUpdate = new Deck();
-		Deck otherDeckToUpdate = new Deck();
+		Deck deckUpdated = new Deck();
 		
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
@@ -71,10 +57,13 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		String playerId = flowDTO.getSuppliedPlayerId();
+		String message = String.format("UpdateCasinoForGameAndPlayerEvent getSuppliedPlayerId is: %s", flowDTO.getSuppliedPlayerId());
+		log.info(message);
+		
+		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
-			dealtToThisPlayer = playerService.findOne(Integer.parseInt(playerId));
-			if (dealtToThisPlayer == null) {
+			dealToThisCasino = casinoService.findOne(Integer.parseInt(casinoId));
+			if (dealToThisCasino == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -83,10 +72,10 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		List<Deck> decks; //TODO should be ordered with a set
+		List<Deck> allDecksForGame; //TODO should be ordered with a set
 		try {
-			decks = deckService.findAllWhere("game", gameId);
-			if (decks == null) {
+			allDecksForGame = deckService.findAllWhere("game", gameId);
+			if (allDecksForGame == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -97,21 +86,27 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 		
 		// find the top card
 		boolean found = false;
-		for (Deck deck : decks) {
+		for (Deck deck : allDecksForGame) {
 			if (deck.getDealtTo() == null || deck.getDealtTo().equals("")) {
 				deckToUpdate = deck;
 				found = true;
 			}
 		}
+		
+		// no cards left
 		if (!found) {
+			flowDTO.setSuppliedTrigger(CardGameStateMachine.Trigger.NO_CARDS_LEFT);
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
 		
 		// do the update
 		try {
-			deckToUpdate.setDealtTo(dealtToThisPlayer);
-			deckToUpdate = deckService.update(deckToUpdate);
+			//deckToUpdate.setDealtTo(dealToThisCasino); // TODO
+			deckUpdated = deckService.update(deckToUpdate);
+			
+			message = String.format("UpdateCasinoForGameAndPlayerEvent deckToUpdate is: %s", deckToUpdate.toString());
+			log.info(message);
 			
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
@@ -120,13 +115,13 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		String message = String.format("UpdateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
-		log.info(message);
+
 		
-		flowDTO.setCurrentDeck(deckToUpdate);
-		flowDTO.setSuppliedDeckId(String.valueOf(deckToUpdate.getDeckId()));
-		flowDTO.setCurrentCard(deckToUpdate.getCard());
-		flowDTO.setSuppliedCardId(deckToUpdate.getCard().getCardId());
+		flowDTO.setCurrentDeck(deckUpdated);
+		flowDTO.setSuppliedDeckId(String.valueOf(deckUpdated.getDeckId()));
+		
+		flowDTO.setCurrentCard(deckUpdated.getCard());
+		flowDTO.setSuppliedCardId(deckUpdated.getCard().getCardId());
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_TURN)
 		
@@ -146,7 +141,7 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 		return eventOutput;
 	}
 	
-	public interface UpdateDeckForGameAndPlayerEventDTO {
+	public interface UpdateDeckForGameAndCasinoEventDTO {
 		
 		// all game fields
 		String getSuppliedGameId();
@@ -155,7 +150,7 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 		
 		// rest of setter and getter
 		String getSuppliedPlayerId();
-		String getSuppliedPlayingOrder();
+		String getSuppliedCasinoId();
 		
 		void setCurrentDeck(Deck deck);
 		void setCurrentCard(Card card);
@@ -164,6 +159,7 @@ public class UpdateDeckForGameAndPlayerEvent extends AbstractEvent {
 		void setSuppliedDeckId(String deckId);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
+		void setSuppliedTrigger(CardGameStateMachine.Trigger trigger);
 		
 	}
 }

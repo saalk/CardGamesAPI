@@ -81,7 +81,13 @@ public class CardGameResource extends AbstractResource {
 		extraResource.ifPresent(s -> pathAndRequestParams.put("extraResource", s));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.GET, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.GET, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -102,7 +108,7 @@ public class CardGameResource extends AbstractResource {
 	public ResponseEntity initCardGame(
 			                                  @RequestBody CardGame cardGameToUpdate,
 			                                  @RequestParam(value = "gameType", required = false) String gameType,
-			                                  @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
+			                                  @RequestParam(value = "ante", required = false) Integer ante) {
 		
 		//POST   api/cardgames/init           ?gameType/ante
 		
@@ -111,7 +117,13 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.POST_INIT, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.POST_INIT, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -133,7 +145,7 @@ public class CardGameResource extends AbstractResource {
 			                                          @PathVariable("playerId") Integer playerId,
 			                                          @RequestBody CardGame cardGameToUpdate,
 			                                          @RequestParam(value = "gameType", required = false) String gameType,
-			                                          @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
+			                                          @RequestParam(value = "ante", required = false) Integer ante) {
 		
 		//POST   api/cardgames/init/human/2   ?gameType/ante
 		
@@ -143,7 +155,13 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.POST_INIT_HUMAN, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.POST_INIT_HUMAN, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -168,7 +186,7 @@ public class CardGameResource extends AbstractResource {
 			                                            @RequestParam(value = "alias", required = false) String alias,
 			                                            @RequestParam(value = "avatar", required = false) String avatar,
 			                                            @RequestParam(value = "aiLevel", required = false) String aiLevel,
-			                                            @RequestParam(value = "securedLoan", required = false) Integer securedLoan) throws Exception {
+			                                            @RequestParam(value = "securedLoan", required = false) Integer securedLoan) {
 		
 		//POST   api/cardgames/1/setup/human        ?alias/avatar/securedLoan            // no dealing yet
 		//POST   api/cardgames/1/setup/ai           ?alias/avatar/securedLoan/aiLevel
@@ -182,11 +200,18 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("securedLoan", String.valueOf(securedLoan));
 		
 		CardGameResponse response;
-		if (humanOrAi.equals("human")) {
-			response = controller.play(CardGameStateMachine.Trigger.POST_SETUP_HUMAN, pathAndRequestParams);
-		} else {
-			response = controller.play(CardGameStateMachine.Trigger.POST_SETUP_AI, pathAndRequestParams);
+		try {
+			if (humanOrAi.equals("human")) {
+				response = controller.play(CardGameStateMachine.Trigger.POST_SETUP_HUMAN, pathAndRequestParams);
+			} else {
+				response = controller.play(CardGameStateMachine.Trigger.POST_SETUP_AI, pathAndRequestParams);
+			}
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
 		}
+		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
 					       .status(HttpStatus.CREATED)
@@ -205,7 +230,7 @@ public class CardGameResource extends AbstractResource {
 	public ResponseEntity shuffleDeckForCardGame(
 			                                            @PathVariable("id") Integer id,
 			                                            @RequestBody CardGame cardGameToUpdate,
-			                                            @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers) throws Exception {
+			                                            @RequestParam(value = "jokers", required = false, defaultValue = "0") Integer jokers) {
 		
 		//POST   api/cardgames/1/shuffle/cards  ?jokers                             // no dealing yet
 		
@@ -214,7 +239,13 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("jokers", String.valueOf(jokers));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.POST_SHUFFLE, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.POST_SHUFFLE, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -236,7 +267,7 @@ public class CardGameResource extends AbstractResource {
 			                                          @PathVariable("id") Integer id,
 			                                          @RequestBody CardGame cardGameToUpdate,
 			                                          @RequestParam(value = "gameType", required = false) String gameType,
-			                                          @RequestParam(value = "ante", required = false) Integer ante) throws Exception {
+			                                          @RequestParam(value = "ante", required = false) Integer ante) {
 		
 		//PUT    api/cardgames/1/init          ?gameType/ante
 		
@@ -246,7 +277,13 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.PUT_INIT, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.PUT_INIT, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -261,24 +298,24 @@ public class CardGameResource extends AbstractResource {
 	}
 	
 	// a body is always needed but can be {}
-	@PutMapping(value = "/cardgames/{id}/setup/players/{playerId}") // change player in cardGame
+	@PutMapping(value = "/cardgames/{id}/setup/players/{casinoId}") // change player in cardGame
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity setupPlayerInExistingCardGame(
 			                                                   @PathVariable("id") Integer id,
-			                                                   @PathVariable("playerId") Integer playerId,
+			                                                   @PathVariable("casinoId") Integer casinoId,
 			                                                   @RequestBody CardGame cardGameToUpdate,
 			                                                   @RequestParam(value = "alias", required = false) String alias,
 			                                                   @RequestParam(value = "avatar", required = false) String avatar,
 			                                                   @RequestParam(value = "aiLevel", required = false) String aiLevel,
 			                                                   @RequestParam(value = "securedLoan", required = false) Integer securedLoan,
-			                                                   @RequestParam(value = "playingOrder", required = false) Integer playingOrder) throws Exception {
+			                                                   @RequestParam(value = "playingOrder", required = false) Integer playingOrder) {
 		
 		//PUT    api/cardgames/1/setup/players/2   ?alias/avatar/securedLoan/aiLevel/playingOrder
 		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameId", String.valueOf(id));
-		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("casinoId", String.valueOf(casinoId));
 		pathAndRequestParams.put("alias", alias);
 		pathAndRequestParams.put("avatar", avatar);
 		pathAndRequestParams.put("aiLevel", aiLevel);
@@ -286,7 +323,13 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("playingOrder", String.valueOf(playingOrder));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.PUT_SETUP_PLAYER, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.PUT_SETUP_PLAYER, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -301,25 +344,31 @@ public class CardGameResource extends AbstractResource {
 	}
 	
 	// a body is always needed but can be {}
-	@PutMapping(value = "/cardgames/{id}/turn/players/{playerId}") // a player plays a cardGame
+	@PutMapping(value = "/cardgames/{id}/turn/players/{casinoId}") // a player plays a cardGame
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity turnFromPlayerInCardGame(
 			                                              @PathVariable("id") Integer id,
-			                                              @PathVariable("playerId") Integer playerId,
+			                                              @PathVariable("casinoId") Integer casinoId,
 			                                              @RequestBody CardGame cardGameToUpdate,
-			                                              @RequestParam(value = "action", required = true) String action) throws Exception {
+			                                              @RequestParam(value = "action", required = true) String action) {
 		
 		
 		//PUT    api/cardgames/1/turn/    players/2   ?action=deal/higher/lower/pass/auto for human or ai player
 		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameId", String.valueOf(id));
-		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("casinoId", String.valueOf(casinoId));
 		pathAndRequestParams.put("action", action);
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.PUT_TURN, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.PUT_TURN, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
@@ -333,28 +382,34 @@ public class CardGameResource extends AbstractResource {
 		}
 	}
 	
-	@DeleteMapping(value = "/cardgames/{id}/setup/{humanOrAi}/{playerId}")
+	@DeleteMapping(value = "/cardgames/{id}/setup/{humanOrAi}/{casinoId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity deletePlayerInCardGame(
 			                                            @PathVariable("id") Integer id,
 			                                            @PathVariable("humanOrAi") String humanOrAi,
-			                                            @PathVariable("playerId") Integer playerId) {
+			                                            @PathVariable("casinoId") Integer casinoId) {
 		
 		//DELETE api/cardgames/1/setup/human/3
 		//DELETE api/cardgames/1/setup/ai/2
 		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameId", String.valueOf(id));
-		pathAndRequestParams.put("playerId", String.valueOf(playerId));
+		pathAndRequestParams.put("casinoId", String.valueOf(casinoId));
 		pathAndRequestParams.put("humanOrAi", humanOrAi);
 		
 		CardGameResponse response;
 		
-		if (humanOrAi.equals("human")) {
-			response = controller.play(CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN, pathAndRequestParams);
-		} else {
-			response = controller.play(CardGameStateMachine.Trigger.DELETE_SETUP_AI, pathAndRequestParams);
+		try {
+			if (humanOrAi.equals("human")) {
+				response = controller.play(CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN, pathAndRequestParams);
+			} else {
+				response = controller.play(CardGameStateMachine.Trigger.DELETE_SETUP_AI, pathAndRequestParams);
+			}
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
 		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
@@ -400,7 +455,13 @@ public class CardGameResource extends AbstractResource {
 		extraResource.ifPresent(s -> pathAndRequestParams.put("extraResource", s));
 		
 		CardGameResponse response;
-		response = controller.play(CardGameStateMachine.Trigger.DELETE, pathAndRequestParams);
+		try {
+			response = controller.play(CardGameStateMachine.Trigger.DELETE, pathAndRequestParams);
+		} catch (Exception e) {
+			return ResponseEntity
+					       .status(HttpStatus.INTERNAL_SERVER_ERROR)
+					       .body(e);
+		}
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity

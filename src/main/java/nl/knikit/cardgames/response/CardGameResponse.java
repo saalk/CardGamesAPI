@@ -4,15 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import nl.knikit.cardgames.VO.CardGame;
-import nl.knikit.cardgames.commons.controller.ControllerResponse;
-import nl.knikit.cardgames.model.Card;
-import nl.knikit.cardgames.model.Casino;
-import nl.knikit.cardgames.model.Deck;
-import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Hand;
-import nl.knikit.cardgames.model.Player;
-
-import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,6 +18,8 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CardGameResponse {
 	
+	private CardGame cardGame;
+	
 	@JsonIgnore
 	private Reason reason;
 	
@@ -34,7 +27,20 @@ public class CardGameResponse {
 		SUCCESS, FAILURE;
 	}
 	
-	private CardGame cardGame;
+	@JsonIgnore
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private String errorCode;
+	
+	@JsonIgnore
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private String errorMessage;
+	
+	@JsonIgnore
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private String solution;
 	
 	@JsonIgnore
 	public Reason getReason() {
@@ -45,6 +51,7 @@ public class CardGameResponse {
 	public void setReason(Reason reason) {
 		this.reason = reason;
 	}
+	
 	
 	@JsonIgnore
 	public String getErrorCode() {
@@ -57,22 +64,22 @@ public class CardGameResponse {
 	}
 	
 	@JsonIgnore
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
-	private String errorCode;
-	
-	@JsonIgnore
-	public String getErrorReason() {
-		return errorReason;
-	}
-	@JsonIgnore
-	public void setErrorReason(String errorReason) {
-		this.errorReason = errorReason;
+	public String getSolution() {
+		return solution;
 	}
 	
 	@JsonIgnore
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
-	private String errorReason;
+	public void setSolution(String solution) {
+		this.solution = solution;
+	}
 	
+	@JsonIgnore
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	
+	@JsonIgnore
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
 }

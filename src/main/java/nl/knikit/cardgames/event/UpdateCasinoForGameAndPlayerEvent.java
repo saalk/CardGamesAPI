@@ -13,7 +13,10 @@ import nl.knikit.cardgames.service.IPlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,29 +40,38 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		UpdateCasinoForGameAndPlayerEventDTO flowDTO = (UpdateCasinoForGameAndPlayerEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
-		String upOrDown;
+		// check if playing order is up (-1) or down (+1)
+		boolean playingOrderChanged = false;
+		boolean moveTowardsFirst = false;
+		boolean moveTowardsLast = false;
+		
 		if (flowDTO.getSuppliedPlayingOrder() == null && flowDTO.getSuppliedPlayingOrder().equals("null") && flowDTO.getSuppliedPlayingOrder().isEmpty()) {
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
 			String message = String.format("UpdateCasinoForGameAndPlayerEvent no getSuppliedPlayingOrder");
 			log.info(message);
 			return eventOutput;
 		} else if (flowDTO.getSuppliedPlayingOrder().equals("-1")) {
-			upOrDown = "up";
+			moveTowardsFirst = true;
+			playingOrderChanged = true;
+		} else if ((flowDTO.getSuppliedPlayingOrder().equals("+1"))) {
+			moveTowardsLast = true;
+			playingOrderChanged = true;
 		} else {
-			upOrDown = "down";
+			playingOrderChanged = false;
+			moveTowardsFirst = false;
+			moveTowardsLast = false;
 		}
 		
-		// get the game and update the gametype and ante
-		Game gameToUpdate;
-		Player playerToUpdate;
+		Game gameToCheck;
+		Casino casinoToUpdate;
+		Casino otherCasinoToUpdate;
+		Casino casinoUpdated = null;
 		
-		Casino casinoToUpdate = new Casino();
-		Casino otherCasinoToUpdate = new Casino();
-		
+		// always check the game
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
-			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToUpdate == null) {
+			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
+			if (gameToCheck == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -68,10 +80,11 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		String playerId = flowDTO.getSuppliedPlayerId();
+		// find casino to update
+		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
-			playerToUpdate = playerService.findOne(Integer.parseInt(playerId));
-			if (playerToUpdate == null) {
+			casinoToUpdate = casinoService.findOne(Integer.parseInt(casinoId));
+			if (casinoToUpdate == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -80,56 +93,50 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		List<Casino> casinos; //TODO should be ordered with a set
-		try {
-			casinos = casinoService.findAllWhere("game", gameId);
-			if (casinos == null) {
+		// sort casinos on playing order
+		List<Casino> allCasinosForAGame = gameToCheck.getCasinos();
+		Map<Integer, Casino> casinosSorted = new HashMap<>(); // is sorted key automatically
+		for (Casino casino : allCasinosForAGame) {
+			casinosSorted.put(casino.getPlayingOrder(), casino);
+		}
+		
+		// see if the change can be done
+		if ((casinoToUpdate.getPlayingOrder() == 1) && (playingOrderChanged) && (moveTowardsFirst)) {
+			playingOrderChanged = false;
+		} else if ((casinoToUpdate.getPlayingOrder() == allCasinosForAGame.size()) && (playingOrderChanged) && (moveTowardsLast)) {
+			playingOrderChanged = false;
+		}
+		
+		if (playingOrderChanged) {
+			// do the switch
+			try {
+				Integer oldPlayingOrder = casinoToUpdate.getPlayingOrder();
+				
+				// update the current
+				Integer newPlayingOrder = moveTowardsFirst ? (casinoToUpdate.getPlayingOrder() - 1) : (casinoToUpdate.getPlayingOrder() + 1);
+				casinoToUpdate.setPlayingOrder(newPlayingOrder);
+				casinoUpdated = casinoService.update(casinoToUpdate);
+				
+				// find the other that is currently on the newPlayingOrder
+				otherCasinoToUpdate = casinosSorted.get(newPlayingOrder);
+				
+				otherCasinoToUpdate.setPlayingOrder(oldPlayingOrder);
+				casinoService.update(otherCasinoToUpdate);
+				
+			} catch (Exception e) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
+			
 		}
 		
-		// find the player
-		int position = 0;
-		int found = 0;
-		for (Casino casino : casinos) {
-			position += 1;
-			if (casino.getPlayer().equals(playerToUpdate.getPlayerId())) {
-				found = position;
-			}
-		}
-		if (found == 0 || (found == 1 && upOrDown.equals("up")) || (found == casinos.size() && upOrDown.equals("down"))) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		// do the switch
-		try {
-			casinoToUpdate = casinos.get(position - 1);
-			int newPlayingOrder = upOrDown.equals("up") ? (casinoToUpdate.getPlayingOrder() - 1) : (casinoToUpdate.getPlayingOrder() + 1);
-			casinoToUpdate.setPlayingOrder(newPlayingOrder);
-			casinoToUpdate = casinoService.update(casinoToUpdate);
-			
-			
-			otherCasinoToUpdate = upOrDown.equals("up") ? casinos.get(position - 2) : casinos.get(position);
-			int newOtherPlayingOrder = upOrDown.equals("up") ? (otherCasinoToUpdate.getPlayingOrder() + 1) : (otherCasinoToUpdate.getPlayingOrder() - 1);
-			otherCasinoToUpdate.setPlayingOrder(newOtherPlayingOrder);
-			otherCasinoToUpdate = casinoService.update(otherCasinoToUpdate);
-			
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
 		String message = String.format("UpdateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
-		flowDTO.setCurrentCasino(casinoToUpdate);
+		flowDTO.setCurrentCasino(casinoUpdated);
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN)
 		
@@ -152,14 +159,17 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// all game fields
 		String getSuppliedGameId();
+		
 		void setCurrentGame(Game game);
+		
 		Game getCurrentGame();
 		
 		// rest
-		String getSuppliedPlayerId();
+		String getSuppliedCasinoId();
+		
 		void setCurrentCasino(Casino casino);
+		
 		String getSuppliedPlayingOrder();
-		void setCurrentPlayer(Player player);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		
