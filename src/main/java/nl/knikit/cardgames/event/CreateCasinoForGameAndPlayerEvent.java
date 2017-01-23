@@ -104,13 +104,13 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
 		String message = String.format("CreateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
-
+		
 		flowDTO.setCurrentCasino(createdCasino);
 		flowDTO.setSuppliedCasinoId(String.valueOf(createdCasino.getCasinoId()));
 		
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_INIT_HUMAN ||
-		flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SETUP_HUMAN ) {
+				    flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SETUP_HUMAN) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
 			message = String.format("CreateCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
@@ -128,12 +128,16 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// all game fields
 		String getSuppliedGameId();
+		
 		void setCurrentGame(Game game);
+		
 		Game getCurrentGame();
 		
 		// rest
 		String getSuppliedPlayerId();
+		
 		void setCurrentCasino(Casino casino);
+		
 		void setSuppliedCasinoId(String casinoId);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();

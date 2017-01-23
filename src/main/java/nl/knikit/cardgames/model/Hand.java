@@ -8,6 +8,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,12 +64,15 @@ import lombok.ToString;
 @Setter
 public class Hand implements Serializable {
     
-    // 5 fields
+    // 6 fields
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "HAND_ID")
     ////@JsonProperty("handId")
     private int handId;
+    
+    @Column(name = "CREATED", length = 25)
+    private String created;
     
     // Cascade = any change happened on this entity must cascade to the parent/child as well
     // since this is the child Hand: do nothing when Hand is delete on the parent Player
@@ -98,6 +103,10 @@ public class Hand implements Serializable {
     private int cardOrder;
 
     public Hand(){
+        LocalDateTime localDateAndTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
+        String result = localDateAndTime.format(formatter);
+        this.created = result.substring(2, 20);
     }
 
 }

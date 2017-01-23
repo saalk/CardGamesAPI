@@ -30,6 +30,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -202,7 +203,7 @@ public class Card implements Serializable {
 	// static fields and methods to easily make decks and add jokers
 	protected static final Card joker = new Card(Rank.JOKER, Suit.JOKERS);
 	
-	protected static final ArrayList<Card> prototypeDeck = new ArrayList<>();
+	protected static final List<Card> prototypeDeck = new ArrayList<>();
 	
 	static {
 		for (Suit suit : Suit.values()) {
@@ -222,8 +223,8 @@ public class Card implements Serializable {
 	
 	}*/
 	
-	public static ArrayList<Card> newDeck(int addJokers) {
-		ArrayList<Card> newDeck = prototypeDeck;
+	public static List<Card> newDeck(int addJokers) {
+		List<Card> newDeck = prototypeDeck;
 		for (int i = 0; i < addJokers; i++) {
 			newDeck.add(joker);
 		}

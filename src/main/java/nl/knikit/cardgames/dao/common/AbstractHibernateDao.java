@@ -192,7 +192,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 		try {
 			// getCurrentSession().persist(entity);
 			getCurrentSession().save(clazz.getName(), entity);
-			getCurrentSession().flush();
+			//getCurrentSession().flush();
 			
 		} catch (Exception e) {
 			String errorMessage = String.format("Entity create error: %s in DAO by entity: %s", e, entity);
@@ -289,7 +289,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 			gameToCreate.setGameType(GameType.HIGHLOW);
 			// the state and gametype must be is supplied
 			getCurrentSession().save((T) gameToCreate);
-			getCurrentSession().flush();
+			//getCurrentSession().flush();
 		} catch (Exception e) {
 			String errorMessage = String.format("Entity default to create error: %s in DAO by entity: %s", e, entity);
 			log.error(errorMessage);
@@ -310,7 +310,7 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 			String message = String.format("Entity state to update in DAO: %s - the state is: %s", entity.toString(),gameToUpdate.getState());
 			log.info(message);
 			getCurrentSession().update(String.valueOf(Game.class), stateToUpdate);
-			getCurrentSession().flush();
+			//getCurrentSession().flush();
 			
 		} catch (Exception e) {
 			String errorMessage = String.format("Entity state to update error: %s in DAO by entity: %s", e, entity);

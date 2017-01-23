@@ -17,6 +17,8 @@ package nl.knikit.cardgames.model;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -113,6 +115,9 @@ public class Deck implements Serializable {
     ////@JsonProperty("deckId")
     private int deckId;
     
+    @Column(name = "CREATED", length = 25)
+    private String created;
+    
     // Cascade = any change happened on this entity must cascade to the parent/child as well
     // since this is the child Deck: do nothing when Deck is delete on the parent Game
     // meaning do not set cascade options
@@ -150,5 +155,9 @@ public class Deck implements Serializable {
      * no-arg constructor to be able to instantiate the object.
      */
     public Deck() {
+        LocalDateTime localDateAndTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
+        String result = localDateAndTime.format(formatter);
+        this.created = result.substring(2, 20);
     }
 }

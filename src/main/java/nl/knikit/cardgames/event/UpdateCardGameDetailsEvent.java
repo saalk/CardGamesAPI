@@ -58,7 +58,7 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 			return eventOutput;
 		}
-	
+		
 		// do the update
 		if (flowDTO.getSuppliedGameType() != null) {
 			gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
@@ -107,11 +107,14 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		
 		// all game fields
 		String getSuppliedGameId();
+		
 		void setCurrentGame(Game game);
+		
 		Game getCurrentGame();
 		
 		// rest
 		GameType getSuppliedGameType();
+		
 		String getSuppliedAnte();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();

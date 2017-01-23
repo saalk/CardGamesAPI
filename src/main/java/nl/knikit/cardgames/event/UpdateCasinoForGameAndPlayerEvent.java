@@ -4,7 +4,6 @@ import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IGameService;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 

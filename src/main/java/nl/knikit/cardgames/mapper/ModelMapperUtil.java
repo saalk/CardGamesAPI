@@ -175,6 +175,14 @@ public class ModelMapperUtil {
 					deckDto.setCardDto(null);
 				}
 				deckDtos.add(deckDto);
+				
+				if (deck.getDealtTo() != null) {
+					
+					deckDto.setDealtToDto(convertToDto(deck.getDealtTo()));
+				} else {
+					deckDto.setDealtToDto(null);
+				}
+				deckDtos.add(deckDto);
 			}
 			cardGame.setCards(deckDtos);
 		} else {

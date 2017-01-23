@@ -5,9 +5,11 @@ import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
+import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
+import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class UpdatePlayerDetailsEvent extends AbstractEvent {
+public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
 	private IPlayerService playerService;
+	
+	@Autowired
+	private ICasinoService casinoService;
 	
 	@Autowired
 	private ModelMapperUtil mapUtil;
@@ -29,17 +34,32 @@ public class UpdatePlayerDetailsEvent extends AbstractEvent {
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
-		UpdatePlayerDetailsEventDTO flowDTO = (UpdatePlayerDetailsEventDTO) eventInput[0];
+		UpdatePlayerForCasinoDetailsEventDTO flowDTO = (UpdatePlayerForCasinoDetailsEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
 		
 		// get the player and update the playertype and ante
 		// init
+		Casino casinoToCheck;
+		
 		Player playerToUpdate;
 		Player updatedPlayer;
 		
+		// find casino to update
+		String casinoId = flowDTO.getSuppliedCasinoId();
+		try {
+			casinoToCheck = casinoService.findOne(Integer.parseInt(casinoId));
+			if (casinoToCheck == null) {
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+				return eventOutput;
+			}
+		} catch (Exception e) {
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+			return eventOutput;
+		}
+		
 		// check path var player/{id}
-		String id = flowDTO.getSuppliedPlayerId();
+		String id = String.valueOf(casinoToCheck.getPlayer().getPlayerId());
 		try {
 			playerToUpdate = playerService.findOne(Integer.parseInt(id));
 			if (playerToUpdate == null) {
@@ -53,7 +73,7 @@ public class UpdatePlayerDetailsEvent extends AbstractEvent {
 		
 		// do the update
 		try {
-			updatedPlayer = playerService.update(makeConsistentPlayer(flowDTO));
+			updatedPlayer = playerService.update(makeConsistentPlayer(flowDTO, playerToUpdate));
 			if (updatedPlayer == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
@@ -67,13 +87,13 @@ public class UpdatePlayerDetailsEvent extends AbstractEvent {
 		
 		// never do a transition, this is no key event
 		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-		String message = String.format("UpdatePlayerDetailsEvent never does no transition");
+		String message = String.format("UpdatePlayerForCasinoDetailsEvent never does no transition");
 		log.info(message);
 		
 		return eventOutput;
 	}
 	
-	public interface UpdatePlayerDetailsEventDTO {
+	public interface UpdatePlayerForCasinoDetailsEventDTO {
 		
 		// all game fields
 		String getSuppliedGameId();
@@ -82,9 +102,13 @@ public class UpdatePlayerDetailsEvent extends AbstractEvent {
 		
 		Game getCurrentGame();
 		
+		// rest
+		
 		void setCurrentPlayer(Player player);
 		
 		String getSuppliedPlayerId();
+		
+		String getSuppliedCasinoId();
 		
 		String getSuppliedHumanOrAi();
 		
@@ -100,40 +124,33 @@ public class UpdatePlayerDetailsEvent extends AbstractEvent {
 		
 	}
 	
-	private Player makeConsistentPlayer(UpdatePlayerDetailsEventDTO flowDTO) {
+	private Player makeConsistentPlayer(UpdatePlayerForCasinoDetailsEventDTO flowDTO, Player playerToUpdate) {
 		
 		// set defaults for human or aline
-		Player player = new Player();
-		if (flowDTO.getSuppliedHumanOrAi().equals("human")) {
-			player.setAiLevel(AiLevel.HUMAN);
-			player.setHuman(true);
-			if (flowDTO.getSuppliedAlias() != null && flowDTO.getSuppliedAlias().isEmpty()) {
-				player.setAlias("Stranger");
-			} else {
-				player.setAlias(flowDTO.getSuppliedAlias());
+		if (playerToUpdate.getHuman()) {
+			playerToUpdate.setAiLevel(AiLevel.HUMAN);
+			if (flowDTO.getSuppliedAlias() != null && !flowDTO.getSuppliedAlias().isEmpty()) {
+				playerToUpdate.setAlias(flowDTO.getSuppliedAlias());
 			}
 		} else {
-			player.setHuman(false);
 			if (flowDTO.getSuppliedAiLevel().equals(AiLevel.HUMAN)) {
-				player.setAiLevel(AiLevel.MEDIUM);
+				playerToUpdate.setAiLevel(AiLevel.MEDIUM);
 			} else {
-				player.setAiLevel(flowDTO.getSuppliedAiLevel());
+				playerToUpdate.setAiLevel(flowDTO.getSuppliedAiLevel());
 			}
-			if (flowDTO.getSuppliedAlias() != null && flowDTO.getSuppliedAlias().isEmpty()) {
-				player.setAlias("Alien");
-			} else {
-				player.setAlias(flowDTO.getSuppliedAlias());
+			if (flowDTO.getSuppliedAlias() != null && !flowDTO.getSuppliedAlias().isEmpty()) {
+				playerToUpdate.setAlias(flowDTO.getSuppliedAlias());
 			}
 		}
 		
 		if (flowDTO.getSuppliedAvatar() != null) {
-			player.setAvatar(flowDTO.getSuppliedAvatar());
+			playerToUpdate.setAvatar(flowDTO.getSuppliedAvatar());
 		}
 		
 		if (flowDTO.getSuppliedSecuredLoan() != null && !flowDTO.getSuppliedSecuredLoan().equals("null") && !flowDTO.getSuppliedSecuredLoan().isEmpty()) {
-			player.setSecuredLoan(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
+			playerToUpdate.setSecuredLoan(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
 		}
-		return player;
+		return playerToUpdate;
 	}
 }
 

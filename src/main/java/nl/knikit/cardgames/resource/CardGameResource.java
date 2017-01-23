@@ -91,7 +91,7 @@ public class CardGameResource extends AbstractResource {
 		
 		if (response.getReason().equals(CardGameResponse.Reason.SUCCESS)) {
 			return ResponseEntity
-					       .status(HttpStatus.CREATED)
+					       .status(HttpStatus.OK)
 					       .body(response);
 		} else {
 			return ResponseEntity

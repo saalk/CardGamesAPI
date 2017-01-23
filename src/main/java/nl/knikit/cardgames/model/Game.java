@@ -52,7 +52,7 @@ public class Game implements Serializable {
 	@Column(name = "CREATED", length = 25)
 	private String created;
 	@Enumerated(EnumType.STRING)
-	@Column(name = "STATE", length = 25, nullable = false)
+	@Column(name = "STATE", length = 50, nullable = false)
 	private State state;
 	@Enumerated(EnumType.STRING)
 	@Column(name = "GAMETYPE", length = 50, nullable = false)
@@ -133,7 +133,7 @@ public class Game implements Serializable {
 	
 	public void addShuffledDeckToGame(int jokers) {
 		
-		ArrayList<Card> cards = Card.newDeck(jokers);
+		List<Card> cards = Card.newDeck(jokers);
 		Collections.shuffle(cards);
 		
 		int i = 1;
@@ -142,6 +142,7 @@ public class Game implements Serializable {
 			deck.setCard(card);
 			deck.setCardOrder(i++);
 			deck.setDealtTo(null);
+			deck.setCardLocation(CardLocation.STOCK);
 			this.decks.add(deck);
 		}
 		

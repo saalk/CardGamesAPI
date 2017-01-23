@@ -107,7 +107,7 @@ import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.UpdateDeckForGameAndCasinoEvent;
-import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
+import nl.knikit.cardgames.event.UpdatePlayerForCasinoDetailsEvent;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.response.CardGameResponse;
@@ -319,6 +319,18 @@ public class CardGameController extends AbstractController<Game> {
 						          .addEvent(UpdateCardGameDetailsEvent.class)
 						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
 						          .build();
+				
+				try {
+					stateMachine.check(State.IS_CONFIGURED);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init", "null", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
+				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.setGameByContext();
 				flowDTO.start();
@@ -395,7 +407,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
-						          .addEvent(UpdatePlayerDetailsEvent.class)
+						          .addEvent(UpdatePlayerForCasinoDetailsEvent.class)
 						          .addEvent(UpdateCasinoForGameAndPlayerEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
@@ -560,8 +572,16 @@ public class CardGameController extends AbstractController<Game> {
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
-				flowDTO.start();
-				// state stays HAS_PLAYERS or stays IS_CONFIGURED
+				try {
+					flowDTO.start();
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.NOT_FOUND_CARDGAME,  "valid cardgame", "invalid id", "id");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
 				
 				break;
 			
@@ -582,7 +602,18 @@ public class CardGameController extends AbstractController<Game> {
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
-				flowDTO.start();
+				
+				try {
+					flowDTO.start();
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.NOT_FOUND_CARDGAME,  "valid cardgame", "invalid id", "id");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
+				
 				// state does not matter
 				
 				break;

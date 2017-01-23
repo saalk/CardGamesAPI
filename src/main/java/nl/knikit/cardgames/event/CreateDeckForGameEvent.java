@@ -1,22 +1,17 @@
 package nl.knikit.cardgames.event;
 
-import nl.knikit.cardgames.DTO.DeckDto;
-import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Player;
-import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IDeckService;
 import nl.knikit.cardgames.service.IGameService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -110,10 +105,13 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		
 		// all game fields
 		String getSuppliedGameId();
+		
 		void setCurrentGame(Game game);
+		
 		Game getCurrentGame();
 		
 		String getSuppliedJokers();
+		
 		void setDecks(List<Deck> decks);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();

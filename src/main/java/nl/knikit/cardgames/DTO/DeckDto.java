@@ -51,7 +51,7 @@ public class DeckDto implements Serializable {
 	private CardDto cardDto;
 	private int cardOrder;
 	private String cardLocation;
-	@JsonIgnore
+	@JsonProperty(value = "dealtTo")
 	private CasinoDto dealtToDto;
 	
 	public Deck getNameConverted(String name) {
