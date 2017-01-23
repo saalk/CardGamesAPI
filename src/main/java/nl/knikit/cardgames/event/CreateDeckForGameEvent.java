@@ -9,6 +9,7 @@ import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IDeckService;
 import nl.knikit.cardgames.service.IGameService;
@@ -44,9 +45,9 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		CreateDeckForGameEventDTO flowDTO = (CreateDeckForGameEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
-		// get the game and update the gametype and ante
 		Game gameToUpdate;
 		
+		// check the game
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
 			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
@@ -60,7 +61,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		}
 		
 		// do the add
-// Get all cards and shuffle (since java 1.8)
+		// Get all cards and shuffle (since java 1.8)
 		List<Card> cards = Card.newDeck(Integer.parseInt(flowDTO.getSuppliedJokers()));
 		Collections.shuffle(cards);
 		
@@ -72,6 +73,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 			newDeck.setCardOrder(order++);
 			newDeck.setDealtTo(null);
 			newDeck.setGame(gameToUpdate);
+			newDeck.setCardLocation(CardLocation.STOCK);
 			try {
 				Deck createdDeck = deckService.create(newDeck);
 				if (createdDeck == null) {

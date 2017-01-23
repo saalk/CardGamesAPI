@@ -1,16 +1,15 @@
 package nl.knikit.cardgames.resource;
 
-
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
-import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.service.ICardService;
+import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IDeckService;
 import nl.knikit.cardgames.service.IGameService;
-import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -60,7 +59,7 @@ public class DeckResource {
 	private ICardService cardService;
 	
 	@Autowired
-	private IPlayerService playerService;
+	private ICasinoService casinoService;
 	
 	@Autowired
 	private ModelMapperUtil mapUtil;
@@ -107,7 +106,7 @@ public class DeckResource {
 					       .body(e);
 		}
 	}
-
+	
 	@GetMapping(value = "/decks", params = {"game"})
 	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity getDecksWhere(@RequestParam(value = "game", required = true) String param) {
@@ -134,20 +133,20 @@ public class DeckResource {
 					       .body(e);
 		}
 	}
-	
+
 //	@GetMapping(value = "/decks", params = {"game", "dealtTo"})
 //	@Produces({MediaType.APPLICATION_JSON})
-//	public ResponseEntity findAllForGameAndPlayer(
+//	public ResponseEntity findAllForGameAndCasino(
 //			@RequestParam(value = "game", required = true) String game,
 //			@RequestParam(value = "dealtTo", required = true) int dealtTo) throws Exception {
 //
 //		//TODO should dealtToDto param be int or String?
 //		if (dealtTo != 0) {
-//			Player player = playerService.findOne((dealtTo));
-//			if (player == null) {
+//			Casino casino = casinoService.findOne((dealtTo));
+//			if (casino == null) {
 //				return ResponseEntity
 //						       .status(HttpStatus.NOT_FOUND)
-//						       .body("detaltTo Player not found");
+//						       .body("detaltTo Casino not found");
 //			}
 //		}
 //
@@ -167,7 +166,7 @@ public class DeckResource {
 //		}
 //		ArrayList<DeckDto> responseDecksDto = new ArrayList<>();
 //		for (Deck deck : decks) {
-//			if (dealtTo != 0 && deck.getDealtTo().getSuppliedPlayerId()==dealtTo) {
+//			if (dealtTo != 0 && deck.getDealtTo().getSuppliedCasinoId()==dealtTo) {
 //				responseDecksDto.add(mapUtil.convertToDto(deck));
 //			}
 //		}
@@ -199,7 +198,7 @@ public class DeckResource {
 		if (deckDto.getDealtToDto() != null) {
 			return ResponseEntity
 					       .status(HttpStatus.BAD_REQUEST)
-					       .body("Player dealtToDto for new deck not null");
+					       .body("Casino dealtToDto for new deck not null");
 		}
 		
 		// check param shuffle
@@ -218,7 +217,7 @@ public class DeckResource {
 		int order = 1;
 		List<DeckDto> newDeckDtos = new ArrayList<>();
 		for (Card card : cards) {
-			Deck newDeck= new Deck();
+			Deck newDeck = new Deck();
 			newDeck.setCard(card);
 			newDeck.setCardOrder(order++);
 			newDeck.setDealtTo(null);
@@ -248,14 +247,14 @@ public class DeckResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity updateDeck(
-			                                          @PathVariable("id") Integer pathId,
-			                                          @RequestBody DeckDto deckDtoToUpdate,
-			                                          @RequestParam(value = "dealtTo", required = false) Integer dealtTo) throws ParseException {
+			                                @PathVariable("id") Integer pathId,
+			                                @RequestBody DeckDto deckDtoToUpdate,
+			                                @RequestParam(value = "dealtTo", required = false) Integer dealtTo) throws ParseException {
 		// init
 		DeckDto updatedDeckDto;
 		Deck deckToUpdate;
 		Deck updatedDeck;
-		Player player;
+		Casino casino;
 		
 		// check path var game/{id}
 		int id = pathId;
@@ -286,13 +285,13 @@ public class DeckResource {
 				deckToUpdate.setDealtTo(null);
 			} else {
 				try {
-					player = playerService.findOne(dealtTo);
-					if (player == null || player.getPlayerId() == 0) {
+					casino = casinoService.findOne(dealtTo);
+					if (casino == null || casino.getCasinoId() == 0) {
 						return ResponseEntity
 								       .status(HttpStatus.NOT_FOUND)
 								       .body("DealtTo in /decks{id}?dealtTo={dealtTo} not found");
 					}
-					deckToUpdate.setDealtTo(player);
+					deckToUpdate.setDealtTo(casino);
 				} catch (Exception e) {
 					return ResponseEntity
 							       .status(HttpStatus.INTERNAL_SERVER_ERROR)

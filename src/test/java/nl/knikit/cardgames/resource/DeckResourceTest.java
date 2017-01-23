@@ -1,12 +1,15 @@
 package nl.knikit.cardgames.resource;
 
+import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
+import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
+import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IDeckService;
 import nl.knikit.cardgames.service.IGameService;
 import nl.knikit.cardgames.service.IPlayerService;
@@ -52,7 +55,7 @@ public class DeckResourceTest {
     private IGameService gameService;
     
     @Mock
-    private IPlayerService playerService;
+    private ICasinoService casinoService;
 	
 	@Mock
 	private ModelMapperUtil mapUtil = new ModelMapperUtil();
@@ -61,8 +64,8 @@ public class DeckResourceTest {
     private DeckDto deckDtoFixture = new DeckDto();
 	private List<Deck> decksFixture = new ArrayList<>();
 	
-	private Player dealtToFixture = new Player();
-    private PlayerDto dealtDtoToFixture = new PlayerDto();
+	private Casino dealtToFixture = new Casino();
+    private CasinoDto dealtDtoToFixture = new CasinoDto();
     private Game game = new Game();
 	private GameDto gameDtoFixture = new GameDto();
     
@@ -72,7 +75,7 @@ public class DeckResourceTest {
     private TestFlowDto flowDto;
     private final int deckId = 1;
     private final int gameId = 2;
-    private final int playerId = 3;
+    private final int casinoId = 3;
     
     @Before
     public void setUp() throws Exception {
@@ -91,7 +94,7 @@ public class DeckResourceTest {
 	
 	    // Given for POST, PUT
 	    gameDtoFixture.setGameId(1);
-	    dealtToFixture.setPlayerId(playerId);
+	    dealtToFixture.setCasinoId(casinoId);
 	
 	    deckDtoFixture.setDeckId(deckId);
 	    deckDtoFixture.setGameDto(gameDtoFixture);

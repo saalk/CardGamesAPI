@@ -2,12 +2,14 @@ package nl.knikit.cardgames.testdata;
 
 
 import nl.knikit.cardgames.DTO.CardDto;
+import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
@@ -55,7 +57,7 @@ public class TestData {
 		playerDtoFixture.setPlayerId(id);
 		playerDtoFixture.setAlias("John 'DtoTest' Doe");
 		playerDtoFixture.setHuman(false);
-		playerDtoFixture.setAiLevel(AiLevel.LOW);
+		playerDtoFixture.setAiLevel(AiLevel.DUMB);
 		playerDtoFixture.setAvatar(Avatar.GOBLIN);
 		playerDtoFixture.setName(); // extra field "Script Joe(Human|Smart) [Elf]"
 		playerDtoFixture.setCubits(2);
@@ -180,12 +182,8 @@ public class TestData {
 		deckFixture.setDeckId(id);
 		deckFixture.setGame(MakeGameEntityWithIdAndDecksAndWinner(id+1,0, 0));
 		deckFixture.setCard(MakeCardEntityWithId("10C"));
+		deckFixture.setDealtTo(MakeCasinoEntityWithIdAndDealtTo(5,2));
 		
-		if (dealtTo>0) {
-			deckFixture.setDealtTo(MakePlayerEntityWithIdAndGamesWon(dealtTo, 0));
-		} else {
-			deckFixture.setDealtTo(null);
-		}
 		deckFixture.setCardOrder(6);
 		
 		return deckFixture;
@@ -198,11 +196,43 @@ public class TestData {
 		// Given a deckDto having 5 + 1 fields
 		deckDtoFixture.setGameDto(MakeGameDtoWithIdAndDecksAndWinner(id+1,0,0));
 		deckDtoFixture.setCardDto(MakeCardDtoWithId("KH"));
-		deckDtoFixture.setDealtToDto(MakePlayerDtoWithIdAndGamesWon(id+2,0));
+		deckDtoFixture.setDealtToDto(MakeCasinoDtoWithId(id+2));
 		deckDtoFixture.setCardOrder(12);
 		deckDtoFixture.setName(); // extra field "(03) 10C  John 'DeckDtoTest' Doe [Medium]"
 		
 		return deckDtoFixture;
+	}
+	
+	protected static Casino MakeCasinoEntityWithIdAndDealtTo(int id, int dealtTo) {
+		
+		// Given a casino having 5 fields
+		Casino casinoFixture = new Casino();
+		casinoFixture.setCasinoId(id);
+		casinoFixture.setGame(MakeGameEntityWithIdAndDecksAndWinner(id+1,0, 0));
+		casinoFixture.setHands(null);
+		
+		if (dealtTo>0) {
+			casinoFixture.setPlayer(MakePlayerEntityWithIdAndGamesWon(dealtTo, 1));
+		} else {
+			casinoFixture.setPlayer(null);
+		}
+		casinoFixture.setPlayingOrder(6);
+		
+		return casinoFixture;
+	}
+	
+	protected static CasinoDto MakeCasinoDtoWithId(int id) throws Exception {
+		
+		CasinoDto casinoDtoFixture = new CasinoDto();
+		casinoDtoFixture.setCasinoId(id);
+		// Given a casinoDto having 5 + 1 fields
+		casinoDtoFixture.setGameDto(MakeGameDtoWithIdAndDecksAndWinner(id+1,0,0));
+		casinoDtoFixture.setHandDtos(null);
+		casinoDtoFixture.setPlayerDto(MakePlayerDtoWithIdAndGamesWon(id+2,0));
+		casinoDtoFixture.setPlayingOrder(12);
+		casinoDtoFixture.setName(); // extra field "(03) 10C  John 'CasinoDtoTest' Doe [Medium]"
+		
+		return casinoDtoFixture;
 	}
 
 }

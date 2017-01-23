@@ -21,6 +21,8 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -89,10 +91,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "DECK",
         indexes = {
-                          @Index(columnList = "PLAYER_ID", name = "PLAYER_ID_INDEX"),
-                          @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")},
-        uniqueConstraints =
-        @UniqueConstraint(name="UC_GAME_CARD", columnNames={"GAME_ID","CARD_ID"}))
+                          @Index(columnList = "CASINO_ID", name = "CASINO_ID_INDEX"),
+                          @Index(columnList = "CARD_ID", name = "CARD_ID_INDEX"),
+                          @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")})
         
 //        indexes = {
 //        @Index(columnList = "GAME_ID", name = "GAME_ID_INDEX")})
@@ -124,19 +125,24 @@ public class Deck implements Serializable {
     //@JsonIgnore
     @OneToOne(optional=false, cascade = CascadeType.DETACH)
     // TODO No fk since that created a unique foreign key that only allows unique cards in all decks..?
-    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID")
+    @JoinColumn(name = "CARD_ID", referencedColumnName = "CARD_ID", nullable=true)
     ////@JsonProperty("card")
     private Card card;
 
     @Column(name = "CARD_ORDER")
     ////@JsonProperty("cardOrder")
     private int cardOrder;
-
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "CARD_LOCATION", nullable = false)
+    ////@JsonProperty("cardLocation")
+    private CardLocation cardLocation;
+    
     //@JsonIgnore
     @OneToOne(optional=true)
-    @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"), nullable=true)
+    @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"), nullable=true)
     ////@JsonProperty("dealtTo")
-    private Player dealtTo;
+    private Casino dealtTo;
 
     /**
      * Hibernate, and code in general that creates objects via reflection use Class<T>.newInstance()

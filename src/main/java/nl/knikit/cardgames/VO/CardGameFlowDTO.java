@@ -15,6 +15,8 @@ import nl.knikit.cardgames.event.UpdatePlayerDetailsEvent;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.CardAction;
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
@@ -75,7 +77,9 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	private String suppliedJokers;
 	private String suppliedPlayingOrder;
 	
-	private String suppliedAction;
+	private CardAction suppliedCardAction;
+	private String suppliedTotal;
+	private CardLocation suppliedCardLocation;
 	// frontend trigger
 	private CardGameStateMachine.Trigger suppliedTrigger;
 	
@@ -131,15 +135,20 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 				this.suppliedSecuredLoan = pathAndQueryData.get("securedLoan");
 			}
 			
-			
 			if (pathAndQueryData.containsKey("jokers")) {
 				this.suppliedJokers = pathAndQueryData.get("jokers");
 			}
 			if (pathAndQueryData.containsKey("playingOrder")) {
 				this.suppliedPlayingOrder = pathAndQueryData.get("playingOrder");
 			}
-			if (pathAndQueryData.containsKey("action")) {
-				this.suppliedAction = pathAndQueryData.get("action");
+			if (pathAndQueryData.containsKey("cardAction")) {
+				this.suppliedCardAction = CardAction.fromLabel(pathAndQueryData.get("cardAction"));
+			}
+			if (pathAndQueryData.containsKey("cardLocation")) {
+				this.suppliedCardLocation = CardLocation.fromLabel(pathAndQueryData.get("cardLocation"));
+			}
+			if (pathAndQueryData.containsKey("total")) {
+				this.suppliedTotal = pathAndQueryData.get("total");
 			}
 			if (pathAndQueryData.containsKey("resource")) {
 				this.suppliedResource = pathAndQueryData.get("resource");
@@ -228,11 +237,6 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	}
 	
 	@Override
-	public void setCurrentCard(Card card) {
-		this.currentCard = card;
-	}
-	
-	@Override
 	public void setSuppliedPlayerId(String playerId) {
 		this.suppliedPlayerId = playerId;
 	}
@@ -240,16 +244,6 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	@Override
 	public void setSuppliedCasinoId(String casinoId) {
 		this.suppliedCasinoId = casinoId;
-	}
-	
-	@Override
-		public void setSuppliedCardId(String cardId) {
-		this.suppliedCardId = cardId;
-	}
-	
-	@Override
-	public void setSuppliedDeckId(String deckId) {
-		this.suppliedDeckId = deckId;
 	}
 	
 	@Override

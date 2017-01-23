@@ -136,6 +136,7 @@ public class PlayerDto implements Serializable {
 	}
 	
 	public void setGameDtos(List<GameDto> gameDtos) {
+		this.winCount = gameDtos == null ? 0 : gameDtos.size();
 		this.gameDtos = gameDtos;
 	}
 	

@@ -56,7 +56,7 @@ public class CardGame extends GameDto implements Serializable {
 	private int maxTurns;
 	
 	//@JsonBackReference(value="gameDto")
-	@JsonProperty(value = "cards")
+	@JsonProperty(value = "cardsInDeck")
 	@Setter(AccessLevel.NONE)
 	@Getter(AccessLevel.NONE)
 	private List<DeckDto> cards;

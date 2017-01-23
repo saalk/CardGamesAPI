@@ -22,8 +22,6 @@ import cucumber.api.java.en.Given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class StepDefsDecks extends SpringIntegrationTest {
 	
@@ -117,7 +115,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 			deckId = latestDecksID;
 		}
 		if (dealtTo.equals("latest")) {
-			dealtTo = StepDefsDecks.latestPlayersID;
+			dealtTo = StepDefsDecks.latestCasinosID;
 		}
 		
 		// Uri (URL) parameters
@@ -125,7 +123,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		uriParams.put("id", deckId);
 		
 		// Query parameters
-		Map<String, String>  queryParams = new HashMap<>();
+		Map<String, String> queryParams = new HashMap<>();
 		queryParams.put("dealtTo", dealtTo);
 		
 		// body cannot be null since there is a put that wants a request body
@@ -206,7 +204,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 		}
 		
 		if (dealtTo.equals("latest")) {
-			dealtTo = latestPlayersID;
+			dealtTo = latestCasinosID;
 		}
 		
 		// expected , actual
@@ -216,7 +214,7 @@ public class StepDefsDecks extends SpringIntegrationTest {
 			if (jsonDtoDeck.getCardDto().getCardId() == new Card(card).getCardId()) {
 				// assert if the input cardDto has the input dealtToDto and cardOder
 				if (!dealtTo.isEmpty()) {
-					assertThat(Integer.parseInt(dealtTo), is(jsonDtoDeck.getDealtToDto().getPlayerId()));
+					assertThat(Integer.parseInt(dealtTo), is(jsonDtoDeck.getDealtToDto().getCasinoId()));
 				}
 				if (!cardOrder.isEmpty()) {
 					// actual, matchers

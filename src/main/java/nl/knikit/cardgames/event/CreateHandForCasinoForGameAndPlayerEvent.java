@@ -4,7 +4,10 @@ import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.CardAction;
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Casino;
+import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Hand;
 import nl.knikit.cardgames.model.Player;
@@ -18,6 +21,10 @@ import nl.knikit.cardgames.service.IPlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,17 +58,26 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		CreateHandForCasinoForGameAndPlayerEventDTO flowDTO = (CreateHandForCasinoForGameAndPlayerEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
-		// get the game and make a hand
+		// find all decks to update; only when cardAction is DEAL, HIGHER, LOWER, NEXT and cardLocation is HAND
+		String message;
+		if (flowDTO.getSuppliedCardAction().equals(CardAction.PASS) &&
+				    flowDTO.getSuppliedCardLocation().equals(CardLocation.HAND)) {
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
+			message = String.format("UpdateCasinoForGameAndPlayerEvent do no update for a pass or not to a hand");
+			log.info(message);
+			return eventOutput;
+		}
+		
+		// init all the object and lists
 		Game gameToCheck;
+		Casino dealToThisCasino;
+		List<Deck> decksUpdated = flowDTO.getDecks();
 		
-		Card cardToDeal;
-		Casino casinoToDealTo;
-		
-		Hand handToCreate = new Hand();
-		Hand createdHand;
 		List<Hand> otherHandsForCasino;
+		Hand handToCreate = new Hand();
+		List<Hand> handsCreated = new ArrayList<>();
 		
-		// find the game
+		// check the game
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
 			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
@@ -74,24 +90,11 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		// find the card
-		String cardId = flowDTO.getCurrentCard().getCardId();
-		try {
-			cardToDeal = cardService.findOne(Integer.parseInt(cardId));
-			if (cardToDeal == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		// find the casino
+		// check the casino
 		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
-			casinoToDealTo = casinoService.findOne(Integer.parseInt(casinoId));
-			if (casinoToDealTo == null) {
+			dealToThisCasino = casinoService.findOne(Integer.parseInt(casinoId));
+			if (dealToThisCasino == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
@@ -100,7 +103,7 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		// find all the Hands for the Casino
+		// find all the current Hands for the Casino
 		try {
 			otherHandsForCasino = handService.findAllWhere("casino", casinoId);
 		} catch (Exception e) {
@@ -108,36 +111,37 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-
-		// do the add
-		handToCreate.setCasino(casinoToDealTo);
-		handToCreate.setPlayer(casinoToDealTo.getPlayer());
-		handToCreate.setCard(cardToDeal);
-		handToCreate.setCardOrder(otherHandsForCasino.size()+1);
+		// sort on card order
+		Collections.sort(otherHandsForCasino, Comparator.comparing(Hand::getCardOrder).thenComparing(Hand::getCardOrder));
+		int cardOrder = otherHandsForCasino.size()+1;
 		
+		// do the add
 		try {
-			createdHand = handService.create(handToCreate);
-			if (createdHand == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
+			
+			for (Deck deck : flowDTO.getDecks()) {
+				
+				handToCreate.setCasino(dealToThisCasino);
+				handToCreate.setPlayer(dealToThisCasino.getPlayer());
+				handToCreate.setCard(deck.getCard());
+				handToCreate.setCardOrder(cardOrder++);
+				
+				handsCreated.add(handService.create(handToCreate));
+				
+				message = String.format("UpdateCasinoForGameAndPlayerEvent handToCreate is: %s", handToCreate.toString());
+				log.info(message);
 			}
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
 		
-		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		String message = String.format("CreateHandForCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		message = String.format("CreateHandForCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
 		// update ids
-		flowDTO.setSuppliedHandId(String.valueOf(createdHand.getHandId()));
-		
-		// update entities found
-		flowDTO.setCurrentPlayer(casinoToDealTo.getPlayer());
-		flowDTO.setCurrentHand(createdHand);
+		flowDTO.setHands(handsCreated);
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_TURN) {
 			// key event so do a transition
@@ -154,20 +158,32 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 	
 	public interface CreateHandForCasinoForGameAndPlayerEventDTO {
 		
-		// all game fields
+		// all game and trigger fields
 		String getSuppliedGameId();
-		void setCurrentGame(Game game);
-		Game getCurrentGame();
-		
-		// rest
-		String getSuppliedCasinoId();
-		Card getCurrentCard();
-		
-		void setSuppliedHandId(String handId);
-		void setCurrentPlayer(Player player);
-		void setCurrentHand(Hand hand);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		
+		Game getCurrentGame();
+		
+		void setCurrentGame(Game game);
+		
+		void setSuppliedTrigger(CardGameStateMachine.Trigger trigger);
+		
+		// the rest of the supplied fields
+		String getSuppliedCasinoId();
+		
+		CardAction getSuppliedCardAction();
+		
+		String getSuppliedTotal();
+		
+		CardLocation getSuppliedCardLocation();
+		
+		// get the data created by other events
+		
+		List<Deck> getDecks();
+		
+		// pass on the data created here for other events
+		
+		void setHands(List<Hand> hands);
 	}
 }

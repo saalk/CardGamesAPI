@@ -36,12 +36,12 @@ public class CasinoDto implements Serializable {
 	//@JsonManagedReference(value="gameDto")
 	@JsonIgnore
 	private GameDto gameDto;
-	@JsonProperty(value = "player")
+	@JsonProperty(value = "visitor")
 	private PlayerDto playerDto;
 	private int playingOrder;
 	
 	@Setter(AccessLevel.NONE)
-	@JsonIgnore
+	@JsonProperty(value = "cardsInHand")
 	private List<HandDto> handDtos;
 	@Setter(AccessLevel.NONE)
 	private int cardCount; // extra field
@@ -64,11 +64,12 @@ public class CasinoDto implements Serializable {
 			this.cardCount = 0;
 	}
 	
+	@JsonProperty(value = "cardsInHand")
 	public void setHandDtos(List<HandDto> handDtos) {
 		this.handDtos = handDtos;
 		this.cardCount = handDtos !=null ? handDtos.size() : 0;
 	}
-	
+	@JsonProperty(value = "cardsInHand")
 	public List<HandDto> getHandDtos() {
 		return this.handDtos;
 	}

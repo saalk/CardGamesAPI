@@ -9,6 +9,7 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.Deck;
+import nl.knikit.cardgames.model.CardLocation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -49,8 +50,9 @@ public class DeckDto implements Serializable {
 	@JsonProperty(value = "card")
 	private CardDto cardDto;
 	private int cardOrder;
+	private String cardLocation;
 	@JsonIgnore
-	private PlayerDto dealtToDto;
+	private CasinoDto dealtToDto;
 	
 	public Deck getNameConverted(String name) {
 		// "10C  Ten of Clubs"
@@ -86,17 +88,28 @@ public class DeckDto implements Serializable {
 			sb.append(" ");
 		}
 		sb.append(this.cardDto.getCardId());
-		if (this.dealtToDto == null || this.dealtToDto.getPlayerId() == 0) {
+//		if (this.dealtToDto == null || this.dealtToDto.getCasinoId() == 0) {
 			sb.append("  " +
 					          WordUtils.capitalizeFully(this.cardDto.getRank()) + " of " +
 					          WordUtils.capitalizeFully(this.cardDto.getSuit()));
-		} else {
-			sb.append(
-					"  " +
-							WordUtils.capitalizeFully(this.dealtToDto.getAlias()) + " [" +
-							WordUtils.capitalizeFully(this.dealtToDto.getAiLevel()) + "]");
-		}
+			//TODO get the player via the casino
+//		} else {
+//			sb.append(
+//					"  " +
+//							WordUtils.capitalizeFully(this.dealtToDto.getPlayerDto().getAlias()) + " [" +
+//							WordUtils.capitalizeFully(this.dealtToDto.getPlayerDto().getAiLevel()) + "]");
+//		}
 		this.name = String.valueOf(sb);
+	}
+	
+	public void setCardLocation(CardLocation cardLocation) {
+		// static Eum methods:
+		// - valueOf() - returns enum instance taking a String
+		// - values()  - returns all enum instances
+		// instance Enum method:
+		// - name()    - returns name of enum constant
+		// -> better use toString() to get the user-friendly name
+		this.cardLocation = (String.valueOf(cardLocation));
 	}
 }
 	

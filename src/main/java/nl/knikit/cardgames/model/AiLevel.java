@@ -2,7 +2,6 @@ package nl.knikit.cardgames.model;
 
 import nl.knikit.cardgames.model.enumlabel.LabeledEnum;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +11,6 @@ import javax.persistence.Column;
 import javax.persistence.Transient;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * <H1>AIlevel</H1> Artificial Intelligence level for simulation human-like intelligence to
@@ -20,9 +18,9 @@ import lombok.ToString;
  * since the levels are a predefined list of values.
  * AIlevels that can be used are
  * <ul>
- * <li> {@link #HIGH}
+ * <li> {@link #SMART}
  * <li> {@link #MEDIUM}
- * <li> {@link #LOW}
+ * <li> {@link #DUMB}
  * <li> {@link #HUMAN}
  * <li> {@link #NONE}
  * </ul>
@@ -36,7 +34,7 @@ import lombok.ToString;
 public enum AiLevel implements LabeledEnum {
 
     @Column(name = "AI_LEVEL", length = 10, nullable = false)
-    LOW("Low"), MEDIUM("Medium"), HIGH("High"), HUMAN("Human"), NONE("None");
+    DUMB("Dumb"), MEDIUM("Medium"), SMART("Smart"), HUMAN("Human"), NONE("None");
     
     /**
      * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
@@ -44,11 +42,11 @@ public enum AiLevel implements LabeledEnum {
      * factory methods for creating an instance like creating groups from enums.
      * Here it is used to group all enums.
      */
-    public static Set<AiLevel> aiLevels = EnumSet.of(LOW, MEDIUM, HIGH, HUMAN, NONE);
+    public static Set<AiLevel> aiLevels = EnumSet.of(DUMB, MEDIUM, SMART, HUMAN, NONE);
     
     /**
      * A static HashMap lookup with key + value is created to use in a getter
-     * to fromLabel the Enum based on the name eg. key "Low" -> value AiLevel.LOW
+     * to fromLabel the Enum based on the name eg. key "Low" -> value AiLevel.DUMB
      */
     private static final Map<String,AiLevel> lookup
             = new HashMap<>();

@@ -204,8 +204,8 @@ public class ModelMapperUtil {
 		DeckDto deckDto = modelMapper.map(deck, DeckDto.class);
 		
 		if (deck.getDealtTo() != null) {
-			deckDto.setDealtToDto(convertToDto(deck.getDealtTo())); // does this create a loop ?
-			//deckDto.setDealtToDto(modelMapper.map(deck.getDealtTo(), PlayerDto.class));
+			//deckDto.setDealtToDto(convertToDto(deck.getDealtTo())); // does this create a loop ?
+			deckDto.setDealtToDto(modelMapper.map(deck.getDealtTo(), CasinoDto.class));
 		} else {
 			deckDto.setDealtToDto(null);
 		}

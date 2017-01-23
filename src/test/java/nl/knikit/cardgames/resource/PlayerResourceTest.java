@@ -85,7 +85,7 @@ public class PlayerResourceTest {
 	    playerDtoFixture.setPlayerId(2);
 	    playerDtoFixture.setAlias("John 'DtoTest' Doe");
 	    playerDtoFixture.setHuman(false);
-	    playerDtoFixture.setAiLevel(AiLevel.LOW);
+	    playerDtoFixture.setAiLevel(AiLevel.DUMB);
 	    playerDtoFixture.setAvatar(Avatar.GOBLIN);
 	    playerDtoFixture.setName(); // extra field "Script Joe(Human|Smart) [Elf]"
 	    playerDtoFixture.setCubits(2);

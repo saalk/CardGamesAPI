@@ -351,7 +351,9 @@ public class CardGameResource extends AbstractResource {
 			                                              @PathVariable("id") Integer id,
 			                                              @PathVariable("casinoId") Integer casinoId,
 			                                              @RequestBody CardGame cardGameToUpdate,
-			                                              @RequestParam(value = "action", required = true) String action) {
+			                                              @RequestParam(value = "action", required = true) String action,
+			                                              @RequestParam(value = "total", required = false, defaultValue = "1") String total,
+			                                              @RequestParam(value = "cardLocation", required = false, defaultValue = "HAND") String cardLocation) {
 		
 		
 		//PUT    api/cardgames/1/turn/    players/2   ?action=deal/higher/lower/pass/auto for human or ai player
@@ -359,7 +361,9 @@ public class CardGameResource extends AbstractResource {
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameId", String.valueOf(id));
 		pathAndRequestParams.put("casinoId", String.valueOf(casinoId));
-		pathAndRequestParams.put("action", action);
+		pathAndRequestParams.put("cardAction", action);
+		pathAndRequestParams.put("total", total);
+		pathAndRequestParams.put("cardLocation", cardLocation);
 		
 		CardGameResponse response;
 		try {
