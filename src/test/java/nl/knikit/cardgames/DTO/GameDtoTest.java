@@ -37,13 +37,13 @@ public class GameDtoTest extends TestData {
 		assertEquals(gameFixture.getMinRounds(), actual.getMinRounds());
 		assertEquals(gameFixture.getCurrentRound(), actual.getCurrentRound());
 		assertEquals(gameFixture.getMaxRounds(), actual.getMaxRounds());
-		String gameFixtureRound = "Round 1 [1-1]";
+		String gameFixtureRound = "Round: 1";
 		assertEquals(gameFixtureRound, actual.getRound());
 		assertEquals(gameFixture.getMinTurns(), actual.getMinTurns());
 		assertEquals(gameFixture.getCurrentTurn(), actual.getCurrentTurn());
 		assertEquals(gameFixture.getTurnsToWin(), actual.getTurnsToWin());
 		assertEquals(gameFixture.getMaxTurns(), actual.getMaxTurns());
-		String gameFixtureTurn = "Playing 2 [2-2]";
+		String gameFixtureTurn = "Playing: 2";
 		assertEquals(gameFixtureTurn, actual.getTurn());
 		// TODO fix me
 		assertEquals(gameFixture.getPlayer().getPlayerId(), actual.getWinner().getPlayerId());

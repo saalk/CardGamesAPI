@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DataTypes {
 	
@@ -35,25 +36,67 @@ public class DataTypes {
 		DataTypes types = new DataTypes();
 		types.dataTypes();
 		types.arrayTypes();
+		types.collectionTypes(0);
 		
 	}
 	
 	public static void staticMethodNoOverride() {
 		
 		
-		DataTypes subOverride = new SubDataType();
-		SubDataType sub = new SubDataType();
+		DataTypes subOverride = new SubDataType(); // ok
+		SubDataType sub1 = new SubDataType(); // ok
+		// SubDataType sub2 = new DataTypes(); // not ok
 		
-		// static method of Instrument class will be called,
+		// static method of super class will be called,
 		// even though object is of sub-class SubDataType
 		subOverride.printCategory();
 		
-		//static method of EquityInstrument class will be called
-		sub.printCategory();
+		//static method of sub class will be called
+		sub1.printCategory();
 	}
 	
 	public static void printCategory() {
 		System.out.println("inside super class static method");
+	}
+	
+	
+	public void collectionTypes(int test1) {
+		
+		++test1;
+		//  test2++; // error since test2 is not initialized
+		
+		List<String> toppings = new ArrayList<>();
+		//toppings = new String[3];  // or in one statement
+		toppings.add("Cheese");
+		toppings.add("Pepperoni");
+		toppings.add("Black Olives");
+		toppings.add("Pepperoni");
+		System.out.println("Given an ArrayList: " + toppings.toString());
+		toppings.remove("Pepperoni");
+
+		System.out.println("remove one of 2 of the same strings (Pepperoni) from an ArrayList results in removing the first found: " + toppings.toString());
+		
+		toppings.add("Cheese");
+		System.out.println("Givenan ArrayList: " + toppings.toString());
+		toppings.remove("Cheese");
+		System.out.println("remove one of 2 of the same strings (Cheese) from an ArrayList results in removing the first found: " + toppings.toString());
+		
+		List numbers = new ArrayList<>();
+		//numbers = no <> gives a .. for numbers
+		numbers.add(7);
+		numbers.add(2);
+		numbers.add(7);
+		numbers.add(8);
+		System.out.println("Given an ArrayList: " + numbers.toString());
+		numbers.remove(2);
+		
+		System.out.println("remove one of 2 of the same ints (2) from an ArrayList results in removing the index 2!: " + numbers.toString());
+		
+		numbers.add(2);
+		System.out.println("Given an ArrayList: " + numbers.toString());
+		// numbers.remove(7); //error
+		// System.out.println("remove one of 2 of the same strings (7) from an ArrayList results in removing the index 7!: " + numbers.toString());
+		
 	}
 	
 	public void arrayTypes() {
@@ -162,6 +205,9 @@ public class DataTypes {
 }
 
 class SubDataType extends DataTypes {
+	
+	// SubDataType sub1 = new SubDataType(); // not ok already defined in scope
+	// SubDataType sub2 = new DataTypes(); // not ok
 	
 	public static void printCategory() { System.out.println("inside sub class static method"); }
 }

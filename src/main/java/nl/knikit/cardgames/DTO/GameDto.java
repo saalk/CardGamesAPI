@@ -3,7 +3,6 @@ package nl.knikit.cardgames.DTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
@@ -44,9 +43,9 @@ public class GameDto implements Serializable {
 	private GameType gameType;
 	private int ante;
 	@Setter(AccessLevel.NONE)
-	private String cardsDealt; // extra field
+	private String dealt; // extra field
 	@Setter(AccessLevel.NONE)
-	private String cardsLeft; // extra field
+	private String stock; // extra field
 	@Setter(AccessLevel.NONE)
 	private String round; // extra field "Round 3 [1-9]"
 	private int minRounds;
@@ -155,45 +154,12 @@ public class GameDto implements Serializable {
 	
 	public String setRound() {
 		// "Round 3 [1-9]"
-		return this.round = "Round " + this.currentRound + " [" + this.minRounds + "-" + this.maxRounds + "]";
-	}
-	
-	@JsonIgnore
-	public void setRoundConverted(String round) {
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(round, "Round "), " "), "[-]");
-		if (splitName.length != 3 ||
-				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty()) {
-			this.currentRound = 1;
-			this.minRounds = 1;
-			this.maxRounds = 9;
-		}
-		this.currentRound = Integer.parseInt(splitName[0]);
-		this.minRounds = Integer.parseInt(splitName[1]);
-		this.maxRounds = Integer.parseInt(splitName[2]);
-		
+		return this.round = "Round: " + this.currentRound;
 	}
 	
 	public String setTurn() {
 		// "Turn 2 (3 to win) [1-9]"
-		return this.turn = "Playing " + this.currentTurn + " [" + this.minTurns + "-" + this.maxTurns + "]";
-	}
-	
-	@JsonIgnore
-	public void setTurnConverted(String turn) {
-		// "Turn 2 (3 to win) [1-9]"
-		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(StringUtils.remove(round, "to win"), "Turn "), " ["), "]"), "()-");
-		if (splitName.length != 4 ||
-				    splitName[0].isEmpty() || splitName[1].isEmpty() || splitName[2].isEmpty() || splitName[3].isEmpty()) {
-			this.currentTurn = 1;
-			this.minTurns = 1;
-			this.maxTurns = 9;
-			this.turnsToWin = 3;
-		}
-		this.currentTurn = Integer.parseInt(splitName[0]);
-		this.turnsToWin = Integer.parseInt(splitName[1]);
-		this.minTurns = Integer.parseInt(splitName[2]);
-		this.maxTurns = Integer.parseInt(splitName[3]);
-		
+		return this.turn = "Playing: " + this.currentTurn;
 	}
 	
 	public void setWinner(PlayerDto playerDto) {
@@ -229,9 +195,9 @@ public class GameDto implements Serializable {
 			sb.append("]");
 			sb.insert(0,count);
 			
-			this.cardsDealt = sb.toString();
+			this.dealt = sb.toString();
 		} else {
-			this.cardsDealt = "0 cards []";
+			this.dealt = "0 cards []";
 		}
 	}
 	
@@ -256,9 +222,9 @@ public class GameDto implements Serializable {
 			}
 			sb.append("]");
 			sb.insert(0,count);
-			this.cardsLeft = sb.toString();
+			this.stock = sb.toString();
 		} else {
-			this.cardsLeft = "0 cards []";
+			this.stock = "0 cards []";
 		}
 	}
 	

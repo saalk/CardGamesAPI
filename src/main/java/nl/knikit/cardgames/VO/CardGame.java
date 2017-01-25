@@ -7,7 +7,6 @@ import nl.knikit.cardgames.DTO.CasinoDto;
 import nl.knikit.cardgames.DTO.DeckDto;
 import nl.knikit.cardgames.DTO.GameDto;
 import nl.knikit.cardgames.DTO.PlayerDto;
-import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,9 +46,9 @@ public class CardGame extends GameDto implements Serializable {
 	private GameType gameType;
 	private int ante;
 	@Setter(AccessLevel.NONE)
-	private String cardsDealt; // extra field
+	private String dealt; // extra field
 	@Setter(AccessLevel.NONE)
-	private String cardsLeft; // extra field
+	private String stock; // extra field
 	@Setter(AccessLevel.NONE)
 	private String round; // extra field "Round 3 [1-9]"
 	@JsonIgnore
@@ -119,12 +118,12 @@ public class CardGame extends GameDto implements Serializable {
 	
 	public String setRound() {
 		// "Round 3 [1-9]"
-		return this.round = "Round " + this.currentRound;
+		return this.round = "Round: " + this.currentRound;
 	}
 	
 	public String setTurn() {
 		// "Turn 2 (3 to win) [1-9]"
-		return this.turn = "Playing " + this.currentTurn;
+		return this.turn = "Playing: " + this.currentTurn;
 	}
 	
 	public void setWinner(PlayerDto playerDto) {
@@ -159,9 +158,9 @@ public class CardGame extends GameDto implements Serializable {
 			sb.append("]");
 			sb.insert(0,count);
 			
-			this.cardsDealt = sb.toString();
+			this.dealt = sb.toString();
 		} else {
-			this.cardsDealt = "0 cards []";
+			this.dealt = "0 cards []";
 		}
 	}
 	
@@ -186,9 +185,9 @@ public class CardGame extends GameDto implements Serializable {
 			}
 			sb.append("]");
 			sb.insert(0,count);
-			this.cardsLeft = sb.toString();
+			this.stock = sb.toString();
 		} else {
-			this.cardsLeft = "0 cards []";
+			this.stock = "0 cards []";
 		}
 	}
 	@JsonIgnore
