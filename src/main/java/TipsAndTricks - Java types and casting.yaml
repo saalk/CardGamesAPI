@@ -3,13 +3,16 @@
 ## Primitive Types
 https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html
 
+# from down to up -> cast is needed !!
 Data Type and Default Value (for fields)
 byte: 	0
 short: 	0
-int: 	0
+int: 	0 (0x123 is hex, 0b0110 is binary)
 long: 	0L
+
 float: 	0.0f
 double: 	0.0d (the d/D is optional!)
+
 char: 	'\u0000'
 String (or any object):   	null
 boolean: 	false
@@ -56,11 +59,11 @@ The byte, long, float and double are signed. The char type is unsigned. We canno
 
 # Not allowed casts in JAVA
 int x = 20;
-boolean b = (boolean) x; //compiler error num to sting/bool not allowed use parseInt/toString
-String s = (String) x; //compiler error num to sting/bool not allowed use parseInt/parseString
+boolean b = (boolean) x; //compiler error num to string/bool not allowed use parseInt/toString
+String s = (String) x; //compiler error num to string/bool not allowed use parseInt/parseString
 
 byte b = (byte) 124 - 20; // compilation error with this explicit casting !
-// The 124 is cast to a byte type then the 124 is promoted to int.
+// The 124 is cast to a byte type and the 20 is promoted to int.
 // The whole expression in the right is of type int! We cannot assign an int to a byte without cast. The
 byte b = (byte) (124 - 20); // OK
 

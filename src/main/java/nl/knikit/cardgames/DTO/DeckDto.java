@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Relation(value = "deck", collectionRelation = "decks")
-@JsonIdentityInfo(generator=JSOGGenerator.class)
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class DeckDto implements Serializable {
@@ -51,7 +51,7 @@ public class DeckDto implements Serializable {
 	private CardDto cardDto;
 	private int cardOrder;
 	private String cardLocation;
-	@JsonProperty(value = "dealtTo")
+	@JsonProperty(value = "player")
 	private CasinoDto dealtToDto;
 	
 	public Deck getNameConverted(String name) {

@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Relation(value = "card", collectionRelation = "cards")
-@JsonIdentityInfo(generator=JSOGGenerator.class)
+//@JsonIdentityInfo(generator=JSOGGenerator.class)
 public class CardDto implements Serializable{
 	
 	private String cardId;

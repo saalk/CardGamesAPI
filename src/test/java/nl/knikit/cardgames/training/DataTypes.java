@@ -25,7 +25,8 @@ public class DataTypes {
 		
 		/* static field via null object */
 		DataTypes object = null;
-		System.out.println(object.printMe); // is this printed
+		System.out.println("Print a static string in class from main() after creating null object for class is ok: " + object.printMe); // is this printed
+		
 				
 		/* static methods in super and sub overriding */
 		staticMethodNoOverride();
@@ -62,7 +63,11 @@ public class DataTypes {
 		toppings[0] = "Cheese";
 		toppings[1] = "Pepperoni";
 		toppings[2] = "Black Olives";
-		toppings[3] = "Tomatoes"; // error
+		try {
+			toppings[3] = "Tomatoes"; // error
+		} catch (Exception e) {
+			System.out.println("Exception in thread main java.lang.ArrayIndexOutOfBoundsException: 3");
+		}
 		
 		String[] aArray = new String[5];
 		String[] bArray = {"a", "b", "c", "d", "e"};
@@ -116,10 +121,18 @@ public class DataTypes {
 		// always use single quotes
 		
 		byte b = 100;           // 8 bits, 128 max - default value is 0
+		//byte b = 100b;        // error
 		// byte 12 -> 0000 1100 -> .... 8421
 		// byte ~12 -> inverts, & and | can also be used, >> and << shifts the bits
+		System.out.println("byte: " + b); // print 100
+		
+		byte b1 = 127 - 0; // ok
+		// byte b2 = 128 - 0; // error
+		byte b3 = 128 - 1; // ok
+		
 		
 		short s = 12345;        // 16 bits, 32000 max - default value is 0
+		System.out.println("short: " + s); // print 100
 		
 		short s1 = 2;
 		short s2 = 3;
@@ -128,9 +141,8 @@ public class DataTypes {
 		// right-hand side of a arithmetic evaluates to int by default!
 		// due to support for multi platform math
 		
-		System.out.println("byte: " + b); // print 100
 		b = (byte) s;
-		System.out.println("casting a short to byte: " + b); // print 57
+		System.out.println("casting a short 12345 to byte: " + b); // print 57
 		
 		int binary = 0b100;    // base-2 just start with 0b, only use 1 or 0
 		int decimal = 1234;
@@ -139,7 +151,7 @@ public class DataTypes {
 		
 		int i = 100000;         // 32 bits - default value is 0
 		
-		System.out.println("Total: " + 3 + 4); // print 34! since you start with a string
+		System.out.println("Print 'tekst + 3 + 4' does not give 7! : " + 3 + 4); // print 34! since you start with a string
 		
 		long l = 100000L;       // 64 bits - default value is 0L
 		float f1 = 234.5f;      // 32 bits - default value is 0.0f, can have NaN

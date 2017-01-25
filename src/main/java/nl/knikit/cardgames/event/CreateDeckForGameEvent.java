@@ -58,7 +58,11 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		// do the add
 		// Get all cards and shuffle (since java 1.8)
 		List<Card> cards = Card.newDeck(Integer.parseInt(flowDTO.getSuppliedJokers()));
+		String message = String.format("CreateDeckForGameEvent do a # newDeck with cards is: %s", cards.size());
+		log.info(message);
 		Collections.shuffle(cards);
+		message = String.format("CreateDeckForGameEvent do a # newDeck with cards is: %s", cards.size());
+		log.info(message);
 		
 		int order = 1;
 		List<Deck> newDeckDtos = new ArrayList<>();
@@ -84,18 +88,18 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		String message = String.format("UpdateCardGameDetailsEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		message = String.format("CreateDeckForGameEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
 		flowDTO.setDecks(newDeckDtos);
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SHUFFLE) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
-			message = String.format("UpdateCardGameDetailsEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
+			message = String.format("CreateDeckForGameEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
 			log.info(message);
 		} else {
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			message = String.format("UpdateCardGameDetailsEvent do no transition");
+			message = String.format("CreateDeckForGameEvent do no transition");
 			log.info(message);
 		}
 		return eventOutput;

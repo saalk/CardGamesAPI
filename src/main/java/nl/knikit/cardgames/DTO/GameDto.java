@@ -1,10 +1,9 @@
 package nl.knikit.cardgames.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 
@@ -13,6 +12,8 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -24,7 +25,7 @@ import static nl.knikit.cardgames.model.state.CardGameStateMachine.State;
 @Getter
 @Setter
 @Relation(value = "game", collectionRelation = "games")
-@JsonIdentityInfo(generator = JSOGGenerator.class)
+//@JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
 public class GameDto implements Serializable {
@@ -43,6 +44,10 @@ public class GameDto implements Serializable {
 	private GameType gameType;
 	private int ante;
 	@Setter(AccessLevel.NONE)
+	private String cardsDealt; // extra field
+	@Setter(AccessLevel.NONE)
+	private String cardsLeft; // extra field
+	@Setter(AccessLevel.NONE)
 	private String round; // extra field "Round 3 [1-9]"
 	private int minRounds;
 	private int currentRound;
@@ -56,7 +61,6 @@ public class GameDto implements Serializable {
 	
 	//@JsonBackReference(value="gameDto")
 	//@JsonProperty(value = "decks")
-	
 	@JsonIgnore
 	@Setter(AccessLevel.NONE)
 	private List<DeckDto> deckDtos;
@@ -171,7 +175,7 @@ public class GameDto implements Serializable {
 	
 	public String setTurn() {
 		// "Turn 2 (3 to win) [1-9]"
-		return this.turn = "Turn " + this.currentTurn + " (" + this.turnsToWin + " to win) [" + this.minTurns + "-" + this.maxTurns + "]";
+		return this.turn = "Playing " + this.currentTurn + " [" + this.minTurns + "-" + this.maxTurns + "]";
 	}
 	
 	@JsonIgnore
@@ -200,8 +204,68 @@ public class GameDto implements Serializable {
 		return this.winner;
 	}
 	
+	
+	public void setCardsDealt() {
+		if (this.deckDtos != null) {
+			StringBuilder sb = new StringBuilder(" card(s) [");
+			List<DeckDto> decks;
+			decks = this.deckDtos;
+			// sort on card order
+			Collections.sort(decks, Comparator.comparing(DeckDto::getCardOrder).thenComparing(DeckDto::getCardOrder));
+			boolean first = true;
+			int count = 0;
+			
+			for (DeckDto deck : decks) {
+				
+				if (!deck.getCardLocation().equals("STOCK")) {
+					count++;
+					if (!first) {
+						sb.append(" ");
+					}
+					first = false;
+					sb.append(deck.getCardDto().getCardId());
+				}
+			}
+			sb.append("]");
+			sb.insert(0,count);
+			
+			this.cardsDealt = sb.toString();
+		} else {
+			this.cardsDealt = "0 cards []";
+		}
+	}
+	
+	public void setCardsLeft() {
+		if (this.deckDtos != null) {
+			StringBuilder sb = new StringBuilder(" card(s) [");
+			List<DeckDto> decks;
+			decks = this.deckDtos;
+			// sort on card order
+			Collections.sort(decks, Comparator.comparing(DeckDto::getCardOrder).thenComparing(DeckDto::getCardOrder));
+			boolean first = true;
+			int count = 0;
+			for (DeckDto deck : decks) {
+				if (deck.getCardLocation().equals("STOCK")) {
+					count++;
+					if (!first) {
+						sb.append(" ");
+					}
+					first = false;
+					sb.append(deck.getCardDto().getCardId());
+				}
+			}
+			sb.append("]");
+			sb.insert(0,count);
+			this.cardsLeft = sb.toString();
+		} else {
+			this.cardsLeft = "0 cards []";
+		}
+	}
+	
 	public void setDeckDtos(List<DeckDto> deckDtos) {
 		this.deckDtos = deckDtos;
+		this.setCardsDealt();
+		this.setCardsLeft();
 	}
 	
 	public List<DeckDto> getDeckDtos() {

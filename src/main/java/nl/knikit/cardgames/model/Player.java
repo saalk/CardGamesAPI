@@ -62,11 +62,11 @@ public class Player implements Serializable {
     private String created;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "AVATAR", nullable = false)
+    @Column(name = "AVATAR", nullable = false, length = 50)
     ////@JsonProperty("avatar")
     private Avatar avatar;
 	
-	@Column(name = "ALIAS")
+	@Column(name = "ALIAS", length = 50)
 	////@JsonProperty("alias")
 	private String alias;
 	
@@ -76,7 +76,7 @@ public class Player implements Serializable {
     private boolean human;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "AI_LEVEL", nullable = false)
+    @Column(name = "AI_LEVEL", nullable = false, length = 50)
     ////@JsonProperty("aiLevel")
     private AiLevel aiLevel;
 

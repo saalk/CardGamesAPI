@@ -14,6 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -44,17 +47,29 @@ public class CardGame extends GameDto implements Serializable {
 	private GameType gameType;
 	private int ante;
 	@Setter(AccessLevel.NONE)
+	private String cardsDealt; // extra field
+	@Setter(AccessLevel.NONE)
+	private String cardsLeft; // extra field
+	@Setter(AccessLevel.NONE)
 	private String round; // extra field "Round 3 [1-9]"
+	@JsonIgnore
 	private int minRounds;
+	@JsonIgnore
 	private int currentRound;
+	@JsonIgnore
 	private int maxRounds;
 	@Setter(AccessLevel.NONE)
 	private String turn; // extra field "Turn 2 (3 to win) [1-9]"
+	@JsonIgnore
 	private int minTurns;
+	@JsonIgnore
 	private int currentTurn;
+	@JsonIgnore
 	private int turnsToWin;
+	@JsonIgnore
 	private int maxTurns;
 	
+	@JsonIgnore
 	//@JsonBackReference(value="gameDto")
 	@JsonProperty(value = "cardsInDeck")
 	@Setter(AccessLevel.NONE)
@@ -104,12 +119,12 @@ public class CardGame extends GameDto implements Serializable {
 	
 	public String setRound() {
 		// "Round 3 [1-9]"
-		return this.round = "Round " + this.currentRound + " [" + this.minRounds + "-" + this.maxRounds + "]";
+		return this.round = "Round " + this.currentRound;
 	}
 	
 	public String setTurn() {
 		// "Turn 2 (3 to win) [1-9]"
-		return this.turn = "Turn " + this.currentTurn + " (" + this.turnsToWin + " to win) [" + this.minTurns + "-" + this.maxTurns + "]";
+		return this.turn = "Playing " + this.currentTurn;
 	}
 	
 	public void setWinner(PlayerDto playerDto) {
@@ -120,9 +135,67 @@ public class CardGame extends GameDto implements Serializable {
 		return this.winner;
 	}
 	
+	public void setCardsDealt() {
+		if (this.cards != null) {
+			StringBuilder sb = new StringBuilder(" card(s) [");
+			List<DeckDto> decks;
+			decks = this.cards;
+			// sort on card order
+			Collections.sort(decks, Comparator.comparing(DeckDto::getCardOrder).thenComparing(DeckDto::getCardOrder));
+			boolean first = true;
+			int count = 0;
+			
+			for (DeckDto deck : decks) {
+				
+				if (!deck.getCardLocation().equals("STOCK")) {
+					count++;
+					if (!first) {
+						sb.append(" ");
+					}
+					first = false;
+					sb.append(deck.getCardDto().getCardId());
+				}
+			}
+			sb.append("]");
+			sb.insert(0,count);
+			
+			this.cardsDealt = sb.toString();
+		} else {
+			this.cardsDealt = "0 cards []";
+		}
+	}
+	
+	public void setCardsLeft() {
+		if (this.cards != null) {
+			StringBuilder sb = new StringBuilder(" card(s) [");
+			List<DeckDto> decks;
+			decks = this.cards;
+			// sort on card order
+			Collections.sort(decks, Comparator.comparing(DeckDto::getCardOrder).thenComparing(DeckDto::getCardOrder));
+			boolean first = true;
+			int count = 0;
+			for (DeckDto deck : decks) {
+				if (deck.getCardLocation().equals("STOCK")) {
+					count++;
+					if (!first) {
+						sb.append(" ");
+					}
+					first = false;
+					sb.append(deck.getCardDto().getCardId());
+				}
+			}
+			sb.append("]");
+			sb.insert(0,count);
+			this.cardsLeft = sb.toString();
+		} else {
+			this.cardsLeft = "0 cards []";
+		}
+	}
 	@JsonIgnore
 	public void setCards(List<DeckDto> deckDtos) {
 		this.cards = deckDtos;
+		this.setCardsDealt();
+		this.setCardsLeft();
 	}
 	
 	@JsonIgnore
@@ -132,11 +205,18 @@ public class CardGame extends GameDto implements Serializable {
 	
 	@JsonIgnore
 	public void setPlayers(List<CasinoDto> casinoDtos) {
-		this.players = casinoDtos;
+		List<CasinoDto> newCasinoDtos = new ArrayList<>();
+		for (CasinoDto casinoDto    :
+				casinoDtos) {
+			casinoDto.setBet();
+			newCasinoDtos.add(casinoDto);
+		}
+		this.players = newCasinoDtos;
 	}
 	
 	@JsonIgnore
 	public List<CasinoDto> getPlayers() {
+		
 		return this.players;
 	}
 	

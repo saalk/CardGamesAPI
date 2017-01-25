@@ -43,7 +43,7 @@ public class GameDtoTest extends TestData {
 		assertEquals(gameFixture.getCurrentTurn(), actual.getCurrentTurn());
 		assertEquals(gameFixture.getTurnsToWin(), actual.getTurnsToWin());
 		assertEquals(gameFixture.getMaxTurns(), actual.getMaxTurns());
-		String gameFixtureTurn = "Turn 2 (2 to win) [2-2]";
+		String gameFixtureTurn = "Playing 2 [2-2]";
 		assertEquals(gameFixtureTurn, actual.getTurn());
 		// TODO fix me
 		assertEquals(gameFixture.getPlayer().getPlayerId(), actual.getWinner().getPlayerId());

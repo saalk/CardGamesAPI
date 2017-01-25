@@ -90,6 +90,8 @@ public class ModelMapperUtil {
 		} else {
 			gameDto.setWinner(null);
 		}
+		gameDto.setCardsDealt();
+		gameDto.setCardsLeft();
 		return gameDto;
 	}
 	
@@ -113,14 +115,29 @@ public class ModelMapperUtil {
 			cardGame.setWinner(null);
 		}
 		
+		// fill casinos and hands in casinos correct
 		List<CasinoDto> casinoDtos = new ArrayList<>();
 		List<HandDto> handDtos = new ArrayList<>();
+		
+		// are casinos present
 		if (game.getCasinos() != null) {
 			for (Casino casino: game.getCasinos()) {
-				
+				handDtos.clear();
 				modelMapper = new ModelMapper();
 				CasinoDto casinoDto = modelMapper.map(casino, CasinoDto.class);
 				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
+				
+				if (casino.getGame() != null) {
+					modelMapper = new ModelMapper();
+					GameDto gameDto = modelMapper.map(casino.getGame(), GameDto.class);
+					
+					gameDto.setDeckDtos(null);
+					gameDto.setWinner(null);
+					
+					casinoDto.setGameDto(gameDto);
+					casinoDto.setBet();
+					
+				}
 				
 				if (casino.getPlayer() != null) {
 					modelMapper = new ModelMapper();
@@ -129,8 +146,11 @@ public class ModelMapperUtil {
 					playerDto.setGameDtos(null);
 					playerDto.setName();
 					playerDto.setWinCount();
+					
 					casinoDto.setPlayerDto(playerDto);
 					casinoDto.setName();
+					casinoDto.setBet();
+					
 				}
 				
 				if (casino.getHands() != null) {
@@ -160,6 +180,7 @@ public class ModelMapperUtil {
 			cardGame.setPlayers(null);
 		}
 		
+		// fill decks
 		List<DeckDto> deckDtos = new ArrayList<>();
 		if (game.getDecks() != null) {
 			for (Deck deck: game.getDecks()) {
@@ -168,14 +189,15 @@ public class ModelMapperUtil {
 				DeckDto deckDto = modelMapper.map(deck, DeckDto.class);
 				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
 				
+				// fill card in deck
 				if (deck.getCard() != null) {
 					deckDto.setCardDto(convertToDto(deck.getCard()));
 					deckDto.setName();
 				} else {
 					deckDto.setCardDto(null);
 				}
-				deckDtos.add(deckDto);
 				
+				// fill player in deck
 				if (deck.getDealtTo() != null) {
 					
 					deckDto.setDealtToDto(convertToDto(deck.getDealtTo()));
@@ -187,8 +209,10 @@ public class ModelMapperUtil {
 			cardGame.setCards(deckDtos);
 		} else {
 			cardGame.setCards(null);
+
 		}
-		
+		cardGame.setCardsDealt();
+		cardGame.setCardsLeft();
 		return cardGame;
 	}
 	
@@ -286,6 +310,7 @@ public class ModelMapperUtil {
 		}
 		
 		casinoDto.setName();
+		casinoDto.setBet();;
 		return casinoDto;
 	}
 	

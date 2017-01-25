@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 // @RestController = @Controller + @ResponseBody
 @CrossOrigin
 @RestController
-@Component
 //@ExposesResourceFor(cardgame.class)
 @Slf4j
 @Scope("prototype")

@@ -9,6 +9,7 @@ import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
@@ -124,6 +125,8 @@ public class TestData {
 		gameDtoFixture.setGameType(GameType.BLACKJACK);
 		gameDtoFixture.setAnte(100);
 		gameDtoFixture.setName(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
+		gameDtoFixture.setCardsLeft(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
+		gameDtoFixture.setCardsDealt(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
 		gameDtoFixture.setMinRounds(3);
 		gameDtoFixture.setCurrentRound(3);
 		gameDtoFixture.setMaxRounds(3);
@@ -198,6 +201,7 @@ public class TestData {
 		deckDtoFixture.setCardDto(MakeCardDtoWithId("KH"));
 		deckDtoFixture.setDealtToDto(MakeCasinoDtoWithId(id+2));
 		deckDtoFixture.setCardOrder(12);
+		deckDtoFixture.setCardLocation(CardLocation.STOCK);
 		deckDtoFixture.setName(); // extra field "(03) 10C  John 'DeckDtoTest' Doe [Medium]"
 		
 		return deckDtoFixture;
@@ -225,11 +229,11 @@ public class TestData {
 		
 		CasinoDto casinoDtoFixture = new CasinoDto();
 		casinoDtoFixture.setCasinoId(id);
+		casinoDtoFixture.setPlayerDto(MakePlayerDtoWithIdAndGamesWon(id+2,0));
+		casinoDtoFixture.setPlayingOrder(12);
 		// Given a casinoDto having 5 + 1 fields
 		casinoDtoFixture.setGameDto(MakeGameDtoWithIdAndDecksAndWinner(id+1,0,0));
 		casinoDtoFixture.setHandDtos(null);
-		casinoDtoFixture.setPlayerDto(MakePlayerDtoWithIdAndGamesWon(id+2,0));
-		casinoDtoFixture.setPlayingOrder(12);
 		casinoDtoFixture.setName(); // extra field "(03) 10C  John 'CasinoDtoTest' Doe [Medium]"
 		
 		return casinoDtoFixture;

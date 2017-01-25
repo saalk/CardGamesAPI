@@ -44,6 +44,7 @@ import javax.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.apache.commons.lang3.StringUtils.left;
 import static org.apache.commons.lang3.StringUtils.right;
@@ -71,6 +72,7 @@ import static org.apache.commons.lang3.StringUtils.right;
 @DynamicUpdate
 @Getter
 @Setter
+@Slf4j
 //@Relation(value = "card", collectionRelation = "cards")
 //@JsonIdentityInfo(generator=JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
@@ -87,13 +89,13 @@ public class Card implements Serializable {
 	
 	@Enumerated(EnumType.STRING)
 	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	@Column(name = "RANK", nullable = false)
+	@Column(name = "RANK", nullable = false, length = 50)
 	////@JsonProperty("rank")
 	private Rank rank;
 	
 	@Enumerated(EnumType.STRING)
 	//@org.hibernate.annotations.Type(type = "nl.knikit.cardgames.model.enumlabel.LabeledEnumType")
-	@Column(name = "SUIT", nullable = false)
+	@Column(name = "SUIT", nullable = false, length = 50)
 	////@JsonProperty("suit")
 	private Suit suit;
 	
@@ -227,6 +229,8 @@ public class Card implements Serializable {
 		List<Card> newDeck = prototypeDeck;
 		for (int i = 0; i < addJokers; i++) {
 			newDeck.add(joker);
+			String message = String.format("Card do add jokers: %s", i + " / "+ addJokers);
+			log.info(message);
 		}
 		return newDeck;
 	}
