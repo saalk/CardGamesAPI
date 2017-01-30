@@ -14,7 +14,7 @@ import org.modelmapper.PropertyMap;
 	- STATE;        next Triggers?
 	- TYPE;
 	Specials:
-	- round;        minRounds;currentRound;maxRounds;
+	- round;        minRounds;currentRound;activeCasino;
 	- turn;         minTurns;currentTurn;turnsToWin;maxTurns;
 	Objects:
 	- List<Decks> Decks;   deckId;game;card;cardOrder;dealtToDto;

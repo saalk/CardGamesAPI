@@ -21,17 +21,28 @@ public class CardGameStateMachine {
 	
 	// @formatter:off
 	public enum State {
-		IS_CONFIGURED,
-		HAS_PLAYERS,
-		IS_SETUP,
+		// PRE
+		SELECTED,
+		HAS_HUMAN,
+		IS_SHUFFLED,
+		// MAIN
+		TURN_STARTED,
 		PLAYING,
+		TURN_ENDED,
+		// POST
 		GAME_WON,
 		NO_WINNER,
 		
+		// MISC
 		ERROR
 	}
 	
 	public enum Trigger {
+		
+		// PRE
+		POST_HUMAN,
+		POST_AI,
+		
 		POST_INIT,
 		PUT_INIT,
 		POST_INIT_HUMAN,
@@ -46,11 +57,17 @@ public class CardGameStateMachine {
 		
 		POST_SHUFFLE,
 		
-		PUT_TURN,
+		// MAIN
+		PUT_DEAL_TURN,
+		PUT_PLAYING_TURN,
+		PUT_PASS_TURN,
+		
+		// POST
 		PLAYER_WINS,
 		ROUNDS_ENDED,
 		NO_CARDS_LEFT,
 		
+		// MISC
 		OK,
 		ERROR,
 		GET,
@@ -65,7 +82,7 @@ public class CardGameStateMachine {
 	}
 	
 	public void initialize(final StateMachineConfig<State, Trigger> config) {
-		this.initialize(config, State.IS_CONFIGURED);
+		this.initialize(config, State.SELECTED);
 	}
 	
 	public void check(final State state) {
@@ -74,7 +91,7 @@ public class CardGameStateMachine {
 			throw new IllegalStateException("Unexpected state found: " + sm.getState() + " instead of: " + state);
 		}
 		log.info(String.format("CardGameStateMachine checkAll state to check: %s", state.toString()));
-		log.info(String.format("CardGameStateMachine checkAll state tfound: %s", sm.getState().toString()));
+		log.info(String.format("CardGameStateMachine checkAll state found: %s", sm.getState().toString()));
 	}
 	
 	public void checkAll(final List<State> states) {

@@ -105,6 +105,7 @@ public class CreatePlayerEvent extends AbstractEvent {
 		
 		if (flowDTO.getSuppliedSecuredLoan() != null && !flowDTO.getSuppliedSecuredLoan().equals("null") && !flowDTO.getSuppliedSecuredLoan().isEmpty()) {
 			player.setSecuredLoan(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
+			player.setCubits(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
 		}
 		return player;
 	}

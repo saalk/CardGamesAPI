@@ -54,21 +54,19 @@ public class HasTurnCorrectCasinoAndActionEvent extends AbstractEvent {
 		HasTurnCorrectCasinoAndActionEventDTO flowDTO = (HasTurnCorrectCasinoAndActionEventDTO) eventInput[0];
 		EventOutput eventOutput = null;
 		
-		// find all decks to update; only when cardAction is DEAL, HIGHER, LOWER, NEXT and cardLocation is HAND
-		String message;
-		if (flowDTO.getSuppliedCardAction().equals(CardAction.PASS) &&
-				    flowDTO.getSuppliedCardLocation().equals(CardLocation.HAND)) {
-			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			message = String.format("HasTurnCorrectCasinoAndActionEvent do no update for a pass or not to a hand");
-			log.info(message);
-			return eventOutput;
-		}
+		String message = String.format("HasTurnCorrectCasinoAndActionEvent setCurrentGame: %s", flowDTO.getCurrentGame());
+		log.info(message);
+		
+		message = String.format("HasTurnCorrectCasinoAndActionEvent CardAction: %s", flowDTO.getSuppliedCardAction());
+		log.info(message);
+		
+		message = String.format("HasTurnCorrectCasinoAndActionEvent CardLocation: %s", flowDTO.getSuppliedCardLocation());
+		log.info(message);
 		
 		// init all the object and lists
 		Game gameToCheck;
 		Casino casinoToCheck;
-		List<Hand> otherHandsForCasino;
-		Hand lastHandForCasino;
+		List<Hand> handsToCheck;
 		
 		// check the game
 		String gameId = flowDTO.getSuppliedGameId();
@@ -98,17 +96,16 @@ public class HasTurnCorrectCasinoAndActionEvent extends AbstractEvent {
 		
 		// find all the current Hands for the Casino
 		try {
-			otherHandsForCasino = handService.findAllWhere("casino", casinoId);
+			handsToCheck = handService.findAllWhere("casino", casinoId);
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
 		
 		// sort on card order
-		Collections.sort(otherHandsForCasino, Comparator.comparing(Hand::getCardOrder).thenComparing(Hand::getCardOrder));
+		Collections.sort(handsToCheck, Comparator.comparing(Hand::getCardOrder).thenComparing(Hand::getCardOrder));
 		
 		// do the check
-		lastHandForCasino = otherHandsForCasino.get(otherHandsForCasino.size() - 1);
 		
 		try {
 			
@@ -134,15 +131,15 @@ public class HasTurnCorrectCasinoAndActionEvent extends AbstractEvent {
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		message = String.format("HasTurnCorrectCasinoAndActionEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
-		log.info(message);
+
 		
 		
-		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_TURN) {
-			
+		if (true) {
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
 			message = String.format("HasTurnCorrectCasinoAndActionEvent do no transition");
 			log.info(message);
+		} else {
+			
 		}
 		return eventOutput;
 	}

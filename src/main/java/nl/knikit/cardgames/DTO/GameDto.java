@@ -46,17 +46,9 @@ public class GameDto implements Serializable {
 	private String dealt; // extra field
 	@Setter(AccessLevel.NONE)
 	private String stock; // extra field
-	@Setter(AccessLevel.NONE)
-	private String round; // extra field "Round 3 [1-9]"
-	private int minRounds;
 	private int currentRound;
-	private int maxRounds;
-	@Setter(AccessLevel.NONE)
-	private String turn; // extra field "Turn 2 (3 to win) [1-9]"
-	private int minTurns;
-	private int currentTurn;
-	private int turnsToWin;
-	private int maxTurns;
+	@JsonProperty(value = "activePlayer")
+	private int activeCasino;
 	
 	//@JsonBackReference(value="gameDto")
 	//@JsonProperty(value = "decks")
@@ -116,14 +108,12 @@ public class GameDto implements Serializable {
 		// - name()    - returns name of enum constant
 		// -> better use toString() to get the user-friendly name
 		
-		//
-		
 		this.state = state;
 	}
 	
 	@JsonIgnore
 	public Game getNameConverted(String name) {
-		// "Highlow#0005 (Ante:100) [Is_Setup]"
+		// "Highlow#0005 (Ante:100) [IS_SHUFFLED]"
 		String[] splitName = StringUtils.split(StringUtils.remove(StringUtils.remove(StringUtils.remove(name, "Ante:"), "]"), " ["), "#()");
 		
 		if (splitName.length != 4 ||
@@ -146,20 +136,10 @@ public class GameDto implements Serializable {
 	
 	public void setName() {
 		
-		// "Highlow#0005 (Ante:100) [Is_Setup]"
+		// "Highlow#0005 (Ante:100) [IS_SHUFFLED]"
 		this.name = WordUtils.capitalizeFully(this.gameType.toString()) + "#" +
 				            StringUtils.leftPad(String.valueOf(this.gameId), 4, "0") +
 				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state.toString()) + "]";
-	}
-	
-	public String setRound() {
-		// "Round 3 [1-9]"
-		return this.round = "Round: " + this.currentRound;
-	}
-	
-	public String setTurn() {
-		// "Turn 2 (3 to win) [1-9]"
-		return this.turn = "Playing: " + this.currentTurn;
 	}
 	
 	public void setWinner(PlayerDto playerDto) {
@@ -183,7 +163,7 @@ public class GameDto implements Serializable {
 			
 			for (DeckDto deck : decks) {
 				
-				if (!deck.getCardLocation().equals("STOCK")) {
+				if (!deck.getCardLocation().equals("STACK")) {
 					count++;
 					if (!first) {
 						sb.append(" ");
@@ -211,7 +191,7 @@ public class GameDto implements Serializable {
 			boolean first = true;
 			int count = 0;
 			for (DeckDto deck : decks) {
-				if (deck.getCardLocation().equals("STOCK")) {
+				if (deck.getCardLocation().equals("STACK")) {
 					count++;
 					if (!first) {
 						sb.append(" ");

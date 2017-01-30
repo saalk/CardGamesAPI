@@ -20,24 +20,20 @@ public class CardGameResponse {
 	
 	private CardGame cardGame;
 	
-	@JsonIgnore
 	private Reason reason;
 	
 	public enum Reason {
 		SUCCESS, FAILURE;
 	}
 	
-	@JsonIgnore
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private String errorCode;
 	
-	@JsonIgnore
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private String errorMessage;
 	
-	@JsonIgnore
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private String solution;

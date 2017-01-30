@@ -88,6 +88,8 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		casinoToCreate.setGame(gameToCheck);
 		casinoToCreate.setPlayer(playerToCheck);
 		casinoToCreate.setPlayingOrder(existingCasinos.size() + 1);
+		casinoToCreate.setBet(0);
+		casinoToCreate.setActiveTurn(0);
 		
 		try {
 			createdCasino = casinoService.create(casinoToCreate);

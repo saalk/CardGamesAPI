@@ -202,10 +202,10 @@ public class Card implements Serializable {
 		}
 		this.value = value != 0 ? rank.getValue(GameType.HIGHLOW) : 0;
 	}
-	// static fields and methods to easily make decks and add jokers
+	// static fields and methods to easily make decks and add jokers -> not synchronized so make them final?
 	protected static final Card joker = new Card(Rank.JOKER, Suit.JOKERS);
 	
-	protected static final List<Card> prototypeDeck = new ArrayList<>();
+	protected static List<Card> prototypeDeck = new ArrayList<>();
 	
 	static {
 		for (Suit suit : Suit.values()) {
@@ -219,6 +219,7 @@ public class Card implements Serializable {
 		}
 	}
 	
+
 	/*public void setCardId() {
 		final StringBuilder builder = new StringBuilder();
 		this.cardId = builder.append(rank.getLabel()).append(suit.getLabel()).toString();
@@ -226,14 +227,27 @@ public class Card implements Serializable {
 	}*/
 	
 	public static List<Card> newDeck(int addJokers) {
-		List<Card> newDeck = prototypeDeck;
+		//List<Card> newDeck = prototypeDeck; // #1 do not do this
+		
+		List<Card> newDeck = new ArrayList<>();
+		newDeck.addAll(prototypeDeck);
+		
+		String message = String.format("Card newDeck prototypeDeck size: "+ prototypeDeck.size());
+		log.info(message);
+		
+		message = String.format("Card newDeck newDeck size: "+ newDeck.size());
+		log.info(message);
+		
 		for (int i = 0; i < addJokers; i++) {
-			newDeck.add(joker);
-			String message = String.format("Card do add jokers: %s", i + " / "+ addJokers);
+			newDeck.add(joker); // this adds jokers to #1 prototypedeck that is a class variable !!
+			
+			message = String.format("Card newDeck add jokers: %s", i + " / "+ addJokers);
 			log.info(message);
 		}
 		return newDeck;
 	}
+	
+
 	
 	//@JsonIgnore
 	public static boolean isValidCard(String input) {

@@ -11,7 +11,7 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the no ante HIGHLOW Game
 
       | id   | decks | winner | state       | gameType | currentRound | ante | HTTP status code |
-      | 1234 | []    |        | IS_SETUP | HIGHLOW  | 0            | 0    | 404              |
+      | 1234 | []    |        | IS_SHUFFLED | HIGHLOW  | 0            | 0    | 404              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to POST /api/games
@@ -22,9 +22,9 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default ante HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    |        | IS_SETUP | BLACKJACK | 0            | 10   | 201              |
-      | latest | []    |        | IS_SETUP | HIGHLOW   | 0            | 200  | 201              |
-      | latest | []    |        | IS_SETUP | HIGHLOW   | 0            | 50   | 201              |
+      | latest | []    |        | IS_SHUFFLED | BLACKJACK | 0            | 10   | 201              |
+      | latest | []    |        | IS_SHUFFLED | HIGHLOW   | 0            | 200  | 201              |
+      | latest | []    |        | IS_SHUFFLED | HIGHLOW   | 0            | 50   | 201              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to GET /api/games/{id}
@@ -35,7 +35,7 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default ante HIGHLOW Game
 
       | id     | decks | winner | state       | gameType | currentRound | ante | HTTP status code |
-      | latest | []    |        | IS_SETUP | HIGHLOW  | 0            | 50   | 200              |
+      | latest | []    |        | IS_SHUFFLED | HIGHLOW  | 0            | 50   | 200              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to GET /api/games?gameType={gameType}
@@ -69,7 +69,7 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    |        | IS_SETUP | BLACKJACK | 0            | 100  | 200              |
+      | latest | []    |        | IS_SHUFFLED | BLACKJACK | 0            | 100  | 200              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to POST /api/players to make a winner
@@ -91,7 +91,7 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    | latest | IS_SETUP | BLACKJACK | 0            | 100  | 200              |
+      | latest | []    | latest | IS_SHUFFLED | BLACKJACK | 0            | 100  | 200              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to DELETE /api/games/{id}
@@ -102,7 +102,7 @@ Feature: Execute a lifecycle of a game in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | decks | winner | state       | gameType  | currentRound | ante | HTTP status code |
-      | latest | []    | latest | IS_SETUP | BLACKJACK | 0            | 100  | 204              |
+      | latest | []    | latest | IS_SHUFFLED | BLACKJACK | 0            | 100  | 204              |
 
   @Api @Games
   Scenario Outline: A frontend makes call to DELETE /api/players/{id} winner

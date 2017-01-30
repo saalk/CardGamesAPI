@@ -57,12 +57,16 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		
 		// do the add
 		// Get all cards and shuffle (since java 1.8)
-		List<Card> cards = Card.newDeck(Integer.parseInt(flowDTO.getSuppliedJokers()));
+		List<Card> cards;
+		cards = Card.newDeck(Integer.parseInt(flowDTO.getSuppliedJokers()));
+		
 		String message = String.format("CreateDeckForGameEvent do a # newDeck with cards is: %s", cards.size());
 		log.info(message);
-		Collections.shuffle(cards);
-		message = String.format("CreateDeckForGameEvent do a # newDeck with cards is: %s", cards.size());
-		log.info(message);
+		if (!flowDTO.getSuppliedTest().equals("true")) {
+			Collections.shuffle(cards);
+			message = String.format("CreateDeckForGameEvent do shuffle # newDeck with cards is: %s", cards.size());
+			log.info(message);
+		}
 		
 		int order = 1;
 		List<Deck> newDeckDtos = new ArrayList<>();
@@ -72,7 +76,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 			newDeck.setCardOrder(order++);
 			newDeck.setDealtTo(null);
 			newDeck.setGame(gameToUpdate);
-			newDeck.setCardLocation(CardLocation.STOCK);
+			newDeck.setCardLocation(CardLocation.STACK);
 			try {
 				Deck createdDeck = deckService.create(newDeck);
 				if (createdDeck == null) {
@@ -115,6 +119,8 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		Game getCurrentGame();
 		
 		String getSuppliedJokers();
+		
+		String getSuppliedTest();
 		
 		void setDecks(List<Deck> decks);
 		

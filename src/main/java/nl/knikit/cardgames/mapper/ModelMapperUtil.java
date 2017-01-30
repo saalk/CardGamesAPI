@@ -95,127 +95,6 @@ public class ModelMapperUtil {
 		return gameDto;
 	}
 	
-	public CardGame convertFromGameEntity(Game game) throws Exception {
-		ModelMapper modelMapper = new ModelMapper();
-		CardGame cardGame = modelMapper.map(game, CardGame.class);
-		
-		cardGame.setName();
-		cardGame.setRound();
-		cardGame.setTurn();
-		
-		if (game.getPlayer() != null) {
-			// gameDto.setWinner(convertToDto(game.getPlayer())); // this created a loop...
-			modelMapper = new ModelMapper();
-			PlayerDto playerDto = modelMapper.map(game.getPlayer(), PlayerDto.class);
-			playerDto.setGameDtos(null);
-			playerDto.setName();
-			playerDto.setWinCount();
-			cardGame.setWinner(playerDto);
-		} else {
-			cardGame.setWinner(null);
-		}
-		
-		// fill casinos and hands in casinos correct
-		List<CasinoDto> casinoDtos = new ArrayList<>();
-		List<HandDto> handDtos = new ArrayList<>();
-		
-		// are casinos present
-		if (game.getCasinos() != null) {
-			for (Casino casino: game.getCasinos()) {
-				handDtos.clear();
-				modelMapper = new ModelMapper();
-				CasinoDto casinoDto = modelMapper.map(casino, CasinoDto.class);
-				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
-				
-				if (casino.getGame() != null) {
-					modelMapper = new ModelMapper();
-					GameDto gameDto = modelMapper.map(casino.getGame(), GameDto.class);
-					
-					gameDto.setDeckDtos(null);
-					gameDto.setWinner(null);
-					
-					casinoDto.setGameDto(gameDto);
-					casinoDto.setBet();
-					
-				}
-				
-				if (casino.getPlayer() != null) {
-					modelMapper = new ModelMapper();
-					PlayerDto playerDto = modelMapper.map(casino.getPlayer(), PlayerDto.class);
-
-					playerDto.setGameDtos(null);
-					playerDto.setName();
-					playerDto.setWinCount();
-					
-					casinoDto.setPlayerDto(playerDto);
-					casinoDto.setName();
-					casinoDto.setBet();
-					
-				}
-				
-				if (casino.getHands() != null) {
-					for (Hand hand : casino.getHands()) {
-						
-						modelMapper = new ModelMapper();
-						HandDto handDto = modelMapper.map(hand, HandDto.class);
-						
-						if (hand.getCard() != null) {
-							modelMapper = new ModelMapper();
-							CardDto cardDto = modelMapper.map(hand.getCard(), CardDto.class);
-							
-							handDto.setCardDto(cardDto);
-						}
-						
-						handDto.setPlayerDto(null);
-						handDto.setCasinoDto(null);
-						handDto.setName();
-						handDtos.add(handDto);
-					}
-					casinoDto.setHandDtos(handDtos);
-				}
-				casinoDtos.add(casinoDto);
-			}
-			cardGame.setPlayers(casinoDtos);
-		} else {
-			cardGame.setPlayers(null);
-		}
-		
-		// fill decks
-		List<DeckDto> deckDtos = new ArrayList<>();
-		if (game.getDecks() != null) {
-			for (Deck deck: game.getDecks()) {
-				
-				modelMapper = new ModelMapper();
-				DeckDto deckDto = modelMapper.map(deck, DeckDto.class);
-				//modelMapper.addMappings(new CasinoMapFromEntity()); // customer mapping
-				
-				// fill card in deck
-				if (deck.getCard() != null) {
-					deckDto.setCardDto(convertToDto(deck.getCard()));
-					deckDto.setName();
-				} else {
-					deckDto.setCardDto(null);
-				}
-				
-				// fill player in deck
-				if (deck.getDealtTo() != null) {
-					
-					deckDto.setDealtToDto(convertToDto(deck.getDealtTo()));
-				} else {
-					deckDto.setDealtToDto(null);
-				}
-				deckDtos.add(deckDto);
-			}
-			cardGame.setCards(deckDtos);
-		} else {
-			cardGame.setCards(null);
-
-		}
-		cardGame.setCardsDealt();
-		cardGame.setCardsLeft();
-		return cardGame;
-	}
-	
 	public Game convertToEntity(GameDto gameDto) throws ParseException {
 		ModelMapper modelMapper = new ModelMapper();
 		Game game = modelMapper.map(gameDto, Game.class);
@@ -310,7 +189,7 @@ public class ModelMapperUtil {
 		}
 		
 		casinoDto.setName();
-		casinoDto.setBet();;
+		casinoDto.setBalance();
 		return casinoDto;
 	}
 	

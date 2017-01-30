@@ -7,7 +7,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -57,20 +56,10 @@ public class Game implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "GAMETYPE", length = 50, nullable = false)
 	private GameType gameType;
-	@Column(name = "MAX_ROUNDS")
-	private int maxRounds;
-	@Column(name = "MIN_ROUNDS")
-	private int minRounds;
+	@Column(name = "ACTIVE_CASINO")
+	private int activeCasino;
 	@Column(name = "CURRENT_ROUND")
 	private int currentRound;
-	@Column(name = "MAX_TURNS")
-	private int maxTurns;
-	@Column(name = "MIN_TURNS")
-	private int minTurns;
-	@Column(name = "CURRENT_TURN")
-	private int currentTurn;
-	@Column(name = "TURNS_TO_WIN")
-	private int turnsToWin;
 	@Column(name = "ANTE")
 	private int ante;
 	
@@ -117,18 +106,12 @@ public class Game implements Serializable {
 		this.currentRound++;
 		return currentRound;
 	}
-	@JsonIgnore
-	public int increaseCurrentTurn() {
-		this.currentTurn++;
-		return currentTurn;
-	}
 	
 	public Game() {
 		LocalDateTime localDateAndTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
 		String result = localDateAndTime.format(formatter);
 		this.created = result.substring(2, 20);
-		
 	}
 	
 	public void addShuffledDeckToGame(int jokers) {
@@ -142,7 +125,7 @@ public class Game implements Serializable {
 			deck.setCard(card);
 			deck.setCardOrder(i++);
 			deck.setDealtTo(null);
-			deck.setCardLocation(CardLocation.STOCK);
+			deck.setCardLocation(CardLocation.STACK);
 			this.decks.add(deck);
 		}
 		

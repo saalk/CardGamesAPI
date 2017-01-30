@@ -83,8 +83,15 @@ public class Casino implements Serializable {
     @Column(name = "PLAYING_ORDER")
     ////@JsonProperty("playingOrder")
     private int playingOrder;
+	
+	@Column(name = "BET")
+	private int bet;
 
-    public Casino() {
+	@Column(name = "ACTIVE_TURN")
+	private int activeTurn;
+	
+	
+	public Casino() {
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");
         String result = localDateAndTime.format(formatter);

@@ -28,9 +28,6 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 	@Autowired
 	private ICasinoService casinoService;
 	
-	@Autowired
-	private ModelMapperUtil mapUtil;
-	
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
@@ -45,6 +42,9 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 		Player playerToUpdate;
 		Player updatedPlayer;
 		
+		String message = String.format("UpdatePlayerForCasinoDetailsEvent getSuppliedCasinoId is: %s", flowDTO.getSuppliedCasinoId());
+		log.info(message);
+		
 		// find casino to update
 		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
@@ -57,6 +57,9 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
+		
+		message = String.format("UpdatePlayerForCasinoDetailsEvent casinoToCheck.getPlayer().getPlayerId() is: %s", casinoToCheck.getPlayer().getPlayerId());
+		log.info(message);
 		
 		// check path var player/{id}
 		String id = String.valueOf(casinoToCheck.getPlayer().getPlayerId());
@@ -83,11 +86,17 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
+		// store player and id
 		flowDTO.setCurrentPlayer(updatedPlayer);
+		flowDTO.setSuppliedPlayerId(String.valueOf(updatedPlayer.getPlayerId()));
+		
+		
+		message = String.format("UpdatePlayerForCasinoDetailsEvent getSuppliedPlayerId is: %s", flowDTO.getSuppliedPlayerId());
+		log.info(message);
 		
 		// never do a transition, this is no key event
 		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-		String message = String.format("UpdatePlayerForCasinoDetailsEvent never does no transition");
+		message = String.format("UpdatePlayerForCasinoDetailsEvent never does no transition");
 		log.info(message);
 		
 		return eventOutput;
@@ -106,6 +115,8 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 		
 		void setCurrentPlayer(Player player);
 		
+		void setSuppliedPlayerId(String playerId);
+		
 		String getSuppliedPlayerId();
 		
 		String getSuppliedCasinoId();
@@ -115,8 +126,6 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 		String getSuppliedAlias();
 		
 		Avatar getSuppliedAvatar();
-		
-		String getSuppliedSecuredLoan();
 		
 		AiLevel getSuppliedAiLevel();
 		
@@ -142,14 +151,10 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 				playerToUpdate.setAlias(flowDTO.getSuppliedAlias());
 			}
 		}
-		
 		if (flowDTO.getSuppliedAvatar() != null) {
 			playerToUpdate.setAvatar(flowDTO.getSuppliedAvatar());
 		}
 		
-		if (flowDTO.getSuppliedSecuredLoan() != null && !flowDTO.getSuppliedSecuredLoan().equals("null") && !flowDTO.getSuppliedSecuredLoan().isEmpty()) {
-			playerToUpdate.setSecuredLoan(Integer.parseInt(flowDTO.getSuppliedSecuredLoan()));
-		}
 		return playerToUpdate;
 	}
 }

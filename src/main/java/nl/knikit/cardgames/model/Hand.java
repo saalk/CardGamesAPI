@@ -17,6 +17,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -101,7 +103,23 @@ public class Hand implements Serializable {
     @Column(name = "CARD_ORDER")
     ////@JsonProperty("cardOrder")
     private int cardOrder;
-
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "CARD_LOCATION", nullable = false)
+    ////@JsonProperty("cardLocation")
+    private CardLocation cardLocation;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "CARD_ACTION", nullable = false)
+    ////@JsonProperty("cardAction")
+    private CardAction cardAction;
+    
+	@Column(name = "ROUND")
+	private int round;
+	
+	@Column(name = "TURN")
+	private int turn;
+	
     public Hand(){
         LocalDateTime localDateAndTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm-ssSSS-nnnnnnnnn");

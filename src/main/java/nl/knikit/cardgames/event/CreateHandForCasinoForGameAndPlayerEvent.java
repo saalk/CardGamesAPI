@@ -2,7 +2,6 @@ package nl.knikit.cardgames.event;
 
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
-import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.CardAction;
 import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Casino;
@@ -46,21 +45,30 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 	@Autowired
 	private IHandService handService;
 	
-	@Autowired
-	private ModelMapperUtil mapUtil;
-	
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
 		CreateHandForCasinoForGameAndPlayerEventDTO flowDTO = (CreateHandForCasinoForGameAndPlayerEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
-		// find all decks to update; only when cardAction is DEAL, HIGHER, LOWER, NEXT and cardLocation is HAND
+		// find all decks to update; only when cardAction is DEAL, HIGHER, LOWER; NEXT should be changed in a special ai event
 		String message;
-		if (flowDTO.getSuppliedCardAction().equals(CardAction.PASS) &&
-				    flowDTO.getSuppliedCardLocation().equals(CardLocation.HAND)) {
+		
+		// skip this event when pass turn
+		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_PASS_TURN) {
+			// key event so do a transition
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
+			message = String.format("CreateHandForCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
+			log.info(message);
+			return eventOutput;
+			
+		}
+		
+		// skip this event when no cards left turn
+		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.NO_CARDS_LEFT) {
+			// no key event no a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			message = String.format("UpdateCasinoForGameAndPlayerEvent do no update for a pass or not to a hand");
+			message = String.format("CreateHandForCasinoForGameAndPlayerEvent no transition with trigger is: %s", flowDTO.getSuppliedTrigger());
 			log.info(message);
 			return eventOutput;
 		}
@@ -115,6 +123,9 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		// do the add
 		try {
 			
+			message = String.format("CreateHandForCasinoForGameAndPlayerEvent getDecks is: %s", flowDTO.getDecks());
+			log.info(message);
+			
 			for (Deck deck : flowDTO.getDecks()) {
 				
 				handToCreate.setCasino(dealToThisCasino);
@@ -122,9 +133,21 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 				handToCreate.setCard(deck.getCard());
 				handToCreate.setCardOrder(cardOrder++);
 				
+				if (flowDTO.getSuppliedCurrentTurn() != 0) {
+					handToCreate.setTurn(flowDTO.getSuppliedCurrentTurn());
+				}
+				if (flowDTO.getSuppliedCurrentRound() != 0) {
+					handToCreate.setRound(flowDTO.getSuppliedCurrentRound());
+				}
+				if (flowDTO.getSuppliedCardLocation() != null) {
+					handToCreate.setCardLocation(flowDTO.getSuppliedCardLocation());
+				}
+				if (flowDTO.getSuppliedCardAction() != null) {
+					handToCreate.setCardAction(flowDTO.getSuppliedCardAction());
+				}
 				handsCreated.add(handService.create(handToCreate));
 				
-				message = String.format("UpdateCasinoForGameAndPlayerEvent handToCreate is: %s", handToCreate.toString());
+				message = String.format("CreateHandForCasinoForGameAndPlayerEvent handToCreate is: %s", handToCreate.toString());
 				log.info(message);
 			}
 		} catch (Exception e) {
@@ -132,15 +155,35 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
+		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
 		message = String.format("CreateHandForCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
-		// update ids
+		// update ids and the fact that a turn has been made so +1 !!
 		flowDTO.setHands(handsCreated);
+		flowDTO.setSuppliedCurrentTurn(dealToThisCasino.getActiveTurn());
 		
-		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_TURN) {
+		
+		// evaluate the last hand,
+		// if lost: deduct the bet right away and end the game
+		// if won 3 times: than add the bet to the player and update the winner
+//		Hand lastHand = otherHandsForCasino.get(otherHandsForCasino.size()-1);
+//		int result = handToCreate.getCard().compareTo(lastHand.getCard(),gameToCheck.getGameType());
+//		if ((result == -1) && (flowDTO.getSuppliedCardAction()==CardAction.LOWER)){
+//			message = String.format("CreateHandForCasinoForGameAndPlayerEvent evaluate result is: %s", result );
+//
+//		} else {
+//			message = String.format("CreateHandForCasinoForGameAndPlayerEvent evaluate result is: %s", result );
+//
+//		}
+		
+		// lost and w.on: also update the cubits  to the player when passing
+		// won: also add the winner to the game when passing
+		
+		if ((flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_DEAL_TURN) ||
+				    (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_PLAYING_TURN)) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
 			message = String.format("CreateHandForCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
@@ -171,16 +214,22 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		CardAction getSuppliedCardAction();
 		
-		String getSuppliedTotal();
-		
 		CardLocation getSuppliedCardLocation();
 		
 		// get the data created by other events
 		
 		List<Deck> getDecks();
 		
+		int getSuppliedCurrentRound();
+		
+		void setSuppliedCurrentTurn(int turn);
+		
+		int getSuppliedCurrentTurn();
+		
 		// pass on the data created here for other events
 		
 		void setHands(List<Hand> hands);
+		
+		void setSuppliedCubits(String cubits);
 	}
 }

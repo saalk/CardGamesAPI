@@ -1,12 +1,9 @@
-package nl.knikit.cardgames.DTO;
+package nl.knikit.cardgames.VO;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import nl.knikit.cardgames.model.Card;
-import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Hand;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +11,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,9 +22,9 @@ import lombok.Setter;
 //@JsonIdentityInfo(generator=JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
-public class HandDto implements Serializable {
+public class CardGameHand implements Serializable {
 	
-	public HandDto() {
+	public CardGameHand() {
 	}
 	
 	// Hand has 5 fields, HandDto has 1 more
@@ -45,12 +38,12 @@ public class HandDto implements Serializable {
 	// "(02)  RJ  Script Joe [ELF]"
 	private int handId;
 	@JsonIgnore
-	private PlayerDto playerDto;
+	private CardGamePlayer cardGamePlayer;
 	//@JsonManagedReference(value="playerDto")
 	@JsonIgnore
-	private CasinoDto casinoDto;
+	private CardGameCasino cardGameCasino;
 	@JsonProperty(value = "card")
-	private CardDto cardDto;
+	private CardGameCard cardGameCard;
 	private int cardOrder;
 	@JsonIgnore
 	private String cardLocation;
@@ -60,6 +53,7 @@ public class HandDto implements Serializable {
 	private int round;
 	@JsonIgnore
 	private int turn;
+	
 	
 	public Hand getNameConverted(String name) {
 		// "10C  Ten of Clubs"
@@ -82,7 +76,7 @@ public class HandDto implements Serializable {
 		// "10C  Ten of Clubs"
 		
 		StringBuilder sb = new StringBuilder();
-		if (cardDto ==null) {
+		if (cardGameCard ==null) {
 			new Exception("CardId cannot be null in HandDto") ;
 		}
 		if (this.cardOrder < 10) {
@@ -90,19 +84,19 @@ public class HandDto implements Serializable {
 		} else {
 			sb.append("(" + this.cardOrder + ") ");
 		}
-		if (this.cardDto.getCardId().length() == 2) {
+		if (this.cardGameCard.getCardId().length() == 2) {
 			sb.append(" ");
 		}
-		sb.append(this.cardDto.getCardId());
-		if (this.playerDto == null || this.playerDto.getPlayerId() == 0) {
+		sb.append(this.cardGameCard.getCardId());
+		if (this.cardGamePlayer == null || this.cardGamePlayer.getPlayerId() == 0) {
 			sb.append("  " +
-					          WordUtils.capitalizeFully(this.cardDto.getRank()) + " of " +
-					          WordUtils.capitalizeFully(this.cardDto.getSuit()));
+					          WordUtils.capitalizeFully(this.cardGameCard.getRank()) + " of " +
+					          WordUtils.capitalizeFully(this.cardGameCard.getSuit()));
 		} else {
 			sb.append(
 					"  " +
-							WordUtils.capitalizeFully(this.playerDto.getAlias()) + " [" +
-							WordUtils.capitalizeFully(this.playerDto.getAiLevel()) + "]");
+							WordUtils.capitalizeFully(this.cardGamePlayer.getAlias()) + " [" +
+							WordUtils.capitalizeFully(this.cardGamePlayer.getAiLevel()) + "]");
 		}
 		this.name = String.valueOf(sb);
 	}

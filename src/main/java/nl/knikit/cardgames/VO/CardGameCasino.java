@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.DTO;
+package nl.knikit.cardgames.VO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,9 +21,9 @@ import lombok.Setter;
 //@JsonIdentityInfo(generator = JSOGGenerator.class)
 // - this annotation adds @Id to prevent chain loop
 // - you could also use @JsonManagedReference and @JsonBackReference
-public class CasinoDto implements Serializable {
+public class CardGameCasino implements Serializable {
 	
-	public CasinoDto() {
+	public CardGameCasino() {
 	}
 	
 	// Casino has 5 fields, CasinoDto has 1 more
@@ -39,13 +39,12 @@ public class CasinoDto implements Serializable {
 	//@JsonManagedReference(value="gameDto")
 	
 	@JsonIgnore
-	private GameDto gameDto;
+	private CardGame cardGame;
 	
-	@JsonIgnore
-	//@JsonProperty(value = "visitor")
-	private PlayerDto playerDto;
+	//@JsonIgnore
+	@JsonProperty(value = "visitor")
+	private CardGamePlayer cardGamePlayer;
 	
-	@JsonIgnore
 	private int playingOrder;
 	
 	@Setter(AccessLevel.NONE)
@@ -58,7 +57,7 @@ public class CasinoDto implements Serializable {
 	@JsonIgnore
 	@Setter(AccessLevel.NONE)
 	//@JsonProperty(value = "cardsInHand")
-	private List<HandDto> handDtos;
+	private List<CardGameHand> cardGameHands;
 	
 	@JsonIgnore
 	@Setter(AccessLevel.NONE)
@@ -66,16 +65,23 @@ public class CasinoDto implements Serializable {
 	
 	public void setName() {
 		// "Script Joe(Human|Smart) [Elf]"
-		this.name = playingOrder + ": " + playerDto.getAlias() + "(" + WordUtils.capitalizeFully(playerDto.getAiLevel()) + ") [" + WordUtils.capitalizeFully(playerDto.getAvatar()) + "]";
+		//this.name = playingOrder + ": " + cardGamePlayer.getAlias() + "(" + WordUtils.capitalizeFully(cardGamePlayer.getAiLevel()) + ") [" + WordUtils.capitalizeFully(cardGamePlayer.getAvatar()) + "]";
+		this.name = cardGamePlayer.getAlias() + " [" + WordUtils.capitalizeFully(cardGamePlayer.getAiLevel()) + "]";
 	}
 	
 	public void setBalance() {
 		// "Script Joe(Human|Smart) [Elf]"
-		if (this.playerDto != null) {
-			if (this.gameDto != null) {
-				this.balance = "Bet: " + this.gameDto.getAnte() + "x" + this.activeTurn + " (Cubits: " + playerDto.getCubits() + ") [Pawned ship: " + playerDto.getSecuredLoan() + "]";
+		int raise = 0;
+		if (this.activeTurn > 2) {
+			raise = (int) Math.pow(2, activeTurn - 1);
+		} else {
+			raise = this.activeTurn;
+		}
+		if (this.cardGamePlayer != null) {
+			if (this.cardGame != null) {
+				this.balance = "Bet: " + this.cardGame.getAnte() + "x" + raise + " (Cubits: " + cardGamePlayer.getCubits() + ") [Pawned ship: " + cardGamePlayer.getSecuredLoan() + "]";
 			} else {
-				this.balance = "(Cubits: " + playerDto.getCubits() + ") [Pawned ship: " + playerDto.getSecuredLoan() + "]";
+				this.balance = "(Cubits: " + cardGamePlayer.getCubits() + ") [Pawned ship: " + cardGamePlayer.getSecuredLoan() + "]";
 			}
 		} else {
 			this.balance = "Bet: []";
@@ -83,19 +89,26 @@ public class CasinoDto implements Serializable {
 	}
 	
 	public void setHand() {
-		if (this.handDtos != null) {
-			StringBuilder sb = new StringBuilder(this.cardCount + " card(s) [");
-			List<HandDto> hands;
-			hands = this.handDtos;
+		if (this.cardGameHands != null) {
+			StringBuilder sb = new StringBuilder(this.cardCount + " card(s) 1[");
+			List<CardGameHand> hands;
+			hands = this.cardGameHands;
 			// sort on card order
-			Collections.sort(hands, Comparator.comparing(HandDto::getCardOrder).thenComparing(HandDto::getCardOrder));
+			Collections.sort(hands, Comparator.comparing(CardGameHand::getCardOrder).thenComparing(CardGameHand::getCardOrder));
 			boolean first = true;
-			for (HandDto hand : hands) {
+			int round = 1;
+			for (CardGameHand hand : hands) {
+				if (round != hand.getRound()) {
+					sb.append("] ");
+					sb.append(hand.getRound());
+					sb.append("[");
+					round++;
+				}
 				if (!first) {
 					sb.append(" ");
 				}
 				first = false;
-				sb.append(hand.getCardDto().getCardId());
+				sb.append(hand.getCardGameCard().getCardId());
 			}
 			sb.append("]");
 			
@@ -106,27 +119,27 @@ public class CasinoDto implements Serializable {
 	}
 	
 	public void setCardCount() {
-		if (handDtos != null) {
-			this.cardCount = handDtos.size();
+		if (cardGameHands != null) {
+			this.cardCount = cardGameHands.size();
 		} else {
 			this.cardCount = 0;
 		}
 		this.cardCount = 0;
 	}
 	
-	public void setHandDtos(List<HandDto> handDtos) {
-		this.handDtos = handDtos;
+	public void setCardGameHands(List<CardGameHand> handDtos) {
+		this.cardGameHands = handDtos;
 		this.cardCount = handDtos != null ? handDtos.size() : 0;
 		setHand();
 	}
 	
-	public void setGameDto(GameDto gameDto) {
-		this.gameDto = gameDto;
+	public void setCardGame(CardGame gameDto) {
+		this.cardGame = gameDto;
 		setBalance();
 	}
 	
-	public List<HandDto> getHandDtos() {
-		return this.handDtos;
+	public List<CardGameHand> getCardGameHands() {
+		return this.cardGameHands;
 	}
 	
 }

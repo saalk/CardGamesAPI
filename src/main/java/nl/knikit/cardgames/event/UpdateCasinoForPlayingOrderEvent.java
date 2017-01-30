@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
+public class UpdateCasinoForPlayingOrderEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
@@ -35,30 +35,10 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
-		UpdateCasinoForGameAndPlayerEventDTO flowDTO = (UpdateCasinoForGameAndPlayerEventDTO) eventInput[0];
+		UpdateCasinoForPlayingOrderEventDTO flowDTO = (UpdateCasinoForPlayingOrderEventDTO) eventInput[0];
 		EventOutput eventOutput;
 		
-		// check if playing order is up (-1) or down (+1)
-		boolean playingOrderChanged = false;
-		boolean moveTowardsFirst = false;
-		boolean moveTowardsLast = false;
-		
-		if (flowDTO.getSuppliedPlayingOrder() == null && flowDTO.getSuppliedPlayingOrder().equals("null") && flowDTO.getSuppliedPlayingOrder().isEmpty()) {
-			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			String message = String.format("UpdateCasinoForGameAndPlayerEvent no getSuppliedPlayingOrder");
-			log.info(message);
-			return eventOutput;
-		} else if (flowDTO.getSuppliedPlayingOrder().equals("-1")) {
-			moveTowardsFirst = true;
-			playingOrderChanged = true;
-		} else if ((flowDTO.getSuppliedPlayingOrder().equals("+1"))) {
-			moveTowardsLast = true;
-			playingOrderChanged = true;
-		} else {
-			playingOrderChanged = false;
-			moveTowardsFirst = false;
-			moveTowardsLast = false;
-		}
+
 		
 		Game gameToCheck;
 		Casino casinoToUpdate;
@@ -78,6 +58,9 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
+		String message = String.format("UpdateCasinoForPlayingOrderEvent gameToCheck is: %s", gameToCheck);
+		log.info(message);
+		
 		// find casino to update
 		String casinoId = flowDTO.getSuppliedCasinoId();
 		try {
@@ -91,6 +74,32 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
+		
+		// update for the rest of the events
+		flowDTO.setCurrentGame(gameToCheck);
+		flowDTO.setSuppliedPlayerId(String.valueOf(casinoToUpdate.getPlayer().getPlayerId()));
+		
+		// check if playing order is up (-1) or down (+1)
+		boolean playingOrderChanged = false;
+		boolean moveTowardsFirst = false;
+		boolean moveTowardsLast = false;
+		
+		if (flowDTO.getSuppliedPlayingOrder() == null || flowDTO.getSuppliedPlayingOrder().equals("null") || flowDTO.getSuppliedPlayingOrder().isEmpty()) {
+			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
+			message = String.format("UpdateCasinoForPlayingOrderEvent no getSuppliedPlayingOrder supplied");
+			log.info(message);
+			return eventOutput;
+		} else if (flowDTO.getSuppliedPlayingOrder().equals("-1")) {
+			moveTowardsFirst = true;
+			playingOrderChanged = true;
+		} else if ((flowDTO.getSuppliedPlayingOrder().equals("+1"))) {
+			moveTowardsLast = true;
+			playingOrderChanged = true;
+		} else {
+			playingOrderChanged = false;
+			moveTowardsFirst = false;
+			moveTowardsLast = false;
+		}
 		// sort casinos on playing order
 		List<Casino> allCasinosForAGame = gameToCheck.getCasinos();
 		Map<Integer, Casino> casinosSorted = new HashMap<>(); // is sorted key automatically
@@ -125,35 +134,27 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
-			
 		}
 		
-		
-		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		String message = String.format("UpdateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		message = String.format("UpdateCasinoForPlayingOrderEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
 		flowDTO.setCurrentCasino(casinoUpdated);
 		
-		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN)
-		
-		{
-			// key event so do a transition but only when human
+		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN) {
+			// key event so do a transition but only when deleting a human
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
-			message = String.format("UpdateCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
+			message = String.format("UpdateCasinoForPlayingOrderEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
 			log.info(message);
-		} else
-		
-		{
+		} else {
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			message = String.format("UpdateCasinoForGameAndPlayerEvent do no transition");
+			message = String.format("UpdateCasinoForPlayingOrderEvent do no transition");
 			log.info(message);
 		}
 		return eventOutput;
 	}
 	
-	public interface UpdateCasinoForGameAndPlayerEventDTO {
+	public interface UpdateCasinoForPlayingOrderEventDTO {
 		
 		// all game fields
 		String getSuppliedGameId();
@@ -168,6 +169,8 @@ public class UpdateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		void setCurrentCasino(Casino casino);
 		
 		String getSuppliedPlayingOrder();
+		
+		void setSuppliedPlayerId(String playerId);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

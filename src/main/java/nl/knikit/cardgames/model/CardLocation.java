@@ -16,7 +16,7 @@ import lombok.Getter;
 public enum CardLocation implements LabeledEnum {
 	
 	@Column(name = "CARD_LOCATION", length = 25, nullable = false)
-	STOCK("Stock"), HAND("Hand"), DRAW_PILE("Draw pile"), TABLE("Center stock"), DISCARD_PILE("Discard pile");
+	STACK("Stock"), HAND("Hand"), DRAW_PILE("Draw pile"), TABLE("Center stock"), DISCARD_PILE("Discard pile");
 	
 	/**
 	 * A list of all the Enums in the class. The list is created via Set implementation EnumSet.
@@ -24,7 +24,7 @@ public enum CardLocation implements LabeledEnum {
 	 * factory methods for creating an instance like creating groups from enums.
 	 * Here it is used to group all enums.
 	 */
-	public static Set<CardLocation> CardLocations = EnumSet.of(STOCK, HAND, DRAW_PILE, TABLE, DISCARD_PILE);
+	public static Set<CardLocation> CardLocations = EnumSet.of(STACK, HAND, DRAW_PILE, TABLE, DISCARD_PILE);
 	
 	/**
 	 * A static HashMap lookup with key + value is created to use in a getter

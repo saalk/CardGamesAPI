@@ -336,7 +336,7 @@ public class GameResource {
 		
 		// set defaults for notNull fields
 		if (gameDto.getState() == null) {
-			gameDto.setState(CardGameStateMachine.State.IS_SETUP);
+			gameDto.setState(CardGameStateMachine.State.IS_SHUFFLED);
 		}
 		if (gameDto.getGameType() == null) {
 			gameDto.setGameType(GameType.HIGHLOW);

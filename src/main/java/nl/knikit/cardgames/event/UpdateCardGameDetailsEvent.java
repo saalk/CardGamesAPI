@@ -3,6 +3,7 @@ package nl.knikit.cardgames.event;
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
+import nl.knikit.cardgames.model.CardAction;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
@@ -59,17 +60,24 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		// do the update
+		// find out what to update
 		if (flowDTO.getSuppliedGameType() != null) {
 			gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
 		}
 		if (flowDTO.getSuppliedAnte() != null && !flowDTO.getSuppliedAnte().equals("null") && !flowDTO.getSuppliedAnte().isEmpty()) {
 			gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
 		}
+		if (flowDTO.getSuppliedActiveCasino() != 0) {
+			gameToUpdate.setActiveCasino(flowDTO.getSuppliedActiveCasino());
+		}
+		if (flowDTO.getSuppliedCurrentRound() != 0) {
+			gameToUpdate.setCurrentRound(flowDTO.getSuppliedCurrentRound());
+		}
 		
 		message = String.format("UpdateCardGameDetailsEvent gameType before update has details: %s", flowDTO.getSuppliedGameType());
 		log.info(message);
 		
+		// do the update
 		try {
 			updatedGame = gameService.update(gameToUpdate);
 			if (updatedGame == null) {
@@ -85,7 +93,9 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
+		flowDTO.setCurrentGame(updatedGame);
+		flowDTO.setSuppliedGameId(String.valueOf(updatedGame.getGameId()));
+		
 		message = String.format("UpdateCardGameDetailsEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
@@ -108,6 +118,8 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		// all game fields
 		String getSuppliedGameId();
 		
+		void  setSuppliedGameId(String gameId);
+		
 		void setCurrentGame(Game game);
 		
 		Game getCurrentGame();
@@ -116,6 +128,10 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		GameType getSuppliedGameType();
 		
 		String getSuppliedAnte();
+		
+		int getSuppliedCurrentRound();
+		
+		int getSuppliedActiveCasino();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

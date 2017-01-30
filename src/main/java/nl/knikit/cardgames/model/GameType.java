@@ -27,9 +27,9 @@ public enum GameType implements LabeledEnum {
      * HIGHLOW cardgame is a simple higher or lower guessing game. The dealer places one card
      * face-down in front of the player, then another card face-up for the players Hand. The player
      * guesses whether the value of the face-down card is higher or lower. <p> The player places his
-     * initial bet. The house matches that bet into the pot. When the player guesses, he wins or
+     * initial balance. The house matches that balance into the pot. When the player guesses, he wins or
      * loses the pot depending on the outcome of his guess. After that round, the player can pass
-     * the bet to another player, or go double or nothing on the next bet depending on the specific
+     * the balance to another player, or go double or nothing on the next balance depending on the specific
      * variant of HIGHLOW.
      */
     @Column(name = "GAMETYPE", length = 25)

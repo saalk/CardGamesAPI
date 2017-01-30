@@ -22,7 +22,7 @@ Feature: Execute a lifecycle of a casino in the card game
     Examples: This is the default ante HIGHLOW Game
 
       | id     | casinos | winner | state         | gameType | currentRound | ante | HTTP status code |
-      | latest | []      |        | PLAYING       | HIGHLOW  | 0            | 500  | 201              |
+      | latest | []      |        | TURN_STARTED       | HIGHLOW  | 0            | 500  | 201              |
 
   @Api @Casinos
   Scenario Outline: A frontend makes call to POST /api/players to make a player
@@ -132,4 +132,4 @@ Feature: Execute a lifecycle of a casino in the card game
     Examples: This is the default HIGHLOW Game
 
       | id     | casinos | winner | state         | type         | currentRound | ante | HTTP status code |
-      | latest | []      | latest | PLAYING       | BLACKJACK | 0            | 100  | 204              |
+      | latest | []      | latest | TURN_STARTED       | BLACKJACK | 0            | 100  | 204              |

@@ -43,6 +43,9 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 		Casino casinoToDelete;
 		Casino otherCasinoToUpdate;
 		
+		String message = String.format("DeleteCasinoForGameAndPlayerEvent getSuppliedGameId is: %s", flowDTO.getSuppliedGameId());
+		log.info(message);
+		
 		// always check the game
 		String gameId = flowDTO.getSuppliedGameId();
 		try {
@@ -55,6 +58,9 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
+		
+		message = String.format("DeleteCasinoForGameAndPlayerEvent getSuppliedCasinoId is: %s", flowDTO.getSuppliedCasinoId());
+		log.info(message);
 		
 		// find casino to delete
 		String casinoId = flowDTO.getSuppliedCasinoId();
@@ -69,42 +75,38 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		// sort casinos on playing order
-		List<Casino> allCasinosForAGame = gameToCheck.getCasinos();
-		Map<Integer, Casino> casinosSorted = new HashMap<>(); // is sorted key automatically
-		for (Casino casino : allCasinosForAGame) {
-			casinosSorted.put(casino.getPlayingOrder(), casino);
-		}
-		
-		// find casino to update
-		List<Casino> casinos;
+		// do the delete
 		try {
-			casinos = casinoService.findAllWhere("game", gameId);
-			if (casinos == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
+			casinoService.deleteOne(casinoToDelete);
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
 		
-		// do the delete
+		// sort other casinos on playing order
+		List<Casino> allCasinosForAGame = gameToCheck.getCasinos();
+		Map<Integer, Casino> casinosSorted = new HashMap<>(); // is sorted key automatically
+		for (Casino casino : allCasinosForAGame) {
+			casinosSorted.put(casino.getPlayingOrder(), casino);
+		}
+		casinosSorted.remove(casinoToDelete.getPlayingOrder());
+		
+		// do the update
+		int order = 1;
+		int countHumans = 0;
 		try {
-			Integer oldPlayingOrder = casinoToDelete.getPlayingOrder();
-			
-			// delete the current
-			casinoService.deleteOne(casinoToDelete);
-			
 			// change playing order on the others
 			for (Casino casino : casinosSorted.values()) {
-				if (casino.getPlayingOrder() > oldPlayingOrder) {
-					
-					casino.setPlayingOrder(casino.getPlayingOrder() - 1);
-					casinoService.update(casino);
+				casino.setPlayingOrder(order++);
+				casinoService.update(casino);
+				if (casino.getPlayer().getHuman()) {
+					countHumans++;
 				}
+				
+				message = String.format("DeleteCasinoForGameAndPlayerEvent updateOther is: %s", casino);
+				log.info(message);
+				
 			}
-			
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
@@ -112,13 +114,14 @@ public class DeleteCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		String message = String.format("DeleteCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
+		message = String.format("DeleteCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
 		flowDTO.setCurrentCasino(null);
 		
-		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN) {
-			// key event so do a transition but only when human
+		if ((flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.DELETE_SETUP_HUMAN) &&
+				    (countHumans == 0)){
+			// key event so do a transition but only when no human left human
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
 			message = String.format("DeleteCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
 			log.info(message);

@@ -5,12 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knikit.cardgames.DTO.PlayerDto;
 import nl.knikit.cardgames.VO.CardGame;
 import nl.knikit.cardgames.commons.util.StackableResponses;
-import nl.knikit.cardgames.definitions.commons.ResponseResults;
 import nl.knikit.cardgames.definitions.commons.SpringIntegrationTest;
 import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
-import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.response.CardGameResponse;
 

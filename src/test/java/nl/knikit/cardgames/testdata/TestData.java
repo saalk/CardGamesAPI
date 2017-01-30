@@ -86,16 +86,10 @@ public class TestData {
 		// Given a gameDto having 14 fields
 		gameFixture.setGameId(id);
 		gameFixture.setCreated("1");
-		gameFixture.setState(CardGameStateMachine.State.IS_SETUP);
+		gameFixture.setState(CardGameStateMachine.State.IS_SHUFFLED);
 		gameFixture.setGameType(GameType.HIGHLOW);
 		gameFixture.setAnte(50);
-		gameFixture.setMinRounds(1);
 		gameFixture.setCurrentRound(1);
-		gameFixture.setMaxRounds(1);
-		gameFixture.setMinTurns(2);
-		gameFixture.setCurrentTurn(2);
-		gameFixture.setTurnsToWin(2);
-		gameFixture.setMaxTurns(2);
 		if (winner!=0) {
 			gameFixture.setPlayer(MakePlayerEntityWithIdAndGamesWon(winner, 0));
 		} else {
@@ -121,21 +115,13 @@ public class TestData {
 		
 		// Given a gameDto having 14 + 3 fields
 		gameDtoFixture.setGameId(id);
-		gameDtoFixture.setState(CardGameStateMachine.State.PLAYING);
+		gameDtoFixture.setState(CardGameStateMachine.State.TURN_STARTED);
 		gameDtoFixture.setGameType(GameType.BLACKJACK);
 		gameDtoFixture.setAnte(100);
 		gameDtoFixture.setName(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
 		gameDtoFixture.setCardsLeft(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
 		gameDtoFixture.setCardsDealt(); // extra fields "Highlow:0005 (Ante:100) [GameSelected]"
-		gameDtoFixture.setMinRounds(3);
 		gameDtoFixture.setCurrentRound(3);
-		gameDtoFixture.setMaxRounds(3);
-		gameDtoFixture.setRound(); // extra field
-		gameDtoFixture.setMinTurns(4);
-		gameDtoFixture.setCurrentTurn(4);
-		gameDtoFixture.setTurnsToWin(4);
-		gameDtoFixture.setMaxTurns(4);
-		gameDtoFixture.setTurn(); // extra field
 		if (winner!=0) {
 			gameDtoFixture.setWinner(MakePlayerDtoWithIdAndGamesWon(winner, 0));
 		} else {
@@ -201,7 +187,7 @@ public class TestData {
 		deckDtoFixture.setCardDto(MakeCardDtoWithId("KH"));
 		deckDtoFixture.setDealtToDto(MakeCasinoDtoWithId(id+2));
 		deckDtoFixture.setCardOrder(12);
-		deckDtoFixture.setCardLocation(CardLocation.STOCK);
+		deckDtoFixture.setCardLocation(CardLocation.STACK);
 		deckDtoFixture.setName(); // extra field "(03) 10C  John 'DeckDtoTest' Doe [Medium]"
 		
 		return deckDtoFixture;

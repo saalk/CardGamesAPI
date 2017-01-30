@@ -9,8 +9,10 @@ import nl.knikit.cardgames.event.DeleteCardGameEvent;
 import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
-import nl.knikit.cardgames.event.UpdateCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.UpdateCasinoForPlayingOrderEvent;
+import nl.knikit.cardgames.event.UpdateCasinoForTurnAndBetEvent;
 import nl.knikit.cardgames.event.UpdateDeckForGameAndCasinoEvent;
+import nl.knikit.cardgames.event.UpdatePlayerCubitsAndSecuredLoanEvent;
 import nl.knikit.cardgames.event.UpdatePlayerForCasinoDetailsEvent;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
@@ -46,9 +48,11 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 				DeleteCasinoForGameAndPlayerEvent.DeleteCasinoForGameAndPlayerEventDTO,
 				GetCardGameDetailsEvent.GetCardGameDetailsEventDTO,
 				UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO,
-				UpdateCasinoForGameAndPlayerEvent.UpdateCasinoForGameAndPlayerEventDTO,
+				UpdateCasinoForPlayingOrderEvent.UpdateCasinoForPlayingOrderEventDTO,
+				UpdateCasinoForTurnAndBetEvent.UpdateCasinoForTurnAndBetEventDTO,
 				UpdateDeckForGameAndCasinoEvent.UpdateDeckForGameAndCasinoEventDTO,
-				UpdatePlayerForCasinoDetailsEvent.UpdatePlayerForCasinoDetailsEventDTO {
+				UpdatePlayerForCasinoDetailsEvent.UpdatePlayerForCasinoDetailsEventDTO,
+				UpdatePlayerCubitsAndSecuredLoanEvent.UpdatePlayerCubitsAndSecuredLoanEventDTO {
 	
 	// suppress lombok setter for these fixed values
 	@Setter(AccessLevel.NONE)
@@ -75,11 +79,20 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	private String suppliedSecuredLoan;
 	private AiLevel suppliedAiLevel;
 	private String suppliedJokers;
+	private String suppliedTest;
 	private String suppliedPlayingOrder;
 	
 	private CardAction suppliedCardAction;
 	private String suppliedTotal;
 	private CardLocation suppliedCardLocation;
+	
+	// in game changes
+	private int suppliedBet;
+	private String suppliedCubits;
+	private int suppliedCurrentRound;
+	private int suppliedCurrentTurn;
+	private int suppliedActiveCasino;
+	
 	// frontend trigger
 	private CardGameStateMachine.Trigger suppliedTrigger;
 	
@@ -137,6 +150,9 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 			
 			if (pathAndQueryData.containsKey("jokers")) {
 				this.suppliedJokers = pathAndQueryData.get("jokers");
+			}
+			if (pathAndQueryData.containsKey("test")) {
+				this.suppliedTest = pathAndQueryData.get("test");
 			}
 			if (pathAndQueryData.containsKey("playingOrder")) {
 				this.suppliedPlayingOrder = pathAndQueryData.get("playingOrder");

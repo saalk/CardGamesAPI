@@ -12,10 +12,10 @@ class GalacticCasinoController {
 ..other methods..
 }
 enum State {
-IS_SETUP
-HAS_PLAYERS
+IS_SHUFFLED
+HAS_HUMAN
 ..
-PLAYING
+TURN_STARTED
 GAME_WON
 ..
 NO_WINNER
@@ -63,27 +63,27 @@ GalacticCasinoController . Console
 @startuml
 
 state GalacticCasinoController {
-[*] -> IS_SETUP
-IS_SETUP -down-> OFFER_FICHES: QUIT
-IS_SETUP: start : +1000 fiches
-IS_SETUP: offer : +500 fiches
-note right of IS_SETUP: Games\n HIGHLOW\n- simple double or nothing\n- three in a row
-IS_SETUP -down-> HAS_PLAYERS: POST_INIT
-HAS_PLAYERS --> IS_SETUP: PUT_TURN
-HAS_PLAYERS: select # bots
-HAS_PLAYERS --> GameEngine: POST_INIT_HUMAN
-OFFER_FICHES -up-> IS_SETUP: OFFER_ACCEPTED
+[*] -> IS_SHUFFLED
+IS_SHUFFLED -down-> OFFER_FICHES: QUIT
+IS_SHUFFLED: start : +1000 fiches
+IS_SHUFFLED: offer : +500 fiches
+note right of IS_SHUFFLED: Games\n HIGHLOW\n- simple double or nothing\n- three in a row
+IS_SHUFFLED -down-> HAS_HUMAN: POST_INIT
+HAS_HUMAN --> IS_SHUFFLED: PUT_TURN
+HAS_HUMAN: select # bots
+HAS_HUMAN --> GameEngine: POST_INIT_HUMAN
+OFFER_FICHES -up-> IS_SHUFFLED: OFFER_ACCEPTED
 OFFER_FICHES --> [*]
 
 state GameEngine {
-[*] -> PLAYING
-PLAYING --> PLAYING: PLAYER_PASSES
-PLAYING --> GAME_WON: TURN_STARTED
-PLAYING --> NO_WINNER: NO_CARDS_LEFT \n or ROUNDS_ENDED
+[*] -> TURN_STARTED
+TURN_STARTED --> TURN_STARTED: PLAYER_PASSES
+TURN_STARTED --> GAME_WON: TURN_STARTED
+TURN_STARTED --> NO_WINNER: NO_CARDS_LEFT \n or ROUNDS_ENDED
 GAME_WON --> GAME_WON: SHOW_RESULTS
-GAME_WON --> PLAYING: TURN_ENDED
+GAME_WON --> TURN_STARTED: TURN_ENDED
 GAME_WON --> NO_WINNER: NO_CARDS_LEFT \n or PLAYERS_WINS
-NO_WINNER -up-> IS_SETUP: GAME_FINISHED
+NO_WINNER -up-> IS_SHUFFLED: GAME_FINISHED
 }
 }
 @enduml
@@ -105,10 +105,12 @@ import nl.knikit.cardgames.event.DeleteCardGameEvent;
 import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
-import nl.knikit.cardgames.event.UpdateCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.UpdateCasinoForPlayingOrderEvent;
+import nl.knikit.cardgames.event.UpdateCasinoForTurnAndBetEvent;
 import nl.knikit.cardgames.event.UpdateDeckForGameAndCasinoEvent;
+import nl.knikit.cardgames.event.UpdatePlayerCubitsAndSecuredLoanEvent;
 import nl.knikit.cardgames.event.UpdatePlayerForCasinoDetailsEvent;
-import nl.knikit.cardgames.mapper.ModelMapperUtil;
+import nl.knikit.cardgames.mapper.CardGameMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.response.CardGameResponse;
 
@@ -155,39 +157,45 @@ public class CardGameController extends AbstractController<Game> {
 	static {
 		// @formatter:off
 		// start on player page
-		config.configure(State.IS_CONFIGURED)
+		config.configure(State.SELECTED)
 				// continue on players page
 				.permitReentry(Trigger.POST_INIT)
 				.permitReentry(Trigger.PUT_INIT)
 				.permitReentry(Trigger.OK)
 				// continue on game page
-				.permit(Trigger.POST_INIT_HUMAN, State.HAS_PLAYERS)
-				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_PLAYERS)
+				.permit(Trigger.POST_INIT_HUMAN, State.HAS_HUMAN)
+				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_HUMAN)
 				.permit(Trigger.ERROR, State.ERROR);
 		
-		config.configure(State.HAS_PLAYERS)
+		config.configure(State.HAS_HUMAN)
 				.permitReentry(Trigger.ERROR)
 				.permitReentry(Trigger.POST_SETUP_AI)
 				.permitReentry(Trigger.DELETE_SETUP_AI)
 				.permitReentry(Trigger.PUT_INIT)
 				.permitReentry(Trigger.PUT_SETUP_PLAYER)
-				.permitReentry(Trigger.OK)
 				// continue on players page
-				.permit(Trigger.DELETE_SETUP_HUMAN, State.IS_CONFIGURED)
+				.permit(Trigger.DELETE_SETUP_HUMAN, State.SELECTED)
 				// continue on casino page
-				.permit(Trigger.POST_SHUFFLE, State.IS_SETUP)
+				.permit(Trigger.POST_SHUFFLE, State.IS_SHUFFLED)
 				.permit(Trigger.ERROR, State.ERROR);
 		
-		config.configure(State.IS_SETUP)
-				.permitReentry(Trigger.OK)
+		config.configure(State.IS_SHUFFLED)
+				.permit(Trigger.PUT_DEAL_TURN, State.TURN_STARTED)
+				.permit(Trigger.ERROR, State.ERROR);
+		
+		config.configure(State.TURN_STARTED)
+				.permit(Trigger.PUT_PLAYING_TURN, State.PLAYING)
+				.permit(Trigger.PUT_PASS_TURN, State.TURN_ENDED)
 				
-				.permit(Trigger.PUT_TURN, State.PLAYING)
+				
+				// continue on results page
+				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
+				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER)
 				.permit(Trigger.ERROR, State.ERROR);
-		
 		
 		config.configure(State.PLAYING)
-				.permitReentry(Trigger.PUT_TURN)
-				.permitReentry(Trigger.OK)
+				.permitReentry(Trigger.PUT_PLAYING_TURN)
+				.permit(Trigger.PUT_PASS_TURN, State.TURN_ENDED)
 				
 				// continue on results page
 				.permit(Trigger.PLAYER_WINS, State.GAME_WON)
@@ -195,16 +203,21 @@ public class CardGameController extends AbstractController<Game> {
 				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER)
 				.permit(Trigger.ERROR, State.ERROR);
 		
+		config.configure(State.TURN_ENDED)
+				.permit(Trigger.PUT_DEAL_TURN, State.TURN_STARTED)
+				
+				// continue on results page
+				.permit(Trigger.NO_CARDS_LEFT, State.NO_WINNER)
+				.permit(Trigger.ROUNDS_ENDED, State.NO_WINNER)
+				.permit(Trigger.ERROR, State.ERROR);
+		
 		
 		config.configure(State.GAME_WON)
-				.permitReentry(Trigger.OK)
-				.permit(Trigger.PUT_TURN, State.PLAYING); // allows continue!
+				.permit(Trigger.PUT_DEAL_TURN, State.TURN_STARTED); // allows continue other players!
 		
 		config.configure(State.NO_WINNER)
-				.permitReentry(Trigger.OK)
 				.permitReentry(Trigger.NO_CARDS_LEFT)
 				.permitReentry(Trigger.ROUNDS_ENDED)
-				.permit(Trigger.PUT_TURN, State.PLAYING) // allows continue!
 				.permit(Trigger.ERROR, State.ERROR);
 		
 		// @formatter:on
@@ -247,7 +260,7 @@ public class CardGameController extends AbstractController<Game> {
 	
 	// 3 - Play a the CardGame based on the Trigger and a list of input data
 	@Autowired
-	private ModelMapperUtil mapUtil;
+	private CardGameMapperUtil mapUtil;
 	
 	public CardGameResponse play(Trigger trigger, Map<String, String> pathAndQueryData) throws Exception {
 		
@@ -260,6 +273,29 @@ public class CardGameController extends AbstractController<Game> {
 		
 		switch (trigger) {
 			
+			case POST_HUMAN:
+			case POST_AI:
+				
+				//POST   api/cardgames/init?gameType={g},ante={a}
+				// init makes a default card game and adds it as context to flowDTO
+				flowDTO = builder
+						          .addContext(super.init(new Game()))
+						          .addStateMachine(this.stateMachine)
+						          .addEvent(CreatePlayerEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class)
+						          .addEvent(CreateCasinoForGameAndPlayerEvent.class)
+						          .build();
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.setGameByContext();
+				flowDTO.start();
+				
+				message = String.format("CardGameController gametype are: %s", flowDTO.getSuppliedGameType());
+				log.info(message);
+				
+				// state SELECTED
+				break;
+			
+				
 			case POST_INIT:
 				
 				//POST   api/cardgames/init?gameType={g},ante={a}
@@ -276,7 +312,7 @@ public class CardGameController extends AbstractController<Game> {
 				message = String.format("CardGameController gametype are: %s", flowDTO.getSuppliedGameType());
 				log.info(message);
 				
-				// state IS_CONFIGURED
+				// state SELECTED
 				break;
 			
 			case PUT_INIT:
@@ -290,8 +326,8 @@ public class CardGameController extends AbstractController<Game> {
 				
 				// reinstate get the card game and adds it as context to flowDTO
 				List<State> possiblePUT_INITStates = new ArrayList<>();
-				possiblePUT_INITStates.add(State.IS_CONFIGURED);
-				possiblePUT_INITStates.add(State.HAS_PLAYERS);
+				possiblePUT_INITStates.add(State.SELECTED);
+				possiblePUT_INITStates.add(State.HAS_HUMAN);
 				try {
 					stateMachine.checkAll(possiblePUT_INITStates);
 				} catch (Exception e) {
@@ -299,13 +335,15 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "init", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 			
 			flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state IS_CONFIGURED or HAS_PLAYERS
+				// state SELECTED or HAS_HUMAN
 				break;
 			
 			case POST_INIT_HUMAN:
@@ -321,12 +359,14 @@ public class CardGameController extends AbstractController<Game> {
 						          .build();
 				
 				try {
-					stateMachine.check(State.IS_CONFIGURED);
+					stateMachine.check(State.SELECTED);
 				} catch (Exception e) {
 					// make error response
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init", "null", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
@@ -334,7 +374,7 @@ public class CardGameController extends AbstractController<Game> {
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.setGameByContext();
 				flowDTO.start();
-				// state HAS_PLAYERS
+				// state HAS_HUMAN
 				break;
 			
 			case POST_SETUP_HUMAN:
@@ -350,8 +390,8 @@ public class CardGameController extends AbstractController<Game> {
 						          .build();
 				
 				List<State> possiblePOST_SETUPStates = new ArrayList<>();
-				possiblePOST_SETUPStates.add(State.IS_CONFIGURED);
-				possiblePOST_SETUPStates.add(State.HAS_PLAYERS);
+				possiblePOST_SETUPStates.add(State.SELECTED);
+				possiblePOST_SETUPStates.add(State.HAS_HUMAN);
 				try {
 					stateMachine.checkAll(possiblePOST_SETUPStates);
 				} catch (Exception e) {
@@ -359,13 +399,15 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "setup", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state HAS_PLAYERS
+				// state HAS_HUMAN
 				break;
 			
 			case POST_SETUP_AI:
@@ -381,8 +423,8 @@ public class CardGameController extends AbstractController<Game> {
 						          .build();
 				
 				List<State> possiblePOST_SETUP_AIStates = new ArrayList<>();
-				possiblePOST_SETUP_AIStates.add(State.IS_CONFIGURED);
-				possiblePOST_SETUP_AIStates.add(State.HAS_PLAYERS);
+				possiblePOST_SETUP_AIStates.add(State.SELECTED);
+				possiblePOST_SETUP_AIStates.add(State.HAS_HUMAN);
 				try {
 					stateMachine.checkAll(possiblePOST_SETUP_AIStates);
 				} catch (Exception e) {
@@ -390,13 +432,15 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "setup", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state HAS_PLAYERS or stays IS_CONFIGURED
+				// state HAS_HUMAN or stays SELECTED
 				break;
 			
 			case PUT_SETUP_PLAYER:
@@ -407,15 +451,16 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(UpdateCasinoForPlayingOrderEvent.class)
 						          .addEvent(UpdatePlayerForCasinoDetailsEvent.class)
-						          .addEvent(UpdateCasinoForGameAndPlayerEvent.class)
+						          .addEvent(UpdatePlayerCubitsAndSecuredLoanEvent.class)
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
-				//stateMachine.check(State.IS_CONFIGURED); surround with if
+				//stateMachine.check(State.SELECTED); surround with if
 				List<State> possiblePUT_SETUP_PLAYERStates = new ArrayList<>();
-				possiblePUT_SETUP_PLAYERStates.add(State.IS_CONFIGURED);
-				possiblePUT_SETUP_PLAYERStates.add(State.HAS_PLAYERS);
+				possiblePUT_SETUP_PLAYERStates.add(State.SELECTED);
+				possiblePUT_SETUP_PLAYERStates.add(State.HAS_HUMAN);
 				try {
 					stateMachine.checkAll(possiblePUT_SETUP_PLAYERStates);
 				} catch (Exception e) {
@@ -423,13 +468,15 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "shuffle or turn", "setup", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// stays state HAS_PLAYERS or stays IS_CONFIGURED
+				// stays state HAS_HUMAN or stays SELECTED
 				break;
 			
 			case POST_SHUFFLE:
@@ -445,22 +492,105 @@ public class CardGameController extends AbstractController<Game> {
 						          .build();
 				
 				try {
-					stateMachine.check(State.HAS_PLAYERS);
+					stateMachine.check(State.HAS_HUMAN);
 				} catch (Exception e) {
 					// make error response
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, setup or turn", "shuffle", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state IS_SETUP
+				// state IS_SHUFFLED
 				break;
 			
-			case PUT_TURN:
+			case PUT_DEAL_TURN:
+				
+				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
+				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
+				
+				
+				// reinstate get the card game and adds it as context to flowDTO
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(UpdateDeckForGameAndCasinoEvent.class) // deal and set flow
+						          .addEvent(UpdateCardGameDetailsEvent.class) // for the round
+						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // for the turn
+						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class) // deal
+						          .addEvent(UpdatePlayerCubitsAndSecuredLoanEvent.class) // needed ?
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				
+				List<State> possiblePUT_TURNStates = new ArrayList<>();
+				possiblePUT_TURNStates.add(State.IS_SHUFFLED);
+				possiblePUT_TURNStates.add(State.TURN_ENDED);
+				possiblePUT_TURNStates.add(State.GAME_WON);
+				try {
+					stateMachine.checkAll(possiblePUT_TURNStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, setup or shuffle", "turn", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.start();
+				// state TURN_STARTED or still in IS_SHUFFLED
+				// TODO determine event for state GameWon, NoMoreCards or RoundsEnded
+				break;
+			
+			case PUT_PLAYING_TURN:
+				
+				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
+				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
+				
+				
+				// reinstate get the card game and adds it as context to flowDTO
+				// TODO
+				flowDTO = builder
+						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(UpdateDeckForGameAndCasinoEvent.class) // deal and set flow
+						          .addEvent(UpdateCardGameDetailsEvent.class) // for the round
+						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // for the turn
+						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class) // deal
+						          .addEvent(UpdatePlayerCubitsAndSecuredLoanEvent.class) // needed ?
+						          .addStateMachine(this.stateMachine)
+						          .build();
+				
+				List<State> possiblePUT__PLAYING_TURNStates = new ArrayList<>();
+				possiblePUT__PLAYING_TURNStates.add(State.TURN_STARTED);
+				possiblePUT__PLAYING_TURNStates.add(State.PLAYING);
+				try {
+					stateMachine.checkAll(possiblePUT__PLAYING_TURNStates);
+				} catch (Exception e) {
+					// make error response
+					responseBuilder = CardGameResponse.builder();
+					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, setup or shuffle", "turn", "state");
+					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
+					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
+					return responseBuilder.build();
+				}
+				
+				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
+				flowDTO.start();
+				// state TURN_STARTED or still in IS_SHUFFLED
+				// TODO determine event for state GameWon, NoMoreCards or RoundsEnded
+				break;
+			
+			
+			case PUT_PASS_TURN:
 				
 				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
 				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
@@ -475,26 +605,27 @@ public class CardGameController extends AbstractController<Game> {
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
-				List<State> possiblePUT_TURNStates = new ArrayList<>();
-				possiblePUT_TURNStates.add(State.IS_SETUP);
-				possiblePUT_TURNStates.add(State.PLAYING);
+				List<State> possiblePUT__PASS_TURNStates = new ArrayList<>();
+				possiblePUT__PASS_TURNStates.add(State.PLAYING);
 				try {
-					stateMachine.checkAll(possiblePUT_TURNStates);
+					stateMachine.checkAll(possiblePUT__PASS_TURNStates);
 				} catch (Exception e) {
 					// make error response
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, setup or shuffle", "turn", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state PLAYING or still in IS_SETUP
+				// state TURN_STARTED or still in IS_SHUFFLED
 				// TODO determine event for state GameWon, NoMoreCards or RoundsEnded
 				break;
-			
+				
 			case DELETE_SETUP_HUMAN:
 				
 				//DELETE api/cardgames/1/setup/human/2
@@ -507,19 +638,21 @@ public class CardGameController extends AbstractController<Game> {
 						          .build();
 				
 				try {
-					stateMachine.check(State.HAS_PLAYERS);
+					stateMachine.check(State.HAS_HUMAN);
 				} catch (Exception e) {
 					// make error response
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, shuffle or play", "setup", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state back to IS_CONFIGURED
+				// state back to SELECTED
 				break;
 			
 			case DELETE_SETUP_AI:
@@ -535,8 +668,8 @@ public class CardGameController extends AbstractController<Game> {
 						          .build();
 				
 				List<State> possibleDELETE_SETUP_AIStates = new ArrayList<>();
-				possibleDELETE_SETUP_AIStates.add(State.IS_CONFIGURED);
-				possibleDELETE_SETUP_AIStates.add(State.HAS_PLAYERS);
+				possibleDELETE_SETUP_AIStates.add(State.SELECTED);
+				possibleDELETE_SETUP_AIStates.add(State.HAS_HUMAN);
 				
 				try {
 					stateMachine.checkAll(possibleDELETE_SETUP_AIStates);
@@ -545,13 +678,15 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.CODE_CONFLICT,  "init, shuffle or play", "setup", "state");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
 				
 				flowDTO.processPathAndQueryParamsAndTrigger(pathAndQueryData, trigger);
 				flowDTO.start();
-				// state stays HAS_PLAYERS or stays IS_CONFIGURED
+				// state stays HAS_HUMAN or stays SELECTED
 				break;
 			
 			case DELETE:
@@ -579,6 +714,8 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.NOT_FOUND_CARDGAME,  "valid cardgame", "invalid id", "id");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
@@ -610,6 +747,8 @@ public class CardGameController extends AbstractController<Game> {
 					responseBuilder = CardGameResponse.builder();
 					ErrorResponse error = new ErrorResponse(HttpError.NOT_FOUND_CARDGAME,  "valid cardgame", "invalid id", "id");
 					responseBuilder.errorCode(error.getCode());
+					responseBuilder.errorMessage(error.getMessage());
+					responseBuilder.solution(error.getSolution());
 					responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 					return responseBuilder.build();
 				}
@@ -644,7 +783,11 @@ public class CardGameController extends AbstractController<Game> {
 			responseBuilder.errorCode(rulesCode.toString());
 			responseBuilder.reason(CardGameResponse.Reason.FAILURE);
 		} else {
+			responseBuilder.errorCode(null);
+			responseBuilder.errorMessage(null);
+			responseBuilder.solution(null);
 			responseBuilder.reason(CardGameResponse.Reason.SUCCESS);
+
 		}
 		
 		return responseBuilder.build();
