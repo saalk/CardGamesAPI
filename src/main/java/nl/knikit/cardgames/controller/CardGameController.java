@@ -160,9 +160,12 @@ public class CardGameController extends AbstractController<Game> {
 		config.configure(State.SELECTED)
 				// continue on players page
 				.permitReentry(Trigger.POST_INIT)
+				.permitReentry(Trigger.POST_AI)
+				.permitReentry(Trigger.POST_SETUP_AI)
 				.permitReentry(Trigger.PUT_INIT)
 				.permitReentry(Trigger.OK)
 				// continue on game page
+				.permit(Trigger.POST_HUMAN, State.HAS_HUMAN)
 				.permit(Trigger.POST_INIT_HUMAN, State.HAS_HUMAN)
 				.permit(Trigger.POST_SETUP_HUMAN, State.HAS_HUMAN)
 				.permit(Trigger.ERROR, State.ERROR);

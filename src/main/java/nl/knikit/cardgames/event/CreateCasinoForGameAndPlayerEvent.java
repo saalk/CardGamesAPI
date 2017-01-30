@@ -112,7 +112,8 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_INIT_HUMAN ||
-				    flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SETUP_HUMAN) {
+				    flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SETUP_HUMAN ||
+				    flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_HUMAN) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
 			message = String.format("CreateCasinoForGameAndPlayerEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
