@@ -3,7 +3,7 @@ package nl.knikit.cardgames.training;
 
 public class MathTypes {
 	
-	public static void main(String[] args) {
+	public static void new_main(String[] args) {
 		
 		int i = 7;
 		int j = -9;

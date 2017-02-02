@@ -5,7 +5,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Welcome {{ players[0].alias }}</h2>
+                <h2 class="title">Welcome {{ visitor.alias }}</h2>
                 <h5 class="subtitle">and play this simple, but yet very addictive
                     High-low card game</h5>
             </div>
@@ -56,16 +56,16 @@
             </div>
             <div class="three columns main-prop">
                 <img class="u-max-full-width main-img" alt="you" src="img/alien.ico" ng-click="vm.setHumanName()">
-                <a class="button button-primary" ng-click="vm.setHumanName()">{{ players[0].alias }}: {{
-                        players[0].cubits | minLength:4:"0" }}</a>
+                <a class="button button-primary" ng-click="vm.setHumanName()">{{ visitor.alias }}: {{
+                        visitor.cubits | minLength:4:"0" }}</a>
                 <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
                      ng-click="vm.pawnHumanShipForCubits(250)">
-                <div ng-if="players[0].securedLoan !== 0">
+                <div ng-if="visitor.securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Repay
                         for: {{
-                        players[0].securedLoan | minLength:4:"0" }}</a>
+                        visitor.securedLoan | minLength:4:"0" }}</a>
                 </div>
-                <div ng-if="players[0].securedLoan === 0">
+                <div ng-if="visitor.securedLoan === 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Pawn
                         your ship</a>
                 </div>

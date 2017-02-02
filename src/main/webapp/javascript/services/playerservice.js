@@ -2,136 +2,72 @@ angular.module('myApp')
         // players in controller is an instance: get(), query(), save()
         // here
        .service('playerService', ['$http', '$q', 'toastr', '$httpParamSerializerJQLike' ,
-function ($http, $q, toastr, $httpParamSerializerJQLike){           
+function ($http, $q, toastr, $httpParamSerializerJQLike){
 
-    //var baseUrl =  "http://localhost:8383";
-    var baseUrl = "http://knikit.nl";
-    //$http.defaults.headers.common.Authorization = 'Basic YmVlcDpib29w';
-    // Return public API
-    return({
-            initPlayerForIsHuman: initPlayerForIsHuman,
-            addPlayer: addPlayer,
-            getPlayers: getPlayers,
-            getPlayersWhere: getPlayersWhere,
-            updatePlayer: updatePlayer,
-            removePlayer: removePlayer,
-            removePlayerById: removePlayerById,
-            removePlayersById: removePlayersById
-            
-        });
-    // ---
-    // PUBLIC METHODS.
-    // ---
+         // interface
+         var service = {
+            cardGame: {},
+            initGameForVisitor: initGameForVisitor,
+            setupAiPlayerForGame: setupAiPlayerForGame,
+            changeVisitorDetailsForGame: changeVisitorDetailsForGame,
+            deleteAiPlayerForGame: deleteAiPlayerForGame
+         };
+         return service;
 
-    // init a human player using the server' api
-    function initPlayerForIsHuman( human ) {
+    // implementations
+
+    function initGameForVisitor( human ) {
         
         if (human==="true") {
-           newPlayer = {"avatar": "ELF",
-                "alias":"stranger", "human" : "true", "aiLevel": 'HUMAN',
-                "cubits": 0, "securedLoan": 0};
+           humanOrAi = "human";
         } else {
-            newPlayer = {"avatar": "ELF",
-                "alias":"alien", "human" : "false", "aiLevel": 'NONE',
-                "cubits": 0, "securedLoan": 0};
+           humanOrAi = "ai";
+
         }
-        
         var request = $http({
             method: "post",
             crossDomain: true,
-            url: baseUrl + "/api/players",
+            url: "http://knikit.nl/api/cardgames/init/" + humanOrAi + "?alias=Stranger&avatar=Elf&aiLevel=Human&securedLoan=0",
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
-            data: newPlayer
+            data: "{}"
         });
         return( request.then( handleSuccess, handleError ) );
         
     }
-    
-    // get all players using the server' api
-    function getPlayers() {
-        // then() returns a new promise. We return that new promise.
-        // that new promise is resolved via response.data, 
-        // i.e. the players in the private method handleSuccess
+    function setupAiPlayerForGame( cardGame, ai ) {
 
-        var request = $http({
-                method: "get",
-                crossDomain: true,
-                url: baseUrl + "/api/players",
-                headers: {'Content-Type': 'application/json'}
-//                params: {
-//                    action: "get"
-//                }
-            });
-        return( request.then( handleSuccess, handleError ) );
-    }
-     
-    // get all players for a condition using the server' api
-    function getPlayersWhere( human ) {
-
-        var request = $http({
-            method: "get",
-            crossDomain: true,
-            url: baseUrl + "/api/players?human=" + human,
-              headers: {'Content-Type': 'application/json'} 
-              //            params: {
-//                action: "get"
-//            },
-        });
-        return( request.then( handleSuccess, handleError ) );
-
-    }   
-    // add a player with the given details using the server' api
-    function addPlayer( player ) {
         var request = $http({
             method: "post",
             crossDomain: true,
-            url: baseUrl + "/api/players",
+            url: "http://knikit.nl/api/cardgames/" + cardGame.gameId + "/setup/ai?alias=ai&avatar=Goblin&aiLevel=Medium&securedLoan=0",
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
-            data: player
+            data: "{}"
        });
        return( request.then( handleSuccess, handleError ) );
     }
-    // update the player with the given \id using the server' api
-    function updatePlayer( player ) {
+    function changeVisitorDetailsForGame( cardGame, player ) {
         var request = $http({
             method: "put",
             crossDomain: true,
-            url: baseUrl + "/api/players/" + player.playerId,
+            url: "http://knikit.nl/api/cardgames/" + cardGame.gameId + "/setup/players/" + player.playerId,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
 //                action: "update"
 //            },
-           data: player
+           data: player.visitor
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    // remove the player with the given \id using the server' api
-    function removePlayer( player ) {
+    function deleteAiPlayerForGame( cardGame, player ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: baseUrl + "/api/players/" + player.playerId,
-              headers: {'Content-Type': 'application/json'} 
-              //            params: {
-//                action: "delete"
-//            },
-        });
-        return( request.then( handleSuccess, handleError ) );
-    }
-    // remove a player passed in the body using the server' api
-    // TODO never tested
-    function removePlayerById( player ) {
-        var request = $http({
-            method: "delete",
-            crossDomain: true,
-            url: baseUrl + "/api/players",
-            params: player.playerId,
-            paramSerializer: '$httpParamSerializerJQLike',
+            url: "http://knikit.nl/api/cardgames/" + cardGame.gameId + "/setup/ai/" + player.playerId,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "delete"
@@ -140,28 +76,10 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         return( request.then( handleSuccess, handleError ) );
     }
 
-    // remove all players passed in the body using the server' api
-    // TODO never tested
-    function removePlayersById( players ) {
-        var request = $http({
-            method: "delete",
-            crossDomain: true,
-            url: baseUrl + "/api/players?id=",
-            params: players.playerId,
-            paramSerializer: '$httpParamSerializerJQLike',
-              headers: {'Content-Type': 'application/json'} 
-              //            params: {
-//                action: "delete"
-//            },
-        });
-        return( request.then( handleSuccess, handleError ) );
-    }
-    
-    // ---
     // PRIVATE METHODS.
-    // ---
     // transform the error response, unwrapping the application dta from
     // the API response payload.
+
     function handleError( response ) {
         // The API response from the server should be returned in a
         // nomralized format. However, if the request was not handled by the
@@ -179,6 +97,6 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // transform the successful response, unwrapping the application data
     // from the API response payload.
     function handleSuccess( response ) {
-        return( response.data );
+        return( cardGame = response.data );
     }
 }]);

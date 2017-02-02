@@ -13,8 +13,9 @@ function ($scope, playerService, toastr){
     // viewmodel for this controller
     var vm = this;
     
-    // init the players collection
+    $scope.cardGame;
     $scope.players = [];
+    $scope.visitor;
     
     // flags + checks for ng-if
     vm.showListForDebug = false;
@@ -41,11 +42,11 @@ function ($scope, playerService, toastr){
     };    
     vm.changeAlien = function (index) {
         loopAiLevel(index);
-        if ($scope.players[index].securedLoan === 0) {
-             $scope.players[index].cubits = (Math.ceil(Math.random() * 500)+ 500);
-            $scope.players[index].securedLoan = $scope.players[index].cubits;
+        if ($scope.players[index].visitor.securedLoan === 0) {
+             $scope.players[index].visitor.cubits = (Math.ceil(Math.random() * 500)+ 500);
+            $scope.players[index].visitor.securedLoan = $scope.players[index].visitor.cubits;
         };
-        playerService.updatePlayer( $scope.players[index] )
+        playerService.changeVisitorDetailsForGame( $scope.players[index] )
             .then( loadRemoteData, function( errorMessage ) {
                 toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -53,19 +54,19 @@ function ($scope, playerService, toastr){
         ;
     };
     vm.pawnHumanShipForCubits = function () {
-        if ($scope.players[0].securedLoan === 0 ) {
-            $scope.players[0].securedLoan = (Math.ceil(Math.random() * 750)+250);
-            $scope.players[0].cubits = $scope.players[0].cubits + $scope.players[0].securedLoan;
+        if ($scope.visitor.securedLoan === 0 ) {
+            $scope.visitor.securedLoan = (Math.ceil(Math.random() * 750)+250);
+            $scope.visitor.cubits = $scope.visitor.cubits + $scope.visitor.securedLoan;
             toastr.info('Your ship is pawned', 'Information');
-        } else if ($scope.players[0].cubits < $scope.players[0].securedLoan) {
+        } else if ($scope.visitor.cubits < $scope.visitor.securedLoan) {
             toastr.error('Your don\'t have not enough credits', 'Error');
-        } else if ($scope.players[0].cubits >= $scope.players[0].securedLoan) {
-            $scope.players[0].cubits = $scope.players[0].cubits - $scope.players[0].securedLoan;
-            $scope.players[0].securedLoan = 0;
+        } else if ($scope.visitor.cubits >= $scope.visitor.securedLoan) {
+            $scope.visitor.cubits = $scope.visitor.cubits - $scope.visitor.securedLoan;
+            $scope.visitor.securedLoan = 0;
             toastr.info('Your loan is repayed', 'Information');
             vm.tothecasino = false;
         };
-        playerService.updatePlayer( $scope.players[0] );
+        playerService.changeVisitorDetailsForGame( $scope.players[0] );
     }; 
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
@@ -83,13 +84,13 @@ function ($scope, playerService, toastr){
         vm.showalien1 = true;
         vm.showalien2 = true;
         for (i=0, len = $scope.players.length; i < len -1; i++) {
-            if ($scope.players[i].aiLevel === 'NONE') {
+            if ($scope.players[i].visitor.aiLevel === 'NONE') {
                 vm.tothecasino = false;
             };
-            if (i === 1 && $scope.players[1].aiLevel === 'NONE') {
+            if (i === 1 && $scope.players[1].visitor.aiLevel === 'NONE') {
                 vm.showalien1 = false;
             };
-            if (i === 2 && $scope.players[2].aiLevel === 'NONE') {
+            if (i === 2 && $scope.players[2].visitor.aiLevel === 'NONE') {
                 vm.showalien2 = false;
             };
         }
@@ -97,26 +98,26 @@ function ($scope, playerService, toastr){
     // proceed to the next aiLevel for the player at the index
     // TODO a copy of the gamecontroller
     function loopAiLevel(index) {
-        if ($scope.players[index].aiLevel === 'NONE') {
-            if ($scope.players[1].aiLevel === 'NONE' && index === 2) {
-                $scope.players[index].aiLevel = 'NONE';
+        if ($scope.players[index].visitor.aiLevel === 'NONE') {
+            if ($scope.players[1].visitor.aiLevel === 'NONE' && index === 2) {
+                $scope.players[index].visitor.aiLevel = 'NONE';
                 $scope.players[index].label = vm.none;
             } else {
-                $scope.players[index].aiLevel = 'LOW';
+                $scope.players[index].visitor.aiLevel = 'LOW';
                 $scope.players[index].label = vm.dumb;
             };
-        } else if ($scope.players[index].aiLevel === 'LOW') {
-            $scope.players[index].aiLevel = 'MEDIUM';
+        } else if ($scope.players[index].visitor.aiLevel === 'LOW') {
+            $scope.players[index].visitor.aiLevel = 'MEDIUM';
             $scope.players[index].label = vm.average;
-        } else if ($scope.players[index].aiLevel === 'MEDIUM') {
-            $scope.players[index].aiLevel = 'HIGH';
+        } else if ($scope.players[index].visitor.aiLevel === 'MEDIUM') {
+            $scope.players[index].visitor.aiLevel = 'HIGH';
             $scope.players[index].label = vm.smart;
-        } else if ($scope.players[index].aiLevel === 'HIGH') {
-            if ($scope.players[2].aiLevel !== 'NONE' && index === 1) {
-                $scope.players[index].aiLevel = 'LOW';
+        } else if ($scope.players[index].visitor.aiLevel === 'HIGH') {
+            if ($scope.players[2].visitor.aiLevel !== 'NONE' && index === 1) {
+                $scope.players[index].visitor.aiLevel = 'LOW';
                 $scope.players[index].label = vm.dumb;
             } else {
-                $scope.players[index].aiLevel = 'NONE';
+                $scope.players[index].visitor.aiLevel = 'NONE';
                 $scope.players[index].label = vm.none;
             };
         };
@@ -125,11 +126,11 @@ function ($scope, playerService, toastr){
     // PUBLIC API METHODS
     // ---
     // process the add-player
-    $scope.addPlayer = function(player) {
+    $scope.setupAiPlayerForGame = function(player) {
         // If the data we provide is invalid, the promise will be rejected,
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
-        playerService.addPlayer( player )
+        playerService.setupAiPlayerForGame( player )
             .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -137,10 +138,10 @@ function ($scope, playerService, toastr){
         ;
     };
     // update the given player from the current collection.
-    $scope.updatePlayer = function( player ) {
+    $scope.changeVisitorDetailsForGame = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.updatePlayer( player.playerId, player )
+        playerService.changeVisitorDetailsForGame( player.playerId, player )
             .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -148,10 +149,10 @@ function ($scope, playerService, toastr){
         ;
     };  
     // remove the given friend from the current collection.
-    $scope.removePlayer = function( player ) {
+    $scope.deleteAiPlayerForGame = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.removePlayer( player.playerId )
+        playerService.deleteAiPlayerForGame( player.playerId )
             .then( loadRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }

@@ -4,7 +4,7 @@
 //
 // 1. 'ngRoute' is for angular-route
 // 2. 'ngAnimate', 'toastr' is for angular-toastr (
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'toastr']);
+angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'toastr']);
 angular.module('myApp')
         .config(function($httpProvider, $routeProvider, $locationProvider, toastrConfig) {
             

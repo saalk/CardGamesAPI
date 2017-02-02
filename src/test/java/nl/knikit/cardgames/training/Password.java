@@ -5,7 +5,7 @@ import java.util.Base64;
 
 public class Password {
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
+    public static void new_main(String[] args) throws UnsupportedEncodingException {
         // when called make a base64 encodes string from the arguments passed (password)
         // 1: change the "password" in a password
         // 2: compile with: javac src/main/java/nl/knikit/cardgames/utils/Password.java

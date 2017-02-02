@@ -2,57 +2,57 @@
     <div class="four columns alien-prop">
         <img class="human-img" alt="you" src="img/aliensmall.jpg">
         <br>
-        <h5>You: {{ players[0].alias }}</h5>
-        <p>Playing the game gained you {{ players[0].cubits - players[0].securedLoan }} cubits
+        <h5>You: {{ visitor.alias }}</h5>
+        <p>Playing the game gained you {{ visitor.cubits - visitor.securedLoan }} cubits
             .</p>
     </div>
     <div class="four columns alien-prop">
         <div ng-if="vm.showalien1" class="animate-if" data-ng-click="vm.changeAlien(1)">
-            <div ng-if="players[1].aiLevel == 'LOW'">
+            <div ng-if="players[1].visitor.aiLevel == 'LOW'">
                 <img alt="alien1" src="img/ailow.jpg">
                 <br>
-                <h5>{{ players[1].alias }}</h5>
+                <h5>{{ players[1].visitor.alias }}</h5>
                 
-                <p>Quick to beat and having only {{ players[1].cubits - players[1].securedLoan }} cubits
+                <p>Quick to beat and having only {{ players[1].visitor.cubits - players[1].visitor.securedLoan }} cubits
                     .</p>                
             </div>
-            <div ng-if="players[1].aiLevel == 'MEDIUM'">
+            <div ng-if="players[1].visitor.aiLevel == 'MEDIUM'">
                 <img alt="alien1" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ players[1].alias }}</h5>
-                <p>A nice competitor, he now has {{ players[1].cubits - players[1].securedLoan }} cubits
+                <h5>{{ players[1].visitor.alias }}</h5>
+                <p>A nice competitor, he now has {{ players[1].visitor.cubits - players[1].visitor.securedLoan }} cubits
                     .</p>                
             </div>
-            <div ng-if="players[1].aiLevel == 'HIGH'">
+            <div ng-if="players[1].visitor.aiLevel == 'HIGH'">
                 <img alt="alien1" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ players[1].alias }}</h5>
-                <p>Most evolved alien species, this fellow played {{ players[1].cubits - players[1].securedLoan }} cubits
+                <h5>{{ players[1].visitor.alias }}</h5>
+                <p>Most evolved alien species, this fellow played {{ players[1].visitor.cubits - players[1].visitor.securedLoan }} cubits
                     .</p>                
             </div>
         </div>
     </div>
     <div class="four columns alien-prop">
         <div ng-if="vm.showalien2" class="animate-if" data-ng-click="vm.changeAlien(2)">
-            <div ng-if="players[2].aiLevel == 'LOW'">
+            <div ng-if="players[2].visitor.aiLevel == 'LOW'">
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>
-                <h5>{{ players[2].alias }}</h5>
-                <p>Quick to beat and now having {{ players[2].cubits - players[2].securedLoan }} cubits
+                <h5>{{ players[2].visitor.alias }}</h5>
+                <p>Quick to beat and now having {{ players[2].visitor.cubits - players[2].visitor.securedLoan }} cubits
                     .</p>                
             </div>
-            <div ng-if="players[2].aiLevel == 'MEDIUM'">
+            <div ng-if="players[2].visitor.aiLevel == 'MEDIUM'">
                 <img alt="alien2" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ players[2].alias }}</h5>
-                <p>A nice competitor, he has now {{ players[2].cubits - players[2].securedLoan }} cubits
+                <h5>{{ players[2].visitor.alias }}</h5>
+                <p>A nice competitor, he has now {{ players[2].visitor.cubits - players[2].visitor.securedLoan }} cubits
                     .</p>                
             </div>
-            <div ng-if="players[2].aiLevel == 'HIGH'">
+            <div ng-if="players[2].visitor.aiLevel == 'HIGH'">
                 <img alt="alien2" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ players[2].alias }}</h5>
-                <p>Most evolved alien species, this fellow splayed {{ players[2].cubits - players[2].securedLoan }} cubits
+                <h5>{{ players[2].visitor.alias }}</h5>
+                <p>Most evolved alien species, this fellow splayed {{ players[2].visitor.cubits - players[2].visitor.securedLoan }} cubits
                     .</p>                
             </div>
         </div>
