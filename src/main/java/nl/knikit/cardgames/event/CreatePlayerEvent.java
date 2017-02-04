@@ -80,8 +80,8 @@ public class CreatePlayerEvent extends AbstractEvent {
 		if (flowDTO.getSuppliedHumanOrAi().equals("human")) {
 			player.setAiLevel(AiLevel.HUMAN);
 			player.setHuman(true);
-			if (flowDTO.getSuppliedAlias() != null && flowDTO.getSuppliedAlias().isEmpty()) {
-				player.setAlias("Stranger");
+			if (flowDTO.getSuppliedAlias() == null || flowDTO.getSuppliedAlias().isEmpty()) {
+				player.setAlias("Event Stranger");
 			} else {
 				player.setAlias(flowDTO.getSuppliedAlias());
 			}
@@ -92,8 +92,8 @@ public class CreatePlayerEvent extends AbstractEvent {
 			} else {
 				player.setAiLevel(flowDTO.getSuppliedAiLevel());
 			}
-			if (flowDTO.getSuppliedAlias() != null && flowDTO.getSuppliedAlias().isEmpty()) {
-				player.setAlias("Alien");
+			if (flowDTO.getSuppliedAlias() == null || flowDTO.getSuppliedAlias().isEmpty()) {
+				player.setAlias("Event Alien");
 			} else {
 				player.setAlias(flowDTO.getSuppliedAlias());
 			}

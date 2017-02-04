@@ -14,15 +14,15 @@ function ($scope, playerService, gameService, toastr){
     var vm = this;
     
     $scope.cardGame;
-    $scope.players = [];
+    $scope.players;
+    $scope.ai;
     $scope.visitor;
 
-    // make sure there are only 2 aliens and 1 game
+    // make sure there are only 2 aliens
     initAliens(2);
-    initGames(1);
-    
+
     // flags + checks for ng-if
-    vm.showListForDebug = false;
+    vm.showListForDebug = true;
     vm.showalien1 = true;
     vm.showalien2 = true;
     vm.tothecasino = false;
@@ -51,7 +51,7 @@ function ($scope, playerService, gameService, toastr){
             $scope.players[index].visitor.securedLoan = $scope.players[index].visitor.cubits;
         };
         playerService.changeVisitorDetailsForGame( $scope.players[index] )
-            .then( loadRemoteData, function( errorMessage ) {
+            .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
@@ -108,165 +108,101 @@ function ($scope, playerService, gameService, toastr){
     // PUBLIC API METHODS
     // ---
     // process the add-player
-    $scope.setupAiPlayerForGame = function(player) {
+    $scope.setupAiPlayerForGame = function( cardGame, ai) {
         // If the data we provide is invalid, the promise will be rejected,
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
-        playerService.setupAiPlayerForGame( player )
-            .then( loadRemoteData, function( errorMessage ) {
+        playerService.setupAiPlayerForGame( cardGame, ai )
+            .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
     };
     // update the given player from the current collection.
-    $scope.changeVisitorDetailsForGame = function( player ) {
+    $scope.changeVisitorDetailsForGame = function( cardGame, player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.changeVisitorDetailsForGame( player.playerId, player )
-            .then( loadRemoteData, function( errorMessage ) {
+        playerService.changeVisitorDetailsForGame( cardGame, player )
+            .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
     };  
     // remove the given friend from the current collection.
-    $scope.deleteAiPlayerForGame = function( player ) {
+    $scope.deleteAiPlayerForGame = function( cardGame, ai ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.deleteAiPlayerForGame( player.playerId )
-            .then( loadRemoteData, function( errorMessage ) {
+        playerService.deleteAiPlayerForGame( cardGame, ai )
+            .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
     };  
+
     // ---
-    // PRIVATE METHODS USED IN PUBLIC API METHODS OR INIT
+    // PRIVATE METHODS USED IN PUBLIC API METHODS OR TO INIT THE PAGE
     // ---
+
     // apply the remote data to the local scope.
-    function applyRemoteData( newPlayers ) {
-        $scope.players = newPlayers;
+    function applyRemoteData( responseCardGame ) {
+        $scope.cardGame = responseCardGame;
+        $scope.players = $scope.cardGame.players;
+
         // set or hide pictures and buttons
         checkIfAliensAreSet();
     }
-    // load the remote data from the server.
-    function loadRemoteData() {
-        // The playerService returns a promise.
-        playerService.getPlayers()
-            .then(
-                function( players ) {
-                    applyRemoteData( players );
-                 }
-            );
-    }
+
     function initAliens( needed ) {
-        // first get all human and alien players
-        playerService.getPlayers()
-        .then( function( response ) {
-            $scope.players = response;
-            // count the aliens  
-            count = 0;
-            for (i=0; i < $scope.players.length; i++) {
-                 if ($scope.players[i].visitor.human === "false") {
-                     count++; 
-                }
-            };
-            toastr.info('There are ' + count + ' alien player(s) and ' + needed + ' is/are needed.', 'Info');
 
-            if (needed < count ) {
-                // more humans than needed -> delete all Aliens
-                // TODO delete only the extra/specific aliens when less/one is/are needed
-                 for (i=0; i < $scope.players.length; i++) {
-                    if ($scope.players[i].visitor.human === "false") {
-                        playerService.deleteAiPlayerForGame( $scope.players[i] )
-                        .then( loadRemoteData, function( errorMessage ) {
-                            toastr.error('Removing one alien failed: ' + errorMessage, 'Error');
-                            }
-                        );
-                    }
-                };
-                for (i = 0 ; i < needed; i++) {
-                    // add one or more aliens until needed
-                    playerService.initGameForVisitor( "false" )
-                           .then( loadRemoteData, function( errorMessage ) {
-                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
-                           }
-                       );
-                }
-            } else if (needed > count) {
-                // no aliens or too few? -> keep adding one until ok
-                extra = needed - count;
-                for (i = 0 ; i < extra; i++) {
-                    // add one or more aliens 
-                    playerService.initGameForVisitor( "false" )
-                           .then( loadRemoteData, function( errorMessage ) {
-                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
-                           }
-                       );
-                }
+        // always get the cardgame from the service
+        $scope.cardGame = playerService.getGameStoredInService();
+        $scope.players = $scope.cardGame.players
+
+        // count the aliens
+        count = 0;
+        for (i=0; i < $scope.players.length; i++) {
+             if ($scope.players[i].visitor.human === "false") {
+                 count++;
             }
-        }
-        );
-    }
-    function applyRemoteGameData( newGames ) {
-        $scope.games = newGames;
-        // set or hide pictures and buttons
-     }
-    // load the remote data from the server.
-    function loadRemoteGameData() {
-        // The playerService returns a promise.
-        gameService.getGameDetails()
-            .then(
-                function( games ) {
-                    applyRemoteGameData( games );
-                 }
-            );
-    }
-    function initGames( needed ) {
-        // first get all games
-        gameService.getGameDetails()
-        .then( function( response ) {
-            $scope.games = response;
-            // count the games  
-            count = 0;
-            count = $scope.games.length;
-            
-            toastr.info('There are ' + count + ' games and ' + needed + ' is/are needed.', 'Info');
+        };
+        toastr.info('There are ' + count + ' alien player(s) and ' + needed + ' is/are needed.', 'Info');
 
-            if (needed < count ) {
-                // more games than needed -> delete all games
-                // TODO delete only the extra/specific games when less/one is/are needed
-                 for (i=0; i < $scope.games.length; i++) {
-
-                    gameService.removeGame( $scope.games[i] )
-                    .then( loadRemoteGameData, function( errorMessage ) {
-                        toastr.error('Removing one game failed: ' + errorMessage, 'Error');
+        if (needed < count ) {
+            // more humans than needed -> delete all Aliens
+            // TODO delete only the extra/specific aliens when less/one is/are needed
+             for (i=0; i < $scope.players.length; i++) {
+                if ($scope.players[i].visitor.human === "false") {
+                    playerService.deleteAiPlayerForGame( $scope.players[i] )
+                    .then( applyRemoteData, function( errorMessage ) {
+                        toastr.error('Removing one alien failed: ' + errorMessage, 'Error');
                         }
                     );
-
-                };
-                for (i = 0 ; i < needed; i++) {
-                    // add one or more aliens until needed
-                    gameService.initGameForExistingVisitor( "HIGHLOW" )
-                           .then( loadRemoteGameData, function( errorMessage ) {
-                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
-                           }
-                       );
                 }
-            } else if (needed > count) {
-                // no aliens or too few? -> keep adding one until ok
-                extra = needed - count;
-                for (i = 0 ; i < extra; i++) {
-                    // add one or more aliens 
-                    gameService.initGameForExistingVisitor( "HIGHLOW" )
-                           .then( loadRemoteGameData, function( errorMessage ) {
-                               toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
-                           }
-                       );
-                }
+            };
+            for (i = 0 ; i < needed; i++) {
+                // add one or more aliens until needed
+                playerService.initGameForVisitor( "false" )
+                       .then( applyRemoteData, function( errorMessage ) {
+                           toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
+                       }
+                   );
+            }
+        } else if (needed > count) {
+            // no aliens or too few? -> keep adding one until ok
+            extra = needed - count;
+            for (i = 0 ; i < extra; i++) {
+                // add one or more aliens
+                playerService.initGameForVisitor( "false" )
+                       .then( applyRemoteData, function( errorMessage ) {
+                           toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
+                       }
+                   );
             }
         }
-        );
     }
+
+
 }]);

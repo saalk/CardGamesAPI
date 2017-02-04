@@ -339,14 +339,14 @@ public class PlayerResource {
 		if (playerDto.getHuman() == "true") {
 			playerDto.setAiLevel(AiLevel.HUMAN);
 			if (playerDto.getAlias().isEmpty()){
-				playerDto.setAlias("Stranger");
+				playerDto.setAlias("Consistent stranger");
 			}
 		} else {
 			if (playerDto.getAiLevel() == null) {
 				playerDto.setAiLevel(AiLevel.NONE);
 			}
 			if (playerDto.getAlias().isEmpty()){
-				playerDto.setAlias("Alien");
+				playerDto.setAlias("Consistent alien");
 			}
 		}
 		

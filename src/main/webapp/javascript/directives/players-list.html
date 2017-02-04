@@ -2,14 +2,14 @@
     <div class="twelve columns">
         <h4>Players</h4>
         <table>
-            <tr data-ng-repeat="visitor in players">
-                <td>{{ visitor.visitorId }}</td>
-                <td>{{ visitor.avatar }}</td>
-                <td>{{ visitor.alias }}</td>
-                <td>{{ visitor.human }}</td>
-                <td>{{ visitor.aiLevel }}</td>
-                <td>{{ visitor.cubits }}</td>
-                <td>{{ visitor.securedLoan }}</td>
+            <tr data-ng-repeat="player in players">
+                <td>{{ player.visitor.visitorId }}</td>
+                <td>{{ player.visitor.avatar }}</td>
+                <td>{{ player.visitor.alias }}</td>
+                <td>{{ player.visitor.human }}</td>
+                <td>{{ player.visitor.aiLevel }}</td>
+                <td>{{ player.visitor.cubits }}</td>
+                <td>{{ player.visitor.securedLoan }}</td>
             </tr>
         </table>
     </div>

@@ -8,6 +8,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
          var service = {
             cardGame: {},
             initGameForVisitor: initGameForVisitor,
+            getGameStoredInService: getGameStoredInService,
             setupAiPlayerForGame: setupAiPlayerForGame,
             changeVisitorDetailsForGame: changeVisitorDetailsForGame,
             deleteAiPlayerForGame: deleteAiPlayerForGame
@@ -27,7 +28,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         var request = $http({
             method: "post",
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/init/" + humanOrAi + "?alias=Stranger&avatar=Elf&aiLevel=Human&securedLoan=0",
+            url: "http://knikit.nl/api/cardgames/init/" + humanOrAi + "?alias=Js Stranger&avatar=Elf&aiLevel=Human&securedLoan=0",
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
@@ -36,12 +37,12 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         return( request.then( handleSuccess, handleError ) );
         
     }
-    function setupAiPlayerForGame( cardGame, ai ) {
+    function setupAiPlayerForGame( suppliedCardGame, ai ) {
 
         var request = $http({
             method: "post",
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + cardGame.gameId + "/setup/ai?alias=ai&avatar=Goblin&aiLevel=Medium&securedLoan=0",
+            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/setup/ai?alias=Js Ai&avatar=Goblin&aiLevel=Medium&securedLoan=0",
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: "add"
             //           },
@@ -49,11 +50,11 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
        });
        return( request.then( handleSuccess, handleError ) );
     }
-    function changeVisitorDetailsForGame( cardGame, player ) {
+    function changeVisitorDetailsForGame( suppliedCardGame, player ) {
         var request = $http({
             method: "put",
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + cardGame.gameId + "/setup/players/" + player.playerId,
+            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/setup/players/" + player.playerId,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
@@ -63,11 +64,11 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         });
         return( request.then( handleSuccess, handleError ) );
     }
-    function deleteAiPlayerForGame( cardGame, player ) {
+    function deleteAiPlayerForGame( suppliedCardGame, player ) {
         var request = $http({
             method: "delete",
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + cardGame.gameId + "/setup/ai/" + player.playerId,
+            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/setup/ai/" + player.playerId,
               headers: {'Content-Type': 'application/json'} 
               //            params: {
 //                action: "delete"
@@ -97,6 +98,13 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // transform the successful response, unwrapping the application data
     // from the API response payload.
     function handleSuccess( response ) {
-        return( cardGame = response.data );
+        cardGame.push(response.data);
+        return cardGame;
     }
+
+    // retrieve the cardgame that is pushed in this service
+    function getGameStoredInService() {
+        return cardGame;
+    }
+
 }]);
