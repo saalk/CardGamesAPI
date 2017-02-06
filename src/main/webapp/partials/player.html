@@ -5,7 +5,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">Welcome {{ $scope.visitor.alias }}</h2>
+                <h2 class="title">Welcome {{ vm.players[0].visitor.alias }}</h2>
                 <h5 class="subtitle">and play this simple, but yet very addictive
                     High-low card game</h5>
             </div>
@@ -50,20 +50,20 @@
                     </p>
                 <a class="button main-button" ng-click="vm.pawnHumanShipForCubits(750)"
                    href="/player">Home</a>
-                <a class="button button-primary main-button animate-if" ng-if="vm.gotogame" data-ng-click="savePlayer($scope.players[0])"
+                <a class="button button-primary main-button animate-if" ng-if="vm.gotogame" data-ng-click="vm.changeVisitorDetailsForGame(vm.cardGame, vm.players[0])"
                    href="/game">Get me to the
                     Casino</a>
             </div>
             <div class="three columns main-prop">
                 <img class="u-max-full-width main-img" alt="you" src="img/alien.ico" ng-click="vm.setHumanName()">
-                <a class="button button-primary" ng-click="vm.setHumanName()">{{ $scope.visitor.alias }}: {{
-                    $scope.visitor.cubits | minLength:4:"0" }}</a>
+                <a class="button button-primary" ng-click="vm.setHumanName()">{{ vm.players[0].visitor.alias }}: {{
+                    vm.players[0].visitor.cubits | minLength:4:"0" }}</a>
                 <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
                      ng-click="vm.pawnHumanShipForCubits(250)">
                 <div ng-if="visitor.securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Repay
                         for: {{
-                        $scope.visitor.securedLoan | minLength:4:"0" }}</a>
+                        vm.players[0].visitor.securedLoan | minLength:4:"0" }}</a>
                 </div>
                 <div ng-if="visitor.securedLoan === 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Pawn
@@ -73,13 +73,13 @@
         </div>
     </section>
 
-    <section class="section-list" ng-show="vm.showListForDebug">
-        <div my-player-directive template-path="javascript/directives/players-list.html">
+    <section class="aliens">
+        <div my-player-directive template-path="javascript/directives/players-player.html">
         </div>
     </section>
 
-    <section class="aliens">
-        <div my-player-directive template-path="javascript/directives/players-player.html">
+    <section class="section-list" ng-show="vm.showListForDebug">
+        <div my-player-directive template-path="javascript/directives/players-list.html">
         </div>
     </section>
 </div>

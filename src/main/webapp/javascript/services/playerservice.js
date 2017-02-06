@@ -5,8 +5,8 @@ angular.module('myApp')
 function ($http, $q, toastr, $httpParamSerializerJQLike){
 
          // interface
-         var service = {
-            cardGame: {},
+         var cardGame = {},
+         service = {
             initGameForVisitor: initGameForVisitor,
             getGameStoredInService: getGameStoredInService,
             setupAiPlayerForGame: setupAiPlayerForGame,
@@ -19,20 +19,20 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
 
     function initGameForVisitor( human ) {
         
-        if (human==="true") {
-           humanOrAi = "human";
+        if (human==='true') {
+           humanOrAi = 'human';
         } else {
-           humanOrAi = "ai";
+           humanOrAi = 'ai';
 
         }
         var request = $http({
-            method: "post",
+            method: 'post',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/init/" + humanOrAi + "?alias=Js Stranger&avatar=Elf&aiLevel=Human&securedLoan=0",
+            url: 'http://knikit.nl/api/cardgames/init/' + humanOrAi + '?alias=Stranger&avatar=Elf&aiLevel=Human&securedLoan=0',
             headers: {'Content-Type': 'application/json'},            //           params: {
-            //               action: "add"
+            //               action: 'add'
             //           },
-            data: "{}"
+            data: '{}'
         });
         return( request.then( handleSuccess, handleError ) );
         
@@ -40,25 +40,33 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     function setupAiPlayerForGame( suppliedCardGame, ai ) {
 
         var request = $http({
-            method: "post",
+            method: 'post',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/setup/ai?alias=Js Ai&avatar=Goblin&aiLevel=Medium&securedLoan=0",
+            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/setup/ai?'
+            + '?alias=' + ai.alias
+            + '&avatar='  + ai.avatar
+            + '$aiLevel='  + ai.aiLevel
+            + '&securedLoan='  + ai.securedLoan ,
             headers: {'Content-Type': 'application/json'},            //           params: {
-            //               action: "add"
+            //               action: 'add'
             //           },
-            data: "{}"
+            data: '{}'
        });
        return( request.then( handleSuccess, handleError ) );
     }
     function changeVisitorDetailsForGame( suppliedCardGame, player ) {
         var request = $http({
-            method: "put",
+            method: 'put',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/setup/players/" + player.playerId,
+            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/setup/players/' + player.playerId
+            + '?alias=' + player.visitor.alias
+            + '&avatar='  + player.visitor.avatar
+            + '$aiLevel='  + player.visitor.aiLevel
+            + '&securedLoan='  + player.visitor.securedLoan ,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
-//                action: "update"
+//                action: 'update'
 //            },
            data: player.visitor
         });
@@ -66,13 +74,10 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     }
     function deleteAiPlayerForGame( suppliedCardGame, player ) {
         var request = $http({
-            method: "delete",
+            method: 'delete',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/setup/ai/" + player.playerId,
-              headers: {'Content-Type': 'application/json'} 
-              //            params: {
-//                action: "delete"
-//            },
+            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/setup/ai/' + player.playerId,
+            headers: {'Content-Type': 'application/json'}
         });
         return( request.then( handleSuccess, handleError ) );
     }
@@ -90,7 +95,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             ! angular.isObject( response.data ) ||
             ! response.data.message
             ) {
-            return( $q.reject( "An unknown error occurred." ) );
+            return( $q.reject( 'An unknown error occurred.' ) );
         }
         // Otherwise, use expected error message.
         return( $q.reject( response.data.message ) );
@@ -98,7 +103,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // transform the successful response, unwrapping the application data
     // from the API response payload.
     function handleSuccess( response ) {
-        cardGame.push(response.data);
+        cardGame = (response.data.cardGame);
         return cardGame;
     }
 

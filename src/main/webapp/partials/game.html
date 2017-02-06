@@ -6,7 +6,7 @@
     <header>
         <div class="row">
             <div class="twelve columns">
-                <h2 class="title">{{ visitor.alias }}, start playing</h2>
+                <h2 class="title">{{ vm.players[0].visitor.alias }}, start playing</h2>
                 <h5 class="subtitle">choose the options for this High-low card game</h5>
             </div>
         </div>
@@ -38,13 +38,13 @@
         </div>
     </section>
 
-    <section class="section-list" ng-show="vm.showListForDebug">
-        <div my-game-directive template-path="javascript/directives/players-list.html">
+    <section class="aliens">
+        <div my-game-directive template-path="javascript/directives/players-game.html">
         </div>
     </section>
 
-    <section class="aliens">
-        <div my-game-directive template-path="javascript/directives/players-game.html">
+    <section class="section-list" ng-show="vm.showListForDebug">
+        <div my-game-directive template-path="javascript/directives/players-list.html">
         </div>
     </section>
 

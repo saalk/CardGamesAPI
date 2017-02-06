@@ -2,8 +2,8 @@
     <div class="four columns alien-prop">
         <img class="human-img" alt="you" src="img/aliensmall.jpg">
         <br>
-        <h5>You: {{ visitor.alias }}</h5>
-        <p>Bailing your ship gained you {{ visitor.cubits }} cubits
+        <h5>You: {{ vm.players[0].alias }}</h5>
+        <p>Bailing your ship gained you {{ vm.players[0].cubits }} cubits
             .</p>
     </div>
     <div class="four columns alien-prop">
@@ -11,23 +11,23 @@
             <div ng-if="players[1].visitor.aiLevel == 'Low'">
                 <img alt="alien1" src="img/ailow.jpg">
                 <br>
-                <h5>{{ players[1].visitor.alias }}</h5>
+                <h5>{{ vm.players[1].visitor.alias }}</h5>
                 
-                <p>Quick to beat, starting with {{ players[1].visitor.cubits }} cubits
+                <p>Quick to beat, starting with {{ vm.players[1].visitor.cubits }} cubits
                     .</p>                
             </div>
             <div ng-if="players[1].visitor.aiLevel == 'Medium'">
                 <img alt="alien1" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ players[1].visitor.alias }}</h5>
-                <p>A nice competitor, he has a budget of {{ players[1].visitor.cubits }} cubits
+                <h5>{{ vm.players[1].visitor.alias }}</h5>
+                <p>A nice competitor, he has a budget of {{ vm.players[1].visitor.cubits }} cubits
                     .</p>                
             </div>
             <div ng-if="players[1].visitor.aiLevel == 'High'">
                 <img alt="alien1" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ players[1].visitor.alias }}</h5>
-                <p>Most evolved alien species, this fellow starts with {{ players[1].visitor.cubits  }} cubits
+                <h5>{{ vm.players[1].visitor.alias }}</h5>
+                <p>Most evolved alien species, this fellow starts with {{ vm.players[1].visitor.cubits  }} cubits
                     .</p>                
             </div>
         </div>
@@ -37,22 +37,22 @@
             <div ng-if="players[2].visitor.aiLevel == 'Low'">
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>
-                <h5>{{ players[2].visitor.alias }}</h5>
-                <p>Quick to beat, starting with {{ players[2].visitor.cubits }} cubits
+                <h5>{{ vm.players[2].visitor.alias }}</h5>
+                <p>Quick to beat, starting with {{ vm.players[2].visitor.cubits }} cubits
                     .</p>                
             </div>
             <div ng-if="players[2].visitor.aiLevel == 'Medium'">
                 <img alt="alien2" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ players[2].visitor.alias }}</h5>
-                <p>A nice competitor, he has a budget of {{ players[2].visitor.cubits }} cubits
+                <h5>{{ vm.players[2].visitor.alias }}</h5>
+                <p>A nice competitor, he has a budget of {{ vm.players[2].visitor.cubits }} cubits
                     .</p>                
             </div>
             <div ng-if="players[2].visitor.aiLevel == 'High'">
                 <img alt="alien2" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ players[2].visitor.alias }}</h5>
-                <p>Most evolved alien species, this fellow starts with {{ players[2].visitor.cubits }} cubits
+                <h5>{{ vm.players[2].visitor.alias }}</h5>
+                <p>Most evolved alien species, this fellow starts with {{ vm.players[2].visitor.cubits }} cubits
                     .</p>                
             </div>
         </div>

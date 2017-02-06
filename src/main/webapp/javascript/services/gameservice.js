@@ -5,8 +5,8 @@ angular.module('myApp')
 function ($http, $q, toastr, $httpParamSerializerJQLike){           
 
           // interface
-          var service = {
-            cardGame: {},
+          var cardGame = {},
+          service = {
             initGameForExistingVisitor: initGameForExistingVisitor,
             getGameStoredInService: getGameStoredInService,
             getGameDetails: getGameDetails,
@@ -16,19 +16,20 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
           };
           return service;
 
-
     // implementations
 
     function initGameForExistingVisitor( suppliedCardGame, visitor ) {
 
         var request = $http({
-            method: "post",
+            method: 'post',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/init/human/" + visitor.visitorId + "?gameType=" + suppliedCardGame.gameType + "&ante=" + suppliedCardGame.ante,
+            url: 'http://knikit.nl/api/cardgames/init/human/' + visitor.visitorId
+            + '?gameType=' + suppliedCardGame.gameType
+            + '&ante=' + suppliedCardGame.ante,
             headers: {'Content-Type': 'application/json'},            //           params: {
-            //               action: "add"
+            //               action: 'add'
             //           },
-            data: "{}"
+            data: '{}'
         });
         return( request.then( handleSuccess, handleError ) );
         
@@ -40,12 +41,12 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         // i.e. the game in the private method handleSuccess
 
         var request = $http({
-                method: "get",
+                method: 'get',
                 crossDomain: true,
-                url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId ,
+                url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId ,
                 headers: {'Content-Type': 'application/json'}
 //                params: {
-//                    action: "get"
+//                    action: 'get'
 //                }
             });
         return( request.then( handleSuccess, handleError ) );
@@ -53,11 +54,12 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
      
     function shuffleGame( suppliedCardGame, jokers ) {
         var request = $http({
-            method: "post",
+            method: 'post',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/shuffle/cards?jokers=" + jokers ,
+            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/shuffle/cards'
+            + '?jokers=' + jokers ,
             headers: {'Content-Type': 'application/json'},            //           params: {
-            //               action: "add"
+            //               action: 'add'
             //           },
             data: suppliedCardGame
        });
@@ -66,11 +68,13 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
 
     function turnGame( suppliedCardGame, action ) {
         var request = $http({
-            method: "post",
+            method: 'post',
             crossDomain: true,
-            url:"http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/turn/players/" + suppliedCardGame.currentPlayerId + "?action=" + action + "&total=1&cardLocation=Hand" ,
+            url:'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/turn/players/' + suppliedCardGame.currentPlayerId
+            + '?action=' + action
+            + '&total=1&cardLocation=Hand' ,
             headers: {'Content-Type': 'application/json'},            //           params: {
-            //               action: "add"
+            //               action: 'add'
             //           },
             data: suppliedCardGame
        });
@@ -79,13 +83,15 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
 
     function updateGame( suppliedCardGame ) {
         var request = $http({
-            method: "put",
+            method: 'put',
             crossDomain: true,
-            url: "http://knikit.nl/api/cardgames/" + suppliedCardGame.gameId + "/init?gameType=" + suppliedCardGame.gameType + "&ante=" + suppliedCardGame.ante,
+            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/init'
+            + '?gameType=' + suppliedCardGame.gameType
+            + '&ante=' + suppliedCardGame.ante,
             headers: {'Content-Type': 'application/json'},   
             //
             //            params: {
-//                action: "update"
+//                action: 'update'
 //            },
            data: suppliedCardGame
         });
@@ -105,7 +111,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             ! angular.isObject( response.data ) ||
             ! response.data.message
             ) {
-            return( $q.reject( "An unknown error occurred." ) );
+            return( $q.reject( 'An unknown error occurred.' ) );
         }
         // Otherwise, use expected error message.
         return( $q.reject( response.data.message ) );
@@ -114,7 +120,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
     // transform the successful response, unwrapping the application data
     // from the API response payload.
     function handleSuccess( response ) {
-        cardGame.push(response.data);
+        cardGame = (response.data.cardGame);
         return cardGame;
     }
 

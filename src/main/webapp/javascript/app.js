@@ -4,15 +4,14 @@
 //
 // 1. 'ngRoute' is for angular-route
 // 2. 'ngAnimate', 'toastr' is for angular-toastr (
-angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'toastr']);
+angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'toastr', 'jsonFormatter']);
 angular.module('myApp')
         .config(function($httpProvider, $routeProvider, $locationProvider, toastrConfig) {
-            
+
     $httpProvider.defaults.headers.common = {};
     $httpProvider.defaults.headers.post = {};
     $httpProvider.defaults.headers.put = {};
     $httpProvider.defaults.headers.patch = {};
-
 
     $routeProvider.when('/player', {
        templateUrl: 'partials/player.html'
@@ -21,7 +20,7 @@ angular.module('myApp')
     }).when('/casino', {
        templateUrl: 'partials/casino.html'
     }).when('/results', {
-       templateUrl: 'partials/results.html'  
+       templateUrl: 'partials/results.html'
     }).otherwise({
         redirectTo: '/player'
     });

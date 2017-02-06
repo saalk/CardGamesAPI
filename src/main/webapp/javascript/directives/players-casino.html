@@ -2,8 +2,8 @@
     <div class="four columns alien-prop">
         <img class="human-img" alt="you" src="img/aliensmall.jpg">
         <br>
-        <h5>You: {{ visitor.alias }}</h5>
-        <p>{{ visitor.cubits - visitor.securedLoan }} of {{ visitor.securedLoan | minLength:4:"0"
+        <h5>You: {{ vm.players[0].visitor.alias }}</h5>
+        <p>{{ vm.players[0].visitor.cubits - vm.players[0].visitor.securedLoan }} of {{ vm.players[0].visitor.securedLoan | minLength:4:"0"
             }} cubits won
             .</p>
     </div>
@@ -12,23 +12,23 @@
             <div ng-if="players[1].visitor.aiLevel == 'Low'">
                 <img alt="alien1" src="img/ailow.jpg">
                 <br>
-                <h5>{{ players[1].visitor.alias }}</h5>
+                <h5>{{ vm.players[1].visitor.alias }}</h5>
                 
-                <p>{{ players[1].visitor.cubits - players[1].visitor.securedLoan }} of {{ players[1].visitor.securedLoan | minLength:4:"0" }} cubits won
+                <p>{{ vm.players[1].visitor.cubits - vm.players[1].visitor.securedLoan }} of {{ vm.players[1].visitor.securedLoan | minLength:4:"0" }} cubits won
                 .</p>                
             </div>
             <div ng-if="players[1].visitor.aiLevel == 'Medium'">
                 <img alt="alien1" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ players[1].visitor.alias }}</h5>
-                <p>{{ players[1].visitor.cubits - players[1].visitor.securedLoan }} of {{ players[1].visitor.securedLoan | minLength:4:"0" }} cubits won
+                <h5>{{ vm.players[1].visitor.alias }}</h5>
+                <p>{{ vm.players[1].visitor.cubits - vm.players[1].visitor.securedLoan }} of {{ vm.players[1].visitor.securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
             <div ng-if="players[1].visitor.aiLevel == 'High'">
                 <img alt="alien1" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ players[1].visitor.alias }}</h5>
-                <p>{{ players[1].visitor.cubits - players[1].visitor.securedLoan }} of {{ players[1].visitor.securedLoan | minLength:4:"0" }} cubits won
+                <h5>{{ vm.players[1].visitor.alias }}</h5>
+                <p>{{ vm.players[1].visitor.cubits - vm.players[1].visitor.securedLoan }} of {{ vm.players[1].visitor.securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
         </div>
@@ -38,22 +38,22 @@
             <div ng-if="players[2].visitor.aiLevel == 'Low'">
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>
-                <h5>{{ players[2].visitor.alias }}</h5>
-                <p>{{ players[2].visitor.cubits - players[2].visitor.securedLoan }} of {{ players[2].visitor.securedLoan | minLength:4:"0" }} cubits won
+                <h5>{{ vm.players[2].visitor.alias }}</h5>
+                <p>{{ vm.players[2].visitor.cubits - vm.players[2].visitor.securedLoan }} of {{ vm.players[2].visitor.securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
             <div ng-if="players[2].visitor.aiLevel == 'Medium'">
                 <img alt="alien2" src="img/aimedium.jpg">
                 <br>
-                <h5>{{ players[2].visitor.alias }}</h5>
-                <p>{{ players[2].visitor.cubits - players[2].visitor.securedLoan }} of {{ players[2].visitor.securedLoan | minLength:4:"0" }} cubits won
+                <h5>{{ vm.players[2].visitor.alias }}</h5>
+                <p>{{ vm.players[2].visitor.cubits - vm.players[2].visitor.securedLoan }} of {{ vm.players[2].visitor.securedLoan | minLength:4:"0" }} cubits won
                 .</p>                
             </div>
             <div ng-if="players[2].visitor.aiLevel == 'High'">
                 <img alt="alien2" src="img/aihigh.jpg">
                 <br>
-                <h5>{{ players[2].visitor.alias }}</h5>
-                <p>{{ players[2].visitor.cubits - players[2].visitor.securedLoan  }} of {{ players[2].visitor.securedLoan | minLength:4:"0" }} cubits won
+                <h5>{{ vm.players[2].visitor.alias }}</h5>
+                <p>{{ vm.players[2].visitor.cubits - vm.players[2].visitor.securedLoan  }} of {{ vm.players[2].visitor.securedLoan | minLength:4:"0" }} cubits won
                 .</p>               
             </div>
         </div>

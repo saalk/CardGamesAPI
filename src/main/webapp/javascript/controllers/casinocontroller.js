@@ -13,9 +13,9 @@ function ($scope, playerService, toastr){
     // viewmodel for this controller
     var vm = this;
     
-    $scope.cardGame;
-    $scope.players = [];
-    $scope.visitor;
+    vm.cardGame;
+    vm.players = [];
+    vm.activePlayer;
     
     // flags + checks for ng-if
     vm.showListForDebug = false;
@@ -39,12 +39,12 @@ function ($scope, playerService, toastr){
         vm.generateguess = Math.round(Math.random() + 0.1 ); 
         if (vm.generateguess === 1) {
             toastr.success('A good guess', 'Success');
-            $scope.players[vm.loopplayer].visitor.cubits = $scope.players[vm.loopplayer].visitor.cubits + vm.ante;
+            vm.players[vm.loopplayer].visitor.cubits = vm.players[vm.loopplayer].visitor.cubits + vm.ante;
         } else {
             toastr.error('Next card differs from your guess', 'Bad luck');
-            $scope.players[vm.loopplayer].visitor.cubits = $scope.players[vm.loopplayer].visitor.cubits - vm.ante;
+            vm.players[vm.loopplayer].visitor.cubits = vm.players[vm.loopplayer].visitor.cubits - vm.ante;
         }; 
-        playerService.changeVisitorDetailsForGame( $scope.players[vm.loopplayer] )
+        playerService.changeVisitorDetailsForGame( vm.players[vm.loopplayer] )
             .then( loadRemoteData, function( errorMessage ) {
                 toastr.error('Setting cubits failed: ' + errorMessage, 'Error');
                 }
@@ -52,8 +52,8 @@ function ($scope, playerService, toastr){
         ;
     };
     vm.pass = function() { 
-        if (vm.loopplayer < $scope.players.length -1 ) {
-            if ($scope.players[vm.loopplayer + 1].visitor.aiLevel === 'NONE') {
+        if (vm.loopplayer < vm.players.length -1 ) {
+            if (vm.players[vm.loopplayer + 1].visitor.aiLevel === 'NONE') {
                 vm.loopplayer = 0; 
                 vm.round = vm.round + 1;
             } else {
@@ -74,12 +74,12 @@ function ($scope, playerService, toastr){
         loadRemoteData();
     };
     function checkIfAliensAreSet() {
-        if ($scope.players[1].visitor.aiLevel === 'NONE') {
+        if (vm.players[1].visitor.aiLevel === 'NONE') {
             vm.showalien1 = false; 
         } else {
             vm.showalien1 = true; 
         };
-        if ($scope.players[2].visitor.aiLevel === 'NONE') {
+        if (vm.players[2].visitor.aiLevel === 'NONE') {
             vm.showalien2 = false;    
         } else {
             vm.showalien2 = true; 
@@ -126,8 +126,11 @@ function ($scope, playerService, toastr){
     // PRIVATE METHODS USED IN PUBLIC API METHODS AND INIT
     // ---
     // apply the remote data to the local scope.
-    function applyRemoteData( newPlayers ) {
-        $scope.players = newPlayers;
+    function applyRemoteData( responseCardGame ) {
+
+        vm.cardGame = responseCardGame;
+        vm.players = responseCardGame.players;
+
         // set show / hide flags for the aliens
         checkIfAliensAreSet();
     }

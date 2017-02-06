@@ -37,6 +37,7 @@
     "restangular": "^1.5.2",
     "lodash": "^4.16.1",
     "skeleton-css": "^2.0.4",
-    "bootstrap": "^3.3.6"
+    "bootstrap": "^3.3.6",
+    "json-formatter": "^0.6.0"
   }
 }
