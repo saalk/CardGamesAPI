@@ -42,10 +42,10 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
         var request = $http({
             method: 'post',
             crossDomain: true,
-            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/setup/ai?'
+            url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/setup/ai'
             + '?alias=' + ai.alias
             + '&avatar='  + ai.avatar
-            + '$aiLevel='  + ai.aiLevel
+            + '&aiLevel='  + ai.aiLevel
             + '&securedLoan='  + ai.securedLoan ,
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: 'add'
@@ -60,8 +60,8 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             crossDomain: true,
             url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/setup/players/' + player.playerId
             + '?alias=' + player.visitor.alias
-            + '&avatar='  + player.visitor.avatar
-            + '$aiLevel='  + player.visitor.aiLevel
+            + '&avatar=Elf'
+            + '&aiLevel='  + player.visitor.aiLevel
             + '&securedLoan='  + player.visitor.securedLoan ,
             headers: {'Content-Type': 'application/json'},   
             //

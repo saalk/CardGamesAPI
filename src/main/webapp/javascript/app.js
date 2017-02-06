@@ -13,7 +13,9 @@ angular.module('myApp')
     $httpProvider.defaults.headers.put = {};
     $httpProvider.defaults.headers.patch = {};
 
-    $routeProvider.when('/player', {
+    $routeProvider.when('/', {
+       templateUrl: 'partials/player.html'
+    }).when('/players', {
        templateUrl: 'partials/player.html'
     }).when('/game', {
        templateUrl: 'partials/game.html'
@@ -22,7 +24,7 @@ angular.module('myApp')
     }).when('/results', {
        templateUrl: 'partials/results.html'
     }).otherwise({
-        redirectTo: '/player'
+        redirectTo: '/'
     });
 
     // use the HTML5 History API

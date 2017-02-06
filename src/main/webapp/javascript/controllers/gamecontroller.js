@@ -12,9 +12,9 @@ function ($scope, playerService, gameService, toastr){
 
     /* jshint validthis: true */
     var vm = this;
-    vm.cardGame = {};
-    vm.players = [];
-    vm.defaultAi = {alias: "Ai JS Doe", human: "false", aiLevel: "NONE", cubits: 0, securedLoan: 0};
+    vm.cardGame;
+    vm.players;
+    vm.defaultAi = {alias: "Ai JS Doe", avatar: "Elf", human: "false", aiLevel: "None", cubits: 0, securedLoan: 0};
     // flags + checks for ng-if
     vm.showListForDebug = true;
     vm.showalien1 = true;
@@ -40,7 +40,7 @@ function ($scope, playerService, gameService, toastr){
         } else {
             vm.players[index].visitor.securedLoan = (Math.ceil(Math.random() * 500)+ 500);
         };
-        playerService.changeVisitorDetailsForGame( vm.players[index] )
+        playerService.changeVisitorDetailsForGame( vm.cardGame, vm.players[index] )
             .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -117,9 +117,6 @@ function ($scope, playerService, gameService, toastr){
     };
 
     function initAliens( needed ) {
-        // always get the cardgame from the service
-        vm.cardGame = playerService.getGameStoredInService();
-        vm.players = vm.cardGame.players;
 
         // count the aliens
         count = 0;
@@ -172,6 +169,7 @@ function ($scope, playerService, gameService, toastr){
         vm.tothecasino = true;
         vm.showalien1 = true;
         vm.showalien2 = true;
+
         for (i=0, len = vm.players.length; i < len -1; i++) {
             if (vm.players[i].visitor.aiLevel === 'NONE') {
                 vm.tothecasino = false;

@@ -60,12 +60,12 @@
                     vm.players[0].visitor.cubits | minLength:4:"0" }}</a>
                 <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
                      ng-click="vm.pawnHumanShipForCubits(250)">
-                <div ng-if="visitor.securedLoan !== 0">
+                <div ng-if="vm.players[0].visitor.securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Repay
                         for: {{
                         vm.players[0].visitor.securedLoan | minLength:4:"0" }}</a>
                 </div>
-                <div ng-if="visitor.securedLoan === 0">
+                <div ng-if="vm.players[0].visitor.securedLoan === 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Pawn
                         your ship</a>
                 </div>
