@@ -7,84 +7,62 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('CasinoController', ['$scope', 'playerService', 'gameService','toastr',
-function ($scope, playerService, gameService, toastr){
+        .controller('CasinoController', ['$scope', 'cardgameService', 'toastr',
+function ($scope, cardgameService, toastr){
 
     // viewmodel for this controller
     var vm = this;
     vm.cardGame;
     vm.players;
+    vm.hand;
+    vm.balance;
     // flags + checks for ng-if
     vm.showListForDebug = true;
-    vm.higher = true;
-    vm.lower = true;
-    //vm.pass = true;
-    vm.generateguess = 0; 
+    vm.higher = false;
+    vm.lower = false;
+    vm.deal = false;
+    vm.pass = false;
+
     vm.loopplayer = 0;
-    vm.showalien1 = true;
-    vm.showalien2 = true;
+    vm.showalien1 = false;
+    vm.showalien2 = false;
 
     initCasino();
  
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
-     vm.doguess = function() { 
-        vm.generateguess = 0;
-        vm.generateguess = Math.round(Math.random() + 0.1 ); 
-        if (vm.generateguess === 1) {
-            toastr.success('A good guess', 'Success');
-            vm.players[vm.loopplayer].visitor.cubits = vm.players[vm.loopplayer].visitor.cubits + vm.cardGame.ante;
-        } else {
-            toastr.error('Next card differs from your guess', 'Bad luck');
-            vm.players[vm.loopplayer].visitor.cubits = vm.players[vm.loopplayer].visitor.cubits - vm.cardGame.ante;
-        }; 
-        playerService.changeVisitorDetailsForGame( vm.cardGame, vm.players[vm.loopplayer] )
+    vm.turn = function( action ) {
+        cardgameService.turnGame( vm.cardGame, action )
             .then( applyRemoteData, function( errorMessage ) {
-                toastr.error('Setting cubits failed: ' + errorMessage, 'Error');
+                toastr.error('Action ' + action + ' for player ' + vm.cardGame.currentPlayerId + ' failed.' + errorMessage, 'Error');
                 }
             )
         ;
     };
-    vm.pass = function() { 
-        if (vm.loopplayer < vm.players.length -1 ) {
-            if (vm.players[vm.loopplayer + 1].visitor.aiLevel.toUpperCase() == 'NONE') {
-                vm.loopplayer = 0; 
-                vm.cardGame.currentRound = vm.cardGame.currentRound + 1;
-            } else {
-                vm.loopplayer = vm.loopplayer + 1; 
-            };    
-        } else {
-            vm.loopplayer = 0; 
-            vm.cardGame.currentRound = vm.cardGame.currentRound + 1;
-        };
-    };
+
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
     function initCasino() {
-        vm.cardGame = playerService.getGameStoredInService();
+        vm.cardGame = cardgameService.getGameStoredInService();
         vm.players = vm.cardGame.players;
 
-        if (vm.cardGame.ante === 0) {
-            vm.cardGame.ante = 50;
-        };
+        if (vm.cardGame.state.toUpperCase() == 'HAS_HUMAN') {
+            cardgameService.shuffleGame( vm.cardGame, 1 )
+                .then( applyRemoteData, function( errorMessage ) {
+                        toastr.error('An error has occurred:' + errorMessage, 'Error');
+                    }
+                )
+            ;
+        toastr.info('Hold on, shuffling the game with 1 joker..', 'Info');
+        } ;
     };
 
     // ---
     // PUBLIC API METHODS
     // ---
-    // update the given player from the current collection.
-    vm.changeVisitorDetailsForGame = function( functionCardGame, player ) {
-        // Rather than doing anything clever on the client-side, I'm just
-        // going to reload the remote data.
-        playerService.changeVisitorDetailsForGame( functionCardGame, player )
-            .then( applyRemoteData, function( errorMessage ) {
-                    toastr.error('An error has occurred:' + errorMessage, 'Error');
-                }
-            )
-        ;
-    };
+
 
     // ---
     // PRIVATE METHODS USED IN PUBLIC API METHODS AND INIT
@@ -94,16 +72,51 @@ function ($scope, playerService, gameService, toastr){
 
         vm.cardGame = responseCardGame;
         vm.players = responseCardGame.players;
-        if (vm.players[1].visitor.aiLevel.toUpperCase() == 'NONE') {
-            vm.showalien1 = false;
-        } else {
-            vm.showalien1 = true;
-        };
-        if (vm.players[2].visitor.aiLevel.toUpperCase() == 'NONE') {
-            vm.showalien2 = false;
-        } else {
-            vm.showalien2 = true;
-        }
-    }
 
+        if (vm.cardGame.currentPlayerId == 0) {
+            vm.loopplayer = 0;
+        } else {
+           for (i=0, len = vm.players.length; i < len -1; i++) {
+                if (vm.players[i].playerId == vm.cardGame.currentPlayerId ) {
+                   vm.loopplayer = i;
+                }
+           };
+        };
+
+        vm.showalien1 = true;
+        vm.showalien2 = true;
+
+        for (i=0, len = vm.players.length; i < len -1; i++) {
+            if (vm.players[i].visitor.aiLevel.toUpperCase() == 'NONE') {
+                vm.tothecasino = false;
+            };
+            if (i === 1 && vm.players[1].visitor.aiLevel.toUpperCase() == 'NONE') {
+                vm.showalien1 = false;
+            };
+            if (i === 2 && vm.players[2].visitor.aiLevel.toUpperCase() == 'NONE') {
+                vm.showalien2 = false;
+            };
+        };
+
+        vm.higher = false;
+        vm.lower = false;
+        vm.deal = false;
+        vm.pass = false;
+        switch(vm.cardGame.state.toUpperCase()) {
+            case 'IS_SHUFFLED':
+                vm.deal = true;
+                break;
+            case 'TURN_STARTED':
+                vm.higher = true;
+                vm.lower = true;
+                vm.pass = false;
+                break;
+            case 'TURN_ENDED':
+                vm.deal = true;
+                break;
+            default:
+                break;
+
+        };
+    };
 }]);

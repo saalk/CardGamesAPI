@@ -7,7 +7,7 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('ResultsController', ['$scope', 'playerService', 'toastr',
+        .controller('ResultsController', ['$scope', 'cardgameService', 'toastr',
 function ($scope, playerService, toastr){
 
     // viewmodel for this controller
@@ -43,7 +43,7 @@ function ($scope, playerService, toastr){
              vm.players[index].visitor.cubits = (Math.ceil(Math.random() * 500)+ 500);
             vm.players[index].visitor.securedLoan = vm.players[index].visitor.cubits;
         };
-        playerService.changeVisitorDetailsForGame( vm.players[index] )
+        cardgameService.changeVisitorDetailsForGame( vm.players[index] )
             .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -63,13 +63,13 @@ function ($scope, playerService, toastr){
             toastr.info('Your loan is repayed', 'Information');
             vm.tothecasino = false;
         };
-        playerService.changeVisitorDetailsForGame( vm.players[0] );
+        cardgameService.changeVisitorDetailsForGame( vm.players[0] );
     }; 
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
     function setAnte() {
-        vm.cardGame = playerService.getGameStoredInService();
+        vm.cardGame = cardgameService.getGameStoredInService();
         vm.players = vm.cardGame.players;
 
         if (vm.cardGame.ante === 0) {
@@ -112,7 +112,7 @@ function ($scope, playerService, toastr){
         // If the data we provide is invalid, the promise will be rejected,
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
-        playerService.setupAiPlayerForGame( player )
+        cardgameService.setupAiPlayerForGame( player )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -123,7 +123,7 @@ function ($scope, playerService, toastr){
     $scope.changeVisitorDetailsForGame = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.changeVisitorDetailsForGame( player.playerId, player )
+        cardgameService.changeVisitorDetailsForGame( player.playerId, player )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -134,7 +134,7 @@ function ($scope, playerService, toastr){
     $scope.deleteAiPlayerForGame = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.deleteAiPlayerForGame( player.playerId )
+        cardgameService.deleteAiPlayerForGame( player.playerId )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }

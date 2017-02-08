@@ -14,6 +14,8 @@ import nl.knikit.cardgames.service.IPlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -72,13 +74,14 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		List<Casino> existingCasinos; //TODO should be ordered with a set
+		List<Casino> existingCasinos;
 		try {
 			existingCasinos = casinoService.findAllWhere("game", gameId);
 			if (existingCasinos == null) {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 				return eventOutput;
 			}
+			Collections.sort(existingCasinos, Comparator.comparing(Casino::getPlayingOrder).thenComparing(Casino::getPlayingOrder));
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;

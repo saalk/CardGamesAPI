@@ -90,7 +90,7 @@ public class CardGameCasino implements Serializable {
 	
 	public void setHand() {
 		if (this.cardGameHands != null) {
-			StringBuilder sb = new StringBuilder(this.cardCount + " card(s) 1[");
+			StringBuilder sb = new StringBuilder(this.cardCount + " card(s) [");
 			List<CardGameHand> hands;
 			hands = this.cardGameHands;
 			// sort on card order

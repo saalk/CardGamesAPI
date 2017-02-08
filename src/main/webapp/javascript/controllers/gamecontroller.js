@@ -7,8 +7,8 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('GameController', ['$scope', 'playerService', 'gameService','toastr',
-function ($scope, playerService, gameService, toastr){
+        .controller('GameController', ['$scope', 'cardgameService','toastr',
+function ($scope, cardgameService, toastr){
 
     /* jshint validthis: true */
     var vm = this;
@@ -20,16 +20,16 @@ function ($scope, playerService, gameService, toastr){
     vm.showalien1 = true;
     vm.showalien2 = true;
     vm.tothecasino = false;
-    // make sure there are only 2 aliens
-    initAliens(2);
     // fixed text
     vm.smart = 'Most evolved alien species, this fellow starts with ';
     vm.average = 'A nice competitor, he has a budget of ';
     vm.dumb = 'Quick to beat, starting with ';
     vm.none = 'This alien has left the game with ';
+    // make sure there are only 2 aliens
+    initAliens(2);
 
     // ---
-    // PUBLIC VIEW BEHAVIOUR METHODS 
+    // PUBLIC VIEW BEHAVIOUR METHODS
     // ---
     vm.changeAlien = function (index) {
 
@@ -40,12 +40,27 @@ function ($scope, playerService, gameService, toastr){
         } else {
             vm.players[index].visitor.securedLoan = (Math.ceil(Math.random() * 500)+ 500);
         };
-        playerService.changeVisitorDetailsForGame( vm.cardGame, vm.players[index] )
+        cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[index] )
             .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
+    };
+    vm.prepareForShuffle = function () {
+
+        // find ai players having none as ai level -> delete them
+        // TODO delete only the extra/specific aliens when less/one is/are needed
+        for (i=0; i < vm.players.length; i++) {
+           if (vm.players[i].visitor.aiLevel.toUpperCase() == 'NONE') {
+               cardgameService.deleteAiPlayerForGame( vm.cardGame, vm.players[i] )
+               .then( applyRemoteData, function( errorMessage ) {
+                   toastr.error('Removing one alien failed: ' + errorMessage, 'Error');
+                   }
+               );
+           }
+        };
+
     };
     // ---
     // PUBLIC API METHODS
@@ -55,7 +70,7 @@ function ($scope, playerService, gameService, toastr){
         // If the data we provide is invalid, the promise will be rejected,
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
-        playerService.setupAiPlayerForGame( functionCardGame, ai )
+        cardgameService.setupAiPlayerForGame( functionCardGame, ai )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -66,24 +81,24 @@ function ($scope, playerService, gameService, toastr){
     vm.changeVisitorDetailsForGame = function( functionCardGame, player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.changeVisitorDetailsForGame( functionCardGame, player )
+        cardgameService.changeVisitorDetailsForGame( functionCardGame, player )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
-    };  
+    };
     // remove the given friend from the current collection.
     vm.deleteAiPlayerForGame = function( functionCardGame, ai ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.deleteAiPlayerForGame( functionCardGame, ai )
+        cardgameService.deleteAiPlayerForGame( functionCardGame, ai )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
             )
         ;
-    };  
+    };
 
     // ---
     // PRIVATE METHODS USED IN PUBLIC METHODS OR TO INIT THE PAGE
@@ -118,8 +133,19 @@ function ($scope, playerService, gameService, toastr){
 
     function initAliens( needed ) {
         // always get the cardgame from the service in this init
-        vm.cardGame = playerService.getGameStoredInService();
+        vm.cardGame = cardgameService.getGameStoredInService();
         vm.players = vm.cardGame.players;
+
+        //set the ante
+        if (vm.cardGame.ante === 0) {
+            vm.cardGame.ante = 50;
+            cardgameService.updateGame( vm.cardGame )
+                .then( applyRemoteData, function( errorMessage ) {
+                        toastr.error('An error has occurred:' + errorMessage, 'Error');
+                    }
+                )
+            ;
+        };
 
         // count the aliens
         count = 0;
@@ -135,7 +161,7 @@ function ($scope, playerService, gameService, toastr){
             // TODO delete only the extra/specific aliens when less/one is/are needed
              for (i=0; i < vm.players.length; i++) {
                 if (vm.players[i].visitor.human === 'false') {
-                    playerService.deleteAiPlayerForGame( vm.cardGame, vm.players[i] )
+                    cardgameService.deleteAiPlayerForGame( vm.cardGame, vm.players[i] )
                     .then( applyRemoteData, function( errorMessage ) {
                         toastr.error('Removing one alien failed: ' + errorMessage, 'Error');
                         }
@@ -144,7 +170,7 @@ function ($scope, playerService, gameService, toastr){
             };
             for (i = 0 ; i < needed; i++) {
                 // add one or more aliens until needed
-                playerService.setupAiPlayerForGame( vm.cardGame, vm.defaultAi )
+                cardgameService.setupAiPlayerForGame( vm.cardGame, vm.defaultAi )
                        .then( applyRemoteData, function( errorMessage ) {
                            toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
                        }
@@ -155,7 +181,7 @@ function ($scope, playerService, gameService, toastr){
             extra = needed - count;
             for (i = 0 ; i < extra; i++) {
                 // add one or more aliens
-                playerService.setupAiPlayerForGame( vm.cardGame, vm.defaultAi )
+                cardgameService.setupAiPlayerForGame( vm.cardGame, vm.defaultAi )
                        .then( applyRemoteData, function( errorMessage ) {
                            toastr.error('Initializing new alien failed: ' + errorMessage, 'Error');
                        }

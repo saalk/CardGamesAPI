@@ -7,18 +7,19 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('PlayerController', ['$scope', 'playerService', 'gameService', 'toastr',
-function ($scope, playerService, gameService, toastr){
+        .controller('PlayerController', ['$scope', 'cardgameService', 'toastr',
+function ($scope, cardgameService, toastr){
 
     /* jshint validthis: true */
     var vm = this;
     vm.cardGame = {};
     vm.players;
+    vm.name = 'Visitor'
     // flags for ng-if and check if player details are ok
     vm.showListForDebug = true;
     vm.gotogame = false;
     // init a game and human = true player only when not present in service
-    init('true');
+    init('true', vm.name);
 
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS
@@ -27,7 +28,7 @@ function ($scope, playerService, gameService, toastr){
         //toastr.clear();
         vm.players[0].visitor.alias = 'John JS Doe';
         toastr.info('Your name is set', 'Information');
-        playerService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
+        cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
         // TODO applyRemoteData or loadRemoteData ?
                .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('Setting name failed: ' + errorMessage, 'Error');
@@ -50,7 +51,7 @@ function ($scope, playerService, gameService, toastr){
             toastr.info('Your loan is repayed', 'Information');
             vm.gotogame = false;
         };
-        playerService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
+        cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
         // TODO applyRemoteData or loadRemoteData ?
                .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('Setting pawn failed: ' + errorMessage, 'Error');
@@ -63,18 +64,18 @@ function ($scope, playerService, gameService, toastr){
     // ---
     function init( human ) {
         // always get the cardgame from the service
-        vm.cardGame = playerService.getGameStoredInService();
+        vm.cardGame = cardgameService.getGameStoredInService();
         if (vm.cardGame.gameId == null || angular.isUndefined(vm.cardGame.gameId)) {
             toastr.info('Initializing new visitor.', 'Informational');
             // add a new game and visitor and relate the visitor to the game
-            playerService.initGameForVisitor( human )
+            cardgameService.initGameForVisitor( human )
                    .then( applyRemoteData, function( errorMessage ) {
                         toastr.error('Initializing new player failed: ' + errorMessage, 'Error');
                     }
                 )
             ;
         } else {
-            vm.cardGame = playerService.getGameStoredInService();
+            vm.cardGame = cardgameService.getGameStoredInService();
             vm.players = vm.cardGame.players;
             toastr.info('Continue using current visitor.' + vm.cardGame, 'Informational');
         };
@@ -88,7 +89,7 @@ function ($scope, playerService, gameService, toastr){
 
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        playerService.changeVisitorDetailsForGame( functionCardGame, player )
+        cardgameService.changeVisitorDetailsForGame( functionCardGame, player )
         // TODO applyRemoteData or loadRemoteData ?
                .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('Updating player failed: ' + errorMessage, 'Error');
@@ -107,13 +108,13 @@ function ($scope, playerService, gameService, toastr){
         vm.players = responseCardGame.players;
 
         vm.gotogame = false;
-        if (vm.players[0].visitor.securedLoan !== 0 && vm.players[0].visitor.alias !== 'Stranger') {
+        if (vm.players[0].visitor.securedLoan !== 0 && vm.players[0].visitor.alias !== vm.name ) {
             vm.gotogame = true;
         };
-        if (vm.players[0].visitor.alias === 'Stranger' && vm.players[0].visitor.cubits !== 0) {
+        if (vm.players[0].visitor.alias === vm.name && vm.players[0].visitor.cubits !== 0) {
             setTimeout(function() {
-            toastr.warning('Get your name for the casino, Stranger', 'Warning');},1000);
-        } else if (vm.players[0].visitor.cubits === 0 && vm.players[0].visitor.alias !== 'Stranger') {
+            toastr.warning('Get your name for the casino, '+ vm.name, 'Warning');},1000);
+        } else if (vm.players[0].visitor.cubits === 0 && vm.players[0].visitor.alias !== vm.name) {
             setTimeout(function() {
             toastr.warning('Pawn your ship for the casino', 'Warning');},1000);
         };

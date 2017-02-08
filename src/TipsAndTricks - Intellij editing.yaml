@@ -61,6 +61,7 @@ Ctrl + Alt + C Extract Constant
 Ctrl + Alt + P Extract Parameter
 
 # abbreviations
+sout: system out
 iter: Iteration according to Java SDK 1.5 style
 inst: Check object type with instanceof and downcast it
 itco: Iterate elements of java.util.Collection

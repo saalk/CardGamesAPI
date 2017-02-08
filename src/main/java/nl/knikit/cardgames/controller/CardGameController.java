@@ -491,6 +491,7 @@ public class CardGameController extends AbstractController<Game> {
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
 						          .addEvent(CreateDeckForGameEvent.class)
+						          .addEvent(UpdateCardGameDetailsEvent.class) // for the round
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
