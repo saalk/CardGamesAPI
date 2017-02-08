@@ -74,6 +74,8 @@ function ($scope, playerService, gameService, toastr){
                 )
             ;
         } else {
+            vm.cardGame = playerService.getGameStoredInService();
+            vm.players = vm.cardGame.players;
             toastr.info('Continue using current visitor.' + vm.cardGame, 'Informational');
         };
     };

@@ -35,7 +35,7 @@ function ($scope, playerService, gameService, toastr){
 
         initAliens(2);
         loopAiLevel(index);
-        if (vm.players[index].visitor.aiLevel === 'NONE') {
+        if (vm.players[index].visitor.aiLevel.toUpperCase() == 'NONE') {
             vm.players[index].visitor.securedLoan = 0;
         } else {
             vm.players[index].visitor.securedLoan = (Math.ceil(Math.random() * 500)+ 500);
@@ -91,32 +91,35 @@ function ($scope, playerService, gameService, toastr){
 
     // proceed to the next aiLevel for the player at the index
     function loopAiLevel(index) {
-        if (vm.players[index].visitor.aiLevel === 'NONE') {
-            if (vm.players[1].visitor.aiLevel === 'NONE' && index === 2) {
-                vm.players[index].visitor.aiLevel = 'NONE';
+        if (vm.players[index].visitor.aiLevel.toUpperCase() == 'NONE') {
+            if (vm.players[1].visitor.aiLevel.toUpperCase() == 'NONE' && index === 2) {
+                vm.players[index].visitor.aiLevel = 'None';
                 //vm.players[index].label = vm.none;
             } else {
-                vm.players[index].visitor.aiLevel = 'LOW';
+                vm.players[index].visitor.aiLevel = 'Dumb';
                 //vm.players[index].label = vm.dumb;
             };
-        } else if (vm.players[index].visitor.aiLevel === 'LOW') {
-            vm.players[index].visitor.aiLevel = 'MEDIUM';
+        } else if (vm.players[index].visitor.aiLevel.toUpperCase() == 'DUMB') {
+            vm.players[index].visitor.aiLevel = 'Medium';
             //vm.players[index].label = vm.average;
-        } else if (vm.players[index].visitor.aiLevel === 'MEDIUM') {
-            vm.players[index].visitor.aiLevel = 'HIGH';
+        } else if (vm.players[index].visitor.aiLevel.toUpperCase() == 'MEDIUM') {
+            vm.players[index].visitor.aiLevel = 'Smart';
             //vm.players[index].label = vm.smart;
-        } else if (vm.players[index].visitor.aiLevel === 'HIGH') {
-            if (vm.players[2].visitor.aiLevel !== 'NONE' && index === 1) {
-                vm.players[index].visitor.aiLevel = 'LOW';
+        } else if (vm.players[index].visitor.aiLevel.toUpperCase() == 'SMART') {
+            if (vm.players[2].visitor.aiLevel.toUpperCase() !== 'NONE' && index === 1) {
+                vm.players[index].visitor.aiLevel = 'Dumb';
                 //vm.players[index].label = vm.dumb;
             } else {
-                vm.players[index].visitor.aiLevel = 'NONE';
+                vm.players[index].visitor.aiLevel = 'None';
                 //vm.players[index].label = vm.none;
             };
         };
     };
 
     function initAliens( needed ) {
+        // always get the cardgame from the service in this init
+        vm.cardGame = playerService.getGameStoredInService();
+        vm.players = vm.cardGame.players;
 
         // count the aliens
         count = 0;
@@ -171,13 +174,13 @@ function ($scope, playerService, gameService, toastr){
         vm.showalien2 = true;
 
         for (i=0, len = vm.players.length; i < len -1; i++) {
-            if (vm.players[i].visitor.aiLevel === 'NONE') {
+            if (vm.players[i].visitor.aiLevel.toUpperCase() == 'NONE') {
                 vm.tothecasino = false;
             };
-            if (i === 1 && vm.players[1].visitor.aiLevel === 'NONE') {
+            if (i === 1 && vm.players[1].visitor.aiLevel.toUpperCase() == 'NONE') {
                 vm.showalien1 = false;
             };
-            if (i === 2 && vm.players[2].visitor.aiLevel === 'NONE') {
+            if (i === 2 && vm.players[2].visitor.aiLevel.toUpperCase() == 'NONE') {
                 vm.showalien2 = false;
             };
         };

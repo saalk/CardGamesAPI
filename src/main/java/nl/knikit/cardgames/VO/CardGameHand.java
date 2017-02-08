@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.knikit.cardgames.model.Card;
+import nl.knikit.cardgames.model.CardAction;
+import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Hand;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +56,25 @@ public class CardGameHand implements Serializable {
 	@JsonIgnore
 	private int turn;
 	
+	public void setCardLocation(CardLocation cardLocation) {
+		// static Eum methods:
+		// - valueOf() - returns enum instance taking a String
+		// - values()  - returns all enum instances
+		// instance Enum method:
+		// - name()    - returns name of enum constant
+		// -> better use toString() to get the user-friendly name
+		this.cardLocation = (String.valueOf(cardLocation));
+	}
+	
+	public void setCardAction(CardAction cardAction) {
+		// static Eum methods:
+		// - valueOf() - returns enum instance taking a String
+		// - values()  - returns all enum instances
+		// instance Enum method:
+		// - name()    - returns name of enum constant
+		// -> better use toString() to get the user-friendly name
+		this.cardAction = (String.valueOf(cardAction));
+	}
 	
 	public Hand getNameConverted(String name) {
 		// "10C  Ten of Clubs"
