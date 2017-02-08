@@ -14,7 +14,7 @@ function ($scope, cardgameService, toastr){
     var vm = this;
     vm.cardGame = {};
     vm.players;
-    vm.name = 'Visitor'
+    vm.name = 'Visitor';
     // flags for ng-if and check if player details are ok
     vm.showListForDebug = true;
     vm.gotogame = false;
@@ -26,7 +26,7 @@ function ($scope, cardgameService, toastr){
     // ---
     vm.setHumanName = function () {
         //toastr.clear();
-        vm.players[0].visitor.alias = 'John JS Doe';
+        vm.players[0].visitor.alias = 'John Doe';
         toastr.info('Your name is set', 'Information');
         cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
         // TODO applyRemoteData or loadRemoteData ?

@@ -14,7 +14,7 @@ function ($scope, cardgameService, toastr){
     var vm = this;
     vm.cardGame;
     vm.players;
-    vm.defaultAi = {alias: "Ai JS Doe", avatar: "Elf", human: "false", aiLevel: "None", cubits: 0, securedLoan: 0};
+    vm.defaultAi = {alias: "Alien Doe", avatar: "Elf", human: "false", aiLevel: "None", cubits: 0, securedLoan: 0};
     // flags + checks for ng-if
     vm.showListForDebug = true;
     vm.showalien1 = true;
@@ -169,6 +169,7 @@ function ($scope, cardgameService, toastr){
                 }
             };
             for (i = 0 ; i < needed; i++) {
+                vm.defaultAi.alias = vm.defaultAi.alias + i;
                 // add one or more aliens until needed
                 cardgameService.setupAiPlayerForGame( vm.cardGame, vm.defaultAi )
                        .then( applyRemoteData, function( errorMessage ) {
