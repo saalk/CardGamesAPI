@@ -89,11 +89,11 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             + '?gameType=' + suppliedCardGame.gameType
             + '&ante=' + suppliedCardGame.ante,
             headers: {'Content-Type': 'application/json'},
+            data: '{}'
             //
             //            params: {
 //                action: 'update'
 //            },
-           data: suppliedCardGame
         });
         return( request.then( handleSuccess, handleError ) );
     }
@@ -151,21 +151,21 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: 'add'
             //           },
-            data: suppliedCardGame
+            data: '{}'
        });
        return( request.then( handleSuccess, handleError ) );
     }
     function turnGame( suppliedCardGame, action ) {
         var request = $http({
-            method: 'post',
+            method: 'put',
             crossDomain: true,
-            url:'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/turn/players' + suppliedCardGame.currentPlayerId
+            url:'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/turn/players/' + suppliedCardGame.currentPlayerId
             + '?action=' + action
             + '&total=1&cardLocation=Hand' ,
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: 'add'
             //           },
-            data: suppliedCardGame
+            data: '{}'
        });
        return( request.then( handleSuccess, handleError ) );
     }

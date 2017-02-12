@@ -22,6 +22,8 @@ function ($scope, cardgameService, toastr){
     vm.lower = false;
     vm.deal = false;
     vm.pass = false;
+    vm.next = false;
+
 
     vm.loopplayer = 0;
     vm.showalien1 = false;
@@ -102,9 +104,15 @@ function ($scope, cardgameService, toastr){
         vm.lower = false;
         vm.deal = false;
         vm.pass = false;
+        vm.next = false;
         switch(vm.cardGame.state.toUpperCase()) {
             case 'IS_SHUFFLED':
                 vm.deal = true;
+                break;
+            case 'PLAYING':
+                vm.higher = true;
+                vm.lower = true;
+                vm.pass = true;
                 break;
             case 'TURN_STARTED':
                 vm.higher = true;

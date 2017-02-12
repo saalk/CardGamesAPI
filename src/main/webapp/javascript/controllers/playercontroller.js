@@ -62,13 +62,13 @@ function ($scope, cardgameService, toastr){
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS + INIT
     // ---
-    function init( human ) {
+    function init( human, name ) {
         // always get the cardgame from the service
         vm.cardGame = cardgameService.getGameStoredInService();
         if (vm.cardGame.gameId == null || angular.isUndefined(vm.cardGame.gameId)) {
             toastr.info('Initializing new visitor.', 'Informational');
             // add a new game and visitor and relate the visitor to the game
-            cardgameService.initGameForVisitor( human )
+            cardgameService.initGameForVisitor( human , name )
                    .then( applyRemoteData, function( errorMessage ) {
                         toastr.error('Initializing new player failed: ' + errorMessage, 'Error');
                     }
@@ -106,15 +106,16 @@ function ($scope, cardgameService, toastr){
 
         vm.cardGame = responseCardGame;
         vm.players = responseCardGame.players;
+        vm.name = vm.players[0].visitor.alias;
 
         vm.gotogame = false;
-        if (vm.players[0].visitor.securedLoan !== 0 && vm.players[0].visitor.alias !== vm.name ) {
+        if ((vm.players[0].visitor.securedLoan !== 0) && (vm.players[0].visitor.alias.toUpperCase() !== 'VISITOR' )) {
             vm.gotogame = true;
         };
-        if (vm.players[0].visitor.alias === vm.name && vm.players[0].visitor.cubits !== 0) {
+        if (vm.players[0].visitor.alias.toUpperCase() == 'VISITOR' && vm.players[0].visitor.cubits !== 0) {
             setTimeout(function() {
             toastr.warning('Get your name for the casino, '+ vm.name, 'Warning');},1000);
-        } else if (vm.players[0].visitor.cubits === 0 && vm.players[0].visitor.alias !== vm.name) {
+        } else if (vm.players[0].visitor.cubits === 0 && vm.players[0].visitor.alias.toUpperCase() !== 'VISITOR') {
             setTimeout(function() {
             toastr.warning('Pawn your ship for the casino', 'Warning');},1000);
         };

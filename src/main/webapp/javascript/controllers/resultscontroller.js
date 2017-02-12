@@ -18,7 +18,6 @@ function ($scope, playerService, toastr){
     vm.showListForDebug = true;
     vm.showalien1 = true;
     vm.showalien2 = true;
-    vm.cardGame.ante = 0;
     vm.loopplayer = 0;
     vm.tothecasino = false;
 
@@ -29,7 +28,7 @@ function ($scope, playerService, toastr){
     vm.none = 'This alien has left the game with ';
     
     // load players
-    setAnte();
+    initResults();
     
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
@@ -68,13 +67,15 @@ function ($scope, playerService, toastr){
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
-    function setAnte() {
+
+    function initResults() {
         vm.cardGame = cardgameService.getGameStoredInService();
         vm.players = vm.cardGame.players;
 
-        if (vm.cardGame.ante === 0) {
-            vm.cardGame.ante = 50;
-        };
+        if (vm.cardGame.state.toUpperCase() == 'TURN_ENDED') {
+            // make a winner or just end the turn
+        toastr.info('To do declare a winner and do the math..', 'Info');
+        } ;
     };
 
     // proceed to the next aiLevel for the player at the index

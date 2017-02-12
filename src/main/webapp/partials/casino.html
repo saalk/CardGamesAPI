@@ -25,8 +25,7 @@
                 <code> - dealt   : {{ vm.cardGame.dealt }}</code><br><br>
                 <code> PLAYER    : {{ vm.players[vm.loopplayer].name }} </code><br>
                 <code> - Hand    : {{ vm.players[vm.loopplayer].hand }} </code><br>
-                <code> - Balance : {{ vm.players[vm.loopplayer].balance }}</code>
-                <br>
+                <code> - Balance : {{ vm.players[vm.loopplayer].balance }}</code><br><br>
                 <div>
                     <a class="button game-button1" ng-if="vm.cardGame.currentRound >= 1" href="/results">Results</a>
                     <a class="button game-button2" ng-if="vm.cardGame.currentRound == 0" href="/game">Leave</a>
@@ -36,6 +35,8 @@
                     data-ng-click="vm.turn('Higher')">Higher</a>
                     <a class="button button-primary game-button5" ng-if="vm.lower" class="animate-if"
                     data-ng-click="vm.turn('Lower')">Lower</a>
+                    <a class="button button-primary game-button5" ng-if="vm.next" class="animate-if"
+                       data-ng-click="vm.turn('Lower')">Next</a>
                     <!-- pass the round logic-->
                     <a class="button game-button6" ng-if="vm.pass" class="animate-if"
                     data-ng-click="vm.turn('Pass')">pass the turn</a>

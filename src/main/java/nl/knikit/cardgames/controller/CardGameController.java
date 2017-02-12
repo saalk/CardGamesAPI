@@ -104,6 +104,7 @@ import nl.knikit.cardgames.event.CreatePlayerEvent;
 import nl.knikit.cardgames.event.DeleteCardGameEvent;
 import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
+import nl.knikit.cardgames.event.SetupFlowDTOForEveryEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForPlayingOrderEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForTurnAndBetEvent;
@@ -490,6 +491,7 @@ public class CardGameController extends AbstractController<Game> {
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
+						          .addEvent(SetupFlowDTOForEveryEvent.class)
 						          .addEvent(CreateDeckForGameEvent.class)
 						          .addEvent(UpdateCardGameDetailsEvent.class) // for the round
 						          .addStateMachine(this.stateMachine)

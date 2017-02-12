@@ -56,7 +56,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		}
 		
 		
-		flowDTO.setSuppliedActiveCasino(gameToUpdate.getCasinos().get(0).getPlayer().getPlayerId());
+		flowDTO.setSuppliedActiveCasino(gameToUpdate.getCasinos().get(0).getCasinoId());
 		// do the add
 		// Get all cards and shuffle (since java 1.8)
 		List<Card> cards;

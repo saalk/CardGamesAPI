@@ -8,6 +8,7 @@ import nl.knikit.cardgames.event.CreatePlayerEvent;
 import nl.knikit.cardgames.event.DeleteCardGameEvent;
 import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
+import nl.knikit.cardgames.event.SetupFlowDTOForEveryEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForPlayingOrderEvent;
 import nl.knikit.cardgames.event.UpdateCasinoForTurnAndBetEvent;
@@ -47,6 +48,7 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 				DeleteCardGameEvent.DeleteCardGameEventDTO,
 				DeleteCasinoForGameAndPlayerEvent.DeleteCasinoForGameAndPlayerEventDTO,
 				GetCardGameDetailsEvent.GetCardGameDetailsEventDTO,
+				SetupFlowDTOForEveryEvent.SetupFlowDTOForEveryEventDTO,
 				UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO,
 				UpdateCasinoForPlayingOrderEvent.UpdateCasinoForPlayingOrderEventDTO,
 				UpdateCasinoForTurnAndBetEvent.UpdateCasinoForTurnAndBetEventDTO,
