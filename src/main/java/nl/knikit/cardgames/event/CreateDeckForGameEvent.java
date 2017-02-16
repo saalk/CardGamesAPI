@@ -26,44 +26,17 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
-	private IGameService gameService;
-	
-	@Autowired
 	private IDeckService deckService;
-	
-	@Autowired
-	private ModelMapperUtil mapUtil;
-	
+
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
 		CreateDeckForGameEventDTO flowDTO = (CreateDeckForGameEventDTO) eventInput[0];
 		EventOutput eventOutput;
+		String message;
 		
-		Game gameToUpdate;
-		
-		// check the game
-		String gameId = flowDTO.getSuppliedGameId();
-		try {
-			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToUpdate == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		
-		flowDTO.setSuppliedActiveCasino(gameToUpdate.getCasinos().get(0).getCasinoId());
-		// do the add
-		// Get all cards and shuffle (since java 1.8)
-		List<Card> cards;
-		cards = Card.newDeck(Integer.parseInt(flowDTO.getSuppliedJokers()));
-		
-		String message = String.format("CreateDeckForGameEvent do a # newDeck with cards is: %s", cards.size());
-		log.info(message);
+		Game gameToUpdate = flowDTO.getCurrentGame();
+		List<Card> cards = Card.newDeck(Integer.parseInt(flowDTO.getSuppliedJokers()));
 		if (!flowDTO.getSuppliedTest().equals("true")) {
 			Collections.shuffle(cards);
 			message = String.format("CreateDeckForGameEvent do shuffle # newDeck with cards is: %s", cards.size());
@@ -92,12 +65,9 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 			}
 		}
 		
-		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		message = String.format("CreateDeckForGameEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
-		log.info(message);
+		flowDTO.setCurrentDecks(newDeckDtos);
+		flowDTO.setSuppliedActiveCasino(flowDTO.getCurrentGame().getCasinos().get(0).getCasinoId());
 		
-		flowDTO.setDecks(newDeckDtos);
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SHUFFLE) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
@@ -126,7 +96,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		
 		void setSuppliedActiveCasino(int activeCasino);
 		
-		void setDecks(List<Deck> decks);
+		void setCurrentDecks(List<Deck> decks);
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

@@ -25,17 +25,17 @@ import lombok.extern.slf4j.Slf4j;
 public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-	@Autowired
-	private IGameService gameService;
-	
-	@Autowired
-	private IPlayerService playerService;
-	
+//	@Autowired
+//	private IGameService gameService;
+//
+//	@Autowired
+//	private IPlayerService playerService;
+//
 	@Autowired
 	private ICasinoService casinoService;
 	
-	@Autowired
-	private ModelMapperUtil mapUtil;
+//	@Autowired
+//	private ModelMapperUtil mapUtil;
 	
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
@@ -44,48 +44,13 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		EventOutput eventOutput;
 		
 		// check the game
-		Game gameToCheck;
-		Player playerToCheck;
+		Game gameToCheck = flowDTO.getCurrentGame();
+		Player playerToCheck = flowDTO.getCurrentPlayer();
 		
 		Casino casinoToCreate = new Casino();
 		Casino createdCasino;
 		
-		String gameId = flowDTO.getSuppliedGameId();
-		try {
-			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToCheck == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		String playerId = flowDTO.getSuppliedPlayerId();
-		try {
-			playerToCheck = playerService.findOne(Integer.parseInt(playerId));
-			if (playerToCheck == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		List<Casino> existingCasinos;
-		try {
-			existingCasinos = casinoService.findAllWhere("game", gameId);
-			if (existingCasinos == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-			Collections.sort(existingCasinos, Comparator.comparing(Casino::getPlayingOrder).thenComparing(Casino::getPlayingOrder));
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
+		List<Casino> existingCasinos = flowDTO.getCurrentCasinos();
 		
 		// do the add
 		casinoToCreate.setGame(gameToCheck);
@@ -106,7 +71,7 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		}
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
+		//flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
 		String message = String.format("CreateCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
@@ -139,10 +104,14 @@ public class CreateCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		Game getCurrentGame();
 		
+		Player getCurrentPlayer();
+		
 		// rest
 		String getSuppliedPlayerId();
 		
 		void setCurrentCasino(Casino casino);
+		
+		List<Casino> getCurrentCasinos();
 		
 		void setSuppliedCasinoId(String casinoId);
 		

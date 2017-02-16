@@ -193,11 +193,11 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	
 	// lists of all the 6 entities, no setter?: that is done in the EventDTO's
 	private List<Game> games;
-	private List<Player> players;
-	private List<Deck> decks;
-	private List<Card> cards;
-	private List<Hand> hands;
-	private List<Casino> casinos;
+	private List<Player> currentPlayers;
+	private List<Deck> currentDecks;
+	private List<Card> currentCards;
+	private List<Hand> currentHands;
+	private List<Casino> currentCasinos;
 	
 	// business rules related
 	private List<Game> abandonedGames;
@@ -215,27 +215,27 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	}
 	
 	@Override
-	public List<Deck> getDecks() {
-		if (decks == null) {
-			decks = new ArrayList<>();
+	public List<Deck> getCurrentDecks() {
+		if (currentDecks == null) {
+			currentDecks = new ArrayList<>();
 		}
-		return decks;
+		return currentDecks;
 	}
 	
 	@Override
-	public List<Casino> getCasinos() {
-		if (casinos == null) {
-			casinos = new ArrayList<>();
+	public List<Casino> getCurrentCasinos() {
+		if (currentCasinos == null) {
+			currentCasinos = new ArrayList<>();
 		}
-		return casinos;
+		return currentCasinos;
 	}
 	
 	@Override
-	public List<Hand> getHands() {
-		if (hands == null) {
-			hands = new ArrayList<>();
+	public List<Hand> getCurrentHands() {
+		if (currentHands == null) {
+			currentHands = new ArrayList<>();
 		}
-		return hands;
+		return currentHands;
 	}
 	
 	@Override

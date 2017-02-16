@@ -74,59 +74,33 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		}
 		
 		// init all the object and lists
-		Game gameToCheck;
-		Casino dealToThisCasino;
-		List<Deck> decksUpdated = flowDTO.getDecks();
+		Game gameToCheck = flowDTO.getCurrentGame();
+		Casino dealToThisCasino = flowDTO.getCurrentCasino();
+		List<Deck> decksUpdated = flowDTO.getCurrentDecks();
 		
-		List<Hand> otherHandsForCasino;
+		List<Hand> otherHandsForCasino = flowDTO.getCurrentHands();
 		Hand handToCreate = new Hand();
 		List<Hand> handsCreated = new ArrayList<>();
 		
-		// check the game
-		String gameId = flowDTO.getSuppliedGameId();
-		try {
-			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToCheck == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		// check the casino
-		String casinoId = flowDTO.getSuppliedCasinoId();
-		try {
-			dealToThisCasino = casinoService.findOne(Integer.parseInt(casinoId));
-			if (dealToThisCasino == null || (dealToThisCasino.getGame().getGameId() != Integer.parseInt(gameId))) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		// find all the current Hands for the Casino
-		try {
-			otherHandsForCasino = handService.findAllWhere("casino", casinoId);
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
+//		// find all the current Hands for the Casino
+//		try {
+//			otherHandsForCasino = handService.findAllWhere("casino", casinoId);
+//		} catch (Exception e) {
+//			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+//			return eventOutput;
+//		}
 		
 		// sort on card order
-		Collections.sort(otherHandsForCasino, Comparator.comparing(Hand::getCardOrder).thenComparing(Hand::getCardOrder));
+		//Collections.sort(otherHandsForCasino, Comparator.comparing(Hand::getCardOrder).thenComparing(Hand::getCardOrder));
 		int cardOrder = otherHandsForCasino.size() + 1;
 		
 		// do the add
 		try {
 			
-			message = String.format("CreateHandForCasinoForGameAndPlayerEvent getDecks is: %s", flowDTO.getDecks());
+			message = String.format("CreateHandForCasinoForGameAndPlayerEvent getDecks is: %s", flowDTO.getCurrentDecks());
 			log.info(message);
 			
-			for (Deck deck : flowDTO.getDecks()) {
+			for (Deck deck : flowDTO.getCurrentDecks()) {
 				
 				handToCreate.setCasino(dealToThisCasino);
 				handToCreate.setPlayer(dealToThisCasino.getPlayer());
@@ -157,12 +131,12 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
+		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(flowDTO.getSuppliedGameId())));
 		message = String.format("CreateHandForCasinoForGameAndPlayerEvent setCurrentGame is: %s", flowDTO.getCurrentGame());
 		log.info(message);
 		
 		// update ids and the fact that a turn has been made so +1 !!
-		flowDTO.setHands(handsCreated);
+		flowDTO.setCurrentHands(handsCreated);
 		flowDTO.setSuppliedCurrentTurn(dealToThisCasino.getActiveTurn());
 		
 		
@@ -205,6 +179,10 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		Game getCurrentGame();
 		
+		Casino getCurrentCasino();
+		
+		List<Hand> getCurrentHands();
+		
 		void setCurrentGame(Game game);
 		
 		void setSuppliedTrigger(CardGameStateMachine.Trigger trigger);
@@ -218,7 +196,7 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// get the data created by other events
 		
-		List<Deck> getDecks();
+		List<Deck> getCurrentDecks();
 		
 		int getSuppliedCurrentRound();
 		
@@ -228,7 +206,7 @@ public class CreateHandForCasinoForGameAndPlayerEvent extends AbstractEvent {
 		
 		// pass on the data created here for other events
 		
-		void setHands(List<Hand> hands);
+		void setCurrentHands(List<Hand> hands);
 		
 		void setSuppliedCubits(String cubits);
 	}

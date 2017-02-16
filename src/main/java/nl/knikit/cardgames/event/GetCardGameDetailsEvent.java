@@ -93,7 +93,7 @@ public class GetCardGameDetailsEvent extends AbstractEvent {
 			return eventOutput;
 		}
 		
-		flowDTO.setCasinos(casinos);
+		flowDTO.setCurrentCasinos(casinos);
 		
 		
 		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
@@ -111,18 +111,8 @@ public class GetCardGameDetailsEvent extends AbstractEvent {
 		Game getCurrentGame();
 		
 		// rest
-		void setCurrentPlayer(Player player);
-		void setDecks(List<Deck> decks);
-		void setCasinos(List<Casino> casinos);
-		void setHands(List<Hand> hands);
-		
-		List<Casino> getCasinos();
-		List<Deck> getDecks();
-		List<Hand> getHands();
-		
-		String getSuppliedResource();
+		void setCurrentCasinos(List<Casino> casinos);
 		String getSuppliedResourceId();
-		String getSuppliedExtraResource();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 	}

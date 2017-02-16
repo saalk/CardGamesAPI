@@ -27,12 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
-	@Autowired
-	private IGameService gameService;
-	
-	@Autowired
-	private ICasinoService casinoService;
-	
+//	@Autowired
+//	private IGameService gameService;
+//
+//	@Autowired
+//	private ICasinoService casinoService;
+//
 	@Autowired
 	private IDeckService deckService;
 	
@@ -52,45 +52,19 @@ public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 		}
 		
 		// init all the object and lists
-		Game gameToCheck;
-		Casino dealToThisCasino;
-		List<Deck> allDecksForGame;
+		Game gameToCheck = flowDTO.getCurrentGame();
+		Casino dealToThisCasino = flowDTO.getCurrentCasino();
+		List<Deck> allDecksForGame = flowDTO.getCurrentDecks();
 		List<Deck> allDecksToUpdate = new ArrayList<>();
 		List<Deck> decksUpdated = new ArrayList<>();
-		
-		// check the game
-		String gameId = flowDTO.getSuppliedGameId();
-		try {
-			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToCheck == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
 		
 		message = String.format("UpdateDeckForGameAndCasinoEvent getSuppliedCasinoId is: %s", flowDTO.getSuppliedCasinoId());
 		log.info(message);
 		
-		// check the casino
-		String casinoId = flowDTO.getSuppliedCasinoId();
-		try {
-			dealToThisCasino = casinoService.findOne(Integer.parseInt(casinoId));
-			if (dealToThisCasino == null || (dealToThisCasino.getGame().getGameId() != Integer.parseInt(gameId))) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
 		// do not do HIGHER, LOWER when the current casino in the game is not the casino supplied
 		if (((flowDTO.getSuppliedCardAction().equals(CardAction.HIGHER))
 				    || (flowDTO.getSuppliedCardAction().equals(CardAction.LOWER))) &&
-				    (gameToCheck.getActiveCasino()!= Integer.parseInt(casinoId))  )  {
+				    (gameToCheck.getActiveCasino()!= Integer.parseInt(flowDTO.getSuppliedCasinoId()))  )  {
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
 			
 			message = String.format("UpdateDeckForGameAndCasinoEvent switch to different casino when playing is not allowed");
@@ -107,18 +81,6 @@ public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 			message = String.format("UpdateDeckForGameAndCasinoEvent switch to not first casino when dealing is not allowed");
 			log.info(message);
 			
-			return eventOutput;
-		}
-		
-		// get all decks
-		try {
-			allDecksForGame = deckService.findAllWhere("game", gameId);
-			if (allDecksForGame == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
 			return eventOutput;
 		}
 		
@@ -164,8 +126,8 @@ public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 		}
 		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
-		flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(gameId)));
-		flowDTO.setDecks(decksUpdated);
+		//flowDTO.setCurrentGame(gameService.findOne(Integer.parseInt(flowDTO.getSuppliedGameId())));
+		flowDTO.setCurrentDecks(decksUpdated);
 		
 		
 		// 2x: settings for the game to update:
@@ -179,7 +141,7 @@ public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 			flowDTO.setSuppliedCurrentRound(gameToCheck.getCurrentRound());
 		}
 		// set the activeCasino to the currentCasino
-		flowDTO.setSuppliedActiveCasino(Integer.parseInt(casinoId));
+		flowDTO.setSuppliedActiveCasino(Integer.parseInt(flowDTO.getSuppliedCasinoId()));
 		
 		
 		// 1x: settings for the casino to update
@@ -222,6 +184,10 @@ public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 		
 		Game getCurrentGame();
 		
+		List<Deck> getCurrentDecks();
+		
+		Casino getCurrentCasino();
+		
 		void setCurrentGame(Game game);
 		
 		void setSuppliedTrigger(CardGameStateMachine.Trigger trigger);
@@ -237,7 +203,7 @@ public class UpdateDeckForGameAndCasinoEvent extends AbstractEvent {
 		
 		// pass on the data created here to other events
 		
-		void setDecks(List<Deck> decks);
+		void setCurrentDecks(List<Deck> decks);
 		
 		void setSuppliedCurrentRound(int currentRound);
 		
