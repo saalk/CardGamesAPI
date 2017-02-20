@@ -18,7 +18,6 @@ function ($scope, playerService, toastr){
     vm.showListForDebug = true;
     vm.showalien1 = true;
     vm.showalien2 = true;
-    vm.loopplayer = 0;
     vm.tothecasino = false;
 
     // fixed text
@@ -33,9 +32,6 @@ function ($scope, playerService, toastr){
     // ---
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
-    vm.start = function() {
-       toastr.warning('Work in progress', 'Warning'); 
-    };    
     vm.changeAlien = function (index) {
         loopAiLevel(index);
         if (vm.players[index].visitor.securedLoan === 0) {
@@ -109,7 +105,7 @@ function ($scope, playerService, toastr){
     // PUBLIC API METHODS
     // ---
     // process the add-player
-    $scope.setupAiPlayerForGame = function(player) {
+    vm.setupAiPlayerForGame = function(player) {
         // If the data we provide is invalid, the promise will be rejected,
         // at which point we can tell the user that something went wrong. In
         // this case, toastr is used
@@ -121,7 +117,7 @@ function ($scope, playerService, toastr){
         ;
     };
     // update the given player from the current collection.
-    $scope.changeVisitorDetailsForGame = function( player ) {
+    vm.changeVisitorDetailsForGame = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         cardgameService.changeVisitorDetailsForGame( player.playerId, player )
@@ -132,7 +128,7 @@ function ($scope, playerService, toastr){
         ;
     };  
     // remove the given friend from the current collection.
-    $scope.deleteAiPlayerForGame = function( player ) {
+    vm.deleteAiPlayerForGame = function( player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         cardgameService.deleteAiPlayerForGame( player.playerId )

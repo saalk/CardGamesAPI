@@ -26,9 +26,9 @@ function ($scope, cardgameService, toastr){
     vm.dumb = 'Quick to beat, starting with ';
     vm.none = 'This alien has left the game with ';
 
-    vm.types = [{text:'todo: only 3 in a row wins', type:'3inarow'},
-    {text:'todo: one round all or nothing', type:'1round'},
-    {text:'todo: one suit till the end', type:'1suit'}];
+    vm.types = [{text:'only 3 in a row wins', type:'3inarow'},
+    {text:'one round all or nothing', type:'1round'},
+    {text:'one suit till the end', type:'1suit'}];
     vm.myType = vm.types[0];
 
     vm.antes = [{amount:'20'},

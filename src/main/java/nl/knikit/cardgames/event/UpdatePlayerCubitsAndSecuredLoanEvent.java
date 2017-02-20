@@ -79,7 +79,6 @@ public class UpdatePlayerCubitsAndSecuredLoanEvent extends AbstractEvent {
 		log.info(message);
 		
 		int oldSecuredLoan = player.getSecuredLoan();
-		
 		if (flowDTO.getNewCubits() != 0) {
 			
 			player.setCubits(player.getCubits() + flowDTO.getNewCubits());

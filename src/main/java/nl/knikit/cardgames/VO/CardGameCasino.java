@@ -72,18 +72,18 @@ public class CardGameCasino implements Serializable {
 		// "Script Joe(Human|Smart) [Elf]"
 		if (this.cardGamePlayer != null) {
 			if (this.cardGame != null) {
-				this.balance = "Bet: " + this.cardGame.getAnte() + "x" + this.activeTurn;
+				this.balance = "" + this.bet;// + " [" + (this.bet / this.cardGame.getAnte()) + "x]";
 			} else {
 				this.balance = "";
 			}
 		} else {
-			this.balance = "Bet: []";
+			this.balance = "[]";
 		}
 	}
 	
 	public void setHand() {
 		if (this.cardGameHands != null) {
-			StringBuilder sb = new StringBuilder(this.cardCount + " card(s) [");
+			StringBuilder sb = new StringBuilder(" [");
 			List<CardGameHand> hands;
 			hands = this.cardGameHands;
 			// sort on card order
@@ -108,7 +108,7 @@ public class CardGameCasino implements Serializable {
 			
 			this.hand = sb.toString();
 		} else {
-			this.hand = "0 cards []";
+			this.hand = "[]";
 		}
 	}
 	

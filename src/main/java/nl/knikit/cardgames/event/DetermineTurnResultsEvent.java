@@ -98,12 +98,12 @@ public class DetermineTurnResultsEvent extends AbstractEvent {
 				log.info(message);
 				
 				if (lastCard.getRank().getValue(gameToCheck.getGameType()) < previousCard.getRank().getValue(gameToCheck.getGameType())) {
-					higher = true; // HIGHER
+					higher = false; // HIGHER
 				} else {
 					if (lastCard.getRank().getValue(gameToCheck.getGameType()) > previousCard.getRank().getValue(gameToCheck.getGameType())) {
-						higher = false; // LOWER
+						higher = true; // LOWER
 					} else {
-						higher = false; // EQUAL
+						higher = true; // EQUAL
 						// TODO add gamevariant logic to this
 					}
 				}
