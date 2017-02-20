@@ -24,12 +24,6 @@ public class UpdateCasinoForPlayingOrderEvent extends AbstractEvent {
 	
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
-	private IGameService gameService;
-	
-	@Autowired
-	private IPlayerService playerService;
-	
-	@Autowired
 	private ICasinoService casinoService;
 	
 	@Override
@@ -37,47 +31,14 @@ public class UpdateCasinoForPlayingOrderEvent extends AbstractEvent {
 		
 		UpdateCasinoForPlayingOrderEventDTO flowDTO = (UpdateCasinoForPlayingOrderEventDTO) eventInput[0];
 		EventOutput eventOutput;
+		String message;
 		
-
 		
-		Game gameToCheck;
-		Casino casinoToUpdate;
-		Casino otherCasinoToUpdate;
+		// INIT
+		Game gameToCheck = flowDTO.getCurrentGame();
+		Casino casinoToUpdate = flowDTO.getCurrentCasino();
 		Casino casinoUpdated = null;
-		
-		// always check the game
-		String gameId = flowDTO.getSuppliedGameId();
-		try {
-			gameToCheck = gameService.findOne(Integer.parseInt(gameId));
-			if (gameToCheck == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		String message = String.format("UpdateCasinoForPlayingOrderEvent gameToCheck is: %s", gameToCheck);
-		log.info(message);
-		
-		// find casino to update
-		String casinoId = flowDTO.getSuppliedCasinoId();
-		try {
-			casinoToUpdate = casinoService.findOne(Integer.parseInt(casinoId));
-			if (casinoToUpdate == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		
-		// update for the rest of the events
-		flowDTO.setCurrentGame(gameToCheck);
-		flowDTO.setSuppliedPlayerId(String.valueOf(casinoToUpdate.getPlayer().getPlayerId()));
+		Casino otherCasinoToUpdate;
 		
 		// check if playing order is up (-1) or down (+1)
 		boolean playingOrderChanged = false;
@@ -162,6 +123,7 @@ public class UpdateCasinoForPlayingOrderEvent extends AbstractEvent {
 		void setCurrentGame(Game game);
 		
 		Game getCurrentGame();
+		Casino getCurrentCasino();
 		
 		// rest
 		String getSuppliedCasinoId();

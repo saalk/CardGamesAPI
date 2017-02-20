@@ -59,6 +59,7 @@ void: session.delete(String entityName, Object object)
 http://howtodoinjava.com/hibernate/save-and-saveorupdate-for-saving-hibernate-entities/
 Integer id: session.save(Object object) # Integer outcome
 Integer id: session.save(String entityName, Object object) # Integer outcome
+void: session.persist(String entityName, Object object) # Integer outcome
 SaveEntityAgainInAnotherSession:
 -- If you call save() on a already persistent entity (in another session)
 -- And make changes

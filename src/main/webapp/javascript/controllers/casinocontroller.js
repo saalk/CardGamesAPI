@@ -35,6 +35,7 @@ function ($scope, cardgameService, toastr){
     // PUBLIC VIEW BEHAVIOUR METHODS 
     // ---
     vm.turn = function( action ) {
+        toastr.info('Hold on 10 sec, processing for the turn the game..', 'Info');
         cardgameService.turnGame( vm.cardGame, action )
             .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('Action ' + action + ' for player ' + vm.cardGame.currentPlayerId + ' failed.' + errorMessage, 'Error');
@@ -57,7 +58,7 @@ function ($scope, cardgameService, toastr){
                     }
                 )
             ;
-        toastr.info('Hold on, shuffling the game with 1 joker..', 'Info');
+        toastr.info('Hold on 10 sec, shuffling the game with 1 joker..', 'Info');
         } ;
     };
 

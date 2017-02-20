@@ -93,8 +93,7 @@ public class CardGame implements Serializable {
 		
 		// "Highlow#0005 (Ante:100) [IS_SHUFFLED]"
 		this.name = WordUtils.capitalizeFully(this.gameType.toString()) + "#" +
-				            StringUtils.leftPad(String.valueOf(this.gameId), 4, "0") +
-				            " (Ante:" + this.ante + ") [" + WordUtils.capitalizeFully(this.state.toString()) + "]";
+				            StringUtils.leftPad(String.valueOf(this.gameId), 4, "0");
 	}
 	
 	public void setWinner(CardGamePlayer cardGamePlayer) {
@@ -107,7 +106,7 @@ public class CardGame implements Serializable {
 	
 	public void setCardsDealt() {
 		if (this.cards != null) {
-			StringBuilder sb = new StringBuilder(" card(s) [");
+			StringBuilder sb = new StringBuilder(" card(s) dealt [");
 			List<CardGameDeck> decks;
 			decks = this.cards;
 			// sort on card order

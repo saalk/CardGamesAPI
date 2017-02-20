@@ -2,6 +2,7 @@ package nl.knikit.cardgames.event;
 
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
+import nl.knikit.cardgames.model.CardAction;
 import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
@@ -53,7 +54,7 @@ public class SetupFlowDTOForEveryEvent extends AbstractEvent {
 		message = String.format("SetupFlowDTOForEveryEvent getSuppliedGameId id : %s", flowDTO.getSuppliedGameId());
 		log.info(message);
 		
-		// save the game and decks and casinos sorted in flow DTO if supplied
+		// get the game and decks and casinos sorted in flow DTO if supplied
 		if ((flowDTO.getSuppliedGameId() != null) && (Integer.parseInt(flowDTO.getSuppliedGameId()) > 0)) {
 			try {
 				
@@ -105,13 +106,13 @@ public class SetupFlowDTOForEveryEvent extends AbstractEvent {
 			}
 		}
 		
-		// save the casino and hands sorted in flow DTO if supplied
+		// get the casino and hands sorted in flow DTO if supplied
 		if ((flowDTO.getSuppliedCasinoId() != null) && (Integer.parseInt(flowDTO.getSuppliedCasinoId()) > 0)) {
 			try {
 				
 				flowDTO.setCurrentCasino(casinoService.findOne(Integer.parseInt(flowDTO.getSuppliedCasinoId())));
 				if (flowDTO.getCurrentCasino() == null) {
-					eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+					eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 					return eventOutput;
 				}
 				
@@ -126,17 +127,17 @@ public class SetupFlowDTOForEveryEvent extends AbstractEvent {
 				message = String.format("SetupFlowDTOForEveryEvent error casino or hands: %s", e);
 				log.info(message);
 				
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
 		}
 		
-		// save the player in flow DTO if supplied
+		// get the player in flow DTO if supplied
 		if ((flowDTO.getSuppliedPlayerId() != null) && (Integer.parseInt(flowDTO.getSuppliedPlayerId()) > 0)) {
 			try {
 				flowDTO.setCurrentPlayer(playerService.findOne(Integer.parseInt(flowDTO.getSuppliedPlayerId())));
 				if (flowDTO.getCurrentPlayer() == null) {
-					eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+					eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 					return eventOutput;
 				}
 				message = String.format("SetupFlowDTOForEveryEvent player: %s", flowDTO.getCurrentPlayer());
@@ -149,6 +150,18 @@ public class SetupFlowDTOForEveryEvent extends AbstractEvent {
 				return eventOutput;
 			}
 		}
+		
+		// DETERMINE CURRENT ROUND FOR GAME AND HAND
+		if (flowDTO.getSuppliedCardAction() == CardAction.DEAL &&
+				    flowDTO.getCurrentCasino().getPlayingOrder() == 1) {
+			flowDTO.setNewCurrentRound(flowDTO.getCurrentGame().getCurrentRound() + 1);
+			message = String.format("SetupFlowDTOForEveryEvent getCurrentRound + 1: %s", flowDTO.getNewCurrentRound());
+			log.info(message);
+		} else {
+			flowDTO.setNewCurrentRound(flowDTO.getCurrentGame().getCurrentRound());
+		}
+		
+		
 		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
 		message = String.format("SetupFlowDTOForEveryEvent success: %s", flowDTO.getSuppliedTrigger());
 		log.info(message);
@@ -165,6 +178,12 @@ public class SetupFlowDTOForEveryEvent extends AbstractEvent {
 		String getSuppliedCasinoId();
 		
 		String getSuppliedPlayerId();
+		
+		CardAction getSuppliedCardAction();
+		
+		void setNewCurrentRound(int currentRound);
+		
+		int getNewCurrentRound();
 		
 		// all the retrieved data
 		Game getCurrentGame();

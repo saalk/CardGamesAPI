@@ -7,6 +7,7 @@ import nl.knikit.cardgames.event.CreateHandForCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.CreatePlayerEvent;
 import nl.knikit.cardgames.event.DeleteCardGameEvent;
 import nl.knikit.cardgames.event.DeleteCasinoForGameAndPlayerEvent;
+import nl.knikit.cardgames.event.DetermineTurnResultsEvent;
 import nl.knikit.cardgames.event.GetCardGameDetailsEvent;
 import nl.knikit.cardgames.event.SetupFlowDTOForEveryEvent;
 import nl.knikit.cardgames.event.UpdateCardGameDetailsEvent;
@@ -15,6 +16,7 @@ import nl.knikit.cardgames.event.UpdateCasinoForTurnAndBetEvent;
 import nl.knikit.cardgames.event.UpdateDeckForGameAndCasinoEvent;
 import nl.knikit.cardgames.event.UpdatePlayerCubitsAndSecuredLoanEvent;
 import nl.knikit.cardgames.event.UpdatePlayerForCasinoDetailsEvent;
+import nl.knikit.cardgames.event.VerifyTurnStateEvent;
 import nl.knikit.cardgames.model.AiLevel;
 import nl.knikit.cardgames.model.Avatar;
 import nl.knikit.cardgames.model.Card;
@@ -47,15 +49,16 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 				CreatePlayerEvent.CreatePlayerEventDTO,
 				DeleteCardGameEvent.DeleteCardGameEventDTO,
 				DeleteCasinoForGameAndPlayerEvent.DeleteCasinoForGameAndPlayerEventDTO,
+				DetermineTurnResultsEvent.DetermineTurnResultsEventDTO,
 				GetCardGameDetailsEvent.GetCardGameDetailsEventDTO,
 				SetupFlowDTOForEveryEvent.SetupFlowDTOForEveryEventDTO,
 				UpdateCardGameDetailsEvent.UpdateCardGameDetailsEventDTO,
 				UpdateCasinoForPlayingOrderEvent.UpdateCasinoForPlayingOrderEventDTO,
 				UpdateCasinoForTurnAndBetEvent.UpdateCasinoForTurnAndBetEventDTO,
 				UpdateDeckForGameAndCasinoEvent.UpdateDeckForGameAndCasinoEventDTO,
+				UpdatePlayerCubitsAndSecuredLoanEvent.UpdatePlayerCubitsAndSecuredLoanEventDTO,
 				UpdatePlayerForCasinoDetailsEvent.UpdatePlayerForCasinoDetailsEventDTO,
-				UpdatePlayerCubitsAndSecuredLoanEvent.UpdatePlayerCubitsAndSecuredLoanEventDTO {
-	
+				VerifyTurnStateEvent.VerifyTurnStateEventDTO {
 	// suppress lombok setter for these fixed values
 	@Setter(AccessLevel.NONE)
 	private String applicationId = "001";
@@ -89,11 +92,11 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	private CardLocation suppliedCardLocation;
 	
 	// in game changes
-	private int suppliedBet;
-	private String suppliedCubits;
-	private int suppliedCurrentRound;
-	private int suppliedCurrentTurn;
-	private int suppliedActiveCasino;
+	private int newBet;
+	private int newCubits;
+	private int newCurrentRound;
+	private int newCurrentTurn;
+	private int newActiveCasino;
 	
 	// frontend trigger
 	private CardGameStateMachine.Trigger suppliedTrigger;

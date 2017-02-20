@@ -97,6 +97,7 @@ import nl.knikit.cardgames.commons.controller.AbstractController;
 import nl.knikit.cardgames.commons.error.ErrorResponse;
 import nl.knikit.cardgames.commons.error.HttpError;
 import nl.knikit.cardgames.commons.event.FlowDTOBuilder;
+import nl.knikit.cardgames.event.DetermineTurnResultsEvent;
 import nl.knikit.cardgames.event.CreateCasinoForGameAndPlayerEvent;
 import nl.knikit.cardgames.event.CreateDeckForGameEvent;
 import nl.knikit.cardgames.event.CreateHandForCasinoForGameAndPlayerEvent;
@@ -246,20 +247,6 @@ public class CardGameController extends AbstractController<Game> {
 		String message = String.format("PostConstruct in controller is: %s", applicationContext);
 		log.info(message);
 	}
-/*  example post construct:
-	public class Foo {
-		@Inject
-		Logger LOG;
-		@PostConstruct
-		public void fooInit(){
-			LOG.info("This will be printed; LOG has already been injected");
-		}
-		public Foo() {
-			LOG.info("This will NOT be printed, LOG is still null");
-			// NullPointerException will be thrown here
-		}
-	}  */
-	
 	
 	// 3 - Play a the CardGame based on the Trigger and a list of input data
 	@Autowired
@@ -494,16 +481,15 @@ public class CardGameController extends AbstractController<Game> {
 				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
 				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
 				
-				
 				// reinstate get the card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
 						          .addEvent(SetupFlowDTOForEveryEvent.class)
-						          .addEvent(UpdateDeckForGameAndCasinoEvent.class) // deal and set flow
-						          .addEvent(UpdateCardGameDetailsEvent.class) // for the round
-						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // for the turn
-						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class) // deal
-						          .addEvent(UpdatePlayerCubitsAndSecuredLoanEvent.class) // needed ?
+						          .addEvent(UpdateDeckForGameAndCasinoEvent.class) // DEAL
+						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class) // DEAL
+						          .addEvent(DetermineTurnResultsEvent.class) // TURN, ROUND
+						          .addEvent(UpdateCardGameDetailsEvent.class) //Set ROUND + 1
+						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // set TURN = 1
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
@@ -532,7 +518,7 @@ public class CardGameController extends AbstractController<Game> {
 			
 			case PUT_PLAYING_TURN:
 				
-				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
+				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower // for human player
 				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
 				
 				
@@ -541,11 +527,10 @@ public class CardGameController extends AbstractController<Game> {
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
 						          .addEvent(SetupFlowDTOForEveryEvent.class)
-						          .addEvent(UpdateDeckForGameAndCasinoEvent.class) // deal and set flow
-						          .addEvent(UpdateCardGameDetailsEvent.class) // for the round
-						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // for the turn
-						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class) // deal
-						          .addEvent(UpdatePlayerCubitsAndSecuredLoanEvent.class) // needed ?
+						          .addEvent(UpdateDeckForGameAndCasinoEvent.class) // DEAL
+						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class) // DEAL
+						          .addEvent(DetermineTurnResultsEvent.class) // TURN
+						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // set TURN + 1
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				
@@ -574,7 +559,7 @@ public class CardGameController extends AbstractController<Game> {
 			
 			case PUT_PASS_TURN:
 				
-				//PUT    api/cardgames/1/turn/players/2?action=deal/higher/lower/pass // for human player
+				//PUT    api/cardgames/1/turn/players/2?action=pass // for human player
 				//PUT    api/cardgames/1/turn/players/3?action=next  // auto deal or pass for ai player
 				
 				// reinstate get the card game and adds it as context to flowDTO
@@ -582,8 +567,11 @@ public class CardGameController extends AbstractController<Game> {
 				flowDTO = builder
 						          .addContext(super.reinstate(Integer.parseInt(pathAndQueryData.get("gameId"))))
 						          .addEvent(SetupFlowDTOForEveryEvent.class)
-						          .addEvent(UpdateDeckForGameAndCasinoEvent.class)
-						          .addEvent(CreateHandForCasinoForGameAndPlayerEvent.class)
+						          .addEvent(DetermineTurnResultsEvent.class) // BET, ACTIVE CASINO
+						          .addEvent(UpdatePlayerCubitsAndSecuredLoanEvent.class) // CUBITS
+						          .addEvent(UpdateCardGameDetailsEvent.class) // NEXT ACTIVE CASINO
+						          .addEvent(UpdateCasinoForTurnAndBetEvent.class) // BET
+								  
 						          .addStateMachine(this.stateMachine)
 						          .build();
 				

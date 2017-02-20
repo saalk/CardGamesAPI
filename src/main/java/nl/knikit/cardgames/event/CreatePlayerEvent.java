@@ -33,11 +33,11 @@ public class CreatePlayerEvent extends AbstractEvent {
 		try {
 			createdPlayer = playerService.create(makeConsistentPlayer(flowDTO));
 			if (createdPlayer == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
 		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 			return eventOutput;
 		}
 		

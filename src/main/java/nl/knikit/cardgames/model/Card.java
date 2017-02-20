@@ -265,35 +265,5 @@ public class Card implements Serializable {
 		String jokerCard = cardId;
 		return jokerCard=="RJ";
 	}
-	
-	/**
-	 * @param cardToCompareWith
-	 * 		Card to compare with
-	 * @param gameType
-	 * 		Supply the card game Type; default is HIGHLOW
-	 *
-	 * @return -1(LOWER), 0(EQUAL), +1(HIGHER)
-	 */
-	//@JsonIgnore
-	public int compareTo(Card cardToCompareWith, GameType gameType) {
-		if (gameType == null) {
-			gameType = GameType.HIGHLOW;
-		}
-		
-		if (rank.getValue(gameType) < cardToCompareWith.getRank().getValue(gameType)) {
-			return 1; // HIGHER
-		} else {
-			if (rank.getValue(gameType) > cardToCompareWith.getRank().getValue(gameType)) {
-				return -1; // LOWER
-			} else {
-				return 0; // EQUAL
-			}
-		}
-	}
-	
-/*	@Override
-	public String toString() {
-		return rank + " of " + suit;
-	}
-	*/
+
 }

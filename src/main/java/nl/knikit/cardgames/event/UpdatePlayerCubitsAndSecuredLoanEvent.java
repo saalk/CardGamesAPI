@@ -5,7 +5,6 @@ import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
-import nl.knikit.cardgames.service.ICasinoService;
 import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,6 @@ public class UpdatePlayerCubitsAndSecuredLoanEvent extends AbstractEvent {
 	@Autowired
 	private IPlayerService playerService;
 	
-	@Autowired
-	private ICasinoService casinoService;
-	
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
@@ -31,73 +27,26 @@ public class UpdatePlayerCubitsAndSecuredLoanEvent extends AbstractEvent {
 		EventOutput eventOutput;
 		String message;
 		
-		
-		message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent getSuppliedPlayerId is: %s", flowDTO.getSuppliedPlayerId());
-		log.info(message);
-		
-		// skip this event when no cubits and securedloan are supplied
-		if ((flowDTO.getSuppliedCubits() == null || flowDTO.getSuppliedCubits().equals("null") || flowDTO.getSuppliedCubits().isEmpty()) &&
-				    (flowDTO.getSuppliedSecuredLoan() == null || flowDTO.getSuppliedSecuredLoan().equals("null") || flowDTO.getSuppliedSecuredLoan().isEmpty())) {
-			// no key event no a transition
-			eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-			
-			message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent skip this event when no cubits and securedloan are supplied trigger is: %s", flowDTO.getSuppliedTrigger());
-			log.info(message);
-			
-			return eventOutput;
-		}
-		
-		// get the player and update
-		Player playerToUpdate;
+		// INIT
+		Player playerToUpdate = flowDTO.getCurrentPlayer();
 		Player updatedPlayer;
 		
-
-		
-		// find player to update
-		String id = flowDTO.getSuppliedPlayerId();
-		try {
-			playerToUpdate = playerService.findOne(Integer.parseInt(id));
-			if (playerToUpdate == null) {
-				
-				message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent playerToUpdate 404: %s", id);
-				log.info(message);
-				
-				
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-				return eventOutput;
-			}
-		} catch (Exception e) {
-			
-			message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent playerToUpdate 404: %s", e);
-			log.info(message);
-			
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-			return eventOutput;
-		}
-		
-		message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent playerToUpdate is: %s", playerToUpdate);
-		log.info(message);
-		
-		// do the update
+		// UPDATE
 		playerToUpdate = makeConsistentCubitsAndSecuredLoan(flowDTO, playerToUpdate);
 		try {
 			updatedPlayer = playerService.update(playerToUpdate);
 			if (updatedPlayer == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
 		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 			return eventOutput;
 		}
-		
 		flowDTO.setCurrentPlayer(updatedPlayer);
 		
 		// never do a transition, this is no key event
 		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-		message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent never does transition");
-		log.info(message);
-		
 		return eventOutput;
 	}
 	
@@ -110,15 +59,15 @@ public class UpdatePlayerCubitsAndSecuredLoanEvent extends AbstractEvent {
 		
 		Game getCurrentGame();
 		
+		Player getCurrentPlayer();
+		
 		// rest
 		
 		void setCurrentPlayer(Player player);
 		
-		String getSuppliedPlayerId();
-		
 		String getSuppliedSecuredLoan();
 		
-		String getSuppliedCubits();
+		int getNewCubits();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		
@@ -131,9 +80,9 @@ public class UpdatePlayerCubitsAndSecuredLoanEvent extends AbstractEvent {
 		
 		int oldSecuredLoan = player.getSecuredLoan();
 		
-		if ((flowDTO.getSuppliedCubits() != null) && (!flowDTO.getSuppliedCubits().equals("null")) && (!flowDTO.getSuppliedCubits().isEmpty())) {
+		if (flowDTO.getNewCubits() != 0) {
 			
-			player.setCubits(player.getCubits() + Integer.parseInt(flowDTO.getSuppliedCubits()));
+			player.setCubits(player.getCubits() + flowDTO.getNewCubits());
 			
 			message = String.format("UpdatePlayerCubitsAndSecuredLoanEvent setCubits is: %s", player.getCubits());
 			log.info(message);

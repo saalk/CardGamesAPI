@@ -25,6 +25,19 @@ function ($scope, cardgameService, toastr){
     vm.average = 'A nice competitor, he has a budget of ';
     vm.dumb = 'Quick to beat, starting with ';
     vm.none = 'This alien has left the game with ';
+
+    vm.types = [{text:'todo: only 3 in a row wins', type:'3inarow'},
+    {text:'todo: one round all or nothing', type:'1round'},
+    {text:'todo: one suit till the end', type:'1suit'}];
+    vm.myType = vm.types[0];
+
+    vm.antes = [{amount:'20'},
+    {amount:'50'},
+    {amount:'100'},
+    {amount:'200'},
+    {amount:'500'}];
+    vm.myAnte = vm.antes[0];
+
     // make sure there are only 2 aliens
     initAliens(2);
 
@@ -65,6 +78,16 @@ function ($scope, cardgameService, toastr){
     // ---
     // PUBLIC API METHODS
     // ---
+    // update the given game with the type and ante.
+    vm.updateGameDetails = function() {
+        vm.cardGame.ante = vm.myAnte.amount;
+        cardgameService.updateGame( vm.cardGame )
+            .then( applyRemoteData, function( errorMessage ) {
+                    toastr.error('An error has occurred:' + errorMessage, 'Error');
+                }
+            )
+        ;
+    };
     // process the add-player
     vm.setupAiPlayerForGame = function( functionCardGame, ai) {
         // If the data we provide is invalid, the promise will be rejected,

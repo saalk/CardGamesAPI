@@ -19,6 +19,8 @@ public interface IOperations<T extends Serializable> {
     
     T create(final T entity);
     
+    List<T> createAll(final List<T> entity);
+    
     T createDefaultGame(final T entity);
 
     T update(final T entity);

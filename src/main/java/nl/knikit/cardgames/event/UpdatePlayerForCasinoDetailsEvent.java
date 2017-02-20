@@ -78,11 +78,11 @@ public class UpdatePlayerForCasinoDetailsEvent extends AbstractEvent {
 		try {
 			updatedPlayer = playerService.update(makeConsistentPlayer(flowDTO, playerToUpdate));
 			if (updatedPlayer == null) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
 		} catch (Exception e) {
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 			return eventOutput;
 		}
 		

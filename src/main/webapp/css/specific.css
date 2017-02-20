@@ -21,6 +21,10 @@
 .button {
   border-radius: 100px; }
 
+.some-class {
+  foreground-color: lightgreen;
+}
+
 /*
 .b, strong {
      color: #ff33cc;

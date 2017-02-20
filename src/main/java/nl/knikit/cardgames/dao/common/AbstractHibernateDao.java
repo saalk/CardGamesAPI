@@ -202,6 +202,28 @@ public abstract class AbstractHibernateDao<T extends Serializable> implements IO
 		return entity;
 	}
 	
+	
+	@Override
+	public final List<T> createAll(final List<T> entities) {
+		
+		String message = String.format("entities to create in DAO: %s", entities.toString());
+		log.info(message);
+		
+		Preconditions.checkNotNull(entities);
+		try {
+			// getCurrentSession().persist(entity);
+			for (T entity: entities) {
+				getCurrentSession().save(clazz.getName(), entity);
+				//getCurrentSession().flush();
+			}
+		} catch (Exception e) {
+			String errorMessage = String.format("Entity create error: %s in DAO by entity: %s", e, entities);
+			log.error(errorMessage);
+			throw e;
+		}
+		return entities;
+	}
+	
 	@Override
 	public final T update(final T entity) {
 		

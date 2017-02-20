@@ -2,14 +2,12 @@ package nl.knikit.cardgames.event;
 
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
-import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Card;
 import nl.knikit.cardgames.model.CardLocation;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IDeckService;
-import nl.knikit.cardgames.service.IGameService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +25,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 	// @Resource = javax, @Inject = javax, @Autowire = spring bean factory
 	@Autowired
 	private IDeckService deckService;
-
+	
 	@Override
 	protected EventOutput execution(final Object... eventInput) {
 		
@@ -52,21 +50,20 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 			newDeck.setDealtTo(null);
 			newDeck.setGame(gameToUpdate);
 			newDeck.setCardLocation(CardLocation.STACK);
-			try {
-				Deck createdDeck = deckService.create(newDeck);
-				if (createdDeck == null) {
-					eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
-					return eventOutput;
-				}
-				newDeckDtos.add(createdDeck);
-			} catch (Exception e) {
-				eventOutput = new EventOutput(EventOutput.Result.FAILURE, flowDTO.getSuppliedTrigger());
+			newDeckDtos.add(newDeck);
+		}
+		try {
+			List<Deck> createdDecks = deckService.createAll(newDeckDtos);
+			if (createdDecks == null) {
+				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
+			flowDTO.setCurrentDecks(createdDecks);
+		} catch (Exception e) {
+			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
+			return eventOutput;
 		}
-		
-		flowDTO.setCurrentDecks(newDeckDtos);
-		flowDTO.setSuppliedActiveCasino(flowDTO.getCurrentGame().getCasinos().get(0).getCasinoId());
+		flowDTO.setNewActiveCasino(flowDTO.getCurrentGame().getCasinos().get(0).getCasinoId());
 		
 		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_SHUFFLE) {
 			// key event so do a transition
@@ -94,7 +91,7 @@ public class CreateDeckForGameEvent extends AbstractEvent {
 		
 		String getSuppliedTest();
 		
-		void setSuppliedActiveCasino(int activeCasino);
+		void setNewActiveCasino(int activeCasino);
 		
 		void setCurrentDecks(List<Deck> decks);
 		

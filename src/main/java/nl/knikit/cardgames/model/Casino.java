@@ -12,6 +12,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -58,7 +59,7 @@ public class Casino implements Serializable {
     // since this is the child Casino: do no delete the Game
     // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional=false, cascade = CascadeType.DETACH)
+    @ManyToOne(optional=false, cascade = CascadeType.DETACH, fetch= FetchType.LAZY)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
     ////@JsonProperty("game")
     private Game game;
@@ -67,7 +68,7 @@ public class Casino implements Serializable {
     // since this is the child Casino: do no delete the Player !
     // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional=false, cascade = CascadeType.DETACH)
+    @ManyToOne(optional=false, cascade = CascadeType.DETACH, fetch= FetchType.LAZY)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"))
     ////@JsonProperty("player")
     private Player player;
@@ -75,7 +76,7 @@ public class Casino implements Serializable {
     // Cascade = any change happened on this entity must cascade to the parent/child as well
     // since this is the parent Casino: delete Hands when Casino is deleted (no other actions!)
     //@JsonIgnore
-    @OneToMany(cascade=CascadeType.REMOVE)
+    @OneToMany(cascade=CascadeType.REMOVE, fetch= FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
     private List<Hand> hands;

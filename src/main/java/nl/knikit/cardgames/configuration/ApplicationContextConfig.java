@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.google.common.base.Preconditions;
 
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -53,9 +54,25 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private Environment env;
-
+    
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+        
+    }
+    
+    /**
+     * Swagger UI adds a set of resources which you must configure as part of a class
+     * that extends WebMvcConfigurerAdapter, and is annotated with @EnableWebMvc.
+     */
+   
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+    
+        registry.addResourceHandler("/webjars*").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        
         registry.addResourceHandler("/webapp/javascript/**/*")
                 .addResourceLocations("/webapp/javascript/");
         registry.addResourceHandler("/webapp/css/**/*")
@@ -168,6 +185,10 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         hibernateProperties.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
         hibernateProperties.setProperty("hibernate.id.new_generator_mappings", "true");
         hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", "true");
+    
+        hibernateProperties.setProperty("hibernate.jdbc.batch_versioned_data", "true");
+        hibernateProperties.setProperty("hibernate.order_inserts", "true");
+        hibernateProperties.setProperty("hibernate.order_updates", "true");
 
         return hibernateProperties;
     }

@@ -19,6 +19,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -80,7 +81,7 @@ public class Hand implements Serializable {
     // since this is the child Hand: do nothing when Hand is delete on the parent Player
     // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional= false, cascade = CascadeType.DETACH)
+    @ManyToOne(optional= false, cascade = CascadeType.DETACH, fetch= FetchType.LAZY)
     @JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID", foreignKey = @ForeignKey(name = "PLAYER_ID"), nullable=false)
     ////@JsonProperty("player")
     private Player player;
@@ -89,7 +90,7 @@ public class Hand implements Serializable {
     // since this is the child Hand: do nothing when Hand is delete on the parent Casino
     // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH, fetch= FetchType.LAZY)
     @JoinColumn(name = "CASINO_ID", referencedColumnName = "CASINO_ID", foreignKey = @ForeignKey(name = "CASINO_ID"))
     ////@JsonProperty("casino")
     private Casino casino;

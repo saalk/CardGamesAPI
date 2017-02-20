@@ -43,6 +43,11 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
     
     @Override
+    public List<T>  createAll(final List<T> entities) {
+        return getDao().createAll(entities);
+    }
+    
+    @Override
     public T createDefaultGame(final T entity) {
         return getDao().createDefaultGame(entity);
     }

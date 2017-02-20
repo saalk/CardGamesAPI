@@ -25,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -122,7 +123,7 @@ public class Deck implements Serializable {
     // since this is the child Deck: do nothing when Deck is delete on the parent Game
     // meaning do not set cascade options
     //@JsonIgnore
-    @ManyToOne(optional=false, cascade = CascadeType.DETACH)
+    @ManyToOne(optional=false, cascade = CascadeType.DETACH, fetch= FetchType.LAZY)
     @JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"), nullable=false)
     //@JsonProperty("game")
     private  Game game;

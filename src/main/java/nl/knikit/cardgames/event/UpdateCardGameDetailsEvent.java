@@ -2,12 +2,10 @@ package nl.knikit.cardgames.event;
 
 import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
-import nl.knikit.cardgames.mapper.ModelMapperUtil;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IGameService;
-import nl.knikit.cardgames.service.IPlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,23 +34,6 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		Game gameToUpdate = flowDTO.getCurrentGame();
 		Game updatedGame;
 		
-		// check path var game/{id}
-//		String gameId = flowDTO.getSuppliedGameId();
-//		try {
-//			gameToUpdate = gameService.findOne(Integer.parseInt(gameId));
-//			message = String.format("UpdateCardGameDetailsEvent game find before update in Event: %s", gameToUpdate);
-//			log.info(message);
-//			if (gameToUpdate == null) {
-//				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
-//				return eventOutput;
-//			}
-//		} catch (Exception e) {
-//			message = String.format("UpdateCardGameDetailsEvent game find before update has exception: %s", e);
-//			log.info(message);
-//			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
-//			return eventOutput;
-//		}
-		
 		// find out what to update
 		if (flowDTO.getSuppliedGameType() != null) {
 			gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
@@ -60,11 +41,15 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		if (flowDTO.getSuppliedAnte() != null) {
 			gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
 		}
-		if (flowDTO.getSuppliedActiveCasino() != 0) {
-			gameToUpdate.setActiveCasino(flowDTO.getSuppliedActiveCasino());
+		
+		message = String.format("UpdateCardGameDetailsEvent getSuppliedActiveCasino is: %s", flowDTO.getNewActiveCasino());
+		log.info(message);
+		
+		if (flowDTO.getNewActiveCasino() != 0) {
+			gameToUpdate.setActiveCasino(flowDTO.getNewActiveCasino());
 		}
-		if (flowDTO.getSuppliedCurrentRound() != 0) {
-			gameToUpdate.setCurrentRound(flowDTO.getSuppliedCurrentRound());
+		if (flowDTO.getNewCurrentRound() != 0) {
+			gameToUpdate.setCurrentRound(flowDTO.getNewCurrentRound());
 		}
 		
 		// do the update
@@ -74,18 +59,17 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 				eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 				return eventOutput;
 			}
-
 		} catch (Exception e) {
 			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
 			return eventOutput;
 		}
 		
-		
 		// OK, set a trigger for EventOutput to trigger a transition in the state machine
 		flowDTO.setCurrentGame(updatedGame);
 		flowDTO.setSuppliedGameId(String.valueOf(updatedGame.getGameId()));
 		
-		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_INIT) {
+		if (flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.POST_INIT ||
+				    flowDTO.getSuppliedTrigger() == CardGameStateMachine.Trigger.PUT_PASS_TURN) {
 			// key event so do a transition
 			eventOutput = new EventOutput(EventOutput.Result.SUCCESS, flowDTO.getSuppliedTrigger());
 			message = String.format("UpdateCardGameDetailsEvent do a transition with trigger is: %s", flowDTO.getSuppliedTrigger());
@@ -115,9 +99,9 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		
 		String getSuppliedAnte();
 		
-		int getSuppliedCurrentRound();
+		int getNewCurrentRound();
 		
-		int getSuppliedActiveCasino();
+		int getNewActiveCasino();
 		
 		CardGameStateMachine.Trigger getSuppliedTrigger();
 		

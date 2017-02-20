@@ -59,7 +59,6 @@ public class CardGameCasino implements Serializable {
 	//@JsonProperty(value = "cardsInHand")
 	private List<CardGameHand> cardGameHands;
 	
-	@JsonIgnore
 	@Setter(AccessLevel.NONE)
 	private int cardCount; // extra field
 	
@@ -71,17 +70,11 @@ public class CardGameCasino implements Serializable {
 	
 	public void setBalance() {
 		// "Script Joe(Human|Smart) [Elf]"
-		int raise = 0;
-		if (this.activeTurn > 2) {
-			raise = (int) Math.pow(2, activeTurn - 1);
-		} else {
-			raise = this.activeTurn;
-		}
 		if (this.cardGamePlayer != null) {
 			if (this.cardGame != null) {
-				this.balance = "Bet: " + this.cardGame.getAnte() + "x" + raise + " (Cubits: " + cardGamePlayer.getCubits() + ") [Pawned ship: " + cardGamePlayer.getSecuredLoan() + "]";
+				this.balance = "Bet: " + this.cardGame.getAnte() + "x" + this.activeTurn;
 			} else {
-				this.balance = "(Cubits: " + cardGamePlayer.getCubits() + ") [Pawned ship: " + cardGamePlayer.getSecuredLoan() + "]";
+				this.balance = "";
 			}
 		} else {
 			this.balance = "Bet: []";
@@ -100,9 +93,10 @@ public class CardGameCasino implements Serializable {
 			for (CardGameHand hand : hands) {
 				if (round != hand.getRound()) {
 					sb.append("] ");
-					sb.append(hand.getRound());
+					//sb.append(hand.getRound());
 					sb.append("[");
 					round++;
+					//first = true;
 				}
 				if (!first) {
 					sb.append(" ");

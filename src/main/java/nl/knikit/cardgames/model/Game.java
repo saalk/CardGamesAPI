@@ -18,6 +18,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -67,7 +68,7 @@ public class Game implements Serializable {
 	// since this is the parent Game: do all when Game is delete on the deck childs
 	// meaning do set cascade type to all -> changed to delete not create
 	//@JsonIgnore
-	@OneToMany(cascade = CascadeType.REMOVE)
+	@OneToMany(cascade = CascadeType.REMOVE, fetch= FetchType.LAZY)
 	@JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
 	private List<Deck> decks;
 	
@@ -75,7 +76,7 @@ public class Game implements Serializable {
 	// since this is the parent Game: do all when Game is delete on the deck childs
 	// meaning do set cascade type to all -> changed to delete not create
 	//@JsonIgnore
-	@OneToMany(cascade = CascadeType.REMOVE)
+	@OneToMany(cascade = CascadeType.REMOVE, fetch= FetchType.LAZY)
 	@JoinColumn(name = "GAME_ID", referencedColumnName = "GAME_ID", foreignKey = @ForeignKey(name = "GAME_ID"))
 	private List<Casino> casinos;
 	
@@ -83,7 +84,7 @@ public class Game implements Serializable {
 	// since this is the child Game: do nothing when Game is delete on the winner Player
 	// meaning do not set cascade options
 	//@JsonIgnore
-	@ManyToOne(optional=true)
+	@ManyToOne(optional=true, fetch= FetchType.LAZY)
 	@JoinColumn(name = "PLAYER_ID", referencedColumnName = "PLAYER_ID",foreignKey = @ForeignKey(name = "PLAYER_ID"))
 	private Player player;
 	
