@@ -63,7 +63,7 @@ small likelihood of stale data is not of critical concern.
  Read-only: A concurrency strategy suitable for data, which never changes. Use it
 for reference data only
 
-# Hibernate rules, no hard requirements
+# Hibernate label, no hard requirements
 - claases need default constructor
 - classes need ID mapped to key column
 - have getxxx and setxxx methods

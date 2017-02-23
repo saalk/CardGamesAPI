@@ -8,7 +8,7 @@ angular.module('myApp')
             };
         })
         .controller('ResultsController', ['$scope', 'cardgameService', 'toastr',
-function ($scope, playerService, toastr){
+function ($scope, cardgameService, toastr){
 
     // viewmodel for this controller
     var vm = this;
@@ -45,21 +45,37 @@ function ($scope, playerService, toastr){
             )
         ;
     };
-    vm.pawnHumanShipForCubits = function () {
-        if (vm.activePlayer.securedLoan === 0 ) {
-            vm.activePlayer.securedLoan = (Math.ceil(Math.random() * 750)+250);
-            vm.activePlayer.cubits = vm.activePlayer.cubits + vm.activePlayer.securedLoan;
+    vm.setHumanName = function () {
+        //toastr.clear();
+        vm.players[0].visitor.alias = 'John Doe';
+        toastr.info('Your name is set', 'Information');
+        cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
+               .then( applyRemoteData, function( errorMessage ) {
+                toastr.error('Setting name failed: ' + errorMessage, 'Error');
+                }
+         );
+    };
+    vm.pawnHumanShipForCubits = function (extraCubits) {
+        minimum = 0 + extraCubits;
+        if (vm.players[0].visitor.securedLoan === 0 ) {
+            vm.players[0].visitor.securedLoan = (Math.ceil(Math.random() * (1000 - minimum))+ minimum);
+            //vm.players[0].visitor.cubits = vm.players[0].visitor.cubits + vm.players[0].visitor.securedLoan;
+            // toastr.info('<body>Your ship is pawned for at least {{ vm.minimum }}<body>', 'InformationL',{allowHtml: true});
             toastr.info('Your ship is pawned', 'Information');
-        } else if (vm.activePlayer.cubits < vm.activePlayer.securedLoan) {
+        } else if (vm.players[0].visitor.cubits < vm.players[0].visitor.securedLoan) {
             toastr.error('Your don\'t have not enough credits', 'Error');
-        } else if (vm.activePlayer.cubits >= vm.activePlayer.securedLoan) {
-            vm.activePlayer.cubits = vm.activePlayer.cubits - vm.activePlayer.securedLoan;
-            vm.activePlayer.securedLoan = 0;
+        } else if (vm.players[0].visitor.cubits >= vm.players[0].visitor.securedLoan) {
+            //vm.players[0].visitor.cubits = vm.players[0].visitor.cubits - vm.players[0].visitor.securedLoan;
+            vm.players[0].visitor.securedLoan = 0;
             toastr.info('Your loan is repayed', 'Information');
-            vm.tothecasino = false;
+            vm.gotogame = false;
         };
-        cardgameService.changeVisitorDetailsForGame( vm.players[0] );
-    }; 
+        cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
+               .then( applyRemoteData, function( errorMessage ) {
+                toastr.error('Setting pawn failed: ' + errorMessage, 'Error');
+                }
+         );
+    };
     // ---
     // PRIVATE METHODS USED IN PUBLIC BEHAVIOUR METHODS
     // ---
@@ -67,6 +83,7 @@ function ($scope, playerService, toastr){
     function initResults() {
         vm.cardGame = cardgameService.getGameStoredInService();
         vm.players = vm.cardGame.players;
+
 
         if (vm.cardGame.state.toUpperCase() == 'TURN_ENDED') {
             // make a winner or just end the turn
@@ -117,10 +134,10 @@ function ($scope, playerService, toastr){
         ;
     };
     // update the given player from the current collection.
-    vm.changeVisitorDetailsForGame = function( player ) {
+    vm.changeVisitorDetailsForGame = function( functionCardGame, player ) {
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
-        cardgameService.changeVisitorDetailsForGame( player.playerId, player )
+        cardgameService.changeVisitorDetailsForGame( functionCardGame, player )
             .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('An error has occurred:' + errorMessage, 'Error');
                 }
@@ -143,9 +160,23 @@ function ($scope, playerService, toastr){
 
         vm.cardGame = responseCardGame;
         vm.players = responseCardGame.players;
+        vm.name = vm.players[0].visitor.alias;
+
+        vm.gotogame = false;
+        if ((vm.players[0].visitor.securedLoan !== 0) && (vm.players[0].visitor.alias.toUpperCase() !== 'VISITOR' )) {
+            vm.gotogame = true;
+        };
+        if (vm.players[0].visitor.alias.toUpperCase() == 'VISITOR' && vm.players[0].visitor.cubits !== 0) {
+            setTimeout(function() {
+            toastr.warning('Get your name for the casino, '+ vm.name, 'Warning');},1000);
+        } else if (vm.players[0].visitor.cubits === 0 && vm.players[0].visitor.alias.toUpperCase() !== 'VISITOR') {
+            setTimeout(function() {
+            toastr.warning('Pawn your ship for the casino', 'Warning');},1000);
+        };
         vm.tothecasino = true;
         vm.showalien1 = true;
         vm.showalien2 = true;
+
         for (i=0, len = vm.players.length; i < len -1; i++) {
             if (vm.players[i].visitor.aiLevel.toUpperCase() == 'NONE') {
                 vm.tothecasino = false;
@@ -156,6 +187,6 @@ function ($scope, playerService, toastr){
             if (i === 2 && vm.players[2].visitor.aiLevel.toUpperCase() == 'NONE') {
                 vm.showalien2 = false;
             };
-        }
+        };
     };
 }]);

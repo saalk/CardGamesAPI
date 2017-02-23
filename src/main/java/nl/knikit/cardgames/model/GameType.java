@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Transient;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <H1>CardGame</H1> A selection of card gameDtos that can be selected to play. <p> More gameDtos will be

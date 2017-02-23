@@ -4,6 +4,7 @@ import nl.knikit.cardgames.commons.event.AbstractEvent;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.GameVariant;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IGameService;
 
@@ -37,6 +38,9 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		// find out what to update
 		if (flowDTO.getSuppliedGameType() != null) {
 			gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
+		}
+		if (flowDTO.getSuppliedGameVariant() != null) {
+			gameToUpdate.setGameVariant(flowDTO.getSuppliedGameVariant().getVariant());
 		}
 		if (flowDTO.getSuppliedAnte() != null) {
 			gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
@@ -96,6 +100,8 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		
 		// rest
 		GameType getSuppliedGameType();
+		
+		GameVariant getSuppliedGameVariant();
 		
 		String getSuppliedAnte();
 		

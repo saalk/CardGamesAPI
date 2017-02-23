@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.GameVariant;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -40,6 +41,7 @@ public class CardGame implements Serializable {
 	// private String created; to prevent setting, this is generated
 	private State state;
 	private GameType gameType;
+	private String gameVariant;
 	private int ante;
 	@Setter(AccessLevel.NONE)
 	private String dealt; // extra field
@@ -76,6 +78,15 @@ public class CardGame implements Serializable {
 		GameType converted = GameType.fromLabel(gameType);
 		if (converted == null) {
 			throw new Exception("GameTypeParseLabelException");
+		}
+		return converted;
+	}
+	
+	@JsonIgnore
+	public GameVariant getGameVariantFromLabel(String gameVariant) throws Exception {
+		GameVariant converted = new GameVariant(gameVariant);
+		if (converted == null) {
+			throw new Exception("GameVariantParseLabelException");
 		}
 		return converted;
 	}

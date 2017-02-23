@@ -101,10 +101,10 @@ public class CardGameResource extends AbstractResource {
 	
 	// a body is always needed but can be {}
 	@PostMapping(value = "/cardgames/init/{humanOrAi}", params = {"alias", "avatar", "aiLevel", "securedLoan"})
-	// add human or ai to cardGame
+	// add a human or ai to a new cardGame
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseEntity initPlayerOrHuman(
+	public ResponseEntity initHumanOrAi(
 			                                            @PathVariable("humanOrAi") String humanOrAi,
 			                                            @RequestBody CardGame cardGameToUpdate,
 			                                            @RequestParam(value = "alias", required = false) String alias,
@@ -147,7 +147,7 @@ public class CardGameResource extends AbstractResource {
 	}
 	
 	// a body is always needed but can be {}
-	@PostMapping(value = "/cardgames/init/human/{playerId}", params = {"gameType", "ante"})
+	@PostMapping(value = "/cardgames/init/human/{playerId}", params = {"gameType", "gameVariant", "ante"})
 	//new cardGame with existing human if present
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -155,13 +155,15 @@ public class CardGameResource extends AbstractResource {
 			                                          @PathVariable("playerId") Integer playerId,
 			                                          @RequestBody CardGame cardGameToUpdate,
 			                                          @RequestParam(value = "gameType", required = false) String gameType,
+			                                          @RequestParam(value = "gameVariant", required = false) String gameVariant,
 			                                          @RequestParam(value = "ante", required = false) Integer ante) {
 		
-		//POST   api/cardgames/init/human/2   ?gameType/ante
+		//POST   api/cardgames/init/human/2   ?gameType/gameVariant/ante
 		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("playerId", String.valueOf(playerId));
 		pathAndRequestParams.put("gameType", gameType);
+		pathAndRequestParams.put("gameVariant", gameVariant);
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
 		CardGameResponse response;
@@ -186,19 +188,21 @@ public class CardGameResource extends AbstractResource {
 	
 	
 	// a body is always needed but can be {}
-	@PostMapping(value = "/cardgames/init", params = {"gameType", "ante"})
+	@PostMapping(value = "/cardgames/init", params = {"gameType", "gameVariant", "ante"})
 	//new cardGame with existing human if present
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity initCardGame(
 			                                  @RequestBody CardGame cardGameToUpdate,
 			                                  @RequestParam(value = "gameType", required = false) String gameType,
+			                                  @RequestParam(value = "gameVariant", required = false) String gameVariant,
 			                                  @RequestParam(value = "ante", required = false) Integer ante) {
 		
-		//POST   api/cardgames/init           ?gameType/ante
+		//POST   api/cardgames/init           ?gameType/gameVariant/ante
 		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameType", gameType);
+		pathAndRequestParams.put("gameVariant", gameVariant);
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
 		CardGameResponse response;
@@ -317,13 +321,15 @@ public class CardGameResource extends AbstractResource {
 			                                          @PathVariable("id") Integer id,
 			                                          @RequestBody CardGame cardGameToUpdate,
 			                                          @RequestParam(value = "gameType", required = false) String gameType,
+			                                          @RequestParam(value = "gameVariant", required = false) String gameVariant,
 			                                          @RequestParam(value = "ante", required = false) Integer ante) {
 		
-		//PUT    api/cardgames/1/init          ?gameType/ante
+		//PUT    api/cardgames/1/init          ?gameType/gameVariant/ante
 		
 		Map<String, String> pathAndRequestParams = new HashMap<>();
 		pathAndRequestParams.put("gameId", String.valueOf(id));
 		pathAndRequestParams.put("gameType", gameType);
+		pathAndRequestParams.put("gameVariant", gameVariant);
 		pathAndRequestParams.put("ante", String.valueOf(ante));
 		
 		CardGameResponse response;

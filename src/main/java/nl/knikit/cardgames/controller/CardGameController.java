@@ -266,7 +266,7 @@ public class CardGameController extends AbstractController<Game> {
 			case POST_HUMAN:
 			case POST_AI:
 				
-				//POST   api/cardgames/init?gameType={g},ante={a}
+				//POST   api/cardgames/init?gameType={g},gameVariant=(v),ante={a}
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.init(new Game()))
@@ -289,7 +289,7 @@ public class CardGameController extends AbstractController<Game> {
 			
 			case POST_INIT:
 				
-				//POST   api/cardgames/init?gameType={g},ante={a}
+				//POST   api/cardgames/init?gameType={g},gameVariant={v},ante={a}
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder
 						          .addContext(super.init(new Game()))
@@ -341,7 +341,7 @@ public class CardGameController extends AbstractController<Game> {
 			
 			case POST_INIT_HUMAN:
 				
-				//POST   api/cardgames/init/human/2   ?gameType/ante
+				//POST   api/cardgames/init/human/2   ?gameType/gameVariant/ante
 				
 				// init makes a default card game and adds it as context to flowDTO
 				flowDTO = builder

@@ -57,6 +57,8 @@ public class Game implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "GAMETYPE", length = 50, nullable = false)
 	private GameType gameType;
+	@Column(name = "GAMEVARIANT", length = 50, nullable = false)
+	private String gameVariant;
 	@Column(name = "ACTIVE_CASINO")
 	private int activeCasino;
 	@Column(name = "CURRENT_ROUND")

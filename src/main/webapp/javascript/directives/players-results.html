@@ -7,7 +7,7 @@
             .</p>
     </div>
     <div class="four columns alien-prop">
-        <div ng-if="vm.showalien1" class="animate-if" data-ng-click="vm.changeAlien(1)">
+        <div ng-if="vm.showalien1" data-ng-click="vm.changeAlien(1)">
             <div ng-if="vm.players[1].visitor.aiLevel.toUpperCase() == 'DUMB'">
                 <img alt="alien1" src="img/ailow.jpg">
                 <br>
@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="four columns alien-prop">
-        <div ng-if="vm.showalien2" class="animate-if" data-ng-click="vm.changeAlien(2)">
+        <div ng-if="vm.showalien2" data-ng-click="vm.changeAlien(2)">
             <div ng-if="vm.players[2].visitor.aiLevel.toUpperCase() == 'DUMB'">
                 <img alt="alien2" src="img/ailow.jpg">
                 <br>

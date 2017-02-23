@@ -71,10 +71,10 @@ public class CardGameCasino implements Serializable {
 	public void setBalance() {
 		// "Script Joe(Human|Smart) [Elf]"
 		if (this.cardGamePlayer != null) {
-			if (this.cardGame != null) {
-				this.balance = "" + this.bet;// + " [" + (this.bet / this.cardGame.getAnte()) + "x]";
+			if (this.cardGame.getAnte() != 0) {
+				this.balance = "" + this.bet + " [" + (this.bet / this.cardGame.getAnte()) + "x]";
 			} else {
-				this.balance = "";
+				this.balance = "" + this.bet;
 			}
 		} else {
 			this.balance = "[]";

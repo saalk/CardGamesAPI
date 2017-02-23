@@ -29,7 +29,6 @@ function ($scope, cardgameService, toastr){
         vm.players[0].visitor.alias = 'John Doe';
         toastr.info('Your name is set', 'Information');
         cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
-        // TODO applyRemoteData or loadRemoteData ?
                .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('Setting name failed: ' + errorMessage, 'Error');
                 }
@@ -52,7 +51,6 @@ function ($scope, cardgameService, toastr){
             vm.gotogame = false;
         };
         cardgameService.changeVisitorDetailsForGame( vm.cardGame, vm.players[0] )
-        // TODO applyRemoteData or loadRemoteData ?
                .then( applyRemoteData, function( errorMessage ) {
                 toastr.error('Setting pawn failed: ' + errorMessage, 'Error');
                 }
@@ -66,7 +64,7 @@ function ($scope, cardgameService, toastr){
         // always get the cardgame from the service
         vm.cardGame = cardgameService.getGameStoredInService();
         if (vm.cardGame.gameId == null || angular.isUndefined(vm.cardGame.gameId)) {
-            toastr.info('Initializing new visitor.', 'Informational');
+            toastr.info('Initializing game for new visitor.', 'Informational');
             // add a new game and visitor and relate the visitor to the game
             cardgameService.initGameForVisitor( human , name )
                    .then( applyRemoteData, function( errorMessage ) {
@@ -75,9 +73,17 @@ function ($scope, cardgameService, toastr){
                 )
             ;
         } else {
+        // there is a player so setup a new game with this player
             vm.cardGame = cardgameService.getGameStoredInService();
             vm.players = vm.cardGame.players;
-            toastr.info('Continue using current visitor.' + vm.cardGame, 'Informational');
+            cardgameService.initGameForExistingVisitor( vm.cardGame , vm.players )
+                               .then( applyRemoteData, function( errorMessage ) {
+                                    toastr.error('Initializing new game for player failed: ' + errorMessage, 'Error');
+                                }
+                            )
+                        ;
+
+            toastr.info('Start a new game for existing player.' + vm.cardGame, 'Informational');
         };
     };
 
@@ -90,7 +96,6 @@ function ($scope, cardgameService, toastr){
         // Rather than doing anything clever on the client-side, I'm just
         // going to reload the remote data.
         cardgameService.changeVisitorDetailsForGame( functionCardGame, player )
-        // TODO applyRemoteData or loadRemoteData ?
                .then( applyRemoteData, function( errorMessage ) {
                     toastr.error('Updating player failed: ' + errorMessage, 'Error');
                 }

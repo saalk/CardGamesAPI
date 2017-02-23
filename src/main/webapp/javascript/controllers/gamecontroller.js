@@ -26,10 +26,11 @@ function ($scope, cardgameService, toastr){
     vm.dumb = 'Quick to beat, starting with ';
     vm.none = 'This alien has left the game with ';
 
-    vm.types = [{text:'only 3 in a row wins', type:'3inarow'},
-    {text:'one round all or nothing', type:'1round'},
-    {text:'one suit till the end', type:'1suit'}];
-    vm.myType = vm.types[0];
+    // default RRANNN ante=n/h betting=r/d deck=a/h/c/s/d/r insurance=n/q/h round=n/1 turns=n/1/2/3
+    vm.variants = [{text:'Default - Double or nothing, multiple rounds, no winner', type:'RDAN1N'},
+    {text:'Todo - Highest bet wins, only 1 round', type:'HRAN1N'},
+    {text:'Todo - Double or nothing,  Highest bet wins, hearts only', type:'HDHNNN'}];
+    vm.myVariant = vm.variants[0];
 
     vm.antes = [{amount:'20'},
     {amount:'50'},
@@ -62,6 +63,7 @@ function ($scope, cardgameService, toastr){
     };
     vm.prepareForShuffle = function () {
 
+        vm.updateGameDetails();
         // find ai players having none as ai level -> delete them
         // TODO delete only the extra/specific aliens when less/one is/are needed
         for (i=0; i < vm.players.length; i++) {
@@ -80,6 +82,8 @@ function ($scope, cardgameService, toastr){
     // ---
     // update the given game with the type and ante.
     vm.updateGameDetails = function() {
+        vm.cardGame.gameType = 'Hi-Lo'
+        vm.cardGame.gameVariant = vm.myVariant.type;
         vm.cardGame.ante = vm.myAnte.amount;
         cardgameService.updateGame( vm.cardGame )
             .then( applyRemoteData, function( errorMessage ) {
@@ -161,7 +165,9 @@ function ($scope, cardgameService, toastr){
 
         //set the ante
         if (vm.cardGame.ante === 0) {
-            vm.cardGame.ante = 50;
+            vm.cardGame.gameType = 'Hi-Lo'
+            vm.cardGame.gameVariant = vm.myVariant.type;
+            vm.cardGame.ante = vm.myAnte.amount;
             cardgameService.updateGame( vm.cardGame )
                 .then( applyRemoteData, function( errorMessage ) {
                         toastr.error('An error has occurred:' + errorMessage, 'Error');

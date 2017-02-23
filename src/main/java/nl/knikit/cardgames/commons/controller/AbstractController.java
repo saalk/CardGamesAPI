@@ -7,6 +7,7 @@ import nl.knikit.cardgames.commons.event.AbstractFlowDTO;
 import nl.knikit.cardgames.commons.event.EventOutput;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.GameVariant;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
 import nl.knikit.cardgames.service.IGameService;
 
@@ -52,8 +53,9 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		
 		context.setState(stateMachine.getCurrentStateEnum());
 		
-		// init a new default game has gameType HIGHLOW with the initial state set in the state machine
+		// init a new default game has gameType HIGHLOW and gameVariant HRANNN with the initial state set in the state machine
 		context.setGameType(GameType.HIGHLOW);
+		context.setGameVariant(new GameVariant(("")).getVariant());
 		this.setContext((T) gameService.createDefaultGame(this.getContext()));
 		
 		return this.context;

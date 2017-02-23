@@ -73,6 +73,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             crossDomain: true,
             url: 'http://knikit.nl/api/cardgames/init/human/' + visitor.visitorId
             + '?gameType=' + suppliedCardGame.gameType
+            + '&gameVariant=' + suppliedCardGame.gameVariant
             + '&ante=' + suppliedCardGame.ante,
             headers: {'Content-Type': 'application/json'},            //           params: {
             //               action: 'add'
@@ -87,6 +88,7 @@ function ($http, $q, toastr, $httpParamSerializerJQLike){
             crossDomain: true,
             url: 'http://knikit.nl/api/cardgames/' + suppliedCardGame.gameId + '/init'
             + '?gameType=' + suppliedCardGame.gameType
+            + '&gameVariant=' + suppliedCardGame.gameVariant
             + '&ante=' + suppliedCardGame.ante,
             headers: {'Content-Type': 'application/json'},
             data: '{}'

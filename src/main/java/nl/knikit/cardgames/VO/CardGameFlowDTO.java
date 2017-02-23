@@ -26,6 +26,7 @@ import nl.knikit.cardgames.model.Casino;
 import nl.knikit.cardgames.model.Deck;
 import nl.knikit.cardgames.model.Game;
 import nl.knikit.cardgames.model.GameType;
+import nl.knikit.cardgames.model.GameVariant;
 import nl.knikit.cardgames.model.Hand;
 import nl.knikit.cardgames.model.Player;
 import nl.knikit.cardgames.model.state.CardGameStateMachine;
@@ -78,6 +79,7 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 	// frontend query params
 	private String suppliedHumanOrAi;
 	private GameType suppliedGameType;
+	private GameVariant suppliedGameVariant;
 	private String suppliedAnte;
 	private String suppliedAlias;
 	private Avatar suppliedAvatar;
@@ -135,6 +137,22 @@ public class CardGameFlowDTO extends AbstractFlowDTO implements
 				log.info(message);
 				
 				message = String.format("CardGameFlowDTO gameType stored is: %s", this.suppliedGameType);
+				log.info(message);
+			}
+			if (pathAndQueryData.containsKey("gameVariant")) {
+				
+				message = String.format("CardGameFlowDTO gameVariant in path is: %s", pathAndQueryData.get("gameVariant"));
+				log.info(message);
+				
+				GameVariant gv = new GameVariant();
+				gv.fromVariant(pathAndQueryData.get("gameVariant"));
+				
+				message = String.format("CardGameFlowDTO gameVariant from Label is: %s", gv.getVariant());
+				log.info(message);
+				
+				this.suppliedGameVariant = gv;
+				
+				message = String.format("CardGameFlowDTO gameVariant stored is: %s", this.suppliedGameVariant);
 				log.info(message);
 			}
 			if (pathAndQueryData.containsKey("ante")) {
