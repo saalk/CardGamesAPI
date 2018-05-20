@@ -40,7 +40,7 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 			gameToUpdate.setGameType(flowDTO.getSuppliedGameType());
 		}
 		if (flowDTO.getSuppliedGameVariant() != null) {
-			gameToUpdate.setGameVariant(flowDTO.getSuppliedGameVariant().getVariant());
+			gameToUpdate.setGameVariant(flowDTO.getSuppliedGameVariant());
 		}
 		if (flowDTO.getSuppliedAnte() != null) {
 			gameToUpdate.setAnte(Integer.parseInt(flowDTO.getSuppliedAnte()));
@@ -101,7 +101,7 @@ public class UpdateCardGameDetailsEvent extends AbstractEvent {
 		// rest
 		GameType getSuppliedGameType();
 		
-		GameVariant getSuppliedGameVariant();
+		String getSuppliedGameVariant();
 		
 		String getSuppliedAnte();
 		

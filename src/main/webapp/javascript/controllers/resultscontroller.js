@@ -7,7 +7,7 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('ResultsController', ['$scope', 'cardgameService', 'toastr',
+        .controller('ResultsController', ['$scope', 'cardgameService', 'toastr', 'envService',
 function ($scope, cardgameService, toastr){
 
     // viewmodel for this controller

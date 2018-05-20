@@ -189,7 +189,7 @@ public class CardGameResource extends AbstractResource {
 	
 	// a body is always needed but can be {}
 	@PostMapping(value = "/cardgames/init", params = {"gameType", "gameVariant", "ante"})
-	//new cardGame with existing human if present
+	//new cardGame
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseEntity initCardGame(
@@ -418,7 +418,7 @@ public class CardGameResource extends AbstractResource {
 		pathAndRequestParams.put("gameId", String.valueOf(id));
 		pathAndRequestParams.put("casinoId", String.valueOf(casinoId));
 		pathAndRequestParams.put("cardAction", action);
-		pathAndRequestParams.put("total", total);
+		pathAndRequestParams.put("total", String.valueOf(total));
 		pathAndRequestParams.put("cardLocation", cardLocation);
 		
 		CardGameResponse response;

@@ -151,7 +151,7 @@ public class Deck implements Serializable {
     private Casino dealtTo;
 
     /**
-     * Hibernate, and code in general that creates objects via reflection use Class<T>.newInstance()
+     * Hibernate, and code in general that creates objects via reflection use newInstance()
      * to create a new instance of your classes. This method requires a public or private
      * no-arg constructor to be able to instantiate the object.
      */

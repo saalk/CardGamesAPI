@@ -4,9 +4,9 @@
 //
 // 1. 'ngRoute' is for angular-route
 // 2. 'ngAnimate', 'toastr' is for angular-toastr (
-angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'toastr', 'jsonFormatter']);
+angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'toastr', 'jsonFormatter', 'environment']);
 angular.module('myApp')
-        .config(function($httpProvider, $routeProvider, $locationProvider, toastrConfig) {
+        .config(function($httpProvider, $routeProvider, $locationProvider, toastrConfig, envServiceProvider) {
 
     $httpProvider.defaults.headers.common = {};
     $httpProvider.defaults.headers.post = {};
@@ -57,5 +57,40 @@ angular.module('myApp')
         titleClass: 'toast-title',
         toastClass: 'toast'
     });
+
+    // set the domains and variables for each environment
+    envServiceProvider.config({
+        domains: {
+            development: ['localhost:8383'],
+            production: ['knikit.nl']
+            //production: ['knikit.nl']
+            // anotherStage: ['domain1', 'domain2'],
+            // anotherStage: ['domain1', 'domain2']
+        },
+        vars: {
+            development: {
+                apiUrl: '//localhost:8383/api',
+                staticUrl: '//static.localhost:8383/api'
+                // antoherCustomVar: 'lorem',
+                // antoherCustomVar: 'ipsum'
+            },
+            production: {
+                apiUrl: '//knikit.nl/api',
+                staticUrl: '//static.knikit.nl/api'
+                //apiUrl: '//knikit.nl/api',
+                //staticUrl: '//static.knikit.nl/api'
+                // antoherCustomVar: 'lorem',
+                // antoherCustomVar: 'ipsum'
+            }
+            // anotherStage: {
+            // 	customVar: 'lorem',
+            // 	customVar: 'ipsum'
+            // }
+        }
+    });
+
+    // run the environment check, so the comprobation is made
+    // before controllers and services are built
+    envServiceProvider.check();
 
 });

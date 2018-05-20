@@ -26,152 +26,105 @@ public class DetermineTurnResultsEvent extends AbstractEvent {
 		
 		DetermineTurnResultsEventDTO flowDTO = (DetermineTurnResultsEventDTO) eventInput[0];
 		EventOutput eventOutput = null;
+		String message;
 		
-		String message = String.format("DetermineTurnResultsEvent setCurrentGame: %s", flowDTO.getCurrentGame());
+		message = String.format("DetermineTurnResultsEventOld CardAction: %s", flowDTO.getSuppliedCardAction());
 		log.info(message);
-		message = String.format("DetermineTurnResultsEvent CardAction: %s", flowDTO.getSuppliedCardAction());
+		message = String.format("DetermineTurnResultsEventOld CardLocation: %s", flowDTO.getSuppliedCardLocation());
 		log.info(message);
-		message = String.format("DetermineTurnResultsEvent CardLocation: %s", flowDTO.getSuppliedCardLocation());
+		message = String.format("DetermineTurnResultsEventOld handsToCheck: %s", flowDTO.getCurrentHands());
 		log.info(message);
 		
-		// init all the object and lists
 		Game gameToCheck = flowDTO.getCurrentGame();
 		Casino casinoToCheck = flowDTO.getCurrentCasino();
-		
 		List<Casino> casinosToCheck = flowDTO.getCurrentCasinos();
 		List<Hand> handsToCheck = flowDTO.getCurrentHands();
 		
-		message = String.format("DetermineTurnResultsEvent handsToCheck: %s", handsToCheck);
-		log.info(message);
+		boolean endTurn = false;
 		
-		// determine raise and set bet
-		try {
-			
-			// UPDATE CURRENT TURN
-			if (flowDTO.getSuppliedCardAction() == CardAction.DEAL) {
+		// set the new bet and turn
+		switch (flowDTO.getSuppliedCardAction()) {
+			case DEAL:
 				flowDTO.setNewCurrentTurn(1);
-			} else if (flowDTO.getSuppliedCardAction() == CardAction.HIGHER ||
-					    flowDTO.getSuppliedCardAction() == CardAction.LOWER) {
+				flowDTO.setNewBet(calculateNewBet(flowDTO));
+				break;
+			case HIGHER:
+			case LOWER:
 				flowDTO.setNewCurrentTurn(casinoToCheck.getActiveTurn() + 1);
-			} else {
-				// PASS
+				if (isWon(flowDTO, gameToCheck, handsToCheck)) {
+					flowDTO.setNewBet(calculateNewBet(flowDTO));
+				} else {
+					flowDTO.setNewBet(-1 * calculateNewBet(flowDTO));
+					endTurn = true;
+				}
+				break;
+			case PASS:
 				flowDTO.setNewCurrentTurn(casinoToCheck.getActiveTurn());
-			}
+				flowDTO.setNewBet(casinoToCheck.getBet());
+				endTurn = true;
+				break;
+			case NEXT:
+				//TODO based on ai level determine higher and lower before this switch!!
+				break;
+		}
+		
+		if (endTurn) {
+			// this will cause a player update
+			flowDTO.setNewCubits(flowDTO.getNewBet());
+			flowDTO.setCurrentPlayer(casinoToCheck.getPlayer());
 			
-			message = String.format("DetermineTurnResultsEvent setNewCurrentTurn is: %s", flowDTO.getNewCurrentTurn());
-			log.info(message);
-			
-			// DOUBLE OR NOTHING
-			int raiseFactor;
-			if (flowDTO.getNewCurrentTurn() > 2) {
-				raiseFactor = (int) Math.pow(2, flowDTO.getNewCurrentTurn() - 1);
-			} else {
-				raiseFactor = flowDTO.getNewCurrentTurn();
-			}
-			int raise = raiseFactor * flowDTO.getCurrentGame().getAnte();
-			
-			if (flowDTO.getSuppliedCardAction() == CardAction.DEAL) {
-				flowDTO.setNewBet(raise);
-				
-				message = String.format("DetermineTurnResultsEvent deal so only new bet and turn and raise: %s", raise);
-				log.info(message);
-				
-				eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-				return eventOutput;
-			}
-			
-			
-			// IS 2nd CARD HIGHER? -> NOT FOR PASS
-			boolean won = true;
-			if (flowDTO.getSuppliedCardAction() == CardAction.HIGHER ||
-					    flowDTO.getSuppliedCardAction() == CardAction.LOWER) {
-				
-				boolean higher = false;
-				Card lastCard = handsToCheck.get(handsToCheck.size() - 1).getCard();
-				
-				message = String.format("DetermineTurnResultsEvent lastCard: %s", lastCard);
-				log.info(message);
-				
-				Card previousCard = handsToCheck.get(handsToCheck.size() - 2).getCard();
-				
-				message = String.format("DetermineTurnResultsEvent previousCard: %s", previousCard);
-				log.info(message);
-				
-				if (lastCard.getRank().getValue(gameToCheck.getGameType()) < previousCard.getRank().getValue(gameToCheck.getGameType())) {
-					higher = false; // HIGHER
-				} else {
-					if (lastCard.getRank().getValue(gameToCheck.getGameType()) > previousCard.getRank().getValue(gameToCheck.getGameType())) {
-						higher = true; // LOWER
-					} else {
-						higher = true; // EQUAL
-						// TODO add gamevariant logic to this
-					}
-				}
-				// UPDATE BET
-				if ((higher) && (flowDTO.getSuppliedCardAction() == CardAction.HIGHER)) {
-					message = String.format("DetermineTurnResultsEvent won with raise: %s", raise);
-					log.info(message);
-					flowDTO.setNewBet(raise);
-					won = true;
-				} else {
-					message = String.format("DetermineTurnResultsEvent lost with raise: %s", raise);
-					log.info(message);
-					flowDTO.setNewBet(-1 * raise);
-					won = false;
-				}
-			}
-			
-			
-			// UPDATE CUBITS WITH BET
-			if (((flowDTO.getSuppliedCardAction() == CardAction.PASS) && won) || !won) {
-				
-				message = String.format("DetermineTurnResultsEvent update cubits: %s", flowDTO.getNewBet());
-				log.info(message);
-				flowDTO.setNewCubits(flowDTO.getNewBet());
-				flowDTO.setCurrentPlayer(casinoToCheck.getPlayer());
-				
-				won = true;
-			}
-			
-			// WHEN PASS OR LOST -> UPDATE NEW ACTIVE CASINO
-			if ((flowDTO.getSuppliedCardAction() == CardAction.PASS) || !won) {
-				
-				boolean found2 = false;
-				for (Casino casino : casinosToCheck) {
-					if (found2) {
-						flowDTO.setNewActiveCasino(Integer.parseInt(String.valueOf(casino.getCasinoId())));
-						found2 = false;
-						break;
-					}
-					if (casino.getCasinoId() == Integer.parseInt(flowDTO.getSuppliedCasinoId())) {
-						found2 = true;
-						message = String.format("DetermineTurnResultsEvent getSuppliedCasinoId found: %s", flowDTO.getSuppliedCasinoId());
-						log.info(message);
-					}
-				}
-				if (found2) {
-					flowDTO.setNewActiveCasino(casinosToCheck.get(0).getCasinoId());
-					message = String.format("DetermineTurnResultsEvent setNewActiveCasino : %s", flowDTO.getNewActiveCasino());
-					log.info(message);
-				}
-			}
-			
-			message = String.format("DetermineTurnResultsEvent setNewBet: %s", flowDTO.getNewBet());
-			log.info(message);
-			
-			
-		} catch (Exception e) {
-			message = String.format("DetermineTurnResultsEvent crash : %s", e);
-			log.info(message);
-			eventOutput = new EventOutput(EventOutput.Result.FAILURE, CardGameStateMachine.Trigger.ERROR);
-			return eventOutput;
+			setNewActiveCasino(flowDTO, casinosToCheck);
 		}
 		
 		eventOutput = new EventOutput(EventOutput.Result.SUCCESS);
-		message = String.format("DetermineTurnResultsEvent do no transition");
-		log.info(message);
-		
 		return eventOutput;
+	}
+	
+	private boolean isWon(DetermineTurnResultsEventDTO flowDTO, Game gameToCheck, List<Hand> handsToCheck) {
+		
+		boolean newCardIsHigher;
+		
+		Card lastCard = handsToCheck.get(handsToCheck.size() - 1).getCard();
+		Card previousCard = handsToCheck.get(handsToCheck.size() - 2).getCard();
+		
+		if (lastCard.getRank().getValue(gameToCheck.getGameType()) < previousCard.getRank().getValue(gameToCheck.getGameType())) {
+			newCardIsHigher = false; // HIGHER
+		} else {
+			if (lastCard.getRank().getValue(gameToCheck.getGameType()) > previousCard.getRank().getValue(gameToCheck.getGameType())) {
+				newCardIsHigher = true; // LOWER
+			} else {
+				newCardIsHigher = true; // EQUAL
+				// TODO add gamevariant logic to this
+			}
+		}
+		return (newCardIsHigher) && (flowDTO.getSuppliedCardAction() == CardAction.HIGHER);
+	}
+	
+	private int calculateNewBet(DetermineTurnResultsEventDTO flowDTO) {
+		int raiseFactor;
+		if (flowDTO.getNewCurrentTurn() > 2) {
+			raiseFactor = (int) Math.pow(2, flowDTO.getNewCurrentTurn() - 1);
+		} else {
+			raiseFactor = flowDTO.getNewCurrentTurn();
+		}
+		return raiseFactor * flowDTO.getCurrentGame().getAnte();
+	}
+	
+	private void setNewActiveCasino(DetermineTurnResultsEventDTO flowDTO, List<Casino> casinosToCheck) {
+		boolean found = false;
+		for (Casino casino : casinosToCheck) {
+			if (found) {
+				flowDTO.setNewActiveCasino(Integer.parseInt(String.valueOf(casino.getCasinoId())));
+				found = false;
+				break;
+			}
+			if (casino.getCasinoId() == Integer.parseInt(flowDTO.getSuppliedCasinoId())) {
+				found = true;
+			}
+		}
+		if (found) {
+			flowDTO.setNewActiveCasino(casinosToCheck.get(0).getCasinoId());
+		}
 	}
 	
 	public interface DetermineTurnResultsEventDTO {

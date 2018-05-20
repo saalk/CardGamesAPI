@@ -7,7 +7,7 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('CasinoController', ['$scope', 'cardgameService', 'toastr',
+        .controller('CasinoController', ['$scope', 'cardgameService', 'toastr', 'envService',
 function ($scope, cardgameService, toastr){
 
     // viewmodel for this controller

@@ -1,4 +1,4 @@
-package nl.knikit.cardgames.training;
+package nl.knikit.cardgames.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -9,7 +9,7 @@ public class Password {
         // when called make a base64 encodes string from the arguments passed (password)
         // 1: change the "password" in a password
         // 2: compile with: javac src/main/java/nl/knikit/cardgames/utils/Password.java
-        // 3: execute with: java -cp src/main/java nl.knikit.cardgames.training.Password
+        // 3: execute with: java -cp src/main/java nl.knikit.cardgames.utils.Password
         // cp = classpath, a path of directories in which .class files are located
         // 4: change the "cGFzc3dvcmQ=" in the result, redo step 2 and 3 and see if ok
 

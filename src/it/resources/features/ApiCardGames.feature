@@ -23,19 +23,19 @@ Feature: Execute a lifecycle of a cardGame in the card game
   //PUT    api/cardgames/1/turn/players/2     ?action=deal/higher/lower/pass/next for human or ai player
 
   @Api @CardGames
-  Scenario Outline: INIT a NEW CardGame with POST /api/cardgames/init?gameType=<gameType>&ante=<ante>
-    Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and ante "<ante>"
+  Scenario Outline: INIT a NEW CardGame with POST /api/cardgames/init?gameType=<gameType>&gameVariant=<gameVariant>&ante=<ante>
+    Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and gameVariant "<gameVariant>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
 
     Examples: CardGames - Game entity with relative id to refer to in later scenarios
 
-      | id | deckId | casinoId | playerId | gameType  | ante | HTTP status code | resultState   | resultWinner |
-      | 1  | null   | null     | null     | Hi-Lo     | 1000 | 201              | SELECTED | null         |
-      | 2  | null   | null     | null     | Hi-Lo     | 2000 | 201              | SELECTED | null         |
-      | 3  | null   | null     | null     | Hi-Lo     |      | 201              | SELECTED | null         |
-      | 4  | null   | null     | null     | Hi-Lo     |      | 201              | SELECTED | null         |
-      | 5  | null   | null     | null     | Hi-Lo     | 5000 | 201              | SELECTED | null         |
-      | 6  | null   | null     | null     | Hi-Lo     |      | 201              | SELECTED | null         |
+      | id | deckId | casinoId | playerId | gameType  | gameVariant | ante | HTTP status code | resultState   | resultWinner |
+      | 1  | null   | null     | null     | Highlow   | HRANNN      | 1000 | 201              | SELECTED | null         |
+      | 2  | null   | null     | null     | Highlow   | HRANNN      | 2000 | 201              | SELECTED | null         |
+      | 3  | null   | null     | null     | Highlow   | HRANNN      |      | 201              | SELECTED | null         |
+      | 4  | null   | null     | null     | Highlow   | HRANNN      |      | 201              | SELECTED | null         |
+      | 5  | null   | null     | null     | Highlow   | HRANNN      | 5000 | 201              | SELECTED | null         |
+      | 6  | null   | null     | null     | Highlow   | HRANNN      |      | 201              | SELECTED | null         |
 
   @Api @CardGames
   Scenario Outline: A frontend makes call to POST /api/players to make a player
@@ -47,41 +47,41 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
       | id     | avatar   | alias            | human | aiLevel | cubits | securedLoan | HTTP status code |
       | 1      | Magician | Cukes human Doe1 | true  | Human   | 0      | 0           | 201              |
-      | 2      | Magician | Cukes ai Doe2    | false | Low     | 0      | 0           | 201              |
+      | 2      | Magician | Cukes ai Doe2    | false | Dumb     | 0      | 0           | 201              |
       | 3      | Magician | Cukes ai Doe3    | false | Medium  | 0      | 0           | 201              |
-      | 4      | Magician | Cukes ai Doe4    | false | High    | 0      | 0           | 201              |
+      | 4      | Magician | Cukes ai Doe4    | false | Smart    | 0      | 0           | 201              |
       | 5      | Magician | Cukes human Doe5 | true  | Human   | 0      | 0           | 201              |
       | 6      | Magician | Cukes human Doe6 | true  | Human   | 0      | 0           | 201              |
 
   @Api @CardGames
-  Scenario Outline: INIT a NEW CardGame for a player with POST /api/cardgames/init/human/{playerId}?gameType=<gameType>&ante=<ante>
-    Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and ante "<ante>"
+  Scenario Outline: INIT a NEW CardGame for a player with POST /api/cardgames/init/human/{playerId}?gameType=<gameType>&gameVariant=<gameVariant>&ante=<ante>
+    Given I try to init a gameType "<gameType>" cardGame with playerId "<playerId>" and gameVariant "<gameVariant>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
 
     Examples: CardGmes (Game entity) with reference to previously created winner and relative id to refer to in later scenarios
 
-      | id | deckId | casinoId | playerId | gameType  | ante  | HTTP status code | resultState   | resultWinner |
-      | 7  | null   | null     | 1        | Blackjack | 7000  | 201              | HAS_HUMAN   | null         |
-      | 8  | null   | null     | 2        | Blackjack | 8000  | 201              | SELECTED | null         |
-      | 9  | null   | null     | 3        | Blackjack |       | 201              | SELECTED | null         |
-      | 10 | null   | null     | 4        | Blackjack |       | 201              | SELECTED | null         |
-      | 11 | null   | null     | 5        | Blackjack | 11000 | 201              | HAS_HUMAN   | null         |
-      | 12 | null   | null     | 6        | Blackjack |       | 201              | HAS_HUMAN   | null         |
+      | id | deckId | casinoId | playerId | gameType  | gameVariant | ante  | HTTP status code | resultState   | resultWinner |
+      | 7  | null   | null     | 1        | Blackjack | HRANNN      | 7000  | 201              | HAS_HUMAN   | null         |
+      | 8  | null   | null     | 2        | Blackjack | HRANNN      | 8000  | 201              | SELECTED | null         |
+      | 9  | null   | null     | 3        | Blackjack | HRANNN      |       | 201              | SELECTED | null         |
+      | 10 | null   | null     | 4        | Blackjack | HRANNN      |       | 201              | SELECTED | null         |
+      | 11 | null   | null     | 5        | Blackjack | HRANNN      | 11000 | 201              | HAS_HUMAN   | null         |
+      | 12 | null   | null     | 6        | Blackjack | HRANNN      |       | 201              | HAS_HUMAN   | null         |
 
   @Api @CardGames
-  Scenario Outline: INIT some CHANGES for a CardGame with PUT /api/cardgames/{id}/init?gameType=<gameType>&ante=<ante>
-    Given I try to init changes to a cardGame with id "<id>" having gameType "<gameType>" and ante "<ante>"
+  Scenario Outline: INIT some CHANGES for a CardGame with PUT /api/cardgames/{id}/init?gameType=<gameType>&gameVariant=<gameVariant>&ante=<ante>
+    Given I try to init changes to a cardGame with id "<id>" having gameType "<gameType>" and gameVariant "<gameVariant>" and ante "<ante>"
     Then I should see that the response has HTTP status "<HTTP status code>"
 
     Examples: This is the default HIGHLOW CardGame
 
-      | id | deckId | casinoId | playerId | gameType  | ante | HTTP status code | resultState   | resultWinner |
-      | 1  | null   | null     | 1        | Hi-Lo     | 100  | 200              | HAS_HUMAN   | null         |
-      | 2  | null   | null     | 2        | Hi-Lo     | 200  | 200              | SELECTED | null         |
-      | 3  | null   | null     | 3        | Hi-Lo     | 300  | 200              | SELECTED | null         |
-      | 7  | null   | null     | 1        | Blackjack | 700  | 200              | HAS_HUMAN   | null         |
-      | 8  | null   | null     | 2        | Blackjack | 800  | 200              | SELECTED | null         |
-      | 9  | null   | null     | 3        | Blackjack | 900  | 200              | SELECTED | null         |
+      | id | deckId | casinoId | playerId | gameType  | gameVariant | ante | HTTP status code | resultState   | resultWinner |
+      | 1  | null   | null     | 1        | Highlow   | HRANNN      | 100  | 200              | HAS_HUMAN   | null         |
+      | 2  | null   | null     | 2        | Highlow   | HRANNN      | 200  | 200              | SELECTED | null         |
+      | 3  | null   | null     | 3        | Highlow   | HRANNN      | 300  | 200              | SELECTED | null         |
+      | 7  | null   | null     | 1        | Blackjack | HRANNN      | 700  | 200              | HAS_HUMAN   | null         |
+      | 8  | null   | null     | 2        | Blackjack | HRANNN      | 800  | 200              | SELECTED | null         |
+      | 9  | null   | null     | 3        | Blackjack | HRANNN      | 900  | 200              | SELECTED | null         |
 
   @Api @CardGames
   Scenario Outline: SETUP a human or ai player for a CardGame with POST /api/cardgames/{id}/setup/"<HumanOrAi>"?alias="<alias>"&avatar="<avatar>"&securedLoan="<securedLoan>"&aiLevel="<aiLevel>"
@@ -92,11 +92,11 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
       | id   | playerId | avatar | alias             | HumanOrAi | aiLevel | cubits | securedLoan | HTTP status code | resultState   | resultWinner |
       | 1    | 7        | Goblin | Cukes human Doe7  | human     | Human   | 0      | 1           | 201              | HAS_HUMAN   | null         |
-      | 2    | 8        | Goblin | Cukes ai Doe8     | ai        | Low     | 0      | 2           | 201              | SELECTED | null         |
-      | 3    | 9        | Goblin | Cukes ai Doe9     | ai        | Low     | 0      | 3           | 201              | SELECTED | null         |
+      | 2    | 8        | Goblin | Cukes ai Doe8     | ai        | Dumb    | 0      | 2           | 201              | SELECTED | null         |
+      | 3    | 9        | Goblin | Cukes ai Doe9     | ai        | Dumb    | 0      | 3           | 201              | SELECTED | null         |
       | 7    | 10       | Goblin | Cukes human Doe10 | human     | Human   | 0      | 7           | 201              | HAS_HUMAN   | null         |
-      | 8    | 11       | Goblin | Cukes ai Doe11    | ai        | Low     | 0      | 8           | 201              | SELECTED | null         |
-      | 9    | 12       | Goblin | Cukes ai Doe12    | ai        | Low     | 0      | 9           | 201              | SELECTED | null         |
+      | 8    | 11       | Goblin | Cukes ai Doe11    | ai        | Dumb    | 0      | 8           | 201              | SELECTED | null         |
+      | 9    | 12       | Goblin | Cukes ai Doe12    | ai        | Dumb    | 0      | 9           | 201              | SELECTED | null         |
 
   @Api @CardGames
   Scenario Outline: SETUP some CHANGES to a CardGame with PUT /api/cardgames/{id}/setup/{playerId}?alias/avatar/aiLevel/securedLoan/playingOrder
@@ -107,11 +107,11 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
       | id   | playerId | avatar | alias            | HumanOrAi | aiLevel | cubits | securedLoan | playingOrder | HTTP status code | resultState   | resultWinner |
       | 1    | 1        | Roman  | Cukes human Doe1 | human     | Human   | 0      | 11          |              | 200              | HAS_HUMAN   | null         |
-      | 2    | 2        | Roman  | Cukes ai Doe2    | ai        | Low     | 0      | 12          | 1            | 200              | SELECTED | null         |
-      | 3    | 3        | Roman  | Cukes ai Doe3    | ai        | Low     | 0      | 13          | -1           | 200              | SELECTED | null         |
+      | 2    | 2        | Roman  | Cukes ai Doe2    | ai        | Dumb    | 0      | 12          | 1            | 200              | SELECTED | null         |
+      | 3    | 3        | Roman  | Cukes ai Doe3    | ai        | Dumb    | 0      | 13          | -1           | 200              | SELECTED | null         |
       | 7    | 7        | Roman  | Cukes human Doe7 | human     | Human   | 0      | 17          |              | 200              | HAS_HUMAN   | null         |
-      | 8    | 8        | Roman  | Cukes ai Doe8    | ai        | Low     | 0      | 18          | -1           | 200              | SELECTED | null         |
-      | 9    | 9        | Roman  | Cukes ai Doe9    | ai        | Low     | 0      | 19          | 1            | 200              | SELECTED | null         |
+      | 8    | 8        | Roman  | Cukes ai Doe8    | ai        | Dumb    | 0      | 18          | -1           | 200              | SELECTED | null         |
+      | 9    | 9        | Roman  | Cukes ai Doe9    | ai        | Dumb    | 0      | 19          | 1            | 200              | SELECTED | null         |
 
   @Api @CardGames
   Scenario Outline: DELETE a player for a CardGame with DELETE /api/cardgames/{id}/"<HumanOrAi>"/{playerId}
@@ -121,9 +121,9 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default ante HIGHLOW CardGame
 
       | id   | playerId | avatar | alias            | HumanOrAi | aiLevel | cubits | securedLoan | HTTP status code | resultState   | resultWinner |
-      | 7    | 1        | Roman  | Cukes human Doe1 | human     | Human   | 0      | 14          | 204              | HAS_HUMAN   | null         |
-      | 8    | 2        | Roman  | Cukes ai Doe2    | ai        | Low     | 0      | 15          | 204              | SELECTED | null         |
-      | 9    | 3        | Roman  | Cukes ai Doe3    | ai        | Low     | 0      | 16          | 204              | SELECTED | null         |
+      | 7    | 1        | Roman  | Cukes human Doe1 | human     | Human   | 0      | 14          | 204              | HAS_HUMAN     | null         |
+      | 8    | 2        | Roman  | Cukes ai Doe2    | ai        | Dumb    | 0      | 15          | 204              | SELECTED      | null         |
+      | 9    | 3        | Roman  | Cukes ai Doe3    | ai        | Dumb    | 0      | 16          | 204              | SELECTED      | null         |
 
   @Api @CardGames
   Scenario Outline: SHUFFLE a CardGame with POST /api/cardgames/{id}/shuffle/cards?jokers
@@ -133,9 +133,9 @@ Feature: Execute a lifecycle of a cardGame in the card game
     Examples: This is the default
 
       | id    | jokers | HTTP status code | resultState   | resultWinner |
-      | 1     | 0      | 201              | resultState   | resultWinner |
-      | 2     | 1      | 500              | HAS_HUMAN   | null         |
-      | 3     |        | 201              | HAS_HUMAN   | null         |
+      | 1     | 0      | 201              | HAS_HUMAN     | null         |
+      | 2     | 1      | 500              | HAS_HUMAN     | null         |
+      | 3     |        | 201              | HAS_HUMAN     | null         |
 
   @Ignore
   Scenario Outline: TURN for a player in a CardGame with PUT /api/cardgames/{id}/turn/players/(playerId}
@@ -158,19 +158,19 @@ Feature: Execute a lifecycle of a cardGame in the card game
 
     Examples: This is the default HIGHLOW CardGame
 
-      | id     | decks | casinos | human | state         | gameType  | ante | HTTP status code | resultState   | resultWinner |
-      | 1      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 2      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 3      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 4      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 5      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 6      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 7      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 8      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 9      | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 10     | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 11     | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
-      | 12     | []    | []      | 1     | SELECTED | Hi-Lo     | 1000 | 204              | resultState   | resultWinner |
+      | id     | decks | casinos | human | state    | gameType  | ante | HTTP status code | resultState   | resultWinner |
+      | 1      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 2      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 3      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 4      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 5      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 6      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 7      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 8      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 9      | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 10     | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 11     | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
+      | 12     | []    | []      | 1     | SELECTED | Highlow   | 1000 | 204              | resultState   | resultWinner |
 
   @Api @CardGames
   Scenario Outline: A frontend makes call to DELETE /api/players/{id} cardGame player

@@ -11,7 +11,7 @@ public class DataTypes {
 	
 	private static String printMe = "static string printed";
 	
-	public static void main(String[] args) {
+	public static void main(String[] arg) {
 		// 1: compile with:
 		// cd D:/Work/Projects/workspace/CardGamesAPI
 		// javac src/test/java/nl/knikit/cardgames/training/DataTypes.java

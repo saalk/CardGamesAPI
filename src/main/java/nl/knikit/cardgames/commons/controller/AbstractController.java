@@ -55,7 +55,7 @@ public abstract class AbstractController<T extends Game> implements Controller<T
 		
 		// init a new default game has gameType HIGHLOW and gameVariant HRANNN with the initial state set in the state machine
 		context.setGameType(GameType.HIGHLOW);
-		context.setGameVariant(new GameVariant(("")).getVariant());
+		context.setGameVariant(new GameVariant().getVariant());
 		this.setContext((T) gameService.createDefaultGame(this.getContext()));
 		
 		return this.context;

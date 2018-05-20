@@ -22,7 +22,7 @@ Feature: Execute a lifecycle of a player in the card game
     Examples: This is the default Human Player
 
       | id     | avatar | alias     | human | aiLevel | cubits | securedLoan | HTTP status code |
-      | latest | ROMAN  | Alien1 Doe | false | LOW     | 0      | 0           | 201              |
+      | latest | ROMAN  | Alien1 Doe | false | DUMB     | 0      | 0           | 201              |
       | latest | GOBLIN | Alien2 Doe | false | MEDIUM  | 0      | 0           | 201              |
       | latest | ELF    | Cukes1 Doe | true  | HUMAN   | 0      | 0           | 201              |
       | latest | ELF    | Cukes2 Doe | true  | HUMAN   | 0      | 0           | 201              |

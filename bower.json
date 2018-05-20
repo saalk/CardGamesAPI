@@ -1,18 +1,17 @@
 {
   "name": "card-games-api",
-  "version": "0.0.0",
   "description": "Card games project for AngularJS with java and maven",
   "main": "src/main/webapp/index.html",
+  "keywords": [
+    "knikit",
+    "highlow",
+    "hi-low",
+    "cardgame",
+    "high-low"],
   "authors": [
     "Saalk lightyear"
   ],
   "license": "Apache 2.0",
-  "keywords": [
-    "java",
-    "maven",
-    "angular",
-    "cardgames"
-  ],
   "homepage": "http://knikit.nl",
   "private": true,
   "ignore": [
@@ -24,20 +23,21 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "^1.5.6",
-    "angular-loader": "^1.5.6",
-    "angular-route": "^1.5.6",
-    "angular-animate": "^1.5.6",
-    "angular-mocks": "^1.5.6",
-    "angular-resource": "^1.5.6",
-    "angular-toastr": "^1.5.6",
-    "angular-cookies": "^1.5.6",
-    "angular-sanitize": "^1.5.6",
-    "angular-touch": "^1.5.6",
+    "angular": "~1.6",
+    "angular-loader": "~1.6",
+    "angular-route": "~1.6",
+    "angular-animate": "~1.6",
+    "angular-mocks": "~1.6",
+    "angular-resource": "~1.6",
+    "angular-toastr": "^2.1.1",
+    "angular-cookies": "~1.6",
+    "angular-sanitize": "~1.6",
+    "angular-touch": "~1.6",
+    "angular-environment":  "1.0.8",
     "restangular": "^1.5.2",
-    "lodash": "^4.16.1",
+    "lodash": "4.17.5",
     "skeleton-css": "^2.0.4",
-    "bootstrap": "^3.3.6",
+    "bootstrap": "4.1.0",
     "json-formatter": "^0.6.0"
   }
 }

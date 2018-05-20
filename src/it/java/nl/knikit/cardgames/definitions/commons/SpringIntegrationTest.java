@@ -1,8 +1,5 @@
 package nl.knikit.cardgames.definitions.commons;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.knikit.cardgames.VO.CardGame;
 import nl.knikit.cardgames.commons.util.StackableResponses;
 
 import org.springframework.beans.factory.annotation.Autowired;

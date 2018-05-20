@@ -7,7 +7,7 @@ angular.module('myApp')
                 }
             };
         })
-        .controller('GameController', ['$scope', 'cardgameService','toastr',
+        .controller('GameController', ['$scope', 'cardgameService','toastr', 'envService',
 function ($scope, cardgameService, toastr){
 
     /* jshint validthis: true */

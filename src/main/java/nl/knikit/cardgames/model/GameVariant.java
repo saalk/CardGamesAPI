@@ -51,20 +51,13 @@ public class GameVariant {
 	 * to fromLabel the Enum based on the name eg. key "Low" -> value AiLevel.DUMB
 	 */
 	
-	@Column(name = "GAMEVARIANT", length = 50)
 	String variant;
 	
-	@Transient
 	VariantAnte variantAnte;
-	@Transient
 	VariantBetting variantBetting;
-	@Transient
 	VariantDeck variantDeck;
-	@Transient
 	VariantInsurance variantInsurance;
-	@Transient
 	VariantRound variantRound;
-	@Transient
 	VariantTurns variantTurns;
 	
 	public GameVariant() {

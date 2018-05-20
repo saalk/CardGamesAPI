@@ -50,13 +50,13 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 	}
 	
 	// INIT NEW or for existing PLAYER
-	@Given("^I try to init a gameType \"([^\"]*)\" cardGame with playerId \"([^\"]*)\" and ante \"([^\"]*)\"$")
-	public void iTryToPostANewTypeCardGameWithAnte(String gameType, String playerId, String ante) throws Throwable {
+	@Given("^I try to init a gameType \"([^\"]*)\" cardGame with playerId \"([^\"]*)\" and gameVariant \"([^\"]*)\" and ante \"([^\"]*)\"$")
+	public void iTryToPostANewTypeCardGameWithAnte(String gameType, String playerId, String gameVariant, String ante) throws Throwable {
 		
 		
-		//POST   api/cardgames/init           ?gameType/ante
+		//POST   api/cardgames/init           ?gameType/gameVariant/ante
 		// or
-		//POST   api/cardgames/init/human/2   ?gameType/ante
+		//POST   api/cardgames/init/human/2   ?gameType/gameVariant/ante
 		String url = baseCardGamesUrl + "/init"; // base is without the / at the end !
 		
 		// Uri (URL) parameters
@@ -77,6 +77,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		// Query parameters
 		Map<String, String> queryParams = new HashMap<>();
 		queryParams.put("gameType", gameType);
+		queryParams.put("gameVariant", gameVariant);
 		queryParams.put("ante", ante);
 		
 		// body cannot be null since there is a put that wants a request body
@@ -92,10 +93,10 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 	}
 	
 	// INIT CHANGES
-	@Given("^I try to init changes to a cardGame with id \"([^\"]*)\" having gameType \"([^\"]*)\" and ante \"([^\"]*)\"$")
-	public void iTryToPutANewTypeCardGameWithAnte(String cardGameId, String gameType, String ante) throws Throwable {
+	@Given("^I try to init changes to a cardGame with id \"([^\"]*)\" having gameType \"([^\"]*)\" and gameVariant \"([^\"]*)\" and ante \"([^\"]*)\"$")
+	public void iTryToPutANewTypeCardGameWithAnte(String cardGameId, String gameType, String gameVariant, String ante) throws Throwable {
 		
-		//PUT    api/cardgames/1/init         ?gameType/ante
+		//PUT    api/cardgames/1/init         ?gameType/gameVariant/ante
 		String url = cardGamesUrlWithId + "/init?"; // cardGamesUrlWithId is with {id} but without the / at the end !
 		
 		if (cardGameId.equals("latest")) {
@@ -113,6 +114,7 @@ public class StepDefsCardGames extends SpringIntegrationTest {
 		// Query parameters
 		Map<String, String> queryParams = new HashMap<>();
 		queryParams.put("gameType", gameType);
+		queryParams.put("gameVariant", gameVariant);
 		queryParams.put("ante", ante);
 		
 		// body cannot be null since there is a put that wants a request body

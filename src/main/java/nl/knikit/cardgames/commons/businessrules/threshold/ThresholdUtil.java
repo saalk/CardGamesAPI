@@ -15,7 +15,6 @@ public class ThresholdUtil {
 
 	/**
 	 * @param threshold will be concatenated with param, so in the end it will look like "param/" + threshold
-	 * @return
 	 */
 	public String obtainThreshold(final String threshold) {
 		

@@ -1,6 +1,8 @@
 #! /bin/sh
 
-server_port=$((RANDOM+10000))
+echo server_port=$((RANDOM+10000))
+
+server_port=8383
 container_port=$((server_port+1))
 
 echo "--- Using port ${server_port}"
