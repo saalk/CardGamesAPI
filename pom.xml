@@ -379,8 +379,8 @@
                     <driver>org.mariadb.jdbc.Driver</driver>
                     <dialect>org.hibernate.dialect.MySQLDialect</dialect>
                     <url><![CDATA[jdbc:mariadb://192.168.2.100:3306/knikit]]></url>
-                    <username>root</username>
-                    <password>klaas</password>
+                    <username></username>
+                    <password></password>
                 </configuration>
             </plugin>
             -->

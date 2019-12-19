@@ -127,8 +127,8 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
 
         // either these 3 or URL
         driverManagerDataSource.setDriverClassName(Preconditions.checkNotNull("org.mariadb.jdbc.Driver"));
-        driverManagerDataSource.setUsername(Preconditions.checkNotNull("root"));
-        driverManagerDataSource.setPassword(Preconditions.checkNotNull("klaas"));
+        driverManagerDataSource.setUsername(Preconditions.checkNotNull(""));
+        driverManagerDataSource.setPassword(Preconditions.checkNotNull(""));
         driverManagerDataSource.setUrl(Preconditions.checkNotNull("jdbc:mariadb://192.168.2.100:3306/knikit"));
 
         return driverManagerDataSource;
@@ -136,10 +136,10 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         /*BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(env.getProperty("org.mysql.jdbc.Driver"));
         dataSource.setUrl(env.getProperty("jdbc:mysql://192.168.2.100:3306/knikit"));
-        dataSource.setUsername(env.getProperty("admin"));
-        dataSource.setPassword(env.getProperty("klaas"));*/
-        //dataSource.setUsername(env.getProperty(Password.decode("cm9cdA==")));
-        //dataSource.setPassword(env.getProperty(Password.decode("a2xhYXM=")));
+        dataSource.setUsername(env.getProperty(""));
+        dataSource.setPassword(env.getProperty(""));*/
+        //dataSource.setUsername(env.getProperty(Password.decode("")));
+        //dataSource.setPassword(env.getProperty(Password.decode("")));
         //return dataSource;
 
     }
