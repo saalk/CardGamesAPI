@@ -27,8 +27,7 @@ import java.util.Map;
 @Scope("request")
 public class SpringIntegrationTest {
 	
-	
-	protected static ResponseResults latestResponse = null;
+	public static ResponseResults latestResponse = null;
 	
 	protected static String latestCardGamesID = "";
 	
@@ -47,7 +46,7 @@ public class SpringIntegrationTest {
 	protected static List<String> latestHandsIDs = new ArrayList<>();
 	protected static List<String> latestDecksIDs = new ArrayList<>();
 	
-	private static String api = "http://localhost:8383/api";
+	public static String api = "http://localhost:8383/api";
 	
 	protected static String baseCardGamesUrl = api + "/cardgames";
 	protected static String cardGamesUrlWithId = baseCardGamesUrl + "/{id}";

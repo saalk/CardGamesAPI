@@ -1,3 +1,4 @@
+# Generic
 *.class
 .idea/
 .DS_Store
@@ -15,6 +16,10 @@ ngproject/
 *.war
 *.ear
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /nbproject/private/
+
+# Security
+*.txt
+*.puml

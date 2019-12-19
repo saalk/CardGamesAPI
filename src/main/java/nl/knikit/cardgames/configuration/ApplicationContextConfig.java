@@ -143,20 +143,20 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         //return dataSource;
 
     }
-
-
+    
+    
     // C: By configuring a transaction manager, code in the dao class doesn’t have to take care of
     // transaction management explicitly. Instead, the @Transactional annotation can be used.
-
+    
     @Bean(name = "transactionManager")
     @Autowired
     public HibernateTransactionManager transactionManager(final SessionFactory sessionFactory) {
         final HibernateTransactionManager txManager = new HibernateTransactionManager();
         txManager.setSessionFactory(sessionFactory);
-
+        
         return txManager;
     }
-
+    
     // D: Translate all errors generated during the persistence process (HibernateExceptions, PersistenceExceptions...)
     // into DataAccessException objects
     @Bean(name = "exceptionTranslation")
