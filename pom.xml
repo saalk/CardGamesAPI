@@ -31,7 +31,7 @@
         <!-- VERSION 4 -->
         <!-- some hibernate versions are not compatible with some spring versions
              hibernate 3 requires a small change in spring bean configuration -->
-        <springframework.version>4.3.3.RELEASE</springframework.version>
+        <springframework.version>5.2.2.RELEASE</springframework.version>
         <junit.version>4.11</junit.version>
 
         <!-- VERSION 3 -->
