@@ -55,7 +55,7 @@
         <!-- 1.3.2 since 1.5.0 is not working-->
         <exec.maven.plugin>1.3.2</exec.maven.plugin>
         <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
-        <spring-data-jpa.version>1.10.4.RELEASE</spring-data-jpa.version>
+        <spring-data-jpa.version>1.11.23.RELEASE</spring-data-jpa.version>
         <!--
         <aspose-cells.version>9.0.0</aspose-cells.version> -->
 
