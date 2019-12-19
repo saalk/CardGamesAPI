@@ -8,7 +8,7 @@
 #    - install winscp and make synology ssh enabled and ssh on port 32800
 #    - go to /volume1/@appstore/Tomcat7/src/conf/tomcat-users.xml
 #    - add 	<role rolename="manager-gui"/> <role rolename="admin-gui"/>
-#		<user roles="manager-gui" password="klaas" username="admin"/>
+#		<user roles="manager-gui" password="<psw>" username="<user>"/>
 # 3. install war file
 #    - go to /var folder 
 #    - mkdir cardgamesapi (standaard met octal 0755 = alleen maker kan schrijven)

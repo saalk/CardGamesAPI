@@ -6,7 +6,6 @@ node_modules/
 target/
 ngproject/
 *.properties
-*.xml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -20,5 +19,3 @@ ngproject/
 hs_err_pid*
 /nbproject/private/
 
-# Security
-*.txt
