@@ -6,7 +6,6 @@ node_modules/
 target/
 ngproject/
 *.properties
-*.xml
 *.iml
 **.log
 
