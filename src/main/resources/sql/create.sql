@@ -16,7 +16,9 @@ alter table HANDS add constraint FKehkfhpnvblsn18sdo2o65vfo9 foreign key (FK_TAB
 create index FK_GAME_ID_INDEX on TABLES (FK_GAME_ID);
 create index FK_PLAYER_ID_INDEX on TABLES (FK_PLAYER_ID);
 create index FK_HAND_ID_INDEX on TABLES (FK_HAND_ID);
+/*
 alter table TABLES add constraint UK8x010rio87eg7qfb62lilrmou unique (FK_GAME_ID, FK_PLAYER_ID, FK_HAND_ID);
 alter table TABLES add constraint FKsodqulyexnftlbr8nyu79ihva foreign key (FK_GAME_ID) references GAMES (GAME_ID);
 alter table TABLES add constraint FKm96viptaps6dnmly1oxhgjcvh foreign key (FK_HAND_ID) references HANDS (HAND_ID);
 alter table TABLES add constraint FKby4cdqq243q7t1ne2jbeafg0i foreign key (FK_PLAYER_ID) references PLAYERS (PLAYER_ID);
+*/

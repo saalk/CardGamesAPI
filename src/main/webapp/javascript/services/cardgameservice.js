@@ -2,7 +2,7 @@ angular.module('myApp')
        .service('cardgameService', ['$http', '$q', 'toastr', '$httpParamSerializerJQLike', 'envService',
 function ($http, $q, toastr, $httpParamSerializerJQLike, envService){
 
-         envService.set('development');
+         envService.set('production');
          // interface
          var cardGame = {},
          service = {

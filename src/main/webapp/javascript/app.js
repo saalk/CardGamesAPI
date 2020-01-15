@@ -61,7 +61,7 @@ angular.module('myApp')
     // set the domains and variables for each environment
     envServiceProvider.config({
         domains: {
-            development: ['localhost:8383'],
+            development: ['knikit.nl'],
             production: ['knikit.nl']
             //production: ['knikit.nl']
             // anotherStage: ['domain1', 'domain2'],
@@ -69,8 +69,8 @@ angular.module('myApp')
         },
         vars: {
             development: {
-                apiUrl: '//localhost:8383/api',
-                staticUrl: '//static.localhost:8383/api'
+                apiUrl: '//knikit.nl/api',
+                staticUrl: '//static.knikit.nl/api'
                 // antoherCustomVar: 'lorem',
                 // antoherCustomVar: 'ipsum'
             },

@@ -124,12 +124,17 @@ public class ApplicationContextConfig extends WebMvcConfigurerAdapter {
         // org.mariadb.jdbc.MySQLDataSource or com.mariadb.jdbc.Driver
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         // JDBC drivers are extensions for java to connect to the database
-
-        // either these 3 or URL
+        // these for synology
         driverManagerDataSource.setDriverClassName(Preconditions.checkNotNull("org.mariadb.jdbc.Driver"));
-        driverManagerDataSource.setUsername(Preconditions.checkNotNull(""));
-        driverManagerDataSource.setPassword(Preconditions.checkNotNull(""));
-        driverManagerDataSource.setUrl(Preconditions.checkNotNull("jdbc:mariadb://192.168.2.100:3306/knikit"));
+        driverManagerDataSource.setUsername(Preconditions.checkNotNull("root"));
+        driverManagerDataSource.setPassword(Preconditions.checkNotNull("klaas"));
+        driverManagerDataSource.setUrl(Preconditions.checkNotNull("jdbc:mysql://192.168.2.100:3306/knikit"));
+        
+        // either these 3 or URL for strato
+        //driverManagerDataSource.setDriverClassName(Preconditions.checkNotNull("org.mysql.jdbc.Driver"));
+        //driverManagerDataSource.setUsername(Preconditions.checkNotNull("U3985394"));
+        //driverManagerDataSource.setPassword(Preconditions.checkNotNull("deventer01!"));
+        //driverManagerDataSource.setUrl(Preconditions.checkNotNull("jdbc:mysql://rdbms.strato.de/DB3985394"));
 
         return driverManagerDataSource;
 

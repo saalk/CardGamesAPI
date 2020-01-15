@@ -10,7 +10,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <!-- local properties for deploy on local tomcat -->
         <tomcat.port>8383</tomcat.port>
+        <tomcat-manager.port>7070</tomcat-manager.port>
         <tomcat.path>/</tomcat.path>
         <tomcat.host>localhost</tomcat.host>
 
@@ -145,7 +147,7 @@
                 <version>${tomcat7-maven-plugin}</version>
                 <configuration>
                     <!-- manager/text for remote deploy for manually do manager /html -->
-                    <!-- be sure to have manager-script added as a role -->
+                    <!-- be sure to have c added as a role -->
                     <url>http://${tomcat.host}:${tomcat.port}/manager/text</url>
                     <server>tomcat7-local</server>
                     <path>${tomcat.path}</path>
@@ -362,7 +364,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- make a database while doing mvn install -> just fill user and psw
+
+            <!-- make a database while doing mvn install -> just fill user and psw -->
             <plugin>
                 <groupId>de.juplo</groupId>
                 <artifactId>hibernate-maven-plugin</artifactId>
@@ -375,15 +378,23 @@
                         </goals>
                     </execution>
                 </executions>
+                <!-- local -->
                 <configuration>
                     <driver>org.mariadb.jdbc.Driver</driver>
-                    <dialect>org.hibernate.dialect.MySQLDialect</dialect>
+                    <dialect>org.hibernate.dialect.MySQL5Dialect</dialect>
                     <url><![CDATA[jdbc:mariadb://192.168.2.100:3306/knikit]]></url>
-                    <username></username>
-                    <password></password>
+                    <username>root</username>
+                    <password>klaas</password>
                 </configuration>
+                <!-- remote MhySQL versie 5.6.42 -->
+<!--                <configuration>
+                    <driver>com.mysql.jdbc.Driver</driver>
+                    <dialect>org.hibernate.dialect.MySQL5Dialect</dialect>
+                    <url><![CDATA[jdbc:mysql://rdbms.strato.de/DB3985394]]></url>
+                    <username>U3985394</username>
+                    <password>deventer01!</password>
+                </configuration>-->
             </plugin>
-            -->
 
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -917,6 +928,24 @@
             </dependencies>
             <build>
                 <plugins>
+                    <!-- cargo library can be used to handle app containers -->
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <configuration>
+                            <container>
+                                <containerId>tomcat7x</containerId>
+                                <type>installed</type>
+                                <home>Insert absolute path to tomcat 7 installation</home>
+                            </container>
+                            <configuration>
+                                <type>existing</type>
+                                <home>Insert absolute path to tomcat 7 installation</home>
+                            </configuration>
+                        </configuration>
+                    </plugin>
+
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>2.7</version>

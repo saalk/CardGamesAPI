@@ -27,10 +27,10 @@
                 <a class="button game-button  animate-if" ng-if="vm.tothecasino" href="/casino" data-ng-click="vm.start()">Start the game</a>
             </div>
             <div class="three columns main-prop">
-                <img class="u-max-full-width main-img" alt="you" src="img/alien.ico" ng-click="vm.setHumanName()">
+                <img class="u-max-full-width main-img" alt="you" src="img/alien-1.jpg" ng-click="vm.setHumanName()">
                 <a class="button button-primary" ng-click="vm.setHumanName()">{{ vm.players[0].visitor.alias }}: {{
                     vm.players[0].visitor.cubits | minLength:4:"0" }}</a>
-                <img class="u-max-full-width main-img" alt="your ship" src="img/ship.ico"
+                <img class="u-max-full-width main-img" alt="your ship" src="img/ship-1.jpg"
                      ng-click="vm.pawnHumanShipForCubits(250)">
                 <div ng-if="vm.players[0].visitor.securedLoan !== 0">
                     <a class="button button-primary" ng-click="vm.pawnHumanShipForCubits(250)">Repay

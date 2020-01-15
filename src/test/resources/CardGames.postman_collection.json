@@ -8,9 +8,9 @@
 	},
 	"item": [
 		{
-			"name": "GET http://knikit.nl/api/players",
+			"name": "GET http://localhost:8383/api/players",
 			"request": {
-				"url": "http://knikit.nl/api/players",
+				"url": "http://localhost:8383/api/players",
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -22,9 +22,9 @@
 			"response": []
 		},
 		{
-			"name": "POST http://knikit.nl/api/players",
+			"name": "POST http://localhost:8383/api/players",
 			"request": {
-				"url": "http://knikit.nl/api/players",
+				"url": "http://localhost:8383/api/players",
 				"method": "POST",
 				"header": [
 					{
@@ -42,9 +42,9 @@
 			"response": []
 		},
 		{
-			"name": "DELETE http://knikit.nl/api/players",
+			"name": "DELETE http://localhost:8383/api/players",
 			"request": {
-				"url": "http://knikit.nl/api/players/4",
+				"url": "http://localhost:8383/api/players/4",
 				"method": "DELETE",
 				"header": [],
 				"body": {
@@ -56,9 +56,9 @@
 			"response": []
 		},
 		{
-			"name": "PUT http://knikit.nl/api/players/0",
+			"name": "PUT http://localhost:8383/api/players/0",
 			"request": {
-				"url": "http://knikit.nl/api/players/3",
+				"url": "http://localhost:8383/api/players/3",
 				"method": "PUT",
 				"header": [
 					{
