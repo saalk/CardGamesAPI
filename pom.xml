@@ -24,7 +24,7 @@
         <tomcat-dbcp.version>7.0.55</tomcat-dbcp.version>
 
         <!-- VERSION 5 -->
-        <mysql.connector.version>5.1.34</mysql.connector.version>
+        <mysql.connector.version>8.0.28</mysql.connector.version>
         <hibernate.version>5.2.2.Final</hibernate.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 
