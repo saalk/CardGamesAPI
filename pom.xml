@@ -25,7 +25,7 @@
 
         <!-- VERSION 5 -->
         <mysql.connector.version>8.0.28</mysql.connector.version>
-        <hibernate.version>5.2.2.Final</hibernate.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 
         <!-- VERSION 4 -->
