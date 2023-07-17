@@ -68,7 +68,7 @@
         <cucumber.version>1.2.5</cucumber.version>
 
         <!-- VERSION 0 -->
-        <spring-hateoas.version>0.20.0.RELEASE</spring-hateoas.version>
+        <spring-hateoas.version>1.5.5</spring-hateoas.version>
 
         <!-- modelmapper.org - jhalterman - Simple, intelligent, object mapping -->
         <!-- - maps between internal Spring entities and external Data Transfer Objects -->
